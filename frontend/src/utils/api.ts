@@ -9,5 +9,5 @@ export const getMessage = async () => {
     return data.message;
   }
 
-  return Promise.reject('Failed to get message from backend');
+  return Promise.reject(new Error('Failed to get message from backend'));
 };

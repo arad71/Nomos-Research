@@ -1,26 +1,35 @@
 #!/usr/bin/env python3
-
-from app.db.session import get_db
-from app.db.crud import create_user
+from app.db.crud import create_user, get_user_by_email
 from app.db.schemas import UserCreate
 from app.db.session import SessionLocal
 
 
-def init() -> None:
-    db = SessionLocal()
+def get_admin_email():
+    return "admin@taxman.com"
 
-    create_user(
-        db,
-        UserCreate(
-            email="admin@TaxMan.com",
-            password="password",
-            is_active=True,
-            is_superuser=True,
-        ),
-    )
+
+def init() -> bool:
+    admin_email = get_admin_email()
+    db = SessionLocal()
+    user = get_user_by_email(db=db, email=admin_email)
+    if user is None:
+        create_user(
+            db,
+            UserCreate(
+                email=admin_email,
+                password="password",
+                is_active=True,
+                is_superuser=True,
+                first_name="Admin",
+                last_name="User"
+            ),
+        )
+        return True
+    return False
 
 
 if __name__ == "__main__":
-    print("Creating superuser admin@TaxMan.com")
-    init()
-    print("Superuser created")
+    print("Initialising")
+    created = init()
+    print("Superuser {} {}".format(get_admin_email(), "created" if created else "exists"))
+

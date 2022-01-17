@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { getMessage } from '../utils/api';
 import { isAuthenticated } from '../utils/auth';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   link: {
     color: '#61dafb',
   },
@@ -17,8 +17,8 @@ export const Home: FC = () => {
 
   const queryBackend = async () => {
     try {
-      const message = await getMessage();
-      setMessage(message);
+      const newMessage = await getMessage();
+      setMessage(newMessage);
     } catch (err) {
       setError(String(err));
     }
@@ -27,9 +27,13 @@ export const Home: FC = () => {
   return (
     <>
       {!message && !error && (
-        <a className={classes.link} href="#" onClick={() => queryBackend()}>
+        <button
+          className={classes.link}
+          type="button"
+          onClick={() => queryBackend()}
+        >
           Click to make request to backend
-        </a>
+        </button>
       )}
       {message && (
         <p>

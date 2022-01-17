@@ -4,14 +4,18 @@ let rules = {
   'no-restricted-syntax': 'off',
   'no-continue': 'off',
   'no-underscore-dangle': 'off',
+  'no-param-reassign': 'off',
+  'prefer-destructuring': 'off',
   'import/extensions': 'off',
   'import/no-unresolved': 'off',
+  'import/prefer-default-export': 'off',
   'operator-linebreak': 'off',
   'implicit-arrow-linebreak': 'off',
   'react/destructuring-assignment': 'off',
   'jsx-a11y/click-events-have-key-events': 'off',
   'jsx-a11y/no-static-element-interactions': 'off',
   'react/jsx-one-expression-per-line': 'off',
+  'react/jsx-props-no-spreading': 'off',
   'react/jsx-filename-extension': [2, { extensions: ['.ts', '.tsx'] }],
   'lines-between-class-members': [
     'error',
@@ -21,7 +25,7 @@ let rules = {
 };
 
 module.exports = {
-  extends: ['airbnb', 'plugin:prettier/recommended', 'prettier/react'],
+  extends: ['airbnb', 'plugin:prettier/recommended', 'prettier'],
   parser: 'babel-eslint',
   rules,
   env: {
