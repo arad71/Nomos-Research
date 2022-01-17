@@ -37,7 +37,7 @@ export const Login: FC = () => {
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
 
-  const handleSubmit = async (_: React.MouseEvent) => {
+  const handleSubmit = async () => {
     setError('');
     try {
       const data = await login(email, password);
@@ -65,7 +65,7 @@ export const Login: FC = () => {
           <Grid item>
             <Face />
           </Grid>
-          <Grid item md={true} sm={true} xs={true}>
+          <Grid item md sm xs>
             <TextField
               id="email"
               label="Email"
@@ -84,7 +84,7 @@ export const Login: FC = () => {
           <Grid item>
             <Fingerprint />
           </Grid>
-          <Grid item md={true} sm={true} xs={true}>
+          <Grid item md sm xs>
             <TextField
               id="password"
               label="Password"

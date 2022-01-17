@@ -1,4 +1,5 @@
 import decodeJwt from 'jwt-decode';
+import { BASE_URL } from '../config';
 
 type loginFormType = {
   username: string;
@@ -7,10 +8,10 @@ type loginFormType = {
 
 const authProvider = {
   login: ({ username, password }: loginFormType) => {
-    let formData = new FormData();
+    const formData = new FormData();
     formData.append('username', username);
     formData.append('password', password);
-    const request = new Request('/api/token', {
+    const request = new Request(`${BASE_URL}/api/token`, {
       method: 'POST',
       body: formData,
     });
@@ -19,14 +20,15 @@ const authProvider = {
         if (response.status < 200 || response.status >= 300) {
           throw new Error(response.statusText);
         }
+        console.log(response);
         return response.json();
       })
-      .then(({ access_token }) => {
-        const decodedToken: any = decodeJwt(access_token);
+      .then(({ access_token: accessToken }) => {
+        const decodedToken: any = decodeJwt(accessToken);
         if (decodedToken.permissions !== 'admin') {
           throw new Error('Forbidden');
         }
-        localStorage.setItem('token', access_token);
+        localStorage.setItem('token', accessToken);
         localStorage.setItem('permissions', decodedToken.permissions);
       });
   },
@@ -48,7 +50,6 @@ const authProvider = {
   getPermissions: () => {
     const role = localStorage.getItem('permissions');
     return role ? Promise.resolve(role) : Promise.reject();
-    // localStorage.getItem('token') ? Promise.resolve() : Promise.reject(),
   },
 };
 

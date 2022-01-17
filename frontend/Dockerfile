@@ -1,4 +1,4 @@
-FROM node:12
+FROM node:lts
 
 ADD package.json /package.json
 

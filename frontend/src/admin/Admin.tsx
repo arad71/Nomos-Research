@@ -3,6 +3,7 @@ import { fetchUtils, Admin as ReactAdmin, Resource } from 'react-admin';
 import simpleRestProvider from 'ra-data-simple-rest';
 import authProvider from './authProvider';
 
+import { BACKEND_URL } from '../config';
 import { UserList, UserEdit, UserCreate } from './Users';
 
 const httpClient = (url: any, options: any) => {
@@ -17,7 +18,7 @@ const httpClient = (url: any, options: any) => {
   return fetchUtils.fetchJson(url, options);
 };
 
-const dataProvider = simpleRestProvider('api/v1', httpClient);
+const dataProvider = simpleRestProvider(BACKEND_URL, httpClient);
 
 export const Admin: FC = () => {
   return (
