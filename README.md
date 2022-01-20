@@ -18,18 +18,12 @@ The only dependencies for this project should be docker and docker-compose.
 
 ### Quick Start
 
-Starting the project with hot-reloading enabled
-(the first time it will take a while):
+Starting the project
 
 ```bash
-docker-compose up -d
+scripts/build.sh
 ```
-
-To run the alembic migrations (for the users table):
-
-```bash
-docker-compose run --rm backend alembic upgrade head
-```
+This will start up your containers and create the super user if it does not already exist. 
 
 And navigate to http://localhost:8000
 
@@ -37,6 +31,8 @@ _Note: If you see an Nginx error at first with a `502: Bad Gateway` page, you ma
 
 Auto-generated docs will be at
 http://localhost:8000/api/docs
+
+You will be able to log into http://localhost:8000/admin using: username "admin@taxman.com" password "password"
 
 ### Rebuilding containers:
 
