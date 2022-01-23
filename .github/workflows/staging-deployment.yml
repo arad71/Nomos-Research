@@ -29,5 +29,6 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_SECRET }}
+          port: ${{ secrets.SSH_PORT}}
           script: |
             /home/azureuser/bdr/action.bash
