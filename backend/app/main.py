@@ -27,8 +27,9 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-    expose_headers=["*"]
+    expose_headers=["*"],
 )
+
 
 @app.middleware("http")
 async def db_session_middleware(request: Request, call_next):

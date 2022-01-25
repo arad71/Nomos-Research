@@ -21,7 +21,7 @@ def init() -> bool:
                 is_active=True,
                 is_superuser=True,
                 first_name="Admin",
-                last_name="User"
+                last_name="User",
             ),
         )
         return True
@@ -31,5 +31,8 @@ def init() -> bool:
 if __name__ == "__main__":
     print("Initialising")
     created = init()
-    print("Superuser {} {}".format(get_admin_email(), "created" if created else "exists"))
-
+    print(
+        "Superuser {} {}".format(
+            get_admin_email(), "created" if created else "exists"
+        )
+    )
