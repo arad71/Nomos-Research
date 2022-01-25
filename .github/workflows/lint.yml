@@ -21,8 +21,9 @@ jobs:
         cd backend
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Lint with flake8
+    - name: Lint backend code
       run: |
+        cd backend
         # copy of scripts/lint.sh
         # Check whitespace for better diffs
         black app --diff --check
