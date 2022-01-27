@@ -114,6 +114,20 @@ docker-compose run frontend test
 
 This is the same as running npm test from within the frontend directory
 
+## Linting
+
+Code style is governed by the linters used in the project.
+There are two scripts which call the backend linters:
+
+```bash
+# Check code format against the code style
+scripts/lint.sh
+
+# Apply automated fixes to match the code style
+scripts/format.sh
+```
+
+
 ## Logging
 
 ```
