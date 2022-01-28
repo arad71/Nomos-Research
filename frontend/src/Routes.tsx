@@ -12,7 +12,7 @@ const useStyles = makeStyles(() => ({
     textAlign: 'center',
   },
   header: {
-    backgroundColor: '#282c34',
+    backgroundColor: '#fafafa',
     minHeight: '100vh',
     display: 'flex',
     flexDirection: 'column',
