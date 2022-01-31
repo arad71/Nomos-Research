@@ -2,11 +2,26 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter as Router } from 'react-router-dom';
 import './index.css';
+import { createMuiTheme, ThemeProvider } from "@material-ui/core";
 import App from './App';
+
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      main: "#6e6e6e"
+    },
+    secondary: {
+      main: "#ffcc80" //Another orange-ish color
+    }
+  },
+  fontFamily: "Roboto" // as an aside, highly recommend importing roboto font for Material UI projects! Looks really nice
+});
 
 ReactDOM.render(
   <Router>
-    <App />
+    <ThemeProvider theme={theme}>
+      <App />
+    </ThemeProvider>
   </Router>,
   document.getElementById('root')
 );
