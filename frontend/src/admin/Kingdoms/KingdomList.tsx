@@ -6,7 +6,7 @@ import {
   TextField,
   BooleanField,
   EmailField,
-  EditButton,
+  EditButton, ReferenceField,
 } from 'react-admin';
 
 export const KingdomList: FC = (props) => (
@@ -15,6 +15,10 @@ export const KingdomList: FC = (props) => (
         <TextField source="id" />
         <TextField source="kingdom_name" />
         <TextField source="kingdom_desc" />
+        <ReferenceField label="Updated By" source="userId" reference="users">
+          <TextField source="first_name" />
+        </ReferenceField>
+        <TextField source="updated_on" />
         <EditButton />
       </Datagrid>
     </List>
