@@ -10,14 +10,12 @@ import {
 } from 'react-admin';
 
 export const KingdomList: FC = (props) => (
-    <List {...props}>
+    <List {...props} sort={{ field: 'kingdom_name', order: 'DESC' }}>
       <Datagrid rowClick="edit">
         <TextField source="id" />
         <TextField source="kingdom_name" />
         <TextField source="kingdom_desc" />
-        <ReferenceField label="Updated By" source="userId" reference="users">
-          <TextField source="first_name" />
-        </ReferenceField>
+        <TextField source="updated_by" />
         <TextField source="updated_on" />
         <EditButton />
       </Datagrid>
