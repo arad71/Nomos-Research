@@ -1,0 +1,91 @@
+from typing import List
+
+from fastapi import APIRouter, Depends, Request, Response
+
+from app.core.auth import get_current_active_superuser, get_current_active_user
+from app.db.hierarchy.crud import create_hierarchy, delete_hierarchy, edit_hierarchy, get_hierarchy, get_hierarchys
+from app.db.schemas import Hierarchy, HierarchyCreate, HierarchyEdit
+from app.db.session import get_db
+
+hierarchys_router = r = APIRouter()
+
+
+@r.get(
+    "/hierarchys",
+    response_model=List[Hierarchy],
+    response_model_exclude_none=True,
+)
+async def hierarchy_list(
+    response: Response,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_superuser),
+):
+    """
+    Get all hierarchys
+    """
+    hierarchys = get_hierarchys(db)
+    # This is necessary for react-admin to work
+    response.headers["Content-Range"] = f"0-9/{len(hierarchys)}"
+    return hierarchys
+
+
+@r.get(
+    "/hierarchys/{hierarchy_id}",
+    response_model=Hierarchy,
+    response_model_exclude_none=True,
+)
+async def hierarchy_details(
+    request: Request,
+    hierarchy_id: int,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_superuser),
+):
+    """
+    Get any hierarchy details
+    """
+    hierarchy = get_hierarchy(db, hierarchy_id)
+    return hierarchy
+
+
+@r.post("/hierarchys", response_model=Hierarchy, response_model_exclude_none=True)
+async def hierarchy_create(
+    request: Request,
+    hierarchy: HierarchyCreate,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_superuser),
+):
+    """
+    Create a new hierarchy
+    """
+    return create_hierarchy(db, hierarchy)
+
+
+@r.put(
+    "/hierarchys/{hierarchy_id}", response_model=Hierarchy, response_model_exclude_none=True
+)
+async def hierarchy_edit(
+    request: Request,
+    hierarchy_id: int,
+    hierarchy: HierarchyEdit,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_superuser),
+):
+    """
+    Update existing hierarchy
+    """
+    return edit_hierarchy(db, hierarchy_id, hierarchy)
+
+
+@r.delete(
+    "/hierarchys/{hierarchy_id}", response_model=Hierarchy, response_model_exclude_none=True
+)
+async def hierarchy_delete(
+    request: Request,
+    hierarchy_id: int,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_superuser),
+):
+    """
+    Delete existing hierarchy
+    """
+    return delete_hierarchy(db, hierarchy_id)
