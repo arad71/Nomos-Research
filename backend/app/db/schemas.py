@@ -31,7 +31,7 @@ class UserEdit(UserBase):
 
 
 class User(UserBase):
-    id: int
+    user_id: int
 
     class Config:
         orm_mode = True
@@ -63,6 +63,7 @@ class AuthorBase(TableBase):
     surname: str
     first_names: str
     initials: str
+    orc_id: int
 
 
 class AuthorCreate(AuthorBase):
@@ -74,7 +75,7 @@ class AuthorEdit(AuthorBase):
 
 
 class Author(AuthorBase):
-    orc_id: int
+    author_id: int
 
     class Config:
         orm_mode = True
@@ -97,44 +98,31 @@ class ClassificationSystemEdit(ClassificationSystemBase):
 
 
 class ClassificationSystem(ClassificationSystemBase):
-    class_id: str
-
-    class Config:
-        orm_mode = True
-
-
-# ConservationStatus
-class ConservationStatusBase(TableBase):
-    consv_code: str
-    list_code: str
-    epbc: str
-    wa_iucn: str
-    iucn_criteria: str
-
-
-class ConservationStatusCreate(ConservationStatusBase):
-    pass
-
-
-class ConservationStatusEdit(ConservationStatusBase):
-    pass
-
-
-class ConservationStatus(ConservationStatusBase):
-    name_id: int
+    classification_system_id: str
 
     class Config:
         orm_mode = True
 
 
 # InformalGroup
-class InformalGroup(BaseModel):
+class InformalGroupBase(TableBase):
     class_id: str
     name_id: int
 
+
+class InformalGroupCreate(InformalGroupBase):
+    pass
+
+
+class InformalGroupEdit(InformalGroupBase):
+    pass
+
+
+class InformalGroup(InformalGroupBase):
+    informal_group_id: str
+
     class Config:
         orm_mode = True
-
 
 # Kingdom
 class KingdomBase(TableBase):
@@ -155,40 +143,6 @@ class Kingdom(KingdomBase):
 
     class Config:
         orm_mode = True
-
-
-# NameId
-class NameIdBase(TableBase):
-    external_name_id: str
-    kingdom_id: int
-    rank_id: int
-    rank_name: str
-    name1: str
-    name2: str
-    rank3: str
-    name3: str
-    rank4: str
-    name4: str
-    author: str
-    created_by_app: str
-    claimed: str
-    updated_by_app: str
-
-
-class NameIdCreate(NameIdBase):
-    pass
-
-
-class NameIdEdit(NameIdBase):
-    pass
-
-
-class NameId(NameIdBase):
-    name_id: int
-
-    class Config:
-        orm_mode = True
-
 
 # TaxonName
 class TaxonNameBase(TableBase):
@@ -259,6 +213,7 @@ class TaxonName(TaxonNameBase):
 
 # Hierarchy
 class HierarchyBase(TableBase):
+    name_id: int
     classification_id: str
     parent_nid: int
     pass
@@ -273,7 +228,7 @@ class HierarchyEdit(HierarchyBase):
 
 
 class Hierarchy(HierarchyBase):
-    name_id: int
+    hierarchy_id: int
 
     class Config:
         orm_mode = True

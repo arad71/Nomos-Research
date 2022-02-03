@@ -7,8 +7,8 @@ from app.db.models import ClassificationSystem as Model
 import app.db.schemas as schema
 
 
-def get_classification_system(db: Session, class_id: int):
-    classification_system = db.query(Model).filter(Model.class_id == class_id).first()
+def get_classification_system(db: Session, classification_system_id: int):
+    classification_system = db.query(Model).filter(Model.classification_system_id == classification_system_id).first()
     if not classification_system:
         raise HTTPException(status_code=404, detail="Classification System not found")
     return classification_system
@@ -37,8 +37,8 @@ def create_classification_system(db: Session, classification_system: schema.Clas
     return db_classification_system
 
 
-def delete_classification_system(db: Session, class_id: int):
-    classification_system = get_classification_system(db, class_id)
+def delete_classification_system(db: Session, classification_system_id: int):
+    classification_system = get_classification_system(db, classification_system_id)
     if not classification_system:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Classification System not found")
     db.delete(classification_system)
@@ -47,9 +47,9 @@ def delete_classification_system(db: Session, class_id: int):
 
 
 def edit_classification_system(
-    db: Session, class_id: int, classification_system: schema.ClassificationSystemEdit
+    db: Session, classification_system_id: int, classification_system: schema.ClassificationSystemEdit
 ) -> schema:
-    db_classification_system = get_classification_system(db, class_id)
+    db_classification_system = get_classification_system(db, classification_system_id)
     if not db_classification_system:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Classification System not found")
     update_data = classification_system.dict(exclude_unset=True)

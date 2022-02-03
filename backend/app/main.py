@@ -7,11 +7,9 @@ from app.api.api_v1.routers.auth import auth_router
 from app.api.api_v1.routers.users import users_router
 from app.api.api_v1.routers.author import authors_router
 from app.api.api_v1.routers.classification_system import classification_systems_router
-from app.api.api_v1.routers.conservation_status import conservation_statuss_router
 from app.api.api_v1.routers.cross_reference import cross_references_router
 from app.api.api_v1.routers.hierarchy import hierarchys_router
 from app.api.api_v1.routers.kingdoms import kingdoms_router
-from app.api.api_v1.routers.name_id import name_ids_router
 from app.api.api_v1.routers.publication import publications_router
 from app.api.api_v1.routers.taxon_name import taxon_names_router
 from app.api.api_v1.routers.taxon_rank import taxon_ranks_router
@@ -90,13 +88,6 @@ app.include_router(
 )
 
 app.include_router(
-    conservation_statuss_router,
-    prefix="/api/v1",
-    tags=["conservation_status"],
-    dependencies=[Depends(get_current_active_user)],
-)
-
-app.include_router(
     cross_references_router,
     prefix="/api/v1",
     tags=["cross_reference"],
@@ -114,13 +105,6 @@ app.include_router(
     kingdoms_router,
     prefix="/api/v1",
     tags=["kingdoms"],
-    dependencies=[Depends(get_current_active_user)],
-)
-
-app.include_router(
-    name_ids_router,
-    prefix="/api/v1",
-    tags=["name_id"],
     dependencies=[Depends(get_current_active_user)],
 )
 

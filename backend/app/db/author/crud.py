@@ -7,8 +7,8 @@ from app.db.models import Author as Model
 import app.db.schemas as schema
 
 
-def get_author(db: Session, orc_id: int):
-    author = db.query(Model).filter(Model.orc_id == orc_id).first()
+def get_author(db: Session, author_id: int):
+    author = db.query(Model).filter(Model.author_id == author_id).first()
     if not author:
         raise HTTPException(status_code=404, detail="Author not found")
     return author
@@ -26,6 +26,7 @@ def create_author(db: Session, author: schema.AuthorCreate):
         surname=author.surname,
         first_names=author.first_names,
         initials=author.initials,
+        author_id=author.author_id,
         updated_by=author.updated_by,
         updated_on=author.updated_on,
         created_by=author.created_by,
@@ -37,8 +38,8 @@ def create_author(db: Session, author: schema.AuthorCreate):
     return db_author
 
 
-def delete_author(db: Session, orc_id: int):
-    author = get_author(db, orc_id)
+def delete_author(db: Session, author_id: int):
+    author = get_author(db, author_id)
     if not author:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Author not found")
     db.delete(author)
@@ -47,9 +48,9 @@ def delete_author(db: Session, orc_id: int):
 
 
 def edit_author(
-    db: Session, orc_id: int, author: schema.AuthorEdit
+    db: Session, author_id: int, author: schema.AuthorEdit
 ) -> schema:
-    db_author = get_author(db, orc_id)
+    db_author = get_author(db, author_id)
     if not db_author:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Author not found")
     update_data = author.dict(exclude_unset=True)
