@@ -3,12 +3,12 @@ import typing as t
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.db.models import Vernacular as Model
-import app.db.schemas as schema
 
+import app.db.vernacular.model as model
+import app.db.vernacular.schema as schema
 
 def get_vernacular(db: Session, name_id: int):
-    vernacular = db.query(Model).filter(Model.name_id == name_id).first()
+    vernacular = db.query(model).filter(model.name_id == name_id).first()
     if not vernacular:
         raise HTTPException(status_code=404, detail="Vernacular not found")
     return vernacular
@@ -17,11 +17,11 @@ def get_vernacular(db: Session, name_id: int):
 def get_vernaculars(
     db: Session, skip: int = 0, limit: int = 100
 ) -> t.List[schema.VernacularBase]:
-    return db.query(Model).offset(skip).limit(limit).all()
+    return db.query(model).offset(skip).limit(limit).all()
 
 
 def create_vernacular(db: Session, vernacular: schema.VernacularCreate):
-    db_vernacular = Model(
+    db_vernacular = model(
         vernacular=vernacular.vernacular,
         language=vernacular.language,
         lang_pref=vernacular.lang_pref,

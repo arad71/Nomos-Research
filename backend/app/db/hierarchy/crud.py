@@ -3,12 +3,12 @@ import typing as t
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.db.models import Hierarchy as Model
-import app.db.schemas as schema
 
+import app.db.hierarchy.model as model
+import app.db.hierarchy.schema as schema
 
 def get_hierarchy(db: Session, hierarchy_id: int):
-    hierarchy = db.query(Model).filter(Model.hierarchy_id == hierarchy_id).first()
+    hierarchy = db.query(model).filter(model.hierarchy_id == hierarchy_id).first()
     if not hierarchy:
         raise HTTPException(status_code=404, detail="Hierarchy not found")
     return hierarchy
@@ -17,11 +17,11 @@ def get_hierarchy(db: Session, hierarchy_id: int):
 def get_hierarchys(
     db: Session, skip: int = 0, limit: int = 100
 ) -> t.List[schema.HierarchyBase]:
-    return db.query(Model).offset(skip).limit(limit).all()
+    return db.query(model).offset(skip).limit(limit).all()
 
 
 def create_hierarchy(db: Session, hierarchy: schema.HierarchyCreate):
-    db_hierarchy = Model(
+    db_hierarchy = model(
         classification_id=hierarchy.classification_id,
         parent_nid=hierarchy.parent_nid,
     )

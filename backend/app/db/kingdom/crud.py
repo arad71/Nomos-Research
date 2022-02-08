@@ -3,12 +3,12 @@ import typing as t
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.db.models import Kingdom as Model
-import app.db.schemas as schema
+import app.db.kingdom.model as model
+import app.db.kingdom.schema as schema
 
 
 def get_kingdom(db: Session, kingdom_id: int):
-    kingdom = db.query(Model).filter(Model.kingdom_id == kingdom_id).first()
+    kingdom = db.query(model).filter(model.kingdom_id == kingdom_id).first()
     if not kingdom:
         raise HTTPException(status_code=404, detail="Kingdom not found")
     return kingdom
@@ -17,11 +17,11 @@ def get_kingdom(db: Session, kingdom_id: int):
 def get_kingdoms(
     db: Session, skip: int = 0, limit: int = 100
 ) -> t.List[schema.KingdomBase]:
-    return db.query(Model).offset(skip).limit(limit).all()
+    return db.query(model).offset(skip).limit(limit).all()
 
 
 def create_kingdom(db: Session, kingdom: schema.KingdomCreate):
-    db_kingdom = Model(
+    db_kingdom = model(
         kingdom_name=kingdom.kingdom_name,
         kingdom_desc=kingdom.kingdom_desc,
         updated_by=kingdom.updated_by,

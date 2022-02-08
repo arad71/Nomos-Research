@@ -3,12 +3,13 @@ import typing as t
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.db.models import Publication as Model
-import app.db.schemas as schema
+
+import app.db.publication.model as model
+import app.db.publication.schema as schema
 
 
 def get_publication(db: Session, publication_id: int):
-    publication = db.query(Model).filter(Model.publication_id == publication_id).first()
+    publication = db.query(model).filter(model.publication_id == publication_id).first()
     if not publication:
         raise HTTPException(status_code=404, detail="Publication not found")
     return publication
@@ -17,11 +18,11 @@ def get_publication(db: Session, publication_id: int):
 def get_publications(
     db: Session, skip: int = 0, limit: int = 100
 ) -> t.List[schema.PublicationBase]:
-    return db.query(Model).offset(skip).limit(limit).all()
+    return db.query(model).offset(skip).limit(limit).all()
 
 
 def create_publication(db: Session, publication: schema.PublicationCreate):
-    db_publication = Model(
+    db_publication = model(
         bad_publication=publication.bad_publication,
         publication=publication.publication,
         publication_name=publication.publication_name,

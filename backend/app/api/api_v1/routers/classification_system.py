@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Request, Response
 
 from app.core.auth import get_current_active_superuser, get_current_active_user
 from app.db.classification_system.crud import create_classification_system, delete_classification_system, edit_classification_system, get_classification_system, get_classification_systems
-from app.db.schemas import ClassificationSystem, ClassificationSystemCreate, ClassificationSystemEdit
+from app.db.classification_system.schema import ClassificationSystem, ClassificationSystemCreate, ClassificationSystemEdit
 from app.db.session import get_db
 
 classification_systems_router = r = APIRouter()

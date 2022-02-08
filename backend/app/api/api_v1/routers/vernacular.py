@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Request, Response
 
 from app.core.auth import get_current_active_superuser, get_current_active_user
 from app.db.vernacular.crud import create_vernacular, delete_vernacular, edit_vernacular, get_vernacular, get_vernacular
-from app.db.schemas import Vernacular, VernacularCreate, VernacularEdit
+from app.db.vernacular.schema import Vernacular, VernacularCreate, VernacularEdit
 from app.db.session import get_db
 
 vernaculars_router = r = APIRouter()

@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Request, Response
 
 from app.core.auth import get_current_active_superuser, get_current_active_user
 from app.db.hierarchy.crud import create_hierarchy, delete_hierarchy, edit_hierarchy, get_hierarchy, get_hierarchys
-from app.db.schemas import Hierarchy, HierarchyCreate, HierarchyEdit
+from app.db.hierarchy.schema import Hierarchy, HierarchyCreate, HierarchyEdit
 from app.db.session import get_db
 
 hierarchys_router = r = APIRouter()

@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Request, Response
 
 from app.core.auth import get_current_active_superuser, get_current_active_user
 from app.db.cross_reference.crud import create_cross_reference, delete_cross_reference, edit_cross_reference, get_cross_reference, get_cross_references
-from app.db.schemas import CrossReference, CrossReferenceCreate, CrossReferenceEdit
+from app.db.cross_reference.schema import CrossReference, CrossReferenceCreate, CrossReferenceEdit
 from app.db.session import get_db
 
 cross_references_router = r = APIRouter()

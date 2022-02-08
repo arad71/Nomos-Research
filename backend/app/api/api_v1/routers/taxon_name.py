@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Request, Response
 
 from app.core.auth import get_current_active_superuser, get_current_active_user
 from app.db.taxon_name.crud import create_taxon_name, delete_taxon_name, edit_taxon_name, get_taxon_name, get_taxon_names
-from app.db.schemas import TaxonName, TaxonNameCreate, TaxonNameEdit
+from app.db.taxon_name.schema import TaxonName, TaxonNameCreate, TaxonNameEdit
 from app.db.session import get_db
 
 taxon_names_router = r = APIRouter()

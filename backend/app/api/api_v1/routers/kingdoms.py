@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Request, Response
 
 from app.core.auth import get_current_active_superuser, get_current_active_user
 from app.db.kingdom.crud import create_kingdom, delete_kingdom, edit_kingdom, get_kingdom, get_kingdoms
-from app.db.schemas import Kingdom, KingdomCreate, KingdomEdit
+from app.db.kingdom.schema import Kingdom, KingdomCreate, KingdomEdit
 from app.db.session import get_db
 
 kingdoms_router = r = APIRouter()

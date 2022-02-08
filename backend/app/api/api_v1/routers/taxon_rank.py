@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Request, Response
 
 from app.core.auth import get_current_active_superuser, get_current_active_user
 from app.db.taxon_rank.crud import create_taxon_rank, delete_taxon_rank, edit_taxon_rank, get_taxon_rank, get_taxon_ranks
-from app.db.schemas import TaxonRank, TaxonRankCreate, TaxonRankEdit
+from app.db.taxon_rank.schema import TaxonRank, TaxonRankCreate, TaxonRankEdit
 from app.db.session import get_db
 
 taxon_ranks_router = r = APIRouter()

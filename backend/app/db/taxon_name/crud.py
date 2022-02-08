@@ -3,12 +3,12 @@ import typing as t
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.db.models import TaxonName as Model
-import app.db.schemas as schema
 
+import app.db.taxon_name.model as model
+import app.db.taxon_name.schema as schema
 
 def get_taxon_name(db: Session, name_id: int):
-    taxon_name = db.query(Model).filter(Model.name_id == name_id).first()
+    taxon_name = db.query(model).filter(model.name_id == name_id).first()
     if not taxon_name:
         raise HTTPException(status_code=404, detail="Taxon Name not found")
     return taxon_name
@@ -17,11 +17,11 @@ def get_taxon_name(db: Session, name_id: int):
 def get_taxon_names(
     db: Session, skip: int = 0, limit: int = 100
 ) -> t.List[schema.TaxonNameBase]:
-    return db.query(Model).offset(skip).limit(limit).all()
+    return db.query(model).offset(skip).limit(limit).all()
 
 
 def create_taxon_name(db: Session, taxon_name: schema.TaxonNameCreate):
-    db_taxon_name = Model(
+    db_taxon_name = model(
         name_id=taxon_name.name_id,
         kingdom_id=taxon_name.kingdom_id,
         rank_id=taxon_name.rank_id,

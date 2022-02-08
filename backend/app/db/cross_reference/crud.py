@@ -3,12 +3,12 @@ import typing as t
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.db.models import CrossReference as Model
-import app.db.schemas as schema
+import app.db.cross_reference.model as model
+import app.db.cross_reference.schema as schema
 
 
-def get_cross_reference(db: Session, xref_id: int):
-    cross_reference = db.query(Model).filter(Model.xref_id == xref_id).first()
+def get_cross_reference(db: Session, cross_reference_id: int):
+    cross_reference = db.query(model).filter(model.cross_reference_id == cross_reference_id).first()
     if not cross_reference:
         raise HTTPException(status_code=404, detail="CrossReference not found")
     return cross_reference
@@ -17,11 +17,11 @@ def get_cross_reference(db: Session, xref_id: int):
 def get_cross_references(
     db: Session, skip: int = 0, limit: int = 100
 ) -> t.List[schema.CrossReferenceBase]:
-    return db.query(Model).offset(skip).limit(limit).all()
+    return db.query(model).offset(skip).limit(limit).all()
 
 
 def create_cross_reference(db: Session, cross_reference: schema.CrossReferenceCreate):
-    db_cross_reference = Model(
+    db_cross_reference = model(
         old_name_id=cross_reference.old_name_id,
         new_name_id=cross_reference.new_name_id,
         xref_type=cross_reference.xref_type,
@@ -43,8 +43,8 @@ def create_cross_reference(db: Session, cross_reference: schema.CrossReferenceCr
     return db_cross_reference
 
 
-def delete_cross_reference(db: Session, xref_id: int):
-    cross_reference = get_cross_reference(db, xref_id)
+def delete_cross_reference(db: Session, cross_reference_id: int):
+    cross_reference = get_cross_reference(db, cross_reference_id)
     if not cross_reference:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="CrossReference not found")
     db.delete(cross_reference)
@@ -53,9 +53,9 @@ def delete_cross_reference(db: Session, xref_id: int):
 
 
 def edit_cross_reference(
-    db: Session, xref_id: int, cross_reference: schema.CrossReferenceEdit
+    db: Session, cross_reference_id: int, cross_reference: schema.CrossReferenceEdit
 ) -> schema:
-    db_cross_reference = get_cross_reference(db, xref_id)
+    db_cross_reference = get_cross_reference(db, cross_reference_id)
     if not db_cross_reference:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="CrossReference not found")
     update_data = cross_reference.dict(exclude_unset=True)

@@ -57,6 +57,16 @@ def run_migrations_online():
     In this scenario we need to create an Engine
     and associate a connection with the context.
     """
+    import app.db.author.model
+    import app.db.classification_system.model
+    import app.db.cross_reference.model
+    import app.db.hierarchy.model
+    import app.db.informal_group.model
+    import app.db.kingdom.model
+    import app.db.publication.model
+    import app.db.taxon_name.model
+    import app.db.taxon_rank.model
+    import app.db.vernacular.model
     configuration = config.get_section(config.config_ini_section)
     configuration["sqlalchemy.url"] = get_url()
     connectable = engine_from_config(

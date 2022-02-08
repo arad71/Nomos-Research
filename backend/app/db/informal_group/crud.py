@@ -3,12 +3,13 @@ import typing as t
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.db.models import InformalGroup as Model
-import app.db.schemas as schema
+
+import app.db.informal_group.model as model
+import app.db.informal_group.schema as schema
 
 
 def get_informal_group(db: Session, informal_group_id: int):
-    informal_group = db.query(Model).filter(Model.informal_group_id == informal_group_id).first()
+    informal_group = db.query(model).filter(model.informal_group_id == informal_group_id).first()
     if not informal_group:
         raise HTTPException(status_code=404, detail="InformalGroup not found")
     return informal_group
@@ -17,11 +18,11 @@ def get_informal_group(db: Session, informal_group_id: int):
 def get_informal_groups(
     db: Session, skip: int = 0, limit: int = 100
 ) -> t.List[schema.InformalGroupBase]:
-    return db.query(Model).offset(skip).limit(limit).all()
+    return db.query(model).offset(skip).limit(limit).all()
 
 
 def create_informal_group(db: Session, informal_group: schema.InformalGroupCreate):
-    db_informal_group = Model(
+    db_informal_group = model(
         informal_group_name=informal_group.informal_group_name,
         informal_group_desc=informal_group.informal_group_desc,
         updated_by=informal_group.updated_by,

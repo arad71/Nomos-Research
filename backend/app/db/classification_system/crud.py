@@ -3,12 +3,12 @@ import typing as t
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.db.models import ClassificationSystem as Model
-import app.db.schemas as schema
+import app.db.classification_system.model as model
+import app.db.classification_system.schema as schema
 
 
 def get_classification_system(db: Session, classification_system_id: int):
-    classification_system = db.query(Model).filter(Model.classification_system_id == classification_system_id).first()
+    classification_system = db.query(model).filter(model.classification_system_id == classification_system_id).first()
     if not classification_system:
         raise HTTPException(status_code=404, detail="Classification System not found")
     return classification_system
@@ -17,11 +17,11 @@ def get_classification_system(db: Session, classification_system_id: int):
 def get_classification_systems(
     db: Session, skip: int = 0, limit: int = 100
 ) -> t.List[schema.ClassificationSystemBase]:
-    return db.query(Model).offset(skip).limit(limit).all()
+    return db.query(model).offset(skip).limit(limit).all()
 
 
 def create_classification_system(db: Session, classification_system: schema.ClassificationSystemCreate):
-    db_classification_system = Model(
+    db_classification_system = model(
         class_desc=classification_system.class_desc,
         class_type=classification_system.class_type,
         preferred=classification_system.preferred,

@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Request, Response
 
 from app.core.auth import get_current_active_superuser, get_current_active_user
 from app.db.publication.crud import create_publication, delete_publication, edit_publication, get_publication, get_publications
-from app.db.schemas import Publication, PublicationCreate, PublicationEdit
+from app.db.publication.schema import Publication, PublicationCreate, PublicationEdit
 from app.db.session import get_db
 
 publications_router = r = APIRouter()

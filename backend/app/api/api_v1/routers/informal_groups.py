@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Request, Response
 
 from app.core.auth import get_current_active_superuser, get_current_active_user
 from app.db.informal_group.crud import create_informal_group, delete_informal_group, edit_informal_group, get_informal_group, get_informal_groups
-from app.db.schemas import informal_group, informal_groupCreate, informal_groupEdit
+from app.db.informal_group.schema import informal_group, informal_groupCreate, informal_groupEdit
 from app.db.session import get_db
 
 informal_groups_router = r = APIRouter()

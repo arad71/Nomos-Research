@@ -3,12 +3,12 @@ import typing as t
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.db.models import Author as Model
-import app.db.schemas as schema
+import app.db.author.model as model
+import app.db.author.schema as schema
 
 
 def get_author(db: Session, author_id: int):
-    author = db.query(Model).filter(Model.author_id == author_id).first()
+    author = db.query(model).filter(model.author_id == author_id).first()
     if not author:
         raise HTTPException(status_code=404, detail="Author not found")
     return author
@@ -17,11 +17,11 @@ def get_author(db: Session, author_id: int):
 def get_authors(
     db: Session, skip: int = 0, limit: int = 100
 ) -> t.List[schema.AuthorBase]:
-    return db.query(Model).offset(skip).limit(limit).all()
+    return db.query(model).offset(skip).limit(limit).all()
 
 
 def create_author(db: Session, author: schema.AuthorCreate):
-    db_author = Model(
+    db_author = model(
         author=author.author,
         surname=author.surname,
         first_names=author.first_names,
