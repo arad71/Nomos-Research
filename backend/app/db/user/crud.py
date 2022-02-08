@@ -5,29 +5,30 @@ from sqlalchemy.orm import Session
 
 from app.core.security import get_password_hash
 
-from . import models, schemas
+import app.db.user.model as model
+import app.db.user.schema as schema
 
 
 def get_user(db: Session, user_id: int):
-    user = db.query(models.User).filter(models.User.user_id == user_id).first()
+    user = db.query(model.User).filter(model.User.user_id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
 
-def get_user_by_email(db: Session, email: str) -> schemas.UserBase:
-    return db.query(models.User).filter(models.User.email == email).first()
+def get_user_by_email(db: Session, email: str) -> schema.UserBase:
+    return db.query(model.User).filter(model.User.email == email).first()
 
 
 def get_users(
     db: Session, skip: int = 0, limit: int = 100
-) -> t.List[schemas.UserOut]:
-    return db.query(models.User).offset(skip).limit(limit).all()
+) -> t.List[schema.UserOut]:
+    return db.query(model.User).offset(skip).limit(limit).all()
 
 
-def create_user(db: Session, user: schemas.UserCreate):
+def create_user(db: Session, user: schema.UserCreate):
     hashed_password = get_password_hash(user.password)
-    db_user = models.User(
+    db_user = model.User(
         first_name=user.first_name,
         last_name=user.last_name,
         email=user.email,
@@ -51,8 +52,8 @@ def delete_user(db: Session, user_id: int):
 
 
 def edit_user(
-    db: Session, user_id: int, user: schemas.UserEdit
-) -> schemas.User:
+    db: Session, user_id: int, user: schema.UserEdit
+) -> schema.User:
     db_user = get_user(db, user_id)
     if not db_user:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")
