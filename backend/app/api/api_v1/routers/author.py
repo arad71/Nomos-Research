@@ -13,11 +13,11 @@ from app.db.author.crud import (
 from app.db.author.schema import Author, AuthorCreate, AuthorEdit
 from app.db.session import get_db
 
-authors_router = r = APIRouter()
+authors_router = r = APIRouter(prefix="/authors")
 
 
 @r.get(
-    "/authors",
+    "/",
     response_model=List[Author],
     response_model_exclude_none=True,
 )
@@ -36,7 +36,7 @@ async def author_list(
 
 
 @r.get(
-    "/authors/{author_id}",
+    "/{author_id}",
     response_model=Author,
     response_model_exclude_none=True,
 )
@@ -53,7 +53,7 @@ async def author_details(
     return author
 
 
-@r.post("/authors", response_model=Author, response_model_exclude_none=True)
+@r.post("", response_model=Author, response_model_exclude_none=True)
 async def author_create(
     request: Request,
     author: AuthorCreate,
@@ -67,7 +67,7 @@ async def author_create(
 
 
 @r.put(
-    "/authors/{author_id}",
+    "/{author_id}",
     response_model=Author,
     response_model_exclude_none=True,
 )
@@ -85,7 +85,7 @@ async def author_edit(
 
 
 @r.delete(
-    "/authors/{author_id}",
+    "/{author_id}",
     response_model=Author,
     response_model_exclude_none=True,
 )

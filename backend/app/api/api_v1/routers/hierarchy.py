@@ -13,11 +13,11 @@ from app.db.hierarchy.crud import (
 from app.db.hierarchy.schema import Hierarchy, HierarchyCreate, HierarchyEdit
 from app.db.session import get_db
 
-hierarchies_router = r = APIRouter()
+hierarchies_router = r = APIRouter(prefix="/hierarchies")
 
 
 @r.get(
-    "/hierarchies",
+    "/",
     response_model=List[Hierarchy],
     response_model_exclude_none=True,
 )
@@ -36,7 +36,7 @@ async def hierarchy_list(
 
 
 @r.get(
-    "/hierarchies/{hierarchy_id}",
+    "/{hierarchy_id}",
     response_model=Hierarchy,
     response_model_exclude_none=True,
 )
@@ -53,7 +53,7 @@ async def hierarchy_details(
     return hierarchy
 
 
-@r.post("/hierarchies", response_model=Hierarchy, response_model_exclude_none=True)
+@r.post("", response_model=Hierarchy, response_model_exclude_none=True)
 async def hierarchy_create(
     request: Request,
     hierarchy: HierarchyCreate,
@@ -67,7 +67,7 @@ async def hierarchy_create(
 
 
 @r.put(
-    "/hierarchies/{hierarchy_id}",
+    "/{hierarchy_id}",
     response_model=Hierarchy,
     response_model_exclude_none=True,
 )
@@ -85,7 +85,7 @@ async def hierarchy_edit(
 
 
 @r.delete(
-    "/hierarchies/{hierarchy_id}",
+    "/{hierarchy_id}",
     response_model=Hierarchy,
     response_model_exclude_none=True,
 )

@@ -13,11 +13,11 @@ from app.db.kingdom.crud import (
 from app.db.kingdom.schema import Kingdom, KingdomCreate, KingdomEdit
 from app.db.session import get_db
 
-kingdoms_router = r = APIRouter()
+kingdoms_router = r = APIRouter(prefix="/kingdoms")
 
 
 @r.get(
-    "/kingdoms",
+    "/",
     response_model=List[Kingdom],
     response_model_exclude_none=True,
 )
@@ -36,7 +36,7 @@ async def kingdom_list(
 
 
 @r.get(
-    "/kingdoms/{kingdom_id}",
+    "/{kingdom_id}",
     response_model=Kingdom,
     response_model_exclude_none=True,
 )
@@ -53,7 +53,7 @@ async def kingdom_details(
     return kingdom
 
 
-@r.post("/kingdoms", response_model=Kingdom, response_model_exclude_none=True)
+@r.post("", response_model=Kingdom, response_model_exclude_none=True)
 async def kingdom_create(
     request: Request,
     kingdom: KingdomCreate,
@@ -67,7 +67,7 @@ async def kingdom_create(
 
 
 @r.put(
-    "/kingdoms/{kingdom_id}",
+    "/{kingdom_id}",
     response_model=Kingdom,
     response_model_exclude_none=True,
 )
@@ -85,7 +85,7 @@ async def kingdom_edit(
 
 
 @r.delete(
-    "/kingdoms/{kingdom_id}",
+    "/{kingdom_id}",
     response_model=Kingdom,
     response_model_exclude_none=True,
 )

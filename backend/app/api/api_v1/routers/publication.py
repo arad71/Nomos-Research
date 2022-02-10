@@ -13,11 +13,11 @@ from app.db.publication.crud import (
 from app.db.publication.schema import Publication, PublicationCreate, PublicationEdit
 from app.db.session import get_db
 
-publications_router = r = APIRouter()
+publications_router = r = APIRouter(prefix="/publications")
 
 
 @r.get(
-    "/publications",
+    "/",
     response_model=List[Publication],
     response_model_exclude_none=True,
 )
@@ -36,7 +36,7 @@ async def publication_list(
 
 
 @r.get(
-    "/publications/{publication_id}",
+    "/{publication_id}",
     response_model=Publication,
     response_model_exclude_none=True,
 )
@@ -54,7 +54,7 @@ async def publication_details(
 
 
 @r.post(
-    "/publications",
+    "",
     response_model=Publication,
     response_model_exclude_none=True,
 )
@@ -71,7 +71,7 @@ async def publication_create(
 
 
 @r.put(
-    "/publications/{publication_id}",
+    "/{publication_id}",
     response_model=Publication,
     response_model_exclude_none=True,
 )
@@ -89,7 +89,7 @@ async def publication_edit(
 
 
 @r.delete(
-    "/publications/{publication_id}",
+    "/{publication_id}",
     response_model=Publication,
     response_model_exclude_none=True,
 )

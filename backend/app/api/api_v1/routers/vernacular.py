@@ -13,11 +13,11 @@ from app.db.vernacular.crud import (
 )
 from app.db.vernacular.schema import Vernacular, VernacularCreate, VernacularEdit
 
-vernaculars_router = r = APIRouter()
+vernaculars_router = r = APIRouter(prefix="/vernacular")
 
 
 @r.get(
-    "/vernacular",
+    "/",
     response_model=List[Vernacular],
     response_model_exclude_none=True,
 )
@@ -36,7 +36,7 @@ async def vernacular_list(
 
 
 @r.get(
-    "/vernacular/{vernacular_id}",
+    "/{vernacular_id}",
     response_model=Vernacular,
     response_model_exclude_none=True,
 )
@@ -53,7 +53,7 @@ async def vernacular_details(
     return vernacular
 
 
-@r.post("/vernacular", response_model=Vernacular, response_model_exclude_none=True)
+@r.post("", response_model=Vernacular, response_model_exclude_none=True)
 async def vernacular_create(
     request: Request,
     vernacular: VernacularCreate,
@@ -67,7 +67,7 @@ async def vernacular_create(
 
 
 @r.put(
-    "/vernacular/{vernacular_id}",
+    "/{vernacular_id}",
     response_model=Vernacular,
     response_model_exclude_none=True,
 )
@@ -85,7 +85,7 @@ async def vernacular_edit(
 
 
 @r.delete(
-    "/vernacular/{vernacular_id}",
+    "/{vernacular_id}",
     response_model=Vernacular,
     response_model_exclude_none=True,
 )
