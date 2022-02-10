@@ -3,7 +3,13 @@ from typing import List
 from fastapi import APIRouter, Depends, Request, Response
 
 from app.core.auth import get_current_active_superuser, get_current_active_user
-from app.db.hierarchy.crud import create_hierarchy, delete_hierarchy, edit_hierarchy, get_hierarchy, get_hierarchies
+from app.db.hierarchy.crud import (
+    create_hierarchy,
+    delete_hierarchy,
+    edit_hierarchy,
+    get_hierarchies,
+    get_hierarchy,
+)
 from app.db.hierarchy.schema import Hierarchy, HierarchyCreate, HierarchyEdit
 from app.db.session import get_db
 
@@ -47,7 +53,9 @@ async def hierarchy_details(
     return hierarchy
 
 
-@r.post("/hierarchies", response_model=Hierarchy, response_model_exclude_none=True)
+@r.post(
+    "/hierarchies", response_model=Hierarchy, response_model_exclude_none=True
+)
 async def hierarchy_create(
     request: Request,
     hierarchy: HierarchyCreate,
@@ -61,7 +69,9 @@ async def hierarchy_create(
 
 
 @r.put(
-    "/hierarchies/{hierarchy_id}", response_model=Hierarchy, response_model_exclude_none=True
+    "/hierarchies/{hierarchy_id}",
+    response_model=Hierarchy,
+    response_model_exclude_none=True,
 )
 async def hierarchy_edit(
     request: Request,
@@ -77,7 +87,9 @@ async def hierarchy_edit(
 
 
 @r.delete(
-    "/hierarchies/{hierarchy_id}", response_model=Hierarchy, response_model_exclude_none=True
+    "/hierarchies/{hierarchy_id}",
+    response_model=Hierarchy,
+    response_model_exclude_none=True,
 )
 async def hierarchy_delete(
     request: Request,

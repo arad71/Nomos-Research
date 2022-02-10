@@ -8,7 +8,11 @@ import app.db.cross_reference.schema as schema
 
 
 def get_cross_reference(db: Session, cross_reference_id: int):
-    cross_reference = db.query(model).filter(model.cross_reference_id == cross_reference_id).first()
+    cross_reference = (
+        db.query(model)
+        .filter(model.cross_reference_id == cross_reference_id)
+        .first()
+    )
     if not cross_reference:
         raise HTTPException(status_code=404, detail="CrossReference not found")
     return cross_reference
@@ -20,7 +24,9 @@ def get_cross_references(
     return db.query(model).offset(skip).limit(limit).all()
 
 
-def create_cross_reference(db: Session, cross_reference: schema.CrossReferenceCreate):
+def create_cross_reference(
+    db: Session, cross_reference: schema.CrossReferenceCreate
+):
     db_cross_reference = model(
         old_name_id=cross_reference.old_name_id,
         new_name_id=cross_reference.new_name_id,
@@ -46,18 +52,24 @@ def create_cross_reference(db: Session, cross_reference: schema.CrossReferenceCr
 def delete_cross_reference(db: Session, cross_reference_id: int):
     cross_reference = get_cross_reference(db, cross_reference_id)
     if not cross_reference:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="CrossReference not found")
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND, detail="CrossReference not found"
+        )
     db.delete(cross_reference)
     db.commit()
     return cross_reference
 
 
 def edit_cross_reference(
-    db: Session, cross_reference_id: int, cross_reference: schema.CrossReferenceEdit
+    db: Session,
+    cross_reference_id: int,
+    cross_reference: schema.CrossReferenceEdit,
 ) -> schema:
     db_cross_reference = get_cross_reference(db, cross_reference_id)
     if not db_cross_reference:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="CrossReference not found")
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND, detail="CrossReference not found"
+        )
     update_data = cross_reference.dict(exclude_unset=True)
 
     for key, value in update_data.items():

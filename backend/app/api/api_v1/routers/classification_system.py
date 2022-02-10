@@ -3,8 +3,18 @@ from typing import List
 from fastapi import APIRouter, Depends, Request, Response
 
 from app.core.auth import get_current_active_superuser, get_current_active_user
-from app.db.classification_system.crud import create_classification_system, delete_classification_system, edit_classification_system, get_classification_system, get_classification_systems
-from app.db.classification_system.schema import ClassificationSystem, ClassificationSystemCreate, ClassificationSystemEdit
+from app.db.classification_system.crud import (
+    create_classification_system,
+    delete_classification_system,
+    edit_classification_system,
+    get_classification_system,
+    get_classification_systems,
+)
+from app.db.classification_system.schema import (
+    ClassificationSystem,
+    ClassificationSystemCreate,
+    ClassificationSystemEdit,
+)
 from app.db.session import get_db
 
 classification_systems_router = r = APIRouter()
@@ -43,11 +53,17 @@ async def classification_system_details(
     """
     Get any classification_system details
     """
-    classification_system = get_classification_system(db, classification_system_id)
+    classification_system = get_classification_system(
+        db, classification_system_id
+    )
     return classification_system
 
 
-@r.post("/classification_systems", response_model=ClassificationSystem, response_model_exclude_none=True)
+@r.post(
+    "/classification_systems",
+    response_model=ClassificationSystem,
+    response_model_exclude_none=True,
+)
 async def classification_system_create(
     request: Request,
     classification_system: ClassificationSystemCreate,
@@ -61,7 +77,9 @@ async def classification_system_create(
 
 
 @r.put(
-    "/classification_systems/{classification_system_id}", response_model=ClassificationSystem, response_model_exclude_none=True
+    "/classification_systems/{classification_system_id}",
+    response_model=ClassificationSystem,
+    response_model_exclude_none=True,
 )
 async def classification_system_edit(
     request: Request,
@@ -73,11 +91,15 @@ async def classification_system_edit(
     """
     Update existing classification_system
     """
-    return edit_classification_system(db, classification_system_id, classification_system)
+    return edit_classification_system(
+        db, classification_system_id, classification_system
+    )
 
 
 @r.delete(
-    "/classification_systems/{classification_system_id}", response_model=ClassificationSystem, response_model_exclude_none=True
+    "/classification_systems/{classification_system_id}",
+    response_model=ClassificationSystem,
+    response_model_exclude_none=True,
 )
 async def classification_system_delete(
     request: Request,

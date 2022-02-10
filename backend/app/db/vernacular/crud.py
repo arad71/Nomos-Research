@@ -3,11 +3,14 @@ import typing as t
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.db.vernacular.model import Vernacular as model
 import app.db.vernacular.schema as schema
+from app.db.vernacular.model import Vernacular as model
+
 
 def get_vernacular(db: Session, vernacular_id: int):
-    vernacular = db.query(model).filter(model.vernacular_id == vernacular_id).first()
+    vernacular = (
+        db.query(model).filter(model.vernacular_id == vernacular_id).first()
+    )
     if not vernacular:
         raise HTTPException(status_code=404, detail="Vernacular not found")
     return vernacular
@@ -42,7 +45,9 @@ def create_vernacular(db: Session, vernacular: schema.VernacularCreate):
 def delete_vernacular(db: Session, vernacular_id: int):
     vernacular = get_vernacular(db, vernacular_id)
     if not vernacular:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Vernacular not found")
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND, detail="Vernacular not found"
+        )
     db.delete(vernacular)
     db.commit()
     return vernacular
@@ -53,7 +58,9 @@ def edit_vernacular(
 ) -> schema:
     db_vernacular = get_vernacular(db, vernacular_id)
     if not db_vernacular:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Vernacular not found")
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND, detail="Vernacular not found"
+        )
     update_data = vernacular.dict(exclude_unset=True)
 
     for key, value in update_data.items():

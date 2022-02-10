@@ -3,10 +3,9 @@ import typing as t
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.core.security import get_password_hash
-
-from app.db.user.model import User as model
 import app.db.user.schema as schema
+from app.core.security import get_password_hash
+from app.db.user.model import User as model
 
 
 def get_user(db: Session, user_id: int):
@@ -51,9 +50,7 @@ def delete_user(db: Session, user_id: int):
     return user
 
 
-def edit_user(
-    db: Session, user_id: int, user: schema.UserEdit
-) -> schema.User:
+def edit_user(db: Session, user_id: int, user: schema.UserEdit) -> schema.User:
     db_user = get_user(db, user_id)
     if not db_user:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")

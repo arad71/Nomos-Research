@@ -3,8 +3,18 @@ from typing import List
 from fastapi import APIRouter, Depends, Request, Response
 
 from app.core.auth import get_current_active_superuser, get_current_active_user
-from app.db.cross_reference.crud import create_cross_reference, delete_cross_reference, edit_cross_reference, get_cross_reference, get_cross_references
-from app.db.cross_reference.schema import CrossReference, CrossReferenceCreate, CrossReferenceEdit
+from app.db.cross_reference.crud import (
+    create_cross_reference,
+    delete_cross_reference,
+    edit_cross_reference,
+    get_cross_reference,
+    get_cross_references,
+)
+from app.db.cross_reference.schema import (
+    CrossReference,
+    CrossReferenceCreate,
+    CrossReferenceEdit,
+)
 from app.db.session import get_db
 
 cross_references_router = r = APIRouter()
@@ -47,7 +57,11 @@ async def cross_reference_details(
     return cross_reference
 
 
-@r.post("/cross_references", response_model=CrossReference, response_model_exclude_none=True)
+@r.post(
+    "/cross_references",
+    response_model=CrossReference,
+    response_model_exclude_none=True,
+)
 async def cross_reference_create(
     request: Request,
     cross_reference: CrossReferenceCreate,
@@ -61,7 +75,9 @@ async def cross_reference_create(
 
 
 @r.put(
-    "/cross_references/{cross_reference_id}", response_model=CrossReference, response_model_exclude_none=True
+    "/cross_references/{cross_reference_id}",
+    response_model=CrossReference,
+    response_model_exclude_none=True,
 )
 async def cross_reference_edit(
     request: Request,
@@ -77,7 +93,9 @@ async def cross_reference_edit(
 
 
 @r.delete(
-    "/cross_references/{cross_reference_id}", response_model=CrossReference, response_model_exclude_none=True
+    "/cross_references/{cross_reference_id}",
+    response_model=CrossReference,
+    response_model_exclude_none=True,
 )
 async def cross_reference_delete(
     request: Request,

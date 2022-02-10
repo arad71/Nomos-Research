@@ -16,7 +16,8 @@ def test_get_users(client, test_superuser, superuser_token_headers):
 
 def test_delete_user(client, test_superuser, test_db, superuser_token_headers):
     response = client.delete(
-        f"/api/v1/users/{test_superuser.user_id}", headers=superuser_token_headers
+        f"/api/v1/users/{test_superuser.user_id}",
+        headers=superuser_token_headers,
     )
     assert response.status_code == 200
     assert test_db.query(models.User).all() == []

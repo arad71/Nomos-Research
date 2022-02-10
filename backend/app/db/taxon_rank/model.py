@@ -1,8 +1,8 @@
-from sqlalchemy import Boolean, Column, Integer, String, DateTime, ForeignKey, Text
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.ext.declarative import declared_attr
 
-from app.db.session import Base
 from app.db.models import TableMixin
+from app.db.session import Base
 
 
 class TaxonRank(Base, TableMixin):

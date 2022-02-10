@@ -3,7 +3,13 @@ from typing import List
 from fastapi import APIRouter, Depends, Request, Response
 
 from app.core.auth import get_current_active_superuser, get_current_active_user
-from app.db.publication.crud import create_publication, delete_publication, edit_publication, get_publication, get_publications
+from app.db.publication.crud import (
+    create_publication,
+    delete_publication,
+    edit_publication,
+    get_publication,
+    get_publications,
+)
 from app.db.publication.schema import Publication, PublicationCreate, PublicationEdit
 from app.db.session import get_db
 
@@ -47,7 +53,11 @@ async def publication_details(
     return publication
 
 
-@r.post("/publications", response_model=Publication, response_model_exclude_none=True)
+@r.post(
+    "/publications",
+    response_model=Publication,
+    response_model_exclude_none=True,
+)
 async def publication_create(
     request: Request,
     publication: PublicationCreate,
@@ -61,7 +71,9 @@ async def publication_create(
 
 
 @r.put(
-    "/publications/{publication_id}", response_model=Publication, response_model_exclude_none=True
+    "/publications/{publication_id}",
+    response_model=Publication,
+    response_model_exclude_none=True,
 )
 async def publication_edit(
     request: Request,
@@ -77,7 +89,9 @@ async def publication_edit(
 
 
 @r.delete(
-    "/publications/{publication_id}", response_model=Publication, response_model_exclude_none=True
+    "/publications/{publication_id}",
+    response_model=Publication,
+    response_model_exclude_none=True,
 )
 async def publication_delete(
     request: Request,

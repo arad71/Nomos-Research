@@ -3,13 +3,14 @@ import typing as t
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-
-from app.db.taxon_name.model import TaxonName as model
 import app.db.taxon_name.schema as schema
+from app.db.taxon_name.model import TaxonName as model
 
 
 def get_taxon_name(db: Session, taxon_name_id: int):
-    taxon_name = db.query(model).filter(model.taxon_name_id == taxon_name_id).first()
+    taxon_name = (
+        db.query(model).filter(model.taxon_name_id == taxon_name_id).first()
+    )
     if not taxon_name:
         raise HTTPException(status_code=404, detail="Taxon Name not found")
     return taxon_name
@@ -85,7 +86,9 @@ def create_taxon_name(db: Session, taxon_name: schema.TaxonNameCreate):
 def delete_taxon_name(db: Session, taxon_name_id: int):
     taxon_name = get_taxon_name(db, taxon_name_id)
     if not taxon_name:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Taxon Name not found")
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND, detail="Taxon Name not found"
+        )
     db.delete(taxon_name)
     db.commit()
     return taxon_name
@@ -96,7 +99,9 @@ def edit_taxon_name(
 ) -> schema:
     db_taxon_name = get_taxon_name(db, taxon_name_id)
     if not db_taxon_name:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Taxon Name not found")
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND, detail="Taxon Name not found"
+        )
     update_data = taxon_name.dict(exclude_unset=True)
 
     for key, value in update_data.items():

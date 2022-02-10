@@ -3,9 +3,14 @@ from typing import List
 from fastapi import APIRouter, Depends, Request, Response
 
 from app.core.auth import get_current_active_superuser, get_current_active_user
-from app.db.vernacular.crud import create_vernacular, delete_vernacular, edit_vernacular, get_vernacular, get_vernacular
-from app.db.vernacular.schema import Vernacular, VernacularCreate, VernacularEdit
 from app.db.session import get_db
+from app.db.vernacular.crud import (
+    create_vernacular,
+    delete_vernacular,
+    edit_vernacular,
+    get_vernacular,
+)
+from app.db.vernacular.schema import Vernacular, VernacularCreate, VernacularEdit
 
 vernaculars_router = r = APIRouter()
 
@@ -47,7 +52,9 @@ async def vernacular_details(
     return vernacular
 
 
-@r.post("/vernacular", response_model=Vernacular, response_model_exclude_none=True)
+@r.post(
+    "/vernacular", response_model=Vernacular, response_model_exclude_none=True
+)
 async def vernacular_create(
     request: Request,
     vernacular: VernacularCreate,
@@ -61,7 +68,9 @@ async def vernacular_create(
 
 
 @r.put(
-    "/vernacular/{vernacular_id}", response_model=Vernacular, response_model_exclude_none=True
+    "/vernacular/{vernacular_id}",
+    response_model=Vernacular,
+    response_model_exclude_none=True,
 )
 async def vernacular_edit(
     request: Request,
@@ -77,7 +86,9 @@ async def vernacular_edit(
 
 
 @r.delete(
-    "/vernacular/{vernacular_id}", response_model=Vernacular, response_model_exclude_none=True
+    "/vernacular/{vernacular_id}",
+    response_model=Vernacular,
+    response_model_exclude_none=True,
 )
 async def vernacular_delete(
     request: Request,
