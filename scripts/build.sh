@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -x
 # Exit in case of error
 set -e
 
