@@ -8,8 +8,8 @@ from sqlalchemy_utils import create_database, database_exists, drop_database
 
 from app.core import config, security
 from app.db.session import Base, get_db
+from app.db.user.model import User
 from app.main import app
-from db.user.model import User
 
 
 def get_test_db_url() -> str:

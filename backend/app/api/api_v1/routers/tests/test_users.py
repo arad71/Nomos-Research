@@ -1,4 +1,4 @@
-from db.user import model
+from app.db.user import model
 
 
 def test_get_users(client, test_superuser, superuser_token_headers):
@@ -20,7 +20,7 @@ def test_delete_user(client, test_superuser, test_db, superuser_token_headers):
         headers=superuser_token_headers,
     )
     assert response.status_code == 200
-    assert test_db.query(model).all() == []
+    assert test_db.query(model.User).all() == []
 
 
 def test_delete_user_not_found(client, superuser_token_headers):

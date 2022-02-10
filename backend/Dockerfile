@@ -1,10 +1,8 @@
   
-FROM python:3.10
+FROM python:3.9
 # If you're using a different user on your system other than the first user you'll have to change these
 ARG USER_ID=1000
 ARG GROUP_ID=1000
-ARG USER_NAME=app
-ARG GROUP_NAME=app
 
 RUN mkdir /app
 WORKDIR /app
