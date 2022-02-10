@@ -1,8 +1,7 @@
-from sqlalchemy import Boolean, Column, Integer, String, DateTime, ForeignKey, Text
-from sqlalchemy.ext.declarative import declared_attr
+from sqlalchemy import Column, Integer, String
 
-from app.db.session import Base
 from app.db.models import TableMixin
+from app.db.session import Base
 
 
 class Kingdom(Base, TableMixin):

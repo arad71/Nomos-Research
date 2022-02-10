@@ -3,8 +3,8 @@ import typing as t
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.db.publication.model import Publication as model
 import app.db.publication.schema as schema
+from app.db.publication.model import Publication as model
 
 
 def get_publication(db: Session, publication_id: int):

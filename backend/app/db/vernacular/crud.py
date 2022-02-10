@@ -3,8 +3,9 @@ import typing as t
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.db.vernacular.model import Vernacular as model
 import app.db.vernacular.schema as schema
+from app.db.vernacular.model import Vernacular as model
+
 
 def get_vernacular(db: Session, vernacular_id: int):
     vernacular = db.query(model).filter(model.vernacular_id == vernacular_id).first()

@@ -1,8 +1,7 @@
-from sqlalchemy import Boolean, Column, Integer, String, DateTime, ForeignKey, Text
-from sqlalchemy.ext.declarative import declared_attr
+from sqlalchemy import Column, DateTime, Integer, String, Text
 
-from app.db.session import Base
 from app.db.models import TableMixin
+from app.db.session import Base
 
 
 class TaxonName(Base, TableMixin):

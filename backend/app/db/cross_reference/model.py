@@ -1,7 +1,8 @@
-from sqlalchemy import Boolean, Column, Integer, String, DateTime, ForeignKey, Text
+from sqlalchemy import Column, Integer, String
 
-from app.db.session import Base
 from app.db.models import TableMixin
+from app.db.session import Base
+
 
 class CrossReference(Base, TableMixin):
     __tablename__ = "cross_reference"

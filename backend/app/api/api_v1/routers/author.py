@@ -2,8 +2,14 @@ from typing import List
 
 from fastapi import APIRouter, Depends, Request, Response
 
-from app.core.auth import get_current_active_superuser, get_current_active_user
-from app.db.author.crud import create_author, delete_author, edit_author, get_author, get_authors
+from app.core.auth import get_current_active_superuser
+from app.db.author.crud import (
+    create_author,
+    delete_author,
+    edit_author,
+    get_author,
+    get_authors,
+)
 from app.db.author.schema import Author, AuthorCreate, AuthorEdit
 from app.db.session import get_db
 
@@ -61,7 +67,9 @@ async def author_create(
 
 
 @r.put(
-    "/authors/{author_id}", response_model=Author, response_model_exclude_none=True
+    "/authors/{author_id}",
+    response_model=Author,
+    response_model_exclude_none=True,
 )
 async def author_edit(
     request: Request,
@@ -77,7 +85,9 @@ async def author_edit(
 
 
 @r.delete(
-    "/authors/{author_id}", response_model=Author, response_model_exclude_none=True
+    "/authors/{author_id}",
+    response_model=Author,
+    response_model_exclude_none=True,
 )
 async def author_delete(
     request: Request,

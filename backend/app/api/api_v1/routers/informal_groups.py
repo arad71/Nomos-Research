@@ -2,9 +2,19 @@ from typing import List
 
 from fastapi import APIRouter, Depends, Request, Response
 
-from app.core.auth import get_current_active_superuser, get_current_active_user
-from app.db.informal_group.crud import create_informal_group, delete_informal_group, edit_informal_group, get_informal_group, get_informal_groups
-from app.db.informal_group.schema import informal_group, informal_groupCreate, informal_groupEdit
+from app.core.auth import get_current_active_superuser
+from app.db.informal_group.crud import (
+    create_informal_group,
+    delete_informal_group,
+    edit_informal_group,
+    get_informal_group,
+    get_informal_groups,
+)
+from app.db.informal_group.schema import (
+    InformalGroup,
+    InformalGroupCreate,
+    InformalGroupEdit,
+)
 from app.db.session import get_db
 
 informal_groups_router = r = APIRouter()
@@ -12,7 +22,7 @@ informal_groups_router = r = APIRouter()
 
 @r.get(
     "/informal_groups",
-    response_model=List[informal_group],
+    response_model=List[InformalGroup],
     response_model_exclude_none=True,
 )
 async def informal_group_list(
@@ -31,7 +41,7 @@ async def informal_group_list(
 
 @r.get(
     "/informal_groups/{informal_group_id}",
-    response_model=informal_group,
+    response_model=InformalGroup,
     response_model_exclude_none=True,
 )
 async def informal_group_details(
@@ -47,10 +57,14 @@ async def informal_group_details(
     return informal_group
 
 
-@r.post("/informal_groups", response_model=informal_group, response_model_exclude_none=True)
+@r.post(
+    "/informal_groups",
+    response_model=InformalGroup,
+    response_model_exclude_none=True,
+)
 async def informal_group_create(
     request: Request,
-    informal_group: informal_groupCreate,
+    informal_group: InformalGroupCreate,
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):
@@ -61,12 +75,14 @@ async def informal_group_create(
 
 
 @r.put(
-    "/informal_groups/{informal_group_id}", response_model=informal_group, response_model_exclude_none=True
+    "/informal_groups/{informal_group_id}",
+    response_model=InformalGroup,
+    response_model_exclude_none=True,
 )
 async def informal_group_edit(
     request: Request,
     informal_group_id: int,
-    informal_group: informal_groupEdit,
+    informal_group: InformalGroupEdit,
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):
@@ -77,7 +93,9 @@ async def informal_group_edit(
 
 
 @r.delete(
-    "/informal_groups/{informal_group_id}", response_model=informal_group, response_model_exclude_none=True
+    "/informal_groups/{informal_group_id}",
+    response_model=InformalGroup,
+    response_model_exclude_none=True,
 )
 async def informal_group_delete(
     request: Request,

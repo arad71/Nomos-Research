@@ -3,8 +3,8 @@ import typing as t
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.db.author.model import Author as model
 import app.db.author.schema as schema
+from app.db.author.model import Author as model
 
 
 def get_author(db: Session, author_id: int):
@@ -47,9 +47,7 @@ def delete_author(db: Session, author_id: int):
     return author
 
 
-def edit_author(
-    db: Session, author_id: int, author: schema.AuthorEdit
-) -> schema:
+def edit_author(db: Session, author_id: int, author: schema.AuthorEdit) -> schema:
     db_author = get_author(db, author_id)
     if not db_author:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Author not found")

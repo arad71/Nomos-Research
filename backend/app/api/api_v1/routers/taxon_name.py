@@ -2,10 +2,16 @@ from typing import List
 
 from fastapi import APIRouter, Depends, Request, Response
 
-from app.core.auth import get_current_active_superuser, get_current_active_user
-from app.db.taxon_name.crud import create_taxon_name, delete_taxon_name, edit_taxon_name, get_taxon_name, get_taxon_names
-from app.db.taxon_name.schema import TaxonName, TaxonNameCreate, TaxonNameEdit
+from app.core.auth import get_current_active_superuser
 from app.db.session import get_db
+from app.db.taxon_name.crud import (
+    create_taxon_name,
+    delete_taxon_name,
+    edit_taxon_name,
+    get_taxon_name,
+    get_taxon_names,
+)
+from app.db.taxon_name.schema import TaxonName, TaxonNameCreate, TaxonNameEdit
 
 taxon_names_router = r = APIRouter()
 
@@ -61,7 +67,9 @@ async def taxon_name_create(
 
 
 @r.put(
-    "/taxon_names/{taxon_name_id}", response_model=TaxonName, response_model_exclude_none=True
+    "/taxon_names/{taxon_name_id}",
+    response_model=TaxonName,
+    response_model_exclude_none=True,
 )
 async def taxon_name_edit(
     request: Request,
@@ -77,7 +85,9 @@ async def taxon_name_edit(
 
 
 @r.delete(
-    "/taxon_names/{taxon_name_id}", response_model=TaxonName, response_model_exclude_none=True
+    "/taxon_names/{taxon_name_id}",
+    response_model=TaxonName,
+    response_model_exclude_none=True,
 )
 async def taxon_name_delete(
     request: Request,

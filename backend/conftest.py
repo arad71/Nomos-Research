@@ -1,14 +1,15 @@
+import typing as t
+
 import pytest
+from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy_utils import database_exists, create_database, drop_database
-from fastapi.testclient import TestClient
-import typing as t
+from sqlalchemy_utils import create_database, database_exists, drop_database
 
 from app.core import config, security
 from app.db.session import Base, get_db
-from app.db import models
 from app.main import app
+from db.user.model import User
 
 
 def get_test_db_url() -> str:
@@ -100,12 +101,12 @@ def get_password_hash() -> str:
 
 
 @pytest.fixture
-def test_user(test_db) -> models.User:
+def test_user(test_db) -> User:
     """
     Make a test user in the database
     """
 
-    user = models.User(
+    user = User(
         email="fake@email.com",
         hashed_password=get_password_hash(),
         is_active=True,
@@ -116,12 +117,12 @@ def test_user(test_db) -> models.User:
 
 
 @pytest.fixture
-def test_superuser(test_db) -> models.User:
+def test_superuser(test_db) -> User:
     """
     Superuser for testing
     """
 
-    user = models.User(
+    user = User(
         email="fakeadmin@email.com",
         hashed_password=get_password_hash(),
         is_superuser=True,

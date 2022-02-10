@@ -3,8 +3,8 @@ import typing as t
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.db.kingdom.model import Kingdom as model
 import app.db.kingdom.schema as schema
+from app.db.kingdom.model import Kingdom as model
 
 
 def get_kingdom(db: Session, kingdom_id: int):
@@ -44,9 +44,7 @@ def delete_kingdom(db: Session, kingdom_id: int):
     return kingdom
 
 
-def edit_kingdom(
-    db: Session, kingdom_id: int, kingdom: schema.KingdomEdit
-) -> schema:
+def edit_kingdom(db: Session, kingdom_id: int, kingdom: schema.KingdomEdit) -> schema:
     db_kingdom = get_kingdom(db, kingdom_id)
     if not db_kingdom:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Kingdom not found")

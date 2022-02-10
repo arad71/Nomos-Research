@@ -2,6 +2,7 @@ from app.db.schemas import TableBase
 
 
 class TaxonRankBase(TableBase):
+    kingdom_id: int
     rank_id: int
     rank_name: str
     rank_abbrev: str
@@ -18,7 +19,7 @@ class TaxonRankEdit(TaxonRankBase):
 
 
 class TaxonRank(TaxonRankBase):
-    kingdom_id: int
+    taxon_rank_id: int
 
     class Config:
         orm_mode = True

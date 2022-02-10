@@ -3,9 +3,8 @@ import typing as t
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-
-from app.db.taxon_name.model import TaxonName as model
 import app.db.taxon_name.schema as schema
+from app.db.taxon_name.model import TaxonName as model
 
 
 def get_taxon_name(db: Session, taxon_name_id: int):

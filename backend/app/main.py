@@ -4,7 +4,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.requests import Request
 
 from app.api.api_v1.routers.auth import auth_router
-from app.api.api_v1.routers.users import users_router
 from app.api.api_v1.routers.author import authors_router
 from app.api.api_v1.routers.classification_system import classification_systems_router
 from app.api.api_v1.routers.cross_reference import cross_references_router
@@ -13,15 +12,14 @@ from app.api.api_v1.routers.kingdoms import kingdoms_router
 from app.api.api_v1.routers.publication import publications_router
 from app.api.api_v1.routers.taxon_name import taxon_names_router
 from app.api.api_v1.routers.taxon_rank import taxon_ranks_router
+from app.api.api_v1.routers.users import users_router
 from app.api.api_v1.routers.vernacular import vernaculars_router
 from app.core import config
 from app.core.auth import get_current_active_user
 from app.core.celery_app import celery_app
 from app.db.session import SessionLocal
 
-app = FastAPI(
-    title=config.PROJECT_NAME, docs_url="/api/docs", openapi_url="/api"
-)
+app = FastAPI(title=config.PROJECT_NAME, docs_url="/api/docs", openapi_url="/api")
 
 origins = [
     "http://localhost",
