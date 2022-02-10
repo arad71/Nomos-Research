@@ -22,7 +22,7 @@ def get_hierarchies(
 
 def create_hierarchy(db: Session, hierarchy: schema.HierarchyCreate):
     db_hierarchy = model(
-        classification_id=hierarchy.classification_id,
+        classification_system_id=hierarchy.classification_system_id,
         parent_nid=hierarchy.parent_nid,
     )
     db.add(db_hierarchy)
