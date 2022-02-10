@@ -3,15 +3,15 @@ from typing import List
 from fastapi import APIRouter, Depends, Request, Response
 
 from app.core.auth import get_current_active_superuser, get_current_active_user
-from app.db.hierarchy.crud import create_hierarchy, delete_hierarchy, edit_hierarchy, get_hierarchy, get_hierarchys
+from app.db.hierarchy.crud import create_hierarchy, delete_hierarchy, edit_hierarchy, get_hierarchy, get_hierarchies
 from app.db.hierarchy.schema import Hierarchy, HierarchyCreate, HierarchyEdit
 from app.db.session import get_db
 
-hierarchys_router = r = APIRouter()
+hierarchies_router = r = APIRouter()
 
 
 @r.get(
-    "/hierarchys",
+    "/hierarchies",
     response_model=List[Hierarchy],
     response_model_exclude_none=True,
 )
@@ -21,16 +21,16 @@ async def hierarchy_list(
     current_user=Depends(get_current_active_superuser),
 ):
     """
-    Get all hierarchys
+    Get all hierarchies
     """
-    hierarchys = get_hierarchys(db)
+    hierarchies = get_hierarchies(db)
     # This is necessary for react-admin to work
-    response.headers["Content-Range"] = f"0-9/{len(hierarchys)}"
-    return hierarchys
+    response.headers["Content-Range"] = f"0-9/{len(hierarchies)}"
+    return hierarchies
 
 
 @r.get(
-    "/hierarchys/{hierarchy_id}",
+    "/hierarchies/{hierarchy_id}",
     response_model=Hierarchy,
     response_model_exclude_none=True,
 )
@@ -47,7 +47,7 @@ async def hierarchy_details(
     return hierarchy
 
 
-@r.post("/hierarchys", response_model=Hierarchy, response_model_exclude_none=True)
+@r.post("/hierarchies", response_model=Hierarchy, response_model_exclude_none=True)
 async def hierarchy_create(
     request: Request,
     hierarchy: HierarchyCreate,
@@ -61,7 +61,7 @@ async def hierarchy_create(
 
 
 @r.put(
-    "/hierarchys/{hierarchy_id}", response_model=Hierarchy, response_model_exclude_none=True
+    "/hierarchies/{hierarchy_id}", response_model=Hierarchy, response_model_exclude_none=True
 )
 async def hierarchy_edit(
     request: Request,
@@ -77,7 +77,7 @@ async def hierarchy_edit(
 
 
 @r.delete(
-    "/hierarchys/{hierarchy_id}", response_model=Hierarchy, response_model_exclude_none=True
+    "/hierarchies/{hierarchy_id}", response_model=Hierarchy, response_model_exclude_none=True
 )
 async def hierarchy_delete(
     request: Request,

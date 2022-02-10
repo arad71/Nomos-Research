@@ -3,7 +3,7 @@ import typing as t
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-import app.db.kingdom.model as model
+from app.db.kingdom.model import Kingdom as model
 import app.db.kingdom.schema as schema
 
 

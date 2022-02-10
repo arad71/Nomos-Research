@@ -3,8 +3,7 @@ import typing as t
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-
-import app.db.informal_group.model as model
+from app.db.informal_group.model import InformalGroup as model
 import app.db.informal_group.schema as schema
 
 

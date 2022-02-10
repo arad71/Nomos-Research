@@ -6,7 +6,7 @@ def test_get_users(client, test_superuser, superuser_token_headers):
     assert response.status_code == 200
     assert response.json() == [
         {
-            "id": test_superuser.user_id,
+            "user_id": test_superuser.user_id,
             "email": test_superuser.email,
             "is_active": test_superuser.is_active,
             "is_superuser": test_superuser.is_superuser,
@@ -45,7 +45,7 @@ def test_edit_user(client, test_superuser, superuser_token_headers):
         headers=superuser_token_headers,
     )
     assert response.status_code == 200
-    new_user["id"] = test_superuser.user_id
+    new_user["user_id"] = test_superuser.user_id
     new_user.pop("password")
     assert response.json() == new_user
 
@@ -73,7 +73,7 @@ def test_get_user(
     )
     assert response.status_code == 200
     assert response.json() == {
-        "id": test_user.user_id,
+        "user_id": test_user.user_id,
         "email": test_user.email,
         "is_active": bool(test_user.is_active),
         "is_superuser": test_user.is_superuser,

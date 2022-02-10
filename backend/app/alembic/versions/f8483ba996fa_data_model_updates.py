@@ -1,8 +1,8 @@
 """Data Model updates.
 
-Revision ID: f8483ba996fa
+Revision ID: 78267fb3977f
 Revises: 8c77c39c3653
-Create Date: 2022-02-07 22:45:34.133000-08:00
+Create Date: 2022-02-09 19:42:46.957300-08:00
 
 """
 from alembic import op
@@ -82,7 +82,7 @@ def upgrade():
     op.create_index(op.f('ix_hierarchy_hierarchy_id'), 'hierarchy', ['hierarchy_id'], unique=False)
     op.create_table('informal_group',
     sa.Column('informal_group_id', sa.String(length=10), nullable=False),
-    sa.Column('class_id', sa.String(length=10), nullable=True),
+    sa.Column('classification_system_id', sa.String(length=10), nullable=True),
     sa.Column('name_id', sa.Integer(), nullable=True),
     sa.Column('updated_by', sa.Integer(), nullable=True),
     sa.Column('updated_on', sa.DateTime(), nullable=True),

@@ -4,8 +4,9 @@ from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
 
-import app.db.taxon_name.model as model
+from app.db.taxon_name.model import TaxonName as model
 import app.db.taxon_name.schema as schema
+
 
 def get_taxon_name(db: Session, name_id: int):
     taxon_name = db.query(model).filter(model.name_id == name_id).first()

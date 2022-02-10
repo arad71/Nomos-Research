@@ -14,7 +14,7 @@ def get_hierarchy(db: Session, hierarchy_id: int):
     return hierarchy
 
 
-def get_hierarchys(
+def get_hierarchies(
     db: Session, skip: int = 0, limit: int = 100
 ) -> t.List[schema.HierarchyBase]:
     return db.query(model).offset(skip).limit(limit).all()

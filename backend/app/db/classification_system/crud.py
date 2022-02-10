@@ -3,7 +3,7 @@ import typing as t
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-import app.db.classification_system.model as model
+from app.db.classification_system.model import ClassificationSystem as model
 import app.db.classification_system.schema as schema
 
 

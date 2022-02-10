@@ -24,7 +24,7 @@ def create_cross_reference(db: Session, cross_reference: schema.CrossReferenceCr
     db_cross_reference = model(
         old_name_id=cross_reference.old_name_id,
         new_name_id=cross_reference.new_name_id,
-        xref_type=cross_reference.xref_type,
+        cross_reference_type=cross_reference.cross_reference_type,
         active=cross_reference.active,
         authorised_by=cross_reference.authorised_by,
         authorised_yr=cross_reference.authorised_yr,

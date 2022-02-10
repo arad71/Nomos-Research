@@ -3,8 +3,7 @@ import typing as t
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-
-import app.db.vernacular.model as model
+from app.db.vernacular.model import Vernacular as model
 import app.db.vernacular.schema as schema
 
 def get_vernacular(db: Session, name_id: int):

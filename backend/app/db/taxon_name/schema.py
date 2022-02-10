@@ -63,7 +63,7 @@ class TaxonNameEdit(TaxonNameBase):
 
 
 class TaxonName(TaxonNameBase):
-    name_id: int
+    taxon_name_id: int
 
     class Config:
         orm_mode = True

@@ -3,8 +3,7 @@ import typing as t
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-
-import app.db.taxon_rank.model as model
+from app.db.taxon_rank.model import TaxonRank as model
 import app.db.taxon_rank.schema as schema
 
 

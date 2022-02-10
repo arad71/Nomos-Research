@@ -5,30 +5,30 @@ from sqlalchemy.orm import Session
 
 from app.core.security import get_password_hash
 
-import app.db.user.model as model
+from app.db.user.model import User as model
 import app.db.user.schema as schema
 
 
 def get_user(db: Session, user_id: int):
-    user = db.query(model.User).filter(model.User.user_id == user_id).first()
+    user = db.query(model).filter(model.user_id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
 
 def get_user_by_email(db: Session, email: str) -> schema.UserBase:
-    return db.query(model.User).filter(model.User.email == email).first()
+    return db.query(model).filter(model.email == email).first()
 
 
 def get_users(
     db: Session, skip: int = 0, limit: int = 100
 ) -> t.List[schema.UserOut]:
-    return db.query(model.User).offset(skip).limit(limit).all()
+    return db.query(model).offset(skip).limit(limit).all()
 
 
 def create_user(db: Session, user: schema.UserCreate):
     hashed_password = get_password_hash(user.password)
-    db_user = model.User(
+    db_user = model(
         first_name=user.first_name,
         last_name=user.last_name,
         email=user.email,

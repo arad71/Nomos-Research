@@ -2,7 +2,7 @@ from app.db.schemas import TableBase
 
 
 class InformalGroupBase(TableBase):
-    class_id: str
+    classification_system_id: str
     name_id: int
 
 

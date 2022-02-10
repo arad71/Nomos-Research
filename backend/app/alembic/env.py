@@ -57,6 +57,7 @@ def run_migrations_online():
     In this scenario we need to create an Engine
     and associate a connection with the context.
     """
+    import app.db.user.model
     import app.db.author.model
     import app.db.classification_system.model
     import app.db.cross_reference.model
