@@ -2,7 +2,7 @@ from typing import List
 
 from fastapi import APIRouter, Depends, Request, Response
 
-from app.core.auth import get_current_active_superuser, get_current_active_user
+from app.core.auth import get_current_active_superuser
 from app.db.informal_group.crud import (
     create_informal_group,
     delete_informal_group,

@@ -38,22 +38,16 @@ def create_kingdom(db: Session, kingdom: schema.KingdomCreate):
 def delete_kingdom(db: Session, kingdom_id: int):
     kingdom = get_kingdom(db, kingdom_id)
     if not kingdom:
-        raise HTTPException(
-            status.HTTP_404_NOT_FOUND, detail="Kingdom not found"
-        )
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Kingdom not found")
     db.delete(kingdom)
     db.commit()
     return kingdom
 
 
-def edit_kingdom(
-    db: Session, kingdom_id: int, kingdom: schema.KingdomEdit
-) -> schema:
+def edit_kingdom(db: Session, kingdom_id: int, kingdom: schema.KingdomEdit) -> schema:
     db_kingdom = get_kingdom(db, kingdom_id)
     if not db_kingdom:
-        raise HTTPException(
-            status.HTTP_404_NOT_FOUND, detail="Kingdom not found"
-        )
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Kingdom not found")
     update_data = kingdom.dict(exclude_unset=True)
 
     for key, value in update_data.items():

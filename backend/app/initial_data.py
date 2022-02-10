@@ -32,7 +32,5 @@ if __name__ == "__main__":
     print("Initialising")
     created = init()
     print(
-        "Superuser {} {}".format(
-            get_admin_email(), "created" if created else "exists"
-        )
+        "Superuser {} {}".format(get_admin_email(), "created" if created else "exists")
     )

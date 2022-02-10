@@ -2,7 +2,7 @@ from typing import List
 
 from fastapi import APIRouter, Depends, Request, Response
 
-from app.core.auth import get_current_active_superuser, get_current_active_user
+from app.core.auth import get_current_active_superuser
 from app.db.cross_reference.crud import (
     create_cross_reference,
     delete_cross_reference,

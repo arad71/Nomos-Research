@@ -2,7 +2,7 @@ from typing import List
 
 from fastapi import APIRouter, Depends, Request, Response
 
-from app.core.auth import get_current_active_superuser, get_current_active_user
+from app.core.auth import get_current_active_superuser
 from app.db.classification_system.crud import (
     create_classification_system,
     delete_classification_system,
@@ -53,9 +53,7 @@ async def classification_system_details(
     """
     Get any classification_system details
     """
-    classification_system = get_classification_system(
-        db, classification_system_id
-    )
+    classification_system = get_classification_system(db, classification_system_id)
     return classification_system
 
 

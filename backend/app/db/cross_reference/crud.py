@@ -9,9 +9,7 @@ import app.db.cross_reference.schema as schema
 
 def get_cross_reference(db: Session, cross_reference_id: int):
     cross_reference = (
-        db.query(model)
-        .filter(model.cross_reference_id == cross_reference_id)
-        .first()
+        db.query(model).filter(model.cross_reference_id == cross_reference_id).first()
     )
     if not cross_reference:
         raise HTTPException(status_code=404, detail="CrossReference not found")
@@ -24,9 +22,7 @@ def get_cross_references(
     return db.query(model).offset(skip).limit(limit).all()
 
 
-def create_cross_reference(
-    db: Session, cross_reference: schema.CrossReferenceCreate
-):
+def create_cross_reference(db: Session, cross_reference: schema.CrossReferenceCreate):
     db_cross_reference = model(
         old_name_id=cross_reference.old_name_id,
         new_name_id=cross_reference.new_name_id,

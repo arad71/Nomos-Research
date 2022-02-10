@@ -2,7 +2,7 @@ from typing import List
 
 from fastapi import APIRouter, Depends, Request, Response
 
-from app.core.auth import get_current_active_superuser, get_current_active_user
+from app.core.auth import get_current_active_superuser
 from app.db.session import get_db
 from app.db.taxon_name.crud import (
     create_taxon_name,
@@ -53,9 +53,7 @@ async def taxon_name_details(
     return taxon_name
 
 
-@r.post(
-    "/taxon_names", response_model=TaxonName, response_model_exclude_none=True
-)
+@r.post("/taxon_names", response_model=TaxonName, response_model_exclude_none=True)
 async def taxon_name_create(
     request: Request,
     taxon_name: TaxonNameCreate,

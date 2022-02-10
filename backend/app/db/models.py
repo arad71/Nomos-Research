@@ -1,7 +1,5 @@
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import Column, DateTime, ForeignKey, Integer
 from sqlalchemy.ext.declarative import declared_attr
-
-from app.db.session import Base
 
 
 # See https://docs.sqlalchemy.org/en/13/orm/extensions/declarative/mixins.html

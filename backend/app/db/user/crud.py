@@ -19,9 +19,7 @@ def get_user_by_email(db: Session, email: str) -> schema.UserBase:
     return db.query(model).filter(model.email == email).first()
 
 
-def get_users(
-    db: Session, skip: int = 0, limit: int = 100
-) -> t.List[schema.UserOut]:
+def get_users(db: Session, skip: int = 0, limit: int = 100) -> t.List[schema.UserOut]:
     return db.query(model).offset(skip).limit(limit).all()
 
 

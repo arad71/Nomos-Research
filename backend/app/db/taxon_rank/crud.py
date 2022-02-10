@@ -8,9 +8,7 @@ from app.db.taxon_rank.model import TaxonRank as model
 
 
 def get_taxon_rank(db: Session, taxon_rank_id: int):
-    taxon_rank = (
-        db.query(model).filter(model.taxon_rank_id == taxon_rank_id).first()
-    )
+    taxon_rank = db.query(model).filter(model.taxon_rank_id == taxon_rank_id).first()
     if not taxon_rank:
         raise HTTPException(status_code=404, detail="TaxonRank not found")
     return taxon_rank
@@ -43,9 +41,7 @@ def create_taxon_rank(db: Session, taxon_rank: schema.TaxonRankCreate):
 def delete_taxon_rank(db: Session, taxon_rank_id: int):
     taxon_rank = get_taxon_rank(db, taxon_rank_id)
     if not taxon_rank:
-        raise HTTPException(
-            status.HTTP_404_NOT_FOUND, detail="TaxonRank not found"
-        )
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="TaxonRank not found")
     db.delete(taxon_rank)
     db.commit()
     return taxon_rank
@@ -56,9 +52,7 @@ def edit_taxon_rank(
 ) -> schema:
     db_taxon_rank = get_taxon_rank(db, taxon_rank_id)
     if not db_taxon_rank:
-        raise HTTPException(
-            status.HTTP_404_NOT_FOUND, detail="TaxonRank not found"
-        )
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="TaxonRank not found")
     update_data = taxon_rank.dict(exclude_unset=True)
 
     for key, value in update_data.items():

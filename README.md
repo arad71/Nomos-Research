@@ -116,7 +116,8 @@ This is the same as running npm test from within the frontend directory
 
 ## Linting
 
-Code style is governed by the linters used in the project.
+Code style is governed by the linters used in the project. 
+For details of those linters please look at the contents of the lint.sh and format.sh scripts. 
 There are two scripts which call the backend linters:
 
 ```bash

@@ -2,7 +2,7 @@ from typing import List
 
 from fastapi import APIRouter, Depends, Request, Response
 
-from app.core.auth import get_current_active_superuser, get_current_active_user
+from app.core.auth import get_current_active_superuser
 from app.db.hierarchy.crud import (
     create_hierarchy,
     delete_hierarchy,
@@ -53,9 +53,7 @@ async def hierarchy_details(
     return hierarchy
 
 
-@r.post(
-    "/hierarchies", response_model=Hierarchy, response_model_exclude_none=True
-)
+@r.post("/hierarchies", response_model=Hierarchy, response_model_exclude_none=True)
 async def hierarchy_create(
     request: Request,
     hierarchy: HierarchyCreate,

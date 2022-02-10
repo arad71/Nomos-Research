@@ -14,9 +14,7 @@ def get_classification_system(db: Session, classification_system_id: int):
         .first()
     )
     if not classification_system:
-        raise HTTPException(
-            status_code=404, detail="Classification System not found"
-        )
+        raise HTTPException(status_code=404, detail="Classification System not found")
     return classification_system
 
 
@@ -46,9 +44,7 @@ def create_classification_system(
 
 
 def delete_classification_system(db: Session, classification_system_id: int):
-    classification_system = get_classification_system(
-        db, classification_system_id
-    )
+    classification_system = get_classification_system(db, classification_system_id)
     if not classification_system:
         raise HTTPException(
             status.HTTP_404_NOT_FOUND, detail="Classification System not found"
@@ -63,9 +59,7 @@ def edit_classification_system(
     classification_system_id: int,
     classification_system: schema.ClassificationSystemEdit,
 ) -> schema:
-    db_classification_system = get_classification_system(
-        db, classification_system_id
-    )
+    db_classification_system = get_classification_system(db, classification_system_id)
     if not db_classification_system:
         raise HTTPException(
             status.HTTP_404_NOT_FOUND, detail="Classification System not found"

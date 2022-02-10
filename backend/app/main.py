@@ -19,9 +19,7 @@ from app.core.auth import get_current_active_user
 from app.core.celery_app import celery_app
 from app.db.session import SessionLocal
 
-app = FastAPI(
-    title=config.PROJECT_NAME, docs_url="/api/docs", openapi_url="/api"
-)
+app = FastAPI(title=config.PROJECT_NAME, docs_url="/api/docs", openapi_url="/api")
 
 origins = [
     "http://localhost",

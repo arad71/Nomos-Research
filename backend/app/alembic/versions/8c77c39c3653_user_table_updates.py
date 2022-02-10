@@ -18,12 +18,8 @@ depends_on = None
 
 def upgrade():
     op.alter_column("user", "id", new_column_name="user_id")
-    op.add_column(
-        "user", sa.Column("default_class", sa.Integer(), nullable=True)
-    )
-    op.add_column(
-        "user", sa.Column("default_kingdom", sa.Integer(), nullable=True)
-    )
+    op.add_column("user", sa.Column("default_class", sa.Integer(), nullable=True))
+    op.add_column("user", sa.Column("default_kingdom", sa.Integer(), nullable=True))
     op.drop_column("user", "address")
 
 
