@@ -6,8 +6,8 @@ from sqlalchemy.orm import Session
 from app.db.vernacular.model import Vernacular as model
 import app.db.vernacular.schema as schema
 
-def get_vernacular(db: Session, name_id: int):
-    vernacular = db.query(model).filter(model.name_id == name_id).first()
+def get_vernacular(db: Session, vernacular_id: int):
+    vernacular = db.query(model).filter(model.vernacular_id == vernacular_id).first()
     if not vernacular:
         raise HTTPException(status_code=404, detail="Vernacular not found")
     return vernacular
@@ -39,8 +39,8 @@ def create_vernacular(db: Session, vernacular: schema.VernacularCreate):
     return db_vernacular
 
 
-def delete_vernacular(db: Session, name_id: int):
-    vernacular = get_vernacular(db, name_id)
+def delete_vernacular(db: Session, vernacular_id: int):
+    vernacular = get_vernacular(db, vernacular_id)
     if not vernacular:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Vernacular not found")
     db.delete(vernacular)
@@ -49,9 +49,9 @@ def delete_vernacular(db: Session, name_id: int):
 
 
 def edit_vernacular(
-    db: Session, name_id: int, vernacular: schema.VernacularEdit
+    db: Session, vernacular_id: int, vernacular: schema.VernacularEdit
 ) -> schema:
-    db_vernacular = get_vernacular(db, name_id)
+    db_vernacular = get_vernacular(db, vernacular_id)
     if not db_vernacular:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Vernacular not found")
     update_data = vernacular.dict(exclude_unset=True)

@@ -8,7 +8,7 @@ from app.db.models import TableMixin
 class TaxonName(Base, TableMixin):
     __tablename__ = "taxon_name"
 
-    name_id = Column(Integer, primary_key=True, index=True)
+    taxon_name_id = Column(Integer, primary_key=True, index=True)
     kingdom_id = Column(Integer, nullable=False)
     rank_id = Column(Integer, nullable=False)
     rank_name = Column(String(15), nullable=False)

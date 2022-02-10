@@ -8,8 +8,8 @@ from app.db.taxon_name.model import TaxonName as model
 import app.db.taxon_name.schema as schema
 
 
-def get_taxon_name(db: Session, name_id: int):
-    taxon_name = db.query(model).filter(model.name_id == name_id).first()
+def get_taxon_name(db: Session, taxon_name_id: int):
+    taxon_name = db.query(model).filter(model.taxon_name_id == taxon_name_id).first()
     if not taxon_name:
         raise HTTPException(status_code=404, detail="Taxon Name not found")
     return taxon_name
@@ -23,7 +23,7 @@ def get_taxon_names(
 
 def create_taxon_name(db: Session, taxon_name: schema.TaxonNameCreate):
     db_taxon_name = model(
-        name_id=taxon_name.name_id,
+        taxon_name_id=taxon_name.taxon_name_id,
         kingdom_id=taxon_name.kingdom_id,
         rank_id=taxon_name.rank_id,
         rank_name=taxon_name.rank_name,
@@ -82,8 +82,8 @@ def create_taxon_name(db: Session, taxon_name: schema.TaxonNameCreate):
     return db_taxon_name
 
 
-def delete_taxon_name(db: Session, name_id: int):
-    taxon_name = get_taxon_name(db, name_id)
+def delete_taxon_name(db: Session, taxon_name_id: int):
+    taxon_name = get_taxon_name(db, taxon_name_id)
     if not taxon_name:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Taxon Name not found")
     db.delete(taxon_name)
@@ -92,9 +92,9 @@ def delete_taxon_name(db: Session, name_id: int):
 
 
 def edit_taxon_name(
-    db: Session, name_id: int, taxon_name: schema.TaxonNameEdit
+    db: Session, taxon_name_id: int, taxon_name: schema.TaxonNameEdit
 ) -> schema:
-    db_taxon_name = get_taxon_name(db, name_id)
+    db_taxon_name = get_taxon_name(db, taxon_name_id)
     if not db_taxon_name:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Taxon Name not found")
     update_data = taxon_name.dict(exclude_unset=True)

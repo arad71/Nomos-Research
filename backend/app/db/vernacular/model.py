@@ -8,8 +8,9 @@ from app.db.models import TableMixin
 class Vernacular(Base, TableMixin):
     __tablename__ = "vernacular"
 
+    vernacular_id = Column(Integer, primary_key=True, index=True)
     vernacular = Column(String(120), nullable=False)
-    name_id = Column(Integer, primary_key=True, index=True)
+    taxon_name_id = Column(Integer)
     language = Column(String(20), nullable=False)
     lang_pref = Column(String(1))
     preferred = Column(String(1))

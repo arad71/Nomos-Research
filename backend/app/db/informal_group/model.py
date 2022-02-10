@@ -10,4 +10,4 @@ class InformalGroup(Base, TableMixin):
 
     informal_group_id = Column(String(10), primary_key=True, index=True)
     classification_system_id = Column(String(10))
-    name_id = Column(Integer)
+    taxon_name_id = Column(Integer)

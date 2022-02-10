@@ -2,6 +2,7 @@ from app.db.schemas import TableBase
 
 
 class VernacularBase(TableBase):
+    taxon_name_id: int
     vernacular: str
     language: str
     lang_pref: str
@@ -18,8 +19,9 @@ class VernacularCreate(VernacularBase):
 class VernacularEdit(VernacularBase):
     pass
 
+
 class Vernacular(VernacularBase):
-    name_id: int
+    vernacular_id: int
 
     class Config:
         orm_mode = True

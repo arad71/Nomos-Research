@@ -9,6 +9,6 @@ class Hierarchy(Base, TableMixin):
     __tablename__ = "hierarchy"
 
     hierarchy_id = Column(Integer, primary_key=True, index=True)
-    name_id = Column(Integer, nullable=False)
-    classification_id = Column(String(10), nullable=False)
+    taxon_name_id = Column(Integer, nullable=False)
+    classification_system_id = Column(String(10), nullable=False)
     parent_nid = Column(Integer, nullable=False)

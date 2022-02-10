@@ -68,8 +68,8 @@ def upgrade():
     op.create_index(op.f('ix_cross_reference_cross_reference_id'), 'cross_reference', ['cross_reference_id'], unique=False)
     op.create_table('hierarchy',
     sa.Column('hierarchy_id', sa.Integer(), nullable=False),
-    sa.Column('name_id', sa.Integer(), nullable=False),
-    sa.Column('classification_id', sa.String(length=10), nullable=False),
+    sa.Column('taxon_name_id', sa.Integer(), nullable=False),
+    sa.Column('classification_system_id', sa.String(length=10), nullable=False),
     sa.Column('parent_nid', sa.Integer(), nullable=False),
     sa.Column('updated_by', sa.Integer(), nullable=True),
     sa.Column('updated_on', sa.DateTime(), nullable=True),
@@ -83,7 +83,7 @@ def upgrade():
     op.create_table('informal_group',
     sa.Column('informal_group_id', sa.String(length=10), nullable=False),
     sa.Column('classification_system_id', sa.String(length=10), nullable=True),
-    sa.Column('name_id', sa.Integer(), nullable=True),
+    sa.Column('taxon_name_id', sa.Integer(), nullable=True),
     sa.Column('updated_by', sa.Integer(), nullable=True),
     sa.Column('updated_on', sa.DateTime(), nullable=True),
     sa.Column('created_by', sa.Integer(), nullable=True),
@@ -121,7 +121,7 @@ def upgrade():
     )
     op.create_index(op.f('ix_publication_publication_id'), 'publication', ['publication_id'], unique=False)
     op.create_table('taxon_name',
-    sa.Column('name_id', sa.Integer(), nullable=False),
+    sa.Column('taxon_name_id', sa.Integer(), nullable=False),
     sa.Column('kingdom_id', sa.Integer(), nullable=False),
     sa.Column('rank_id', sa.Integer(), nullable=False),
     sa.Column('rank_name', sa.String(length=15), nullable=False),
@@ -175,9 +175,9 @@ def upgrade():
     sa.Column('created_on', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['created_by'], ['user.user_id'], ),
     sa.ForeignKeyConstraint(['updated_by'], ['user.user_id'], ),
-    sa.PrimaryKeyConstraint('name_id')
+    sa.PrimaryKeyConstraint('taxon_name_id')
     )
-    op.create_index(op.f('ix_taxon_name_name_id'), 'taxon_name', ['name_id'], unique=False)
+    op.create_index(op.f('ix_taxon_name_taxon_name_id'), 'taxon_name', ['taxon_name_id'], unique=False)
     op.create_table('taxon_rank',
     sa.Column('kingdom_id', sa.Integer(), nullable=False),
     sa.Column('rank_id', sa.Integer(), nullable=False),
@@ -195,8 +195,9 @@ def upgrade():
     )
     op.create_index(op.f('ix_taxon_rank_kingdom_id'), 'taxon_rank', ['kingdom_id'], unique=False)
     op.create_table('vernacular',
+    sa.Column('vernacular_id', sa.Integer(), nullable=False),
     sa.Column('vernacular', sa.String(length=120), nullable=False),
-    sa.Column('name_id', sa.Integer(), nullable=False),
+    sa.Column('taxon_name_id', sa.Integer(), nullable=False),
     sa.Column('language', sa.String(length=20), nullable=False),
     sa.Column('lang_pref', sa.String(length=1), nullable=True),
     sa.Column('preferred', sa.String(length=1), nullable=True),
@@ -209,17 +210,17 @@ def upgrade():
     sa.Column('created_on', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['created_by'], ['user.user_id'], ),
     sa.ForeignKeyConstraint(['updated_by'], ['user.user_id'], ),
-    sa.PrimaryKeyConstraint('name_id')
+    sa.PrimaryKeyConstraint('vernacular_id')
     )
-    op.create_index(op.f('ix_vernacular_name_id'), 'vernacular', ['name_id'], unique=False)
+    op.create_index(op.f('ix_vernacular_vernacular_id'), 'vernacular', ['vernacular_id'], unique=False)
 
 
 def downgrade():
-    op.drop_index(op.f('ix_vernacular_name_id'), table_name='vernacular')
+    op.drop_index(op.f('ix_vernacular_vernacular_id'), table_name='vernacular')
     op.drop_table('vernacular')
     op.drop_index(op.f('ix_taxon_rank_kingdom_id'), table_name='taxon_rank')
     op.drop_table('taxon_rank')
-    op.drop_index(op.f('ix_taxon_name_name_id'), table_name='taxon_name')
+    op.drop_index(op.f('ix_taxon_name_taxon_name_id'), table_name='taxon_name')
     op.drop_table('taxon_name')
     op.drop_index(op.f('ix_publication_publication_id'), table_name='publication')
     op.drop_table('publication')
