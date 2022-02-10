@@ -8,7 +8,9 @@ import app.db.hierarchy.schema as schema
 
 
 def get_hierarchy(db: Session, hierarchy_id: int):
-    hierarchy = db.query(model).filter(model.Hierarchy.hierarchy_id == hierarchy_id).first()
+    hierarchy = (
+        db.query(model).filter(model.Hierarchy.hierarchy_id == hierarchy_id).first()
+    )
     if not hierarchy:
         raise HTTPException(status_code=404, detail="Hierarchy not found")
     return hierarchy
