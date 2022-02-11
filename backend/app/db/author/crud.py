@@ -26,7 +26,7 @@ def create_author(db: Session, author: schema.AuthorCreate):
         surname=author.surname,
         first_names=author.first_names,
         initials=author.initials,
-        author_id=author.author_id,
+        orc_id=author.orc_id,
         updated_by=author.updated_by,
         updated_on=author.updated_on,
         created_by=author.created_by,
