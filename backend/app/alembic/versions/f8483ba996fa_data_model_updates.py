@@ -42,7 +42,7 @@ def upgrade():
     op.create_index(op.f("ix_author_author_id"), "author", ["author_id"], unique=False)
     op.create_table(
         "classification_system",
-        sa.Column("classification_system_id", sa.String(length=10), nullable=False),
+        sa.Column("classification_system_id", sa.Integer, nullable=False),
         sa.Column("class_desc", sa.String(length=200), nullable=False),
         sa.Column("class_type", sa.String(length=15), nullable=False),
         sa.Column("preferred", sa.String(length=1), nullable=True),
@@ -101,7 +101,7 @@ def upgrade():
         "hierarchy",
         sa.Column("hierarchy_id", sa.Integer(), nullable=False),
         sa.Column("taxon_name_id", sa.Integer(), nullable=False),
-        sa.Column("classification_system_id", sa.String(length=10), nullable=False),
+        sa.Column("classification_system_id", sa.Integer, nullable=False),
         sa.Column("parent_nid", sa.Integer(), nullable=False),
         sa.Column("updated_by", sa.Integer(), nullable=True),
         sa.Column("updated_on", sa.DateTime(), nullable=True),
@@ -126,7 +126,7 @@ def upgrade():
     op.create_table(
         "informal_group",
         sa.Column("informal_group_id", sa.String(length=10), nullable=False),
-        sa.Column("classification_system_id", sa.String(length=10), nullable=True),
+        sa.Column("classification_system_id", sa.Integer, nullable=True),
         sa.Column("taxon_name_id", sa.Integer(), nullable=True),
         sa.Column("updated_by", sa.Integer(), nullable=True),
         sa.Column("updated_on", sa.DateTime(), nullable=True),

@@ -18,7 +18,7 @@ class ClassificationSystemEdit(ClassificationSystemBase):
 
 
 class ClassificationSystem(ClassificationSystemBase):
-    classification_system_id: str
+    classification_system_id: int
 
     class Config:
         orm_mode = True

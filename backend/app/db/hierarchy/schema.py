@@ -3,7 +3,7 @@ from app.db.schemas import TableBase
 
 class HierarchyBase(TableBase):
     taxon_name_id: int
-    classification_system_id: str
+    classification_system_id: int
     parent_nid: int
     pass
 
