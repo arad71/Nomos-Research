@@ -17,11 +17,11 @@ from app.db.cross_reference.schema import (
 )
 from app.db.session import get_db
 
-cross_references_router = r = APIRouter()
+cross_references_router = r = APIRouter(prefix="/cross_references")
 
 
 @r.get(
-    "/cross_references",
+    "/",
     response_model=List[CrossReference],
     response_model_exclude_none=True,
 )
@@ -40,7 +40,7 @@ async def cross_reference_list(
 
 
 @r.get(
-    "/cross_references/{cross_reference_id}",
+    "/{cross_reference_id}",
     response_model=CrossReference,
     response_model_exclude_none=True,
 )
@@ -58,7 +58,7 @@ async def cross_reference_details(
 
 
 @r.post(
-    "/cross_references",
+    "",
     response_model=CrossReference,
     response_model_exclude_none=True,
 )
@@ -75,7 +75,7 @@ async def cross_reference_create(
 
 
 @r.put(
-    "/cross_references/{cross_reference_id}",
+    "/{cross_reference_id}",
     response_model=CrossReference,
     response_model_exclude_none=True,
 )
@@ -93,7 +93,7 @@ async def cross_reference_edit(
 
 
 @r.delete(
-    "/cross_references/{cross_reference_id}",
+    "/{cross_reference_id}",
     response_model=CrossReference,
     response_model_exclude_none=True,
 )

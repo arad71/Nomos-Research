@@ -13,11 +13,11 @@ from app.db.taxon_rank.crud import (
 )
 from app.db.taxon_rank.schema import TaxonRank, TaxonRankCreate, TaxonRankEdit
 
-taxon_ranks_router = r = APIRouter()
+taxon_ranks_router = r = APIRouter(prefix="/taxon_ranks")
 
 
 @r.get(
-    "/taxon_ranks",
+    "/",
     response_model=List[TaxonRank],
     response_model_exclude_none=True,
 )
@@ -36,7 +36,7 @@ async def taxon_rank_list(
 
 
 @r.get(
-    "/taxon_ranks/{taxon_rank_id}",
+    "/{taxon_rank_id}",
     response_model=TaxonRank,
     response_model_exclude_none=True,
 )
@@ -53,7 +53,7 @@ async def taxon_rank_details(
     return taxon_rank
 
 
-@r.post("/taxon_ranks", response_model=TaxonRank, response_model_exclude_none=True)
+@r.post("", response_model=TaxonRank, response_model_exclude_none=True)
 async def taxon_rank_create(
     request: Request,
     taxon_rank: TaxonRankCreate,
@@ -67,7 +67,7 @@ async def taxon_rank_create(
 
 
 @r.put(
-    "/taxon_ranks/{taxon_rank_id}",
+    "/{taxon_rank_id}",
     response_model=TaxonRank,
     response_model_exclude_none=True,
 )
@@ -85,7 +85,7 @@ async def taxon_rank_edit(
 
 
 @r.delete(
-    "/taxon_ranks/{taxon_rank_id}",
+    "/{taxon_rank_id}",
     response_model=TaxonRank,
     response_model_exclude_none=True,
 )

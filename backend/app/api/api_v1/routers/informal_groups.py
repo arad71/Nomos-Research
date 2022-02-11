@@ -17,11 +17,11 @@ from app.db.informal_group.schema import (
 )
 from app.db.session import get_db
 
-informal_groups_router = r = APIRouter()
+informal_groups_router = r = APIRouter(prefix="/informal_groups")
 
 
 @r.get(
-    "/informal_groups",
+    "/",
     response_model=List[InformalGroup],
     response_model_exclude_none=True,
 )
@@ -40,7 +40,7 @@ async def informal_group_list(
 
 
 @r.get(
-    "/informal_groups/{informal_group_id}",
+    "/{informal_group_id}",
     response_model=InformalGroup,
     response_model_exclude_none=True,
 )
@@ -58,7 +58,7 @@ async def informal_group_details(
 
 
 @r.post(
-    "/informal_groups",
+    "",
     response_model=InformalGroup,
     response_model_exclude_none=True,
 )
@@ -75,7 +75,7 @@ async def informal_group_create(
 
 
 @r.put(
-    "/informal_groups/{informal_group_id}",
+    "/{informal_group_id}",
     response_model=InformalGroup,
     response_model_exclude_none=True,
 )
@@ -93,7 +93,7 @@ async def informal_group_edit(
 
 
 @r.delete(
-    "/informal_groups/{informal_group_id}",
+    "/{informal_group_id}",
     response_model=InformalGroup,
     response_model_exclude_none=True,
 )

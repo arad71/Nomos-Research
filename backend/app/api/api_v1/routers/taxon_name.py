@@ -13,11 +13,11 @@ from app.db.taxon_name.crud import (
 )
 from app.db.taxon_name.schema import TaxonName, TaxonNameCreate, TaxonNameEdit
 
-taxon_names_router = r = APIRouter()
+taxon_names_router = r = APIRouter(prefix="/taxon_names")
 
 
 @r.get(
-    "/taxon_names",
+    "/",
     response_model=List[TaxonName],
     response_model_exclude_none=True,
 )
@@ -36,7 +36,7 @@ async def taxon_name_list(
 
 
 @r.get(
-    "/taxon_names/{taxon_name_id}",
+    "/{taxon_name_id}",
     response_model=TaxonName,
     response_model_exclude_none=True,
 )
@@ -53,7 +53,7 @@ async def taxon_name_details(
     return taxon_name
 
 
-@r.post("/taxon_names", response_model=TaxonName, response_model_exclude_none=True)
+@r.post("", response_model=TaxonName, response_model_exclude_none=True)
 async def taxon_name_create(
     request: Request,
     taxon_name: TaxonNameCreate,
@@ -67,7 +67,7 @@ async def taxon_name_create(
 
 
 @r.put(
-    "/taxon_names/{taxon_name_id}",
+    "/{taxon_name_id}",
     response_model=TaxonName,
     response_model_exclude_none=True,
 )
@@ -85,7 +85,7 @@ async def taxon_name_edit(
 
 
 @r.delete(
-    "/taxon_names/{taxon_name_id}",
+    "/{taxon_name_id}",
     response_model=TaxonName,
     response_model_exclude_none=True,
 )

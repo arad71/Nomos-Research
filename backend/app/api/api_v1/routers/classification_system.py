@@ -17,11 +17,11 @@ from app.db.classification_system.schema import (
 )
 from app.db.session import get_db
 
-classification_systems_router = r = APIRouter()
+classification_systems_router = r = APIRouter(prefix="/classification_systems")
 
 
 @r.get(
-    "/classification_systems",
+    "",
     response_model=List[ClassificationSystem],
     response_model_exclude_none=True,
 )
@@ -40,7 +40,7 @@ async def classification_system_list(
 
 
 @r.get(
-    "/classification_systems/{classification_system_id}",
+    "/{classification_system_id}",
     response_model=ClassificationSystem,
     response_model_exclude_none=True,
 )
@@ -58,7 +58,7 @@ async def classification_system_details(
 
 
 @r.post(
-    "/classification_systems",
+    "",
     response_model=ClassificationSystem,
     response_model_exclude_none=True,
 )
@@ -75,7 +75,7 @@ async def classification_system_create(
 
 
 @r.put(
-    "/classification_systems/{classification_system_id}",
+    "/{classification_system_id}",
     response_model=ClassificationSystem,
     response_model_exclude_none=True,
 )
@@ -95,7 +95,7 @@ async def classification_system_edit(
 
 
 @r.delete(
-    "/classification_systems/{classification_system_id}",
+    "/{classification_system_id}",
     response_model=ClassificationSystem,
     response_model_exclude_none=True,
 )

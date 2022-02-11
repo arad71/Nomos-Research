@@ -7,11 +7,11 @@ from app.db.session import get_db
 from app.db.user.crud import create_user, delete_user, edit_user, get_user, get_users
 from app.db.user.schema import User, UserCreate, UserEdit
 
-users_router = r = APIRouter()
+users_router = r = APIRouter(prefix="/users")
 
 
 @r.get(
-    "/users",
+    "/",
     response_model=List[User],
     response_model_exclude_none=True,
 )
@@ -29,7 +29,7 @@ async def users_list(
     return users
 
 
-@r.get("/users/me", response_model=User, response_model_exclude_none=True)
+@r.get("/me", response_model=User, response_model_exclude_none=True)
 async def user_me(current_user=Depends(get_current_active_user)):
     """
     Get own user
@@ -38,7 +38,7 @@ async def user_me(current_user=Depends(get_current_active_user)):
 
 
 @r.get(
-    "/users/{user_id}",
+    "/{user_id}",
     response_model=User,
     response_model_exclude_none=True,
 )
@@ -58,7 +58,7 @@ async def user_details(
     # )
 
 
-@r.post("/users", response_model=User, response_model_exclude_none=True)
+@r.post("", response_model=User, response_model_exclude_none=True)
 async def user_create(
     request: Request,
     user: UserCreate,
@@ -71,7 +71,7 @@ async def user_create(
     return create_user(db, user)
 
 
-@r.put("/users/{user_id}", response_model=User, response_model_exclude_none=True)
+@r.put("/{user_id}", response_model=User, response_model_exclude_none=True)
 async def user_edit(
     request: Request,
     user_id: int,
@@ -85,7 +85,7 @@ async def user_edit(
     return edit_user(db, user_id, user)
 
 
-@r.delete("/users/{user_id}", response_model=User, response_model_exclude_none=True)
+@r.delete("/{user_id}", response_model=User, response_model_exclude_none=True)
 async def user_delete(
     request: Request,
     user_id: int,
