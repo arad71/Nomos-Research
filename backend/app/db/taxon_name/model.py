@@ -53,6 +53,6 @@ class TaxonName(Base, TableMixin):
     family_nid = Column(Integer)
     all_vernaculars = Column(String(200))
     notes = Column(String(3000))
-    reference = Column(Text(convert_unicode=True))
+    reference = Column(Text)
     authorised_by = Column(String(16))
     authorised_on = Column(DateTime)

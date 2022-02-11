@@ -9,5 +9,5 @@ class Publication(Base, TableMixin):
 
     publication_id = Column(Integer, primary_key=True, index=True)
     bad_publication = Column(String(1))
-    publication = Column(Text(convert_unicode=True))
-    publication_name = Column(Text(convert_unicode=True))
+    publication = Column(Text)
+    publication_name = Column(Text)
