@@ -49,7 +49,7 @@ async def kingdom_details(
     """
     Get any kingdom details
     """
-    kingdom = get_kingdom(db, kingdom_id)
+    kingdom = get_kingdom(db, kingdom_id, current_user.user_id)
     return kingdom
 
 
@@ -63,7 +63,7 @@ async def kingdom_create(
     """
     Create a new kingdom
     """
-    return create_kingdom(db, kingdom)
+    return create_kingdom(db, kingdom, current_user.user_id)
 
 
 @r.put(
@@ -81,7 +81,7 @@ async def kingdom_edit(
     """
     Update existing kingdom
     """
-    return edit_kingdom(db, kingdom_id, kingdom)
+    return edit_kingdom(db, kingdom_id, kingdom, current_user.user_id)
 
 
 @r.delete(

@@ -1,4 +1,5 @@
 import typing as t
+from datetime import datetime
 
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
@@ -25,17 +26,20 @@ def get_classification_systems(
 
 
 def create_classification_system(
-    db: Session, classification_system: schema.ClassificationSystemCreate
+    db: Session,
+    classification_system: schema.ClassificationSystemCreate,
+    current_user: int,
 ):
+    now = datetime.utcnow()
     db_classification_system = model(
         class_desc=classification_system.class_desc,
         class_type=classification_system.class_type,
         preferred=classification_system.preferred,
         sort_order=classification_system.sort_order,
-        updated_by=classification_system.updated_by,
-        updated_on=classification_system.updated_on,
-        created_by=classification_system.created_by,
-        created_on=classification_system.created_on,
+        created_by=current_user,
+        created_on=now,
+        updated_by=current_user,
+        updated_on=now,
     )
     db.add(db_classification_system)
     db.commit()
@@ -58,6 +62,7 @@ def edit_classification_system(
     db: Session,
     classification_system_id: int,
     classification_system: schema.ClassificationSystemEdit,
+    current_user: int,
 ) -> schema:
     db_classification_system = get_classification_system(db, classification_system_id)
     if not db_classification_system:
@@ -69,6 +74,8 @@ def edit_classification_system(
     for key, value in update_data.items():
         setattr(db_classification_system, key, value)
 
+    setattr(db_classification_system, "updated_by", current_user)
+    setattr(db_classification_system, "updated_on", datetime.utcnow())
     db.add(db_classification_system)
     db.commit()
     db.refresh(db_classification_system)

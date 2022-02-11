@@ -63,7 +63,7 @@ async def taxon_rank_create(
     """
     Create a new taxon_rank
     """
-    return create_taxon_rank(db, taxon_rank)
+    return create_taxon_rank(db, taxon_rank, current_user.user_id)
 
 
 @r.put(
@@ -81,7 +81,7 @@ async def taxon_rank_edit(
     """
     Update existing taxon_rank
     """
-    return edit_taxon_rank(db, taxon_rank_id, taxon_rank)
+    return edit_taxon_rank(db, taxon_rank_id, taxon_rank, current_user.user_id)
 
 
 @r.delete(

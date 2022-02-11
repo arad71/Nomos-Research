@@ -1,4 +1,5 @@
 import typing as t
+from datetime import datetime
 
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
@@ -22,10 +23,15 @@ def get_hierarchies(
     return db.query(model).offset(skip).limit(limit).all()
 
 
-def create_hierarchy(db: Session, hierarchy: schema.HierarchyCreate):
+def create_hierarchy(db: Session, hierarchy: schema.HierarchyCreate, current_user: int):
+    now = datetime.utcnow()
     db_hierarchy = model(
         classification_system_id=hierarchy.classification_system_id,
         parent_nid=hierarchy.parent_nid,
+        created_by=current_user,
+        created_on=now,
+        updated_by=current_user,
+        updated_on=now,
     )
     db.add(db_hierarchy)
     db.commit()
@@ -43,7 +49,7 @@ def delete_hierarchy(db: Session, hierarchy_id: int):
 
 
 def edit_hierarchy(
-    db: Session, hierarchy_id: int, hierarchy: schema.HierarchyEdit
+    db: Session, hierarchy_id: int, hierarchy: schema.HierarchyEdit, current_user: int
 ) -> schema:
     db_hierarchy = get_hierarchy(db, hierarchy_id)
     if not db_hierarchy:
@@ -53,6 +59,8 @@ def edit_hierarchy(
     for key, value in update_data.items():
         setattr(db_hierarchy, key, value)
 
+    setattr(db_hierarchy, "updated_by", current_user)
+    setattr(db_hierarchy, "updated_on", datetime.utcnow())
     db.add(db_hierarchy)
     db.commit()
     db.refresh(db_hierarchy)

@@ -67,7 +67,7 @@ async def publication_create(
     """
     Create a new publication
     """
-    return create_publication(db, publication)
+    return create_publication(db, publication, current_user.user_id)
 
 
 @r.put(
@@ -85,7 +85,7 @@ async def publication_edit(
     """
     Update existing publication
     """
-    return edit_publication(db, publication_id, publication)
+    return edit_publication(db, publication_id, publication, current_user.user_id)
 
 
 @r.delete(

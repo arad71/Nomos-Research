@@ -63,7 +63,7 @@ async def hierarchy_create(
     """
     Create a new hierarchy
     """
-    return create_hierarchy(db, hierarchy)
+    return create_hierarchy(db, hierarchy, current_user.user_id)
 
 
 @r.put(
@@ -81,7 +81,7 @@ async def hierarchy_edit(
     """
     Update existing hierarchy
     """
-    return edit_hierarchy(db, hierarchy_id, hierarchy)
+    return edit_hierarchy(db, hierarchy_id, hierarchy, current_user.user_id)
 
 
 @r.delete(

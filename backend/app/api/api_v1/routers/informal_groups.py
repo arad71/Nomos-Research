@@ -71,7 +71,7 @@ async def informal_group_create(
     """
     Create a new informal_group
     """
-    return create_informal_group(db, informal_group)
+    return create_informal_group(db, informal_group, current_user.user_id)
 
 
 @r.put(
@@ -89,7 +89,9 @@ async def informal_group_edit(
     """
     Update existing informal_group
     """
-    return edit_informal_group(db, informal_group_id, informal_group)
+    return edit_informal_group(
+        db, informal_group_id, informal_group, current_user.user_id
+    )
 
 
 @r.delete(

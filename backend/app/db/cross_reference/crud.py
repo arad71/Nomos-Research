@@ -1,4 +1,5 @@
 import typing as t
+from datetime import datetime
 
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
@@ -22,7 +23,10 @@ def get_cross_references(
     return db.query(model).offset(skip).limit(limit).all()
 
 
-def create_cross_reference(db: Session, cross_reference: schema.CrossReferenceCreate):
+def create_cross_reference(
+    db: Session, cross_reference: schema.CrossReferenceCreate, current_user: int
+):
+    now = datetime.utcnow()
     db_cross_reference = model(
         old_name_id=cross_reference.old_name_id,
         new_name_id=cross_reference.new_name_id,
@@ -34,10 +38,10 @@ def create_cross_reference(db: Session, cross_reference: schema.CrossReferenceCr
         authorised_dy=cross_reference.authorised_dy,
         comments=cross_reference.comments,
         notes=cross_reference.notes,
-        updated_by=cross_reference.updated_by,
-        updated_on=cross_reference.updated_on,
-        created_by=cross_reference.created_by,
-        created_on=cross_reference.created_on,
+        created_by=current_user,
+        created_on=now,
+        updated_by=current_user,
+        updated_on=now,
     )
     db.add(db_cross_reference)
     db.commit()
@@ -60,6 +64,7 @@ def edit_cross_reference(
     db: Session,
     cross_reference_id: int,
     cross_reference: schema.CrossReferenceEdit,
+    current_user: int,
 ) -> schema:
     db_cross_reference = get_cross_reference(db, cross_reference_id)
     if not db_cross_reference:
@@ -71,6 +76,8 @@ def edit_cross_reference(
     for key, value in update_data.items():
         setattr(db_cross_reference, key, value)
 
+    setattr(db_cross_reference, "updated_by", current_user)
+    setattr(db_cross_reference, "updated_on", datetime.utcnow())
     db.add(db_cross_reference)
     db.commit()
     db.refresh(db_cross_reference)
