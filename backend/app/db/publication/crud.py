@@ -7,6 +7,7 @@ import app.db.publication.schema as schema
 from app.db.publication.model import Publication as model
 from app.db.publication_author.schema import PublicationSchema
 
+
 def get_publication(db: Session, publication_id: int):
     publication = db.query(model).filter(model.publication_id == publication_id).first()
     if not publication:
@@ -17,7 +18,13 @@ def get_publication(db: Session, publication_id: int):
 def get_publications(
     db: Session, skip: int = 0, limit: int = 100
 ) -> t.List[PublicationSchema]:
-    return db.query(model).options(joinedload(model.author)).offset(skip).limit(limit).all()
+    return (
+        db.query(model)
+        .options(joinedload(model.author))
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
 
 
 def create_publication(db: Session, publication: schema.PublicationCreate):

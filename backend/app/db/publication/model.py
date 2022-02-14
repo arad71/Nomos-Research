@@ -1,5 +1,6 @@
-from sqlalchemy import Column, Integer, String, Text, Boolean, ForeignKey
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
+
 from app.db.models import TableMixin
 from app.db.session import Base
 
@@ -36,8 +37,9 @@ class Publication(Base, TableMixin):
     tl2 = Column(String)
     reference_type = Column(String)
     parent = Column(Integer)
-    author = relationship("Author", secondary="publication_author", back_populates="publication")
+    author = relationship(
+        "Author", secondary="publication_author", back_populates="publication"
+    )
     reference_author_role = Column(String)
     language = Column(String)
     duplicate_of = Column(Integer)
-

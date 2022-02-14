@@ -1,5 +1,7 @@
 from typing import List
+
 from app.db.schemas import TableBase
+
 
 class PublicationBase(TableBase):
     bad_publication: str

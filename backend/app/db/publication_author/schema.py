@@ -1,7 +1,7 @@
 from typing import List
 
-from app.db.publication.schema import Publication
 from app.db.author.schema import Author
+from app.db.publication.schema import Publication
 
 
 class AuthorSchema(Author):

@@ -15,10 +15,14 @@ def get_author(db: Session, author_id: int):
     return author
 
 
-def get_authors(
-    db: Session, skip: int = 0, limit: int = 100
-) -> t.List[AuthorSchema]:
-    return db.query(model).options(joinedload(model.publication)).offset(skip).limit(limit).all()
+def get_authors(db: Session, skip: int = 0, limit: int = 100) -> t.List[AuthorSchema]:
+    return (
+        db.query(model)
+        .options(joinedload(model.publication))
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
 
 
 def create_author(db: Session, author: schema.AuthorCreate):

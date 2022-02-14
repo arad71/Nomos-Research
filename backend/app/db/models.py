@@ -1,6 +1,6 @@
 from sqlalchemy import Column, DateTime, ForeignKey, Integer
 from sqlalchemy.ext.declarative import declared_attr
-from sqlalchemy import Column, ForeignKey
+
 from app.db.session import Base
 
 
@@ -26,5 +26,5 @@ class TableMixin(object):
 class PublicationAuthor(Base):
     __tablename__ = "publication_author"
 
-    publication_id = Column(ForeignKey('publication.publication_id'), primary_key=True)
-    author_id = Column(ForeignKey('author.author_id'), primary_key=True)
+    publication_id = Column(ForeignKey("publication.publication_id"), primary_key=True)
+    author_id = Column(ForeignKey("author.author_id"), primary_key=True)
