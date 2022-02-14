@@ -24,14 +24,11 @@ def get_hierarchies(
 
 
 def create_hierarchy(db: Session, hierarchy: schema.HierarchyCreate, current_user: int):
-    now = datetime.utcnow()
     db_hierarchy = model(
         classification_system_id=hierarchy.classification_system_id,
         parent_nid=hierarchy.parent_nid,
         created_by=current_user,
-        created_on=now,
         updated_by=current_user,
-        updated_on=now,
     )
     db.add(db_hierarchy)
     db.commit()
@@ -60,7 +57,6 @@ def edit_hierarchy(
         setattr(db_hierarchy, key, value)
 
     setattr(db_hierarchy, "updated_by", current_user)
-    setattr(db_hierarchy, "updated_on", datetime.utcnow())
     db.add(db_hierarchy)
     db.commit()
     db.refresh(db_hierarchy)

@@ -1,4 +1,6 @@
-from sqlalchemy import Column, DateTime, ForeignKey, Integer
+from datetime import datetime
+
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, func
 from sqlalchemy.ext.declarative import declared_attr
 
 
@@ -10,7 +12,7 @@ class TableMixin(object):
 
     @declared_attr
     def updated_on(cls):
-        return Column(DateTime)
+        return Column(DateTime, onupdate=func.current_timestamp())
 
     @declared_attr
     def created_by(cls):
@@ -18,4 +20,4 @@ class TableMixin(object):
 
     @declared_attr
     def created_on(cls):
-        return Column(DateTime)
+        return Column(DateTime, default=func.current_timestamp())

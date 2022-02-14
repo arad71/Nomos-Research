@@ -22,7 +22,6 @@ def get_authors(
 
 
 def create_author(db: Session, author: schema.AuthorCreate, current_user: int):
-    now = datetime.utcnow()
     db_author = model(
         author=author.author,
         surname=author.surname,
@@ -30,9 +29,7 @@ def create_author(db: Session, author: schema.AuthorCreate, current_user: int):
         initials=author.initials,
         orc_id=author.orc_id,
         created_by=current_user,
-        created_on=now,
         updated_by=current_user,
-        updated_on=now,
     )
     db.add(db_author)
     db.commit()
@@ -61,7 +58,6 @@ def edit_author(
         setattr(db_author, key, value)
 
     setattr(db_author, "updated_by", current_user)
-    setattr(db_author, "updated_on", datetime.utcnow())
     db.add(db_author)
     db.commit()
     db.refresh(db_author)

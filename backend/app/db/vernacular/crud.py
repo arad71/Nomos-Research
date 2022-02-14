@@ -24,7 +24,6 @@ def get_vernaculars(
 def create_vernacular(
     db: Session, vernacular: schema.VernacularCreate, current_user: int
 ):
-    now = datetime.utcnow()
     db_vernacular = model(
         vernacular=vernacular.vernacular,
         language=vernacular.language,
@@ -34,9 +33,7 @@ def create_vernacular(
         enabled=vernacular.enabled,
         sort_order=vernacular.sort_order,
         created_by=current_user,
-        created_on=now,
         updated_by=current_user,
-        updated_on=now,
     )
     db.add(db_vernacular)
     db.commit()
@@ -68,7 +65,6 @@ def edit_vernacular(
         setattr(db_vernacular, key, value)
 
     setattr(db_vernacular, "updated_by", current_user)
-    setattr(db_vernacular, "updated_on", datetime.utcnow())
     db.add(db_vernacular)
     db.commit()
     db.refresh(db_vernacular)

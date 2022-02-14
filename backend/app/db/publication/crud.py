@@ -24,15 +24,12 @@ def get_publications(
 def create_publication(
     db: Session, publication: schema.PublicationCreate, current_user: int
 ):
-    now = datetime.utcnow()
     db_publication = model(
         bad_publication=publication.bad_publication,
         publication=publication.publication,
         publication_name=publication.publication_name,
         created_by=current_user,
-        created_on=now,
         updated_by=current_user,
-        updated_on=now,
     )
     db.add(db_publication)
     db.commit()
@@ -64,7 +61,6 @@ def edit_publication(
         setattr(db_publication, key, value)
 
     setattr(db_publication, "updated_by", current_user)
-    setattr(db_publication, "updated_on", datetime.utcnow())
     db.add(db_publication)
     db.commit()
     db.refresh(db_publication)

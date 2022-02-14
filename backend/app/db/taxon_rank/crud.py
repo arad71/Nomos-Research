@@ -24,7 +24,6 @@ def get_taxon_ranks(
 def create_taxon_rank(
     db: Session, taxon_rank: schema.TaxonRankCreate, current_user: int
 ):
-    now = datetime.utcnow()
     db_taxon_rank = model(
         kingdom_id=taxon_rank.kingdom_id,
         rank_name=taxon_rank.rank_name,
@@ -32,9 +31,7 @@ def create_taxon_rank(
         direct_parent_rank_id=taxon_rank.direct_parent_rank_id,
         required_parent_rank_id=taxon_rank.required_parent_rank_id,
         created_by=current_user,
-        created_on=now,
         updated_by=current_user,
-        updated_on=now,
     )
     db.add(db_taxon_rank)
     db.commit()
@@ -63,7 +60,6 @@ def edit_taxon_rank(
         setattr(db_taxon_rank, key, value)
 
     setattr(db_taxon_rank, "updated_by", current_user)
-    setattr(db_taxon_rank, "updated_on", datetime.utcnow())
     db.add(db_taxon_rank)
     db.commit()
     db.refresh(db_taxon_rank)

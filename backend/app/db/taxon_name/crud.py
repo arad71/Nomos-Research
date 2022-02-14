@@ -24,7 +24,6 @@ def get_taxon_names(
 def create_taxon_name(
     db: Session, taxon_name: schema.TaxonNameCreate, current_user: int
 ):
-    now = datetime.utcnow()
     db_taxon_name = model(
         taxon_name_id=taxon_name.taxon_name_id,
         kingdom_id=taxon_name.kingdom_id,
@@ -75,9 +74,7 @@ def create_taxon_name(
         authorised_by=taxon_name.authorised_by,
         authorised_on=taxon_name.authorised_on,
         created_by=current_user,
-        created_on=now,
         updated_by=current_user,
-        updated_on=now,
     )
     db.add(db_taxon_name)
     db.commit()
@@ -106,7 +103,6 @@ def edit_taxon_name(
         setattr(db_taxon_name, key, value)
 
     setattr(db_taxon_name, "updated_by", current_user)
-    setattr(db_taxon_name, "updated_on", datetime.utcnow())
     db.add(db_taxon_name)
     db.commit()
     db.refresh(db_taxon_name)

@@ -30,16 +30,13 @@ def create_classification_system(
     classification_system: schema.ClassificationSystemCreate,
     current_user: int,
 ):
-    now = datetime.utcnow()
     db_classification_system = model(
         class_desc=classification_system.class_desc,
         class_type=classification_system.class_type,
         preferred=classification_system.preferred,
         sort_order=classification_system.sort_order,
         created_by=current_user,
-        created_on=now,
         updated_by=current_user,
-        updated_on=now,
     )
     db.add(db_classification_system)
     db.commit()
@@ -75,7 +72,6 @@ def edit_classification_system(
         setattr(db_classification_system, key, value)
 
     setattr(db_classification_system, "updated_by", current_user)
-    setattr(db_classification_system, "updated_on", datetime.utcnow())
     db.add(db_classification_system)
     db.commit()
     db.refresh(db_classification_system)

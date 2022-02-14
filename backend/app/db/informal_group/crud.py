@@ -26,14 +26,11 @@ def get_informal_groups(
 def create_informal_group(
     db: Session, informal_group: schema.InformalGroupCreate, current_user: int
 ):
-    now = datetime.utcnow()
     db_informal_group = model(
         informal_group_name=informal_group.informal_group_name,
         informal_group_desc=informal_group.informal_group_desc,
         created_by=current_user,
-        created_on=now,
         updated_by=current_user,
-        updated_on=now,
     )
     db.add(db_informal_group)
     db.commit()
@@ -65,7 +62,6 @@ def edit_informal_group(
         setattr(db_informal_group, key, value)
 
     setattr(db_informal_group, "updated_by", current_user)
-    setattr(db_informal_group, "updated_on", datetime.utcnow())
     db.add(db_informal_group)
     db.commit()
     db.refresh(db_informal_group)

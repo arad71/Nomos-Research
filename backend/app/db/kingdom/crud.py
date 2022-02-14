@@ -22,14 +22,11 @@ def get_kingdoms(
 
 
 def create_kingdom(db: Session, kingdom: schema.KingdomCreate, current_user: int):
-    now = datetime.utcnow()
     db_kingdom = model(
         kingdom_name=kingdom.kingdom_name,
         kingdom_desc=kingdom.kingdom_desc,
         created_by=current_user,
-        created_on=now,
         updated_by=current_user,
-        updated_on=now,
     )
     db.add(db_kingdom)
     db.commit()
@@ -58,7 +55,6 @@ def edit_kingdom(
         setattr(db_kingdom, key, value)
 
     setattr(db_kingdom, "updated_by", current_user)
-    setattr(db_kingdom, "updated_on", datetime.utcnow())
     db.add(db_kingdom)
     db.commit()
     db.refresh(db_kingdom)

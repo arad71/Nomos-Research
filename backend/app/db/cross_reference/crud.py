@@ -26,7 +26,6 @@ def get_cross_references(
 def create_cross_reference(
     db: Session, cross_reference: schema.CrossReferenceCreate, current_user: int
 ):
-    now = datetime.utcnow()
     db_cross_reference = model(
         old_name_id=cross_reference.old_name_id,
         new_name_id=cross_reference.new_name_id,
@@ -39,9 +38,7 @@ def create_cross_reference(
         comments=cross_reference.comments,
         notes=cross_reference.notes,
         created_by=current_user,
-        created_on=now,
         updated_by=current_user,
-        updated_on=now,
     )
     db.add(db_cross_reference)
     db.commit()
@@ -77,7 +74,6 @@ def edit_cross_reference(
         setattr(db_cross_reference, key, value)
 
     setattr(db_cross_reference, "updated_by", current_user)
-    setattr(db_cross_reference, "updated_on", datetime.utcnow())
     db.add(db_cross_reference)
     db.commit()
     db.refresh(db_cross_reference)
