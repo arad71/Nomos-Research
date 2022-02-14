@@ -1,10 +1,11 @@
 import typing as t
 
 from fastapi import HTTPException, status
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 import app.db.author.schema as schema
 from app.db.author.model import Author as model
+from app.db.publication_author.schema import AuthorSchema
 
 
 def get_author(db: Session, author_id: int):
@@ -16,8 +17,8 @@ def get_author(db: Session, author_id: int):
 
 def get_authors(
     db: Session, skip: int = 0, limit: int = 100
-) -> t.List[schema.AuthorBase]:
-    return db.query(model).offset(skip).limit(limit).all()
+) -> t.List[AuthorSchema]:
+    return db.query(model).options(joinedload(model.publication)).offset(skip).limit(limit).all()
 
 
 def create_author(db: Session, author: schema.AuthorCreate):
@@ -26,7 +27,7 @@ def create_author(db: Session, author: schema.AuthorCreate):
         surname=author.surname,
         first_names=author.first_names,
         initials=author.initials,
-        author_id=author.author_id,
+        orc_id=author.orc_id,
         updated_by=author.updated_by,
         updated_on=author.updated_on,
         created_by=author.created_by,

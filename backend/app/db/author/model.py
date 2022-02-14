@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import relationship
 
 from app.db.models import TableMixin
 from app.db.session import Base
@@ -13,3 +14,4 @@ class Author(Base, TableMixin):
     first_names = Column(String(60))
     initials = Column(String(30))
     orc_id = Column(Integer)
+    publication = relationship("Publication", secondary="publication_author", back_populates="author")

@@ -1,3 +1,4 @@
+from typing import List
 from app.db.schemas import TableBase
 
 
@@ -22,3 +23,4 @@ class Author(AuthorBase):
 
     class Config:
         orm_mode = True
+
