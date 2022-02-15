@@ -17,7 +17,7 @@ hierarchies_router = r = APIRouter(prefix="/hierarchies")
 
 
 @r.get(
-    "/",
+    "",
     response_model=List[Hierarchy],
     response_model_exclude_none=True,
 )

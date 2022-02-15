@@ -17,7 +17,7 @@ vernaculars_router = r = APIRouter(prefix="/vernacular")
 
 
 @r.get(
-    "/",
+    "",
     response_model=List[Vernacular],
     response_model_exclude_none=True,
 )

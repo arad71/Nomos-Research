@@ -21,7 +21,7 @@ cross_references_router = r = APIRouter(prefix="/cross_references")
 
 
 @r.get(
-    "/",
+    "",
     response_model=List[CrossReference],
     response_model_exclude_none=True,
 )

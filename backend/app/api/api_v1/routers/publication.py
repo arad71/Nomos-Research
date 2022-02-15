@@ -17,7 +17,7 @@ publications_router = r = APIRouter(prefix="/publications")
 
 
 @r.get(
-    "/",
+    "",
     response_model=List[Publication],
     response_model_exclude_none=True,
 )

@@ -17,7 +17,7 @@ authors_router = r = APIRouter(prefix="/authors")
 
 
 @r.get(
-    "/",
+    "",
     response_model=List[Author],
     response_model_exclude_none=True,
 )
