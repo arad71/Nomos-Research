@@ -63,7 +63,7 @@ async def taxon_name_create(
     """
     Create a new taxon_name
     """
-    return create_taxon_name(db, taxon_name)
+    return create_taxon_name(db, taxon_name, current_user.user_id)
 
 
 @r.put(
@@ -81,7 +81,7 @@ async def taxon_name_edit(
     """
     Update existing taxon_name
     """
-    return edit_taxon_name(db, taxon_name_id, taxon_name)
+    return edit_taxon_name(db, taxon_name_id, taxon_name, current_user.user_id)
 
 
 @r.delete(

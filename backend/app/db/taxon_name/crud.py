@@ -20,7 +20,9 @@ def get_taxon_names(
     return db.query(model).offset(skip).limit(limit).all()
 
 
-def create_taxon_name(db: Session, taxon_name: schema.TaxonNameCreate):
+def create_taxon_name(
+    db: Session, taxon_name: schema.TaxonNameCreate, current_user: int
+):
     db_taxon_name = model(
         taxon_name_id=taxon_name.taxon_name_id,
         kingdom_id=taxon_name.kingdom_id,
@@ -70,10 +72,8 @@ def create_taxon_name(db: Session, taxon_name: schema.TaxonNameCreate):
         reference=taxon_name.reference,
         authorised_by=taxon_name.authorised_by,
         authorised_on=taxon_name.authorised_on,
-        updated_by=taxon_name.updated_by,
-        updated_on=taxon_name.updated_on,
-        created_by=taxon_name.created_by,
-        created_on=taxon_name.created_on,
+        created_by=current_user,
+        updated_by=current_user,
     )
     db.add(db_taxon_name)
     db.commit()
@@ -91,7 +91,7 @@ def delete_taxon_name(db: Session, taxon_name_id: int):
 
 
 def edit_taxon_name(
-    db: Session, taxon_name_id: int, taxon_name: schema.TaxonNameEdit
+    db: Session, taxon_name_id: int, taxon_name: schema.TaxonNameEdit, current_user: int
 ) -> schema:
     db_taxon_name = get_taxon_name(db, taxon_name_id)
     if not db_taxon_name:
@@ -101,6 +101,7 @@ def edit_taxon_name(
     for key, value in update_data.items():
         setattr(db_taxon_name, key, value)
 
+    setattr(db_taxon_name, "updated_by", current_user)
     db.add(db_taxon_name)
     db.commit()
     db.refresh(db_taxon_name)

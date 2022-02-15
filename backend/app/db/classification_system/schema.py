@@ -1,8 +1,9 @@
+from pydantic import BaseModel
+
 from app.db.schemas import TableBase
 
 
-# ClassificationSystem
-class ClassificationSystemBase(TableBase):
+class ClassificationSystemBase(BaseModel):
     class_desc: str
     class_type: str
     preferred: str
@@ -17,7 +18,7 @@ class ClassificationSystemEdit(ClassificationSystemBase):
     pass
 
 
-class ClassificationSystem(ClassificationSystemBase):
+class ClassificationSystem(ClassificationSystemBase, TableBase):
     classification_system_id: int
 
     class Config:

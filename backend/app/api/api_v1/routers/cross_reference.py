@@ -71,7 +71,7 @@ async def cross_reference_create(
     """
     Create a new cross_reference
     """
-    return create_cross_reference(db, cross_reference)
+    return create_cross_reference(db, cross_reference, current_user.user_id)
 
 
 @r.put(
@@ -89,7 +89,9 @@ async def cross_reference_edit(
     """
     Update existing cross_reference
     """
-    return edit_cross_reference(db, cross_reference_id, cross_reference)
+    return edit_cross_reference(
+        db, cross_reference_id, cross_reference, current_user.user_id
+    )
 
 
 @r.delete(

@@ -22,14 +22,14 @@ def get_informal_groups(
     return db.query(model).offset(skip).limit(limit).all()
 
 
-def create_informal_group(db: Session, informal_group: schema.InformalGroupCreate):
+def create_informal_group(
+    db: Session, informal_group: schema.InformalGroupCreate, current_user: int
+):
     db_informal_group = model(
         informal_group_name=informal_group.informal_group_name,
         informal_group_desc=informal_group.informal_group_desc,
-        updated_by=informal_group.updated_by,
-        updated_on=informal_group.updated_on,
-        created_by=informal_group.created_by,
-        created_on=informal_group.created_on,
+        created_by=current_user,
+        updated_by=current_user,
     )
     db.add(db_informal_group)
     db.commit()
@@ -50,6 +50,7 @@ def edit_informal_group(
     db: Session,
     informal_group_id: int,
     informal_group: schema.InformalGroupEdit,
+    current_user: int,
 ) -> schema:
     db_informal_group = get_informal_group(db, informal_group_id)
     if not db_informal_group:
@@ -59,6 +60,7 @@ def edit_informal_group(
     for key, value in update_data.items():
         setattr(db_informal_group, key, value)
 
+    setattr(db_informal_group, "updated_by", current_user)
     db.add(db_informal_group)
     db.commit()
     db.refresh(db_informal_group)

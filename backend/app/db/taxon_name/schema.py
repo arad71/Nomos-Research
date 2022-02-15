@@ -1,9 +1,11 @@
 from datetime import datetime
 
+from pydantic import BaseModel
+
 from app.db.schemas import TableBase
 
 
-class TaxonNameBase(TableBase):
+class TaxonNameBase(BaseModel):
     kingdom_id: int
     rank_id: int
     rank_name: str
@@ -62,7 +64,7 @@ class TaxonNameEdit(TaxonNameBase):
     pass
 
 
-class TaxonName(TaxonNameBase):
+class TaxonName(TaxonNameBase, TableBase):
     taxon_name_id: int
 
     class Config:

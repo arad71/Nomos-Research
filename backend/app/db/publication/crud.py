@@ -20,15 +20,15 @@ def get_publications(
     return db.query(model).offset(skip).limit(limit).all()
 
 
-def create_publication(db: Session, publication: schema.PublicationCreate):
+def create_publication(
+    db: Session, publication: schema.PublicationCreate, current_user: int
+):
     db_publication = model(
         bad_publication=publication.bad_publication,
         publication=publication.publication,
         publication_name=publication.publication_name,
-        updated_by=publication.updated_by,
-        updated_on=publication.updated_on,
-        created_by=publication.created_by,
-        created_on=publication.created_on,
+        created_by=current_user,
+        updated_by=current_user,
     )
     db.add(db_publication)
     db.commit()
@@ -46,7 +46,10 @@ def delete_publication(db: Session, publication_id: int):
 
 
 def edit_publication(
-    db: Session, publication_id: int, publication: schema.PublicationEdit
+    db: Session,
+    publication_id: int,
+    publication: schema.PublicationEdit,
+    current_user: int,
 ) -> schema:
     db_publication = get_publication(db, publication_id)
     if not db_publication:
@@ -56,6 +59,7 @@ def edit_publication(
     for key, value in update_data.items():
         setattr(db_publication, key, value)
 
+    setattr(db_publication, "updated_by", current_user)
     db.add(db_publication)
     db.commit()
     db.refresh(db_publication)
