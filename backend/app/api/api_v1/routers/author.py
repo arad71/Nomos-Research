@@ -63,7 +63,7 @@ async def author_create(
     """
     Create a new author
     """
-    return create_author(db, author)
+    return create_author(db, author, current_user.user_id)
 
 
 @r.put(
@@ -81,7 +81,7 @@ async def author_edit(
     """
     Update existing author
     """
-    return edit_author(db, author_id, author)
+    return edit_author(db, author_id, author, current_user.user_id)
 
 
 @r.delete(

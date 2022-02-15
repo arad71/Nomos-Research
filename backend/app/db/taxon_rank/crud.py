@@ -20,17 +20,17 @@ def get_taxon_ranks(
     return db.query(model).offset(skip).limit(limit).all()
 
 
-def create_taxon_rank(db: Session, taxon_rank: schema.TaxonRankCreate):
+def create_taxon_rank(
+    db: Session, taxon_rank: schema.TaxonRankCreate, current_user: int
+):
     db_taxon_rank = model(
         kingdom_id=taxon_rank.kingdom_id,
         rank_name=taxon_rank.rank_name,
         rank_abbrev=taxon_rank.rank_abbrev,
         direct_parent_rank_id=taxon_rank.direct_parent_rank_id,
         required_parent_rank_id=taxon_rank.required_parent_rank_id,
-        updated_by=taxon_rank.updated_by,
-        updated_on=taxon_rank.updated_on,
-        created_by=taxon_rank.created_by,
-        created_on=taxon_rank.created_on,
+        created_by=current_user,
+        updated_by=current_user,
     )
     db.add(db_taxon_rank)
     db.commit()
@@ -48,7 +48,7 @@ def delete_taxon_rank(db: Session, taxon_rank_id: int):
 
 
 def edit_taxon_rank(
-    db: Session, taxon_rank_id: int, taxon_rank: schema.TaxonRankEdit
+    db: Session, taxon_rank_id: int, taxon_rank: schema.TaxonRankEdit, current_user: int
 ) -> schema:
     db_taxon_rank = get_taxon_rank(db, taxon_rank_id)
     if not db_taxon_rank:
@@ -58,6 +58,7 @@ def edit_taxon_rank(
     for key, value in update_data.items():
         setattr(db_taxon_rank, key, value)
 
+    setattr(db_taxon_rank, "updated_by", current_user)
     db.add(db_taxon_rank)
     db.commit()
     db.refresh(db_taxon_rank)
