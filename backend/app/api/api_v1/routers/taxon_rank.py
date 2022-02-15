@@ -17,7 +17,7 @@ taxon_ranks_router = r = APIRouter(prefix="/taxon_ranks")
 
 
 @r.get(
-    "/",
+    "",
     response_model=List[TaxonRank],
     response_model_exclude_none=True,
 )
