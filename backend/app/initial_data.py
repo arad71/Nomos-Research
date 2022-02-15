@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-from app.db.crud import create_user, get_user_by_email
-from app.db.schemas import UserCreate
 from app.db.session import SessionLocal
+from app.db.user.crud import create_user, get_user_by_email
+from app.db.user.schema import UserCreate
 
 
 def get_admin_email():
@@ -32,7 +32,5 @@ if __name__ == "__main__":
     print("Initialising")
     created = init()
     print(
-        "Superuser {} {}".format(
-            get_admin_email(), "created" if created else "exists"
-        )
+        "Superuser {} {}".format(get_admin_email(), "created" if created else "exists")
     )
