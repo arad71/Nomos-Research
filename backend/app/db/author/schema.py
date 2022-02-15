@@ -1,7 +1,9 @@
+from pydantic import BaseModel
+
 from app.db.schemas import TableBase
 
 
-class AuthorBase(TableBase):
+class AuthorBase(BaseModel):
     author: str
     surname: str
     first_names: str
@@ -17,7 +19,7 @@ class AuthorEdit(AuthorBase):
     pass
 
 
-class Author(AuthorBase):
+class Author(AuthorBase, TableBase):
     author_id: int
 
     class Config:

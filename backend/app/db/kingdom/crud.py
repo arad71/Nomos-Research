@@ -20,14 +20,12 @@ def get_kingdoms(
     return db.query(model).offset(skip).limit(limit).all()
 
 
-def create_kingdom(db: Session, kingdom: schema.KingdomCreate):
+def create_kingdom(db: Session, kingdom: schema.KingdomCreate, current_user: int):
     db_kingdom = model(
         kingdom_name=kingdom.kingdom_name,
         kingdom_desc=kingdom.kingdom_desc,
-        updated_by=kingdom.updated_by,
-        updated_on=kingdom.updated_on,
-        created_by=kingdom.created_by,
-        created_on=kingdom.created_on,
+        created_by=current_user,
+        updated_by=current_user,
     )
     db.add(db_kingdom)
     db.commit()
@@ -44,7 +42,9 @@ def delete_kingdom(db: Session, kingdom_id: int):
     return kingdom
 
 
-def edit_kingdom(db: Session, kingdom_id: int, kingdom: schema.KingdomEdit) -> schema:
+def edit_kingdom(
+    db: Session, kingdom_id: int, kingdom: schema.KingdomEdit, current_user: int
+) -> schema:
     db_kingdom = get_kingdom(db, kingdom_id)
     if not db_kingdom:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Kingdom not found")
@@ -53,6 +53,7 @@ def edit_kingdom(db: Session, kingdom_id: int, kingdom: schema.KingdomEdit) -> s
     for key, value in update_data.items():
         setattr(db_kingdom, key, value)
 
+    setattr(db_kingdom, "updated_by", current_user)
     db.add(db_kingdom)
     db.commit()
     db.refresh(db_kingdom)

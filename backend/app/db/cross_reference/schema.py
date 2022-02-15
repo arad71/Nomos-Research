@@ -1,8 +1,9 @@
+from pydantic import BaseModel
+
 from app.db.schemas import TableBase
 
 
-# CrossReference
-class CrossReferenceBase(TableBase):
+class CrossReferenceBase(BaseModel):
     old_name_id: int
     new_name_id: int
     cross_reference_type: str
@@ -20,7 +21,7 @@ class CrossReferenceEdit(CrossReferenceBase):
     pass
 
 
-class CrossReference(CrossReferenceBase):
+class CrossReference(CrossReferenceBase, TableBase):
     cross_reference_id: int
 
     class Config:

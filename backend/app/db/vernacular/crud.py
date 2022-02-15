@@ -20,7 +20,9 @@ def get_vernaculars(
     return db.query(model).offset(skip).limit(limit).all()
 
 
-def create_vernacular(db: Session, vernacular: schema.VernacularCreate):
+def create_vernacular(
+    db: Session, vernacular: schema.VernacularCreate, current_user: int
+):
     db_vernacular = model(
         vernacular=vernacular.vernacular,
         language=vernacular.language,
@@ -29,10 +31,8 @@ def create_vernacular(db: Session, vernacular: schema.VernacularCreate):
         source=vernacular.source,
         enabled=vernacular.enabled,
         sort_order=vernacular.sort_order,
-        updated_by=vernacular.updated_by,
-        updated_on=vernacular.updated_on,
-        created_by=vernacular.created_by,
-        created_on=vernacular.created_on,
+        created_by=current_user,
+        updated_by=current_user,
     )
     db.add(db_vernacular)
     db.commit()
@@ -50,7 +50,10 @@ def delete_vernacular(db: Session, vernacular_id: int):
 
 
 def edit_vernacular(
-    db: Session, vernacular_id: int, vernacular: schema.VernacularEdit
+    db: Session,
+    vernacular_id: int,
+    vernacular: schema.VernacularEdit,
+    current_user: int,
 ) -> schema:
     db_vernacular = get_vernacular(db, vernacular_id)
     if not db_vernacular:
@@ -60,6 +63,7 @@ def edit_vernacular(
     for key, value in update_data.items():
         setattr(db_vernacular, key, value)
 
+    setattr(db_vernacular, "updated_by", current_user)
     db.add(db_vernacular)
     db.commit()
     db.refresh(db_vernacular)

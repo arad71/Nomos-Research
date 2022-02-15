@@ -63,7 +63,7 @@ async def vernacular_create(
     """
     Create a new vernacular
     """
-    return create_vernacular(db, vernacular)
+    return create_vernacular(db, vernacular, current_user.user_id)
 
 
 @r.put(
@@ -81,7 +81,7 @@ async def vernacular_edit(
     """
     Update existing vernacular
     """
-    return edit_vernacular(db, vernacular_id, vernacular)
+    return edit_vernacular(db, vernacular_id, vernacular, current_user.user_id)
 
 
 @r.delete(

@@ -71,7 +71,7 @@ async def classification_system_create(
     """
     Create a new classification_system
     """
-    return create_classification_system(db, classification_system)
+    return create_classification_system(db, classification_system, current_user.user_id)
 
 
 @r.put(
@@ -90,7 +90,7 @@ async def classification_system_edit(
     Update existing classification_system
     """
     return edit_classification_system(
-        db, classification_system_id, classification_system
+        db, classification_system_id, classification_system, current_user.user_id
     )
 
 

@@ -1,7 +1,9 @@
+from pydantic import BaseModel
+
 from app.db.schemas import TableBase
 
 
-class VernacularBase(TableBase):
+class VernacularBase(BaseModel):
     taxon_name_id: int
     vernacular: str
     language: str
@@ -20,7 +22,7 @@ class VernacularEdit(VernacularBase):
     pass
 
 
-class Vernacular(VernacularBase):
+class Vernacular(VernacularBase, TableBase):
     vernacular_id: int
 
     class Config:

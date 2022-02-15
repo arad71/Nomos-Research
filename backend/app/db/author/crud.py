@@ -20,17 +20,15 @@ def get_authors(
     return db.query(model).offset(skip).limit(limit).all()
 
 
-def create_author(db: Session, author: schema.AuthorCreate):
+def create_author(db: Session, author: schema.AuthorCreate, current_user: int):
     db_author = model(
         author=author.author,
         surname=author.surname,
         first_names=author.first_names,
         initials=author.initials,
-        author_id=author.author_id,
-        updated_by=author.updated_by,
-        updated_on=author.updated_on,
-        created_by=author.created_by,
-        created_on=author.created_on,
+        orc_id=author.orc_id,
+        created_by=current_user,
+        updated_by=current_user,
     )
     db.add(db_author)
     db.commit()
@@ -47,7 +45,9 @@ def delete_author(db: Session, author_id: int):
     return author
 
 
-def edit_author(db: Session, author_id: int, author: schema.AuthorEdit) -> schema:
+def edit_author(
+    db: Session, author_id: int, author: schema.AuthorEdit, current_user: int
+) -> schema:
     db_author = get_author(db, author_id)
     if not db_author:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Author not found")
@@ -56,6 +56,7 @@ def edit_author(db: Session, author_id: int, author: schema.AuthorEdit) -> schem
     for key, value in update_data.items():
         setattr(db_author, key, value)
 
+    setattr(db_author, "updated_by", current_user)
     db.add(db_author)
     db.commit()
     db.refresh(db_author)

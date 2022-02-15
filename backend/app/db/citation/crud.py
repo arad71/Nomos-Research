@@ -20,16 +20,14 @@ def get_citations(
     return db.query(model).offset(skip).limit(limit).all()
 
 
-def create_citation(db: Session, citation: schema.CitationCreate):
+def create_citation(db: Session, citation: schema.CitationCreate, current_user: int):
     db_citation = model(
         taxon_name_id=citation.taxon_name_id,
         author_id=citation.author_id,
         author_type=citation.author_type,
         author_order=citation.author_order,
-        updated_by=citation.updated_by,
-        updated_on=citation.updated_on,
-        created_by=citation.created_by,
-        created_on=citation.created_on,
+        created_by=current_user,
+        updated_by=current_user,
     )
     db.add(db_citation)
     db.commit()
@@ -47,7 +45,7 @@ def delete_citation(db: Session, citation_id: int):
 
 
 def edit_citation(
-    db: Session, citation_id: int, citation: schema.CitationEdit
+    db: Session, citation_id: int, citation: schema.CitationEdit, current_user: int
 ) -> schema:
     db_citation = get_citation(db, citation_id)
     if not db_citation:
@@ -57,6 +55,7 @@ def edit_citation(
     for key, value in update_data.items():
         setattr(db_citation, key, value)
 
+    setattr(db_citation, "updated_by", current_user)
     db.add(db_citation)
     db.commit()
     db.refresh(db_citation)

@@ -1,8 +1,8 @@
 """Data Model updates.
 
-Revision ID: 78267fb3977f
+Revision ID: f8483ba996fa
 Revises: 8c77c39c3653
-Create Date: 2022-02-09 19:42:46.957300-08:00
+Create Date: 2022-02-10 22:28:11.897780-08:00
 
 """
 import sqlalchemy as sa
@@ -42,7 +42,7 @@ def upgrade():
     op.create_index(op.f("ix_author_author_id"), "author", ["author_id"], unique=False)
     op.create_table(
         "classification_system",
-        sa.Column("classification_system_id", sa.Integer, nullable=False),
+        sa.Column("classification_system_id", sa.Integer(), nullable=False),
         sa.Column("class_desc", sa.String(length=200), nullable=False),
         sa.Column("class_type", sa.String(length=15), nullable=False),
         sa.Column("preferred", sa.String(length=1), nullable=True),
@@ -101,7 +101,7 @@ def upgrade():
         "hierarchy",
         sa.Column("hierarchy_id", sa.Integer(), nullable=False),
         sa.Column("taxon_name_id", sa.Integer(), nullable=False),
-        sa.Column("classification_system_id", sa.Integer, nullable=False),
+        sa.Column("classification_system_id", sa.Integer(), nullable=True),
         sa.Column("parent_nid", sa.Integer(), nullable=False),
         sa.Column("updated_by", sa.Integer(), nullable=True),
         sa.Column("updated_on", sa.DateTime(), nullable=True),
@@ -118,15 +118,18 @@ def upgrade():
         sa.PrimaryKeyConstraint("hierarchy_id"),
     )
     op.create_index(
-        op.f("ix_hierarchy_hierarchy_id"),
+        op.f("ix_hierarchy_classification_system_id"),
         "hierarchy",
-        ["hierarchy_id"],
+        ["classification_system_id"],
         unique=False,
+    )
+    op.create_index(
+        op.f("ix_hierarchy_hierarchy_id"), "hierarchy", ["hierarchy_id"], unique=False
     )
     op.create_table(
         "informal_group",
         sa.Column("informal_group_id", sa.String(length=10), nullable=False),
-        sa.Column("classification_system_id", sa.Integer, nullable=True),
+        sa.Column("classification_system_id", sa.Integer(), nullable=True),
         sa.Column("taxon_name_id", sa.Integer(), nullable=True),
         sa.Column("updated_by", sa.Integer(), nullable=True),
         sa.Column("updated_on", sa.DateTime(), nullable=True),
@@ -141,6 +144,12 @@ def upgrade():
             ["user.user_id"],
         ),
         sa.PrimaryKeyConstraint("informal_group_id"),
+    )
+    op.create_index(
+        op.f("ix_informal_group_classification_system_id"),
+        "informal_group",
+        ["classification_system_id"],
+        unique=False,
     )
     op.create_index(
         op.f("ix_informal_group_informal_group_id"),
@@ -174,8 +183,8 @@ def upgrade():
         "publication",
         sa.Column("publication_id", sa.Integer(), nullable=False),
         sa.Column("bad_publication", sa.String(length=1), nullable=True),
-        sa.Column("publication", sa.Text(_expect_unicode=True), nullable=True),
-        sa.Column("publication_name", sa.Text(_expect_unicode=True), nullable=True),
+        sa.Column("publication", sa.Text(), nullable=True),
+        sa.Column("publication_name", sa.Text(), nullable=True),
         sa.Column("updated_by", sa.Integer(), nullable=True),
         sa.Column("updated_on", sa.DateTime(), nullable=True),
         sa.Column("created_by", sa.Integer(), nullable=True),
@@ -243,7 +252,7 @@ def upgrade():
         sa.Column("family_nid", sa.Integer(), nullable=True),
         sa.Column("all_vernaculars", sa.String(length=200), nullable=True),
         sa.Column("notes", sa.String(length=3000), nullable=True),
-        sa.Column("reference", sa.Text(_expect_unicode=True), nullable=True),
+        sa.Column("reference", sa.Text(), nullable=True),
         sa.Column("authorised_by", sa.String(length=16), nullable=True),
         sa.Column("authorised_on", sa.DateTime(), nullable=True),
         sa.Column("updated_by", sa.Integer(), nullable=True),
@@ -268,8 +277,8 @@ def upgrade():
     )
     op.create_table(
         "taxon_rank",
+        sa.Column("taxon_rank_id", sa.Integer(), nullable=False),
         sa.Column("kingdom_id", sa.Integer(), nullable=False),
-        sa.Column("rank_id", sa.Integer(), nullable=False),
         sa.Column("rank_name", sa.String(length=15), nullable=False),
         sa.Column("rank_abbrev", sa.String(length=9), nullable=True),
         sa.Column("direct_parent_rank_id", sa.Integer(), nullable=False),
@@ -286,19 +295,19 @@ def upgrade():
             ["updated_by"],
             ["user.user_id"],
         ),
-        sa.PrimaryKeyConstraint("kingdom_id"),
+        sa.PrimaryKeyConstraint("taxon_rank_id"),
     )
     op.create_index(
-        op.f("ix_taxon_rank_kingdom_id"),
+        op.f("ix_taxon_rank_taxon_rank_id"),
         "taxon_rank",
-        ["kingdom_id"],
+        ["taxon_rank_id"],
         unique=False,
     )
     op.create_table(
         "vernacular",
         sa.Column("vernacular_id", sa.Integer(), nullable=False),
         sa.Column("vernacular", sa.String(length=120), nullable=False),
-        sa.Column("taxon_name_id", sa.Integer(), nullable=False),
+        sa.Column("taxon_name_id", sa.Integer(), nullable=True),
         sa.Column("language", sa.String(length=20), nullable=False),
         sa.Column("lang_pref", sa.String(length=1), nullable=True),
         sa.Column("preferred", sa.String(length=1), nullable=True),
@@ -330,7 +339,7 @@ def upgrade():
 def downgrade():
     op.drop_index(op.f("ix_vernacular_vernacular_id"), table_name="vernacular")
     op.drop_table("vernacular")
-    op.drop_index(op.f("ix_taxon_rank_kingdom_id"), table_name="taxon_rank")
+    op.drop_index(op.f("ix_taxon_rank_taxon_rank_id"), table_name="taxon_rank")
     op.drop_table("taxon_rank")
     op.drop_index(op.f("ix_taxon_name_taxon_name_id"), table_name="taxon_name")
     op.drop_table("taxon_name")
@@ -341,12 +350,15 @@ def downgrade():
     op.drop_index(
         op.f("ix_informal_group_informal_group_id"), table_name="informal_group"
     )
+    op.drop_index(
+        op.f("ix_informal_group_classification_system_id"), table_name="informal_group"
+    )
     op.drop_table("informal_group")
     op.drop_index(op.f("ix_hierarchy_hierarchy_id"), table_name="hierarchy")
+    op.drop_index(op.f("ix_hierarchy_classification_system_id"), table_name="hierarchy")
     op.drop_table("hierarchy")
     op.drop_index(
-        op.f("ix_cross_reference_cross_reference_id"),
-        table_name="cross_reference",
+        op.f("ix_cross_reference_cross_reference_id"), table_name="cross_reference"
     )
     op.drop_table("cross_reference")
     op.drop_index(
