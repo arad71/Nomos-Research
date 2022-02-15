@@ -17,7 +17,7 @@ kingdoms_router = r = APIRouter(prefix="/kingdoms")
 
 
 @r.get(
-    "/",
+    "",
     response_model=List[Kingdom],
     response_model_exclude_none=True,
 )

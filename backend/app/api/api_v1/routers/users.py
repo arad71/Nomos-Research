@@ -11,7 +11,7 @@ users_router = r = APIRouter(prefix="/users")
 
 
 @r.get(
-    "/",
+    "",
     response_model=List[User],
     response_model_exclude_none=True,
 )

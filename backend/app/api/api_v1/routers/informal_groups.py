@@ -21,7 +21,7 @@ informal_groups_router = r = APIRouter(prefix="/informal_groups")
 
 
 @r.get(
-    "/",
+    "",
     response_model=List[InformalGroup],
     response_model_exclude_none=True,
 )
