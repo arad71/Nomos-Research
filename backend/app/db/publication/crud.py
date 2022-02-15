@@ -1,10 +1,11 @@
 import typing as t
 
 from fastapi import HTTPException, status
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 import app.db.publication.schema as schema
 from app.db.publication.model import Publication as model
+from app.db.publication_author.schema import PublicationSchema
 
 
 def get_publication(db: Session, publication_id: int):
@@ -16,8 +17,14 @@ def get_publication(db: Session, publication_id: int):
 
 def get_publications(
     db: Session, skip: int = 0, limit: int = 100
-) -> t.List[schema.PublicationBase]:
-    return db.query(model).offset(skip).limit(limit).all()
+) -> t.List[PublicationSchema]:
+    return (
+        db.query(model)
+        .options(joinedload(model.author))
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
 
 
 def create_publication(
