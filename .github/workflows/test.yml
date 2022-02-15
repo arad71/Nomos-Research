@@ -1,10 +1,10 @@
-name: Docker Image CI
+name: Run backend / frontend tests
 
 on: [push]
 
 jobs:
 
-  build:
+  test:
 
     runs-on: ubuntu-latest
     env:
