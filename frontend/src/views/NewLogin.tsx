@@ -1,21 +1,26 @@
 import React, { FC, useState } from 'react';
-import { useLogin, useNotify, Notification } from 'react-admin';
-import Avatar from '@material-ui/core/Avatar';
+import { useTranslate, useLogin, useNotify, useSafeSetState } from 'react-admin';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
-import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import logo from '../assets/img/tom-ohlin-owYSd_TXoEc-unsplash-1500.jpg'
 import dbcaLogo from '../assets/img/logo-dbca-bio-dark.svg'
 import { makeStyles } from '@material-ui/core/styles';
-import authProvider from "../admin/authProvider";
+import PropTypes from "prop-types";
+import { Field, Form } from 'react-final-form';
+
+interface Props {
+  redirectTo?: string;
+}
+
+interface FormData {
+  username: string;
+  password: string;
+}
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -64,16 +69,69 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const NewLogin: FC = () => {
+const Input = ({
+                 meta: { touched, error }, // eslint-disable-line react/prop-types
+                 input: inputProps, // eslint-disable-line react/prop-types
+                 ...props
+               }) => (
+    <TextField
+        error={!!(touched && error)}
+        helperText={touched && error}
+        {...inputProps}
+        {...props}
+        fullWidth
+        margin="normal"
+        variant="outlined"
+    />
+);
+
+const NewLogin = (props: Props) => {
+  const { redirectTo } = props;
   const classes = useStyles();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useSafeSetState(false);
   const login = useLogin();
+  const translate = useTranslate();
   const notify = useNotify();
-  const submit = (e) => {
-    e.preventDefault();
-    login({ email, password })
-        .catch(() => notify('Invalid email or password'));
+
+  const validate = (values: FormData) => {
+    const errors = { username: undefined, password: undefined };
+
+    if (!values.username) {
+      errors.username = translate('ra.validation.required');
+    }
+    if (!values.password) {
+      errors.password = translate('ra.validation.required');
+    }
+    return errors;
+  };
+
+  const submit = values => {
+    setLoading(true);
+    login(values, redirectTo)
+        .then(() => {
+          setLoading(false);
+        })
+        .catch(error => {
+          setLoading(false);
+          notify(
+              typeof error === 'string'
+                  ? error
+                  : typeof error === 'undefined' || !error.message
+                      ? 'ra.auth.sign_in_error'
+                      : error.message,
+              {
+                type: 'warning',
+                messageArgs: {
+                  _:
+                      typeof error === 'string'
+                          ? error
+                          : error && error.message
+                              ? error.message
+                              : undefined,
+                },
+              }
+          );
+        });
   };
 
   return (
@@ -90,55 +148,56 @@ const NewLogin: FC = () => {
             <Typography component="h1" variant="h6">
               Log in
             </Typography>
-            <form className={classes.form} onSubmit={submit} noValidate>
-              <TextField
-                  variant="outlined"
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  autoComplete="email"
-                  autoFocus
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-              />
-              <TextField
-                  variant="outlined"
-                  margin="normal"
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  id="password"
-                  autoComplete="current-password"
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-              />
-              <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  className={classes.submit}
-                  disableElevation
-              >
-                Login
-              </Button>
-              <Grid container className={classes.loginHelpers}>
-                <Grid item>
-                  <Link href="#" variant="body2">
-                    {"Don't have an account? Register here"}
-                  </Link>
-                </Grid>
-              </Grid>
-            </form>
+            <Form
+                onSubmit={submit}
+                validate={validate}
+                render={({ handleSubmit }) => (
+                  <form className={classes.form} onSubmit={handleSubmit} noValidate>
+                    <Field
+                        autoFocus
+                        id="username"
+                        name="username"
+                        component={Input}
+                        label={translate('ra.auth.username')}
+                        disabled={loading}
+                    />
+                    <Field
+                        id="password"
+                        name="password"
+                        component={Input}
+                        label={translate('ra.auth.password')}
+                        type="password"
+                        disabled={loading}
+                        autoComplete="current-password"
+                    />
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        className={classes.submit}
+                        disableElevation
+                    >
+                      Login
+                    </Button>
+                    <Grid container className={classes.loginHelpers}>
+                      <Grid item>
+                        <Link href="/signup" variant="body2">
+                          {"Don't have an account? Register here"}
+                        </Link>
+                      </Grid>
+                    </Grid>
+                  </form>
+                )}
+            />
           </div>
         </Grid>
         <Grid item xs={false} sm={4} md={6} className={classes.image} />
       </Grid>
   );
-}
+};
+
+NewLogin.propTypes = {
+  redirectTo: PropTypes.string,
+};
 
 export default NewLogin;
