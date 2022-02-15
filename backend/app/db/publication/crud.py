@@ -1,5 +1,4 @@
 import typing as t
-from datetime import datetime
 
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session

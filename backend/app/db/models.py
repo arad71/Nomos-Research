@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, func
 from sqlalchemy.ext.declarative import declared_attr
 
