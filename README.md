@@ -114,6 +114,21 @@ docker-compose run frontend test
 
 This is the same as running npm test from within the frontend directory
 
+## Linting
+
+Code style is governed by the linters used in the project. 
+For details of those linters please look at the contents of the lint.sh and format.sh scripts. 
+There are two scripts which call the backend linters:
+
+```bash
+# Check code format against the code style
+scripts/lint.sh
+
+# Apply automated fixes to match the code style
+scripts/format.sh
+```
+
+
 ## Logging
 
 ```
@@ -125,6 +140,17 @@ Or for a specific service:
 ```
 docker-compose logs -f name_of_service # frontend|backend|db
 ```
+
+## Deployment
+The app is deployed using GitHub actions configured through [.github/workflows/staging-deployment.yml](.github/workflows/staging-deployment.yml).
+
+### Configuration
+Environment specific configuration can be placed in a .env in the project directory on the deployment server.
+Take a look at [.env.default](.env.default) for an example of how to configure the app.
+
+### Environments
+In order to deploy to the **staging** environment push code to the `staging` branch via a pull request into **staging**.
+This calls a script (action.bash) which fetches the latest code for that branch and builds the stack.
 
 ## Project Layout
 

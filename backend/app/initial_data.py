@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-from app.db.crud import create_user, get_user_by_email
-from app.db.schemas import UserCreate
 from app.db.session import SessionLocal
+from app.db.user.crud import create_user, get_user_by_email
+from app.db.user.schema import UserCreate
 
 
 def get_admin_email():
@@ -21,7 +21,7 @@ def init() -> bool:
                 is_active=True,
                 is_superuser=True,
                 first_name="Admin",
-                last_name="User"
+                last_name="User",
             ),
         )
         return True
@@ -31,5 +31,6 @@ def init() -> bool:
 if __name__ == "__main__":
     print("Initialising")
     created = init()
-    print("Superuser {} {}".format(get_admin_email(), "created" if created else "exists"))
-
+    print(
+        "Superuser {} {}".format(get_admin_email(), "created" if created else "exists")
+    )

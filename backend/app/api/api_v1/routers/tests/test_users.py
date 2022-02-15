@@ -1,4 +1,4 @@
-from app.db import models
+from app.db.user import model
 
 
 def test_get_users(client, test_superuser, superuser_token_headers):
@@ -6,7 +6,7 @@ def test_get_users(client, test_superuser, superuser_token_headers):
     assert response.status_code == 200
     assert response.json() == [
         {
-            "id": test_superuser.id,
+            "user_id": test_superuser.user_id,
             "email": test_superuser.email,
             "is_active": test_superuser.is_active,
             "is_superuser": test_superuser.is_superuser,
@@ -16,16 +16,15 @@ def test_get_users(client, test_superuser, superuser_token_headers):
 
 def test_delete_user(client, test_superuser, test_db, superuser_token_headers):
     response = client.delete(
-        f"/api/v1/users/{test_superuser.id}", headers=superuser_token_headers
+        f"/api/v1/users/{test_superuser.user_id}",
+        headers=superuser_token_headers,
     )
     assert response.status_code == 200
-    assert test_db.query(models.User).all() == []
+    assert test_db.query(model.User).all() == []
 
 
 def test_delete_user_not_found(client, superuser_token_headers):
-    response = client.delete(
-        "/api/v1/users/4321", headers=superuser_token_headers
-    )
+    response = client.delete("/api/v1/users/4321", headers=superuser_token_headers)
     assert response.status_code == 404
 
 
@@ -40,12 +39,12 @@ def test_edit_user(client, test_superuser, superuser_token_headers):
     }
 
     response = client.put(
-        f"/api/v1/users/{test_superuser.id}",
+        f"/api/v1/users/{test_superuser.user_id}",
         json=new_user,
         headers=superuser_token_headers,
     )
     assert response.status_code == 200
-    new_user["id"] = test_superuser.id
+    new_user["user_id"] = test_superuser.user_id
     new_user.pop("password")
     assert response.json() == new_user
 
@@ -69,11 +68,11 @@ def test_get_user(
     superuser_token_headers,
 ):
     response = client.get(
-        f"/api/v1/users/{test_user.id}", headers=superuser_token_headers
+        f"/api/v1/users/{test_user.user_id}", headers=superuser_token_headers
     )
     assert response.status_code == 200
     assert response.json() == {
-        "id": test_user.id,
+        "user_id": test_user.user_id,
         "email": test_user.email,
         "is_active": bool(test_user.is_active),
         "is_superuser": test_user.is_superuser,
