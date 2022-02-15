@@ -2,6 +2,7 @@ import React, { FC } from 'react';
 import { fetchUtils, Admin as ReactAdmin, Resource } from 'react-admin';
 import simpleRestProvider from 'ra-data-simple-rest';
 import authProvider from './authProvider';
+import MyLoginPage from '../views/NewLogin';
 
 import { BACKEND_URL } from '../config';
 import { UserList, UserEdit, UserCreate } from './Users';
@@ -22,7 +23,7 @@ const dataProvider = simpleRestProvider(BACKEND_URL, httpClient);
 
 export const Admin: FC = () => {
   return (
-    <ReactAdmin dataProvider={dataProvider} authProvider={authProvider}>
+    <ReactAdmin loginPage={MyLoginPage} dataProvider={dataProvider} authProvider={authProvider}>
       {(permissions: 'admin' | 'user') => [
         permissions === 'admin' ? (
           <Resource

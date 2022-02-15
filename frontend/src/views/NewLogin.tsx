@@ -1,4 +1,5 @@
 import React, { FC, useState } from 'react';
+import { useLogin, useNotify, Notification } from 'react-admin';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -14,19 +15,7 @@ import Typography from '@material-ui/core/Typography';
 import logo from '../assets/img/tom-ohlin-owYSd_TXoEc-unsplash-1500.jpg'
 import dbcaLogo from '../assets/img/logo-dbca-bio-dark.svg'
 import { makeStyles } from '@material-ui/core/styles';
-
-function Copyright() {
-  return (
-      <Typography variant="body2" color="textSecondary" align="center">
-        {'Copyright © '}
-        <Link color="inherit" href="https://mui.com/">
-          Your Website
-        </Link>{' '}
-        {new Date().getFullYear()}
-        {'.'}
-      </Typography>
-  );
-}
+import authProvider from "../admin/authProvider";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -75,8 +64,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const NewLogin: FC = () => {
+const NewLogin: FC = () => {
   const classes = useStyles();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const login = useLogin();
+  const notify = useNotify();
+  const submit = (e) => {
+    e.preventDefault();
+    login({ email, password })
+        .catch(() => notify('Invalid email or password'));
+  };
 
   return (
       <Grid container component="main" className={classes.root}>
@@ -92,7 +90,7 @@ export const NewLogin: FC = () => {
             <Typography component="h1" variant="h6">
               Log in
             </Typography>
-            <form className={classes.form} noValidate>
+            <form className={classes.form} onSubmit={submit} noValidate>
               <TextField
                   variant="outlined"
                   margin="normal"
@@ -103,6 +101,8 @@ export const NewLogin: FC = () => {
                   name="email"
                   autoComplete="email"
                   autoFocus
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
               />
               <TextField
                   variant="outlined"
@@ -114,11 +114,9 @@ export const NewLogin: FC = () => {
                   type="password"
                   id="password"
                   autoComplete="current-password"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
               />
-              {/*<FormControlLabel*/}
-              {/*    control={<Checkbox value="remember" color="primary" />}*/}
-              {/*    label="Remember me"*/}
-              {/*/>*/}
               <Button
                   type="submit"
                   variant="contained"
@@ -129,20 +127,12 @@ export const NewLogin: FC = () => {
                 Login
               </Button>
               <Grid container className={classes.loginHelpers}>
-                <Grid item xs>
-                  <Link href="#" variant="body2">
-                    Forgot password?
-                  </Link>
-                </Grid>
                 <Grid item>
                   <Link href="#" variant="body2">
                     {"Don't have an account? Register here"}
                   </Link>
                 </Grid>
               </Grid>
-              {/*<Box mt={5}>*/}
-              {/*  <Copyright />*/}
-              {/*</Box>*/}
             </form>
           </div>
         </Grid>
@@ -150,3 +140,5 @@ export const NewLogin: FC = () => {
       </Grid>
   );
 }
+
+export default NewLogin;
