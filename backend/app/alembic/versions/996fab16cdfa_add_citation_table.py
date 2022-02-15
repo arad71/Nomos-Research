@@ -1,7 +1,7 @@
 """Add Citation Table.
 
 Revision ID: 996fab16cdfa
-Revises: f8483ba996fa
+Revises: b8ba0879714c
 Create Date: 2022-02-14 19:35:52.045416-08:00
 
 """
@@ -11,7 +11,7 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "996fab16cdfa"
-down_revision = "f8483ba996fa"
+down_revision = "b8ba0879714c"
 branch_labels = None
 depends_on = None
 
