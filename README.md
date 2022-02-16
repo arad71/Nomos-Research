@@ -1,5 +1,7 @@
 # TaxMan
 
+[![Continuous Integration / Continuous Delivery](https://github.com/BIO-WA/BDRTaxMan/actions/workflows/cicd.yml/badge.svg)](https://github.com/BIO-WA/BDRTaxMan/actions/workflows/cicd.yml)
+
 ## Features
 
 - **FastAPI** with Python 3.8
