@@ -38,18 +38,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const Home: FC = () => {
-  const [message, setMessage] = useState<string>('');
-  const [error, setError] = useState<string>('');
   const classes = useStyles();
-
-  // const queryBackend = async () => {
-  //   try {
-  //     const newMessage = await getMessage();
-  //     setMessage(newMessage);
-  //   } catch (err) {
-  //     setError(String(err));
-  //   }
-  // };
 
   return (
     <>
@@ -63,26 +52,6 @@ export const Home: FC = () => {
       </AppBar>
       <div className={classes.landingContainer}>
         <img src={logo} className={classes.logo} alt="Logo" />
-        {/*{!message && !error && (*/}
-        {/*  <Button*/}
-        {/*    // className={classes.link}*/}
-        {/*    variant="contained"*/}
-        {/*    // type="button"*/}
-        {/*    onClick={() => queryBackend()}*/}
-        {/*  >*/}
-        {/*    Click to make request to backend*/}
-        {/*  </Button>*/}
-        {/*)}*/}
-        {/*{message && (*/}
-        {/*  <p>*/}
-        {/*    <code>{message}</code>*/}
-        {/*  </p>*/}
-        {/*)}*/}
-        {/*{error && (*/}
-        {/*  <p>*/}
-        {/*    Error: <code>{error}</code>*/}
-        {/*  </p>*/}
-        {/*)}*/}
         {isAuthenticated() ? (
             <Button variant="contained" className={classes.button} href="/logout">Logout</Button>
         ) : (
@@ -91,9 +60,6 @@ export const Home: FC = () => {
               <Button variant="contained" className={classes.button} href="/signup">Signup</Button>
             </>
         )}
-        {/*<Button variant="contained" className={classes.button} href="/protected">*/}
-        {/*  Protected Route*/}
-        {/*</Button>*/}
       </div>
     </>
   );
