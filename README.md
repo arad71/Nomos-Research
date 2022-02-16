@@ -114,6 +114,10 @@ docker-compose run frontend test
 
 This is the same as running npm test from within the frontend directory
 
+### CI
+
+Testing is run through the continuous integration pipeline [.github/workflows/cicd.yml](.github/workflows/cicd.yml) in the `test` job.
+
 ## Linting
 
 Code style is governed by the linters used in the project. 
@@ -128,6 +132,9 @@ scripts/lint.sh
 scripts/format.sh
 ```
 
+### CI
+
+Linting is run through the continuous integration pipeline [.github/workflows/cicd.yml](.github/workflows/cicd.yml) in the `lint` job.
 
 ## Logging
 
@@ -142,7 +149,7 @@ docker-compose logs -f name_of_service # frontend|backend|db
 ```
 
 ## Deployment
-The app is deployed using GitHub actions configured through [.github/workflows/staging-deployment.yml](.github/workflows/staging-deployment.yml).
+The app is deployed using GitHub actions configured through [.github/workflows/cicd.yml](.github/workflows/cicd.yml).
 
 ### Configuration
 Environment specific configuration can be placed in a .env in the project directory on the deployment server.
