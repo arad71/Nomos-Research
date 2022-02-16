@@ -41,6 +41,8 @@ services:
       - ./.docker/.ipython:/root/.ipython:cached
     environment:
       PYTHONPATH: .
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@taxman.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-password}
       DATABASE_URL: 'postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-password}@${DB_HOST:-postgres}:${DB_PORT:-5432}/${DB_NAME:-postgres}'
     depends_on:
       - "postgres"
