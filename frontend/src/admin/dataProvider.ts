@@ -13,10 +13,6 @@ const httpClient = (url: any, options: any) => {
   return fetchUtils.fetchJson(url, options);
 };
 
-const id_convert = (resource) => {
-
-};
-
 
 const dataProvider = {
   getList: (resource, params) => {
@@ -28,16 +24,17 @@ const dataProvider = {
       filter: JSON.stringify(params.filter),
     };
     const url = `${BACKEND_URL}/${resource}?${JSON.stringify(query)}`;
-
+    const dyn_id = `resource.${resource.slice(0, -1)}_id`;
     return httpClient(url).then(({ headers, json }) => ({
-      data: json.map(resource => ({ ...resource, id: resource.kingdom_id }) ),
+      data: json.map(resource => ({ ...resource, id: eval(dyn_id) }) ),
       total: parseInt(headers.get('content-range').split('/').pop(), 10),
     }));
   },
   getOne: (resource, params) => {
-    // console.log(params);
+    console.log("in get one");
+    const dyn_id = `json.${resource.slice(0, -1)}_id`;
     httpClient(`${BACKEND_URL}/${resource}/${params.id}`).then(({json}) => ({
-      ...json, id: resource.kingdom_id,
+      ...json, id: eval(dyn_id),
     }));
   },
   getMany: (resource, params) => {
@@ -45,8 +42,9 @@ const dataProvider = {
       filter: JSON.stringify({ id: params.ids }),
     };
     const url = `${BACKEND_URL}/${resource}?${JSON.stringify(query)}`;
+    const dyn_id = `resource.${resource.slice(0, -1)}_id`;
     return httpClient(url).then(({ json }) => ({
-      data: json.map(resource => ({ ...resource, id: resource.kingdom_id }) ),
+      data: json.map(resource => ({ ...resource, id: eval(dyn_id) }) ),
     }));
   },
 
@@ -62,38 +60,44 @@ const dataProvider = {
     }),
   };
   const url = `${BACKEND_URL}/${resource}?${JSON.stringify(query)}`;
-
+  const dyn_id = `json.${resource.slice(0, -1)}_id`;
   return httpClient(url).then(({ headers, json }) => ({
-    data: json.map(resource => ({ ...resource, id: resource.kingdom_id }) ),
+    data: json.map(resource => ({ ...resource, id: eval(dyn_id) }) ),
     total: parseInt(headers.get('content-range').split('/').pop(), 10),
   }));
 },
 
-    update: (resource, params) =>
-    httpClient(`${BACKEND_URL}/${resource}/${params.id}`, {
-      method: 'PUT',
-      body: JSON.stringify(params.data),
-    }).then(({ json }) => ({
- ...json, id: json.kingdom_id ,
-})),
+    update: (resource, params) => {
+      console.log("update params");
+      const dyn_id = `json.${resource.slice(0, -1)}_id`;
+      httpClient(`${BACKEND_URL}/${resource}/${params.id}`, {
+        method: 'PUT',
+        body: JSON.stringify(params.data),
+      }).then(({json}) => ({
+        ...json, id: eval(dyn_id),
+      }))
+    },
 
-updateMany: (resource, params) => {
-  const query = {
-    filter: JSON.stringify({ id: params.ids}),
-  };
-  return httpClient(`${BACKEND_URL}/${resource}?${JSON.stringify(query)}`, {
-    method: 'PUT',
-    body: JSON.stringify(params.data),
-  }).then(({ json }) => ({ data: json }));
-},
+    updateMany: (resource, params) => {
+      const query = {
+        filter: JSON.stringify({ id: params.ids}),
+      };
+      return httpClient(`${BACKEND_URL}/${resource}?${JSON.stringify(query)}`, {
+        method: 'PUT',
+        body: JSON.stringify(params.data),
+      }).then(({ json }) => ({ data: json }));
+    },
 
-create: (resource, params) =>
-    httpClient(`${BACKEND_URL}/${resource}`, {
-      method: 'POST',
-      body: JSON.stringify(params.data),
-    }).then(({ json }) => ({
-      data: { ...params.data, id: json.kingdom_id },
-    })),
+    create: (resource, params) => {
+      console.log(params.data)
+      const dyn_id = `json.${resource.slice(0, -1)}_id`;
+      httpClient(`${BACKEND_URL}/${resource}`, {
+        method: 'POST',
+        body: JSON.stringify(params.data),
+      }).then(({json}) => ({
+        data: {...params.data, id: eval(dyn_id)},
+      }))
+    },
 
     delete: (resource, params) =>
     httpClient(`${BACKEND_URL}/${resource}/${params.id}`, {

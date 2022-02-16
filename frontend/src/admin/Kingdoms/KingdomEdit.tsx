@@ -3,8 +3,6 @@ import {
   Edit,
   SimpleForm,
   TextInput,
-  PasswordInput,
-  BooleanInput,
 } from 'react-admin';
 
 export const KingdomEdit: FC = (props) => (
