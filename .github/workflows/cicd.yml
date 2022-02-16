@@ -73,7 +73,14 @@ jobs:
           key: ${{ secrets.SSH_SECRET }}
           port: ${{ secrets.SSH_PORT}}
           script: |
-            /home/azureuser/bdr/action.bash
+            set -x
+            set -e
+            set -u
+            cd /home/azureuser/bdr/BDRTaxMan
+            git checkout staging
+            git pull
+            # ignore docker-compose.override.yml using env variable
+            COMPOSE_FILE=docker-compose.yml scripts/build.sh
       - name: Check http status code of deployed site
         uses: lakuapik/gh-actions-http-status@v1
         with:
