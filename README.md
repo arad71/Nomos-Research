@@ -156,7 +156,6 @@ The app is deployed using GitHub actions configured through [.github/workflows/c
 ### Set up
 * Ensure that action.bash exists on the environment that you want to copy into.
 * Ensure that environment variables referenced in `cicd.yml` are defined in GitHub admin UI
-* Copy [.github/action.bash](.github/action.bash)  into the correct location referenced by workflows/cicd.yml and make it executable
 
 ### Configuration
 Environment specific configuration can be placed in a .env in the project directory on the deployment server.
