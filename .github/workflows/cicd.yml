@@ -65,17 +65,17 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - name: Copy in deployment script
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_SECRET }}
-          port: ${{ secrets.SSH_PORT }}
-          overwrite: true
-          debug: true
-          source: ".github/*.bash"
-          target: "/home/azureuser/bdr"
+#      - name: Copy in deployment script
+#        uses: appleboy/scp-action@master
+#        with:
+#          host: ${{ secrets.SSH_HOST }}
+#          username: ${{ secrets.SSH_USERNAME }}
+#          key: ${{ secrets.SSH_SECRET }}
+#          port: ${{ secrets.SSH_PORT }}
+#          overwrite: true
+#          debug: true
+#          source: ".github/*.bash"
+#          target: "/home/azureuser/bdr"
 
       - name: Deploy Stack
         uses: appleboy/ssh-action@master
