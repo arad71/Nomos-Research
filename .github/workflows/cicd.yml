@@ -82,7 +82,11 @@ jobs:
             # ignore docker-compose.override.yml using env variable
             COMPOSE_FILE=docker-compose.yml scripts/build.sh
       - name: Check http status code of deployed site
-        uses: lakuapik/gh-actions-http-status@v1
+        uses: jtalk/url-health-check-action@v2
         with:
-          sites: '["http://${{ secrets.SSH_HOST }}", "http://${{ secrets.SSH_HOST }}/api"]'
-          expected: '[301, 200]'
+          # Check the following URLs one by one sequentially
+          url: "http://${{ secrets.SSH_HOST }}|http://${{ secrets.SSH_HOST }}/api"
+          # Follow redirects, or just report success on 3xx status codes
+          follow-redirect: true
+          max-attempts: 5
+          retry-delay: 5s
