@@ -7,11 +7,11 @@ from app.db.user.schema import UserCreate
 
 
 def get_admin_email():
-    return os.getenv('ADMIN_EMAIL', "admin@taxman.com")
+    return os.getenv("ADMIN_EMAIL", "admin@taxman.com")
 
 
 def get_admin_password():
-    return os.getenv('ADMIN_PASSWORD', "password")
+    return os.getenv("ADMIN_PASSWORD", "password")
 
 
 def init() -> bool:
