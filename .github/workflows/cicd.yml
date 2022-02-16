@@ -74,3 +74,8 @@ jobs:
           port: ${{ secrets.SSH_PORT}}
           script: |
             /home/azureuser/bdr/action.bash
+      - name: Check http status code of deployed site
+        uses: lakuapik/gh-actions-http-status@v1
+        with:
+          sites: '["http://${{ secrets.SSH_HOST }}", "http://${{ secrets.SSH_HOST }}/api"]'
+          expected: '[301, 200]'
