@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Copy this file into the correct location referenced by workflows/cicd.yml and make it executable
 set -x
 set -e
 set -u
