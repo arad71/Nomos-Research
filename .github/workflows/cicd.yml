@@ -51,9 +51,9 @@ jobs:
     runs-on: ubuntu-latest
 
     # Only run deployment if preceding pipelines were successful
-    needs:
-      - lint
-      - test
+#    needs:
+#      - lint
+#      - test
     if:
       contains('
       refs/heads/staging
