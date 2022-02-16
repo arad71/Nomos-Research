@@ -72,8 +72,10 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_SECRET }}
           port: ${{ secrets.SSH_PORT }}
-          source: ".github/action.bash"
-          target: "/home/azureuser/bdr/action.bash"
+          overwrite: true
+          debug: true
+          source: ".github/*.bash"
+          target: "/home/azureuser/bdr"
 
       - name: Deploy Stack
         uses: appleboy/ssh-action@master
