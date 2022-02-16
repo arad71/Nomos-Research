@@ -7,9 +7,9 @@ name: Staging Deployment
 on:
   # Triggers the workflow on push or pull request events but only for the develop branch
   push:
-    branches: [ staging ]
+    branches: [ staging, deployTweaks ]
   pull_request:
-    branches: [ staging ]
+    branches: [ staging, deployTweaks ]
 #  Only when the other pipelines have completed
 #  https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_run
   workflow_run:
