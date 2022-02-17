@@ -21,6 +21,8 @@ class AuthorEdit(AuthorBase):
 
 class Author(AuthorBase, TableBase):
     author_id: int
+    # publications: "list[app.db.publication.schema.Publication]" = []
+    citations: "list[Citation]" = []
 
     class Config:
         orm_mode = True

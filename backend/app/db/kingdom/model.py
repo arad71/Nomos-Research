@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import relationship
 
 from app.db.models import TableMixin
 from app.db.session import Base
@@ -10,3 +11,4 @@ class Kingdom(Base, TableMixin):
     kingdom_id = Column(Integer, primary_key=True, index=True)
     kingdom_name = Column(String(15), nullable=False)
     kingdom_desc = Column(String(200))
+    taxon_names = relationship("TaxonName", back_populates="kingdom")
