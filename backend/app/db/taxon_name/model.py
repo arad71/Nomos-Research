@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, Integer, String, Text
+from sqlalchemy import Column, DateTime, Integer, String, Text, ForeignKey
 
 from app.db.models import TableMixin
 from app.db.session import Base
@@ -8,8 +8,8 @@ class TaxonName(Base, TableMixin):
     __tablename__ = "taxon_name"
 
     taxon_name_id = Column(Integer, primary_key=True, index=True)
-    kingdom_id = Column(Integer, nullable=False)
-    rank_id = Column(Integer, nullable=False)
+    kingdom_id = Column(Integer, ForeignKey("kingdom.kingdom_id"), nullable=False)
+    rank_id = Column(Integer, ForeignKey("taxon_rank.taxon_rank_id"), nullable=False)
     rank_name = Column(String(15), nullable=False)
     uninomial = Column(String)
     kingdom = Column(String)
@@ -26,7 +26,7 @@ class TaxonName(Base, TableMixin):
     taxon_rank = Column(String(9))
     specific_epithet = Column(String(70))
     infraspecific_epithet = Column(String(70))
-    publication_id = Column(Integer)
+    publication_id = Column(Integer, ForeignKey("publication.publication_id"))
     volume_information = Column(String(100))
     publication_year = Column(Integer)
     is_current = Column(String(1), nullable=False)
@@ -50,7 +50,7 @@ class TaxonName(Base, TableMixin):
     is_eradicated = Column(String(1))
     naturalised_comments = Column(String(400))
     linear_sequence = Column(Integer)
-    family_nid = Column(Integer)
+    family_nid = Column(Integer, ForeignKey("taxon_name.taxon_name_id"))
     all_vernaculars = Column(String(200))
     notes = Column(String(3000))
     reference = Column(Text)

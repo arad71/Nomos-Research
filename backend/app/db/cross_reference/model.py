@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, ForeignKey
 
 from app.db.models import TableMixin
 from app.db.session import Base
@@ -8,8 +8,8 @@ class CrossReference(Base, TableMixin):
     __tablename__ = "cross_reference"
 
     cross_reference_id = Column(Integer, primary_key=True, index=True)
-    old_name_id = Column(Integer, nullable=False)
-    new_name_id = Column(Integer)
+    old_name_id = Column(Integer, ForeignKey("cross_reference.cross_reference_id"), nullable=False)
+    new_name_id = Column(Integer, ForeignKey("cross_reference.cross_reference_id"))
     cross_reference_type = Column(String(3), nullable=False)
     active = Column(String(1), nullable=False)
     authorised_by = Column(String(60))
