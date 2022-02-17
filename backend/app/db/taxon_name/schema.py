@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel
 
@@ -9,51 +10,51 @@ class TaxonNameBase(BaseModel):
     kingdom_id: int
     rank_id: int
     rank_name: str
-    uninomial: str
-    kingdom: str
-    phylum: str
+    uninomial: Optional[str]
+    kingdom: Optional[str]
+    phylum: Optional[str]
     # class is a reserved word, will this workaround be enough?
-    taxon_class: str
-    order: str
-    family: str
-    genus: str
-    subgenus: str
-    scientific_name: str
-    species: str
-    subspecies: str
-    taxon_rank: str
-    specific_epithet: str
-    infraspecific_epithet: str
-    publication_id: int
-    volume_information: str
-    publication_year: int
+    taxon_class: Optional[str]
+    order: Optional[str]
+    family: Optional[str]
+    genus: Optional[str]
+    subgenus: Optional[str]
+    scientific_name: Optional[str]
+    species: Optional[str]
+    subspecies: Optional[str]
+    taxon_rank: Optional[str]
+    specific_epithet: Optional[str]
+    infraspecific_epithet: Optional[str]
+    publication_id: Optional[int]
+    volume_information: Optional[str]
+    publication_year: Optional[int]
     is_current: str
-    origin: str
-    informal: str
-    form_desc_yr: int
-    form_desc_mn: int
-    form_desc_dy: int
-    comments: str
-    contributed_by: str
-    contributed_on: datetime
+    origin: Optional[str]
+    informal: Optional[str]
+    form_desc_yr: Optional[int]
+    form_desc_mn: Optional[int]
+    form_desc_dy: Optional[int]
+    comments: Optional[str]
+    contributed_by: Optional[str]
+    contributed_on: Optional[datetime]
     validated: str
-    source: str
-    external_id: str
-    family_code: str
-    author: str
-    vernacular: str
-    editor: str
-    naturalised_status: str
-    naturalised_certainty: str
-    is_eradicated: str
-    naturalised_comments: str
-    linear_sequence: int
-    family_nid: int
-    all_vernaculars: str
-    notes: str
-    reference: str
-    authorised_by: str
-    authorised_on: datetime
+    source: Optional[str]
+    external_id: Optional[str]
+    family_code: Optional[str]
+    author: Optional[str]
+    vernacular: Optional[str]
+    editor: Optional[str]
+    naturalised_status: Optional[str]
+    naturalised_certainty: Optional[str]
+    is_eradicated: Optional[str]
+    naturalised_comments: Optional[str]
+    linear_sequence: Optional[int]
+    family_nid: Optional[int]
+    all_vernaculars: Optional[str]
+    notes: Optional[str]
+    reference: Optional[str]
+    authorised_by: Optional[str]
+    authorised_on: Optional[datetime]
 
 
 class TaxonNameCreate(TaxonNameBase):

@@ -1,3 +1,6 @@
+from datetime import datetime
+from typing import Optional
+
 from pydantic import BaseModel
 
 from app.db.schemas import TableBase
@@ -5,10 +8,11 @@ from app.db.schemas import TableBase
 
 class CrossReferenceBase(BaseModel):
     old_name_id: int
-    new_name_id: int
+    new_name_id: Optional[int]
     cross_reference_type: str
     active: str
-    authorised_by: str
+    authorised_date: Optional[datetime]
+    authorised_by: Optional[str]
     comments: str
     notes: str
 
