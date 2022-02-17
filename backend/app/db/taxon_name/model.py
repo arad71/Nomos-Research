@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, Integer, String, Text, ForeignKey
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Text
 
 from app.db.models import TableMixin
 from app.db.session import Base

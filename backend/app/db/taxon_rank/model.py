@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, ForeignKey, Integer, String
 
 from app.db.models import TableMixin
 from app.db.session import Base
@@ -12,4 +12,6 @@ class TaxonRank(Base, TableMixin):
     rank_name = Column(String(15), nullable=False)
     rank_abbrev = Column(String(9))
     direct_parent_rank_id = Column(Integer, nullable=False)
-    required_parent_rank_id = Column(Integer, ForeignKey("taxon_rank.taxon_rank_id"), nullable=False)
+    required_parent_rank_id = Column(
+        Integer, ForeignKey("taxon_rank.taxon_rank_id"), nullable=False
+    )
