@@ -16,6 +16,4 @@ class Author(Base, TableMixin):
     publications = relationship(
         "Publication", secondary="publication_author", back_populates="authors"
     )
-    citations = relationship(
-        "Citation", back_populates="author"
-    )
+    citations = relationship("Citation", back_populates="author")

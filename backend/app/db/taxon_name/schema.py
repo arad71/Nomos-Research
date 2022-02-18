@@ -67,5 +67,6 @@ class TaxonName(TaxonNameBase, TableBase):
     taxon_name_id: int
     kingdom: Kingdom
     taxon_rank: TaxonRank
+
     class Config:
         orm_mode = True

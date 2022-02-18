@@ -1,6 +1,5 @@
 from pydantic import BaseModel
 
-
 from app.db.schemas import TableBase
 
 
@@ -22,7 +21,6 @@ class AuthorEdit(AuthorBase):
 
 class Author(AuthorBase, TableBase):
     author_id: int
-
 
     class Config:
         orm_mode = True

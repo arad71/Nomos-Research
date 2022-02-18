@@ -10,11 +10,7 @@ from app.db.citation.crud import (
     get_citation,
     get_citations,
 )
-from app.db.citation.schema import (
-    Citation,
-    CitationCreate,
-    CitationEdit,
-)
+from app.db.citation.schema import Citation, CitationCreate, CitationEdit
 from app.db.session import get_db
 
 citations_router = r = APIRouter(prefix="/citations")
@@ -89,9 +85,7 @@ async def citation_edit(
     """
     Update existing citation
     """
-    return edit_citation(
-        db, citation_id, citation, current_user.user_id
-    )
+    return edit_citation(db, citation_id, citation, current_user.user_id)
 
 
 @r.delete(
