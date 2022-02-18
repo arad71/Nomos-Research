@@ -19,5 +19,6 @@ class Hierarchy(Base, TableMixin):
         ForeignKey("classification_system.classification_system_id"),
         index=True,
     )
-    classification_system = relationship("TaxonName", back_populates=name_plural)
+    classification_system = relationship("ClassificationSystem", back_populates=name_plural)
     parent_nid = Column(Integer, ForeignKey("taxon_name.taxon_name_id"), nullable=False)
+    parent = relationship("TaxonName", back_populates="children")
