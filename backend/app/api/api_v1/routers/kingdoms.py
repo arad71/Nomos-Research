@@ -49,7 +49,7 @@ async def kingdom_details(
     """
     Get any kingdom details
     """
-    kingdom = get_kingdom(db, kingdom_id, current_user.user_id)
+    kingdom = get_kingdom(db, kingdom_id)
     return kingdom
 
 
