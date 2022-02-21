@@ -5,6 +5,7 @@ import pytest
     ("endpoint"),
     [
         ("authors"),
+        ("citations"),
         ("classification_systems"),
         ("cross_references"),
         ("hierarchies"),
