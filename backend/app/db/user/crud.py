@@ -3,12 +3,11 @@ import typing as t
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
+import app.db.crud as crud
 import app.db.user.schema as schema
 from app.core.security import get_password_hash
-from app.db.user.model import User as model
-
-import app.db.crud as crud
 from app.db.user.model import User
+from app.db.user.model import User as model
 
 
 class UserCrud(crud.Crud):

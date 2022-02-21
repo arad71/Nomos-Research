@@ -4,5 +4,5 @@ from app.db.vernacular.model import Vernacular
 
 class VernacularCrud(crud.Crud):
     model = Vernacular
-    id_key = 'vernacular_id'
-    name = 'Vernacular'
+    id_key = "vernacular_id"
+    name = "Vernacular"

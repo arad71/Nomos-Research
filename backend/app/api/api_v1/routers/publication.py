@@ -79,7 +79,9 @@ async def publication_edit(
     """
     Update existing publication
     """
-    return PublicationCrud.edit_item(db, publication_id, publication, current_user.user_id)
+    return PublicationCrud.edit_item(
+        db, publication_id, publication, current_user.user_id
+    )
 
 
 @r.delete(

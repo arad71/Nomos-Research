@@ -47,7 +47,9 @@ async def classification_system_details(
     """
     Get any classification_system details
     """
-    classification_system = ClassificationSystemCrud.get_item(db, classification_system_id)
+    classification_system = ClassificationSystemCrud.get_item(
+        db, classification_system_id
+    )
     return classification_system
 
 
@@ -65,7 +67,9 @@ async def classification_system_create(
     """
     Create a new classification_system
     """
-    return ClassificationSystemCrud.create_item(db, classification_system, current_user.user_id)
+    return ClassificationSystemCrud.create_item(
+        db, classification_system, current_user.user_id
+    )
 
 
 @r.put(
