@@ -19,5 +19,3 @@ import pytest
 def test_item_list(client, endpoint, superuser_token_headers):
     response = client.get("/api/v1/" + endpoint, headers=superuser_token_headers)
     assert response.status_code == 200
-    # assert response.json() == {"detail": "Not authenticated"}
-    # assert test_db.query(model.User).all() == []
