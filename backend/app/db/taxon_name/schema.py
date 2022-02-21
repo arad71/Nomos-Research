@@ -1,10 +1,35 @@
 from datetime import datetime
+from enum import Enum
 
 from pydantic import BaseModel
 
 from app.db.kingdom.schema import Kingdom
 from app.db.schemas import TableBase
 from app.db.taxon_rank.schema import TaxonRank
+
+
+class IsCurrent(str, Enum):
+    y = "y"
+    n = "n"
+    subf = "subf."
+
+
+class Validated(str, Enum):
+    y = "y"
+    n = "n"
+    subf = "subf."
+
+
+class NaturalisedStatus(str, Enum):
+    a = "a"
+    n = "n"
+    m = "m"
+    u = "u"
+
+
+class NaturalisedCertainty(str, Enum):
+    y = "y"
+    n = "n"
 
 
 class TaxonNameBase(BaseModel):
@@ -26,7 +51,7 @@ class TaxonNameBase(BaseModel):
     publication_id: int
     volume_information: str
     publication_year: int
-    is_current: str
+    is_current: IsCurrent
     origin: str
     informal: str
     form_desc_yr: int
@@ -35,15 +60,15 @@ class TaxonNameBase(BaseModel):
     comments: str
     contributed_by: str
     contributed_on: datetime
-    validated: str
+    validated: Validated
     source: str
     external_id: str
     family_code: str
     author: str
     vernacular: str
     editor: str
-    naturalised_status: str
-    naturalised_certainty: str
+    naturalised_status: NaturalisedStatus
+    naturalised_certainty: NaturalisedCertainty
     is_eradicated: str
     naturalised_comments: str
     linear_sequence: int

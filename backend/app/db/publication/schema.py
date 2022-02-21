@@ -1,7 +1,15 @@
+from enum import Enum
+
 from pydantic import BaseModel
 
 from app.db.author.schema import Author
 from app.db.schemas import TableBase
+
+
+class BadPublication(str, Enum):
+    y = "y"
+    n = "n"
+    subf = "subf."
 
 
 class PublicationBase(BaseModel):
