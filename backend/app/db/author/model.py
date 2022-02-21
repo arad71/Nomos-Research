@@ -14,6 +14,5 @@ class Author(Base, TableMixin):
     initials = Column(String(30))
     orc_id = Column(Integer)
     publications = relationship(
-        "Publication", secondary="publication_author", back_populates="authors"
+        "Publication", secondary="publication_author", back_populates="author"
     )
-    citations = relationship("Citation", back_populates="author")

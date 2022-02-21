@@ -1,8 +1,9 @@
 from sqlalchemy import Column, ForeignKey, Integer
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import backref, relationship
 
 from app.db.models import TableMixin
 from app.db.session import Base
+from app.db.taxon_name.model import TaxonName
 
 
 class Hierarchy(Base, TableMixin):
@@ -13,14 +14,22 @@ class Hierarchy(Base, TableMixin):
     taxon_name_id = Column(
         Integer, ForeignKey("taxon_name.taxon_name_id"), nullable=False
     )
-    taxon_name = relationship("TaxonName", back_populates=name_plural)
+    taxon_name = relationship(
+        "TaxonName",
+        foreign_keys=[taxon_name_id],
+        remote_side=[TaxonName.taxon_name_id],
+        backref=backref("names"),
+    )
     classification_system_id = Column(
         Integer,
         ForeignKey("classification_system.classification_system_id"),
         index=True,
     )
-    classification_system = relationship(
-        "ClassificationSystem", back_populates=name_plural
-    )
+    classification_system = relationship("ClassificationSystem", backref=name_plural)
     parent_nid = Column(Integer, ForeignKey("taxon_name.taxon_name_id"), nullable=False)
-    parent = relationship("TaxonName", back_populates="children")
+    parent = relationship(
+        "TaxonName",
+        foreign_keys=[parent_nid],
+        remote_side=[TaxonName.taxon_name_id],
+        backref=backref("children"),
+    )
