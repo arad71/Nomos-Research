@@ -5,9 +5,11 @@ from starlette.requests import Request
 
 from app.api.api_v1.routers.auth import auth_router
 from app.api.api_v1.routers.author import authors_router
+from app.api.api_v1.routers.citation import citations_router
 from app.api.api_v1.routers.classification_system import classification_systems_router
 from app.api.api_v1.routers.cross_reference import cross_references_router
 from app.api.api_v1.routers.hierarchy import hierarchies_router
+from app.api.api_v1.routers.informal_groups import informal_groups_router
 from app.api.api_v1.routers.kingdoms import kingdoms_router
 from app.api.api_v1.routers.publication import publications_router
 from app.api.api_v1.routers.taxon_name import taxon_names_router
@@ -86,6 +88,13 @@ app.include_router(
 )
 
 app.include_router(
+    citations_router,
+    prefix="/api/v1",
+    tags=["citation"],
+    dependencies=[Depends(get_current_active_user)],
+)
+
+app.include_router(
     cross_references_router,
     prefix="/api/v1",
     tags=["cross_reference"],
@@ -96,6 +105,13 @@ app.include_router(
     hierarchies_router,
     prefix="/api/v1",
     tags=["hierachy"],
+    dependencies=[Depends(get_current_active_user)],
+)
+
+app.include_router(
+    informal_groups_router,
+    prefix="/api/v1",
+    tags=["informal_groups"],
     dependencies=[Depends(get_current_active_user)],
 )
 

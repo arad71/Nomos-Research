@@ -1,6 +1,8 @@
 from pydantic import BaseModel
 
+from app.db.classification_system.schema import ClassificationSystem
 from app.db.schemas import TableBase
+from app.db.taxon_name.schema import TaxonName
 
 
 class HierarchyBase(BaseModel):
@@ -20,6 +22,9 @@ class HierarchyEdit(HierarchyBase):
 
 class Hierarchy(HierarchyBase, TableBase):
     hierarchy_id: int
+    taxon_name: TaxonName
+    parent: TaxonName
+    classification_system: ClassificationSystem
 
     class Config:
         orm_mode = True

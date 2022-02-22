@@ -2,6 +2,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 
+from app.db.author.schema import Author
 from app.db.schemas import TableBase
 
 
@@ -50,6 +51,7 @@ class PublicationEdit(PublicationBase):
 
 class Publication(PublicationBase, TableBase):
     publication_id: int
+    author: Author
 
     class Config:
         orm_mode = True

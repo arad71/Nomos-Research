@@ -3,13 +3,7 @@ from typing import List
 from fastapi import APIRouter, Depends, Request, Response
 
 from app.core.auth import get_current_active_superuser
-from app.db.kingdom.crud import (
-    create_kingdom,
-    delete_kingdom,
-    edit_kingdom,
-    get_kingdom,
-    get_kingdoms,
-)
+from app.db.kingdom.crud import KingdomCrud
 from app.db.kingdom.schema import Kingdom, KingdomCreate, KingdomEdit
 from app.db.session import get_db
 
@@ -29,7 +23,7 @@ async def kingdom_list(
     """
     Get all kingdoms
     """
-    kingdoms = get_kingdoms(db)
+    kingdoms = KingdomCrud.get_items(db)
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = f"0-9/{len(kingdoms)}"
     return kingdoms
@@ -49,8 +43,7 @@ async def kingdom_details(
     """
     Get any kingdom details
     """
-    kingdom = get_kingdom(db, kingdom_id, current_user.user_id)
-    return kingdom
+    return KingdomCrud.get_item(db, kingdom_id)
 
 
 @r.post("", response_model=Kingdom, response_model_exclude_none=True)
@@ -63,7 +56,7 @@ async def kingdom_create(
     """
     Create a new kingdom
     """
-    return create_kingdom(db, kingdom, current_user.user_id)
+    return KingdomCrud.create_item(db, kingdom, current_user.user_id)
 
 
 @r.put(
@@ -81,7 +74,7 @@ async def kingdom_edit(
     """
     Update existing kingdom
     """
-    return edit_kingdom(db, kingdom_id, kingdom, current_user.user_id)
+    return KingdomCrud.edit_item(db, kingdom_id, kingdom, current_user.user_id)
 
 
 @r.delete(
@@ -98,4 +91,4 @@ async def kingdom_delete(
     """
     Delete existing kingdom
     """
-    return delete_kingdom(db, kingdom_id)
+    return KingdomCrud.delete_item(db, kingdom_id)

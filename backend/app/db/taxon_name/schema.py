@@ -3,7 +3,9 @@ from typing import Optional
 
 from pydantic import BaseModel
 
+from app.db.kingdom.schema import Kingdom
 from app.db.schemas import TableBase
+from app.db.taxon_rank.schema import TaxonRank
 
 
 class TaxonNameBase(BaseModel):
@@ -11,18 +13,15 @@ class TaxonNameBase(BaseModel):
     rank_id: int
     rank_name: str
     uninomial: Optional[str]
-    kingdom: Optional[str]
     phylum: Optional[str]
     # class is a reserved word, will this workaround be enough?
     taxon_class: Optional[str]
     order: Optional[str]
-    family: Optional[str]
     genus: Optional[str]
     subgenus: Optional[str]
     scientific_name: Optional[str]
     species: Optional[str]
     subspecies: Optional[str]
-    taxon_rank: Optional[str]
     specific_epithet: Optional[str]
     infraspecific_epithet: Optional[str]
     publication_id: Optional[int]
@@ -67,6 +66,8 @@ class TaxonNameEdit(TaxonNameBase):
 
 class TaxonName(TaxonNameBase, TableBase):
     taxon_name_id: int
+    kingdom: Kingdom
+    taxon_rank: TaxonRank
 
     class Config:
         orm_mode = True

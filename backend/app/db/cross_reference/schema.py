@@ -4,6 +4,7 @@ from typing import Optional
 from pydantic import BaseModel
 
 from app.db.schemas import TableBase
+from app.db.taxon_name.schema import TaxonName
 
 
 class CrossReferenceBase(BaseModel):
@@ -27,6 +28,8 @@ class CrossReferenceEdit(CrossReferenceBase):
 
 class CrossReference(CrossReferenceBase, TableBase):
     cross_reference_id: int
+    old_name: TaxonName
+    new_name: TaxonName
 
     class Config:
         orm_mode = True

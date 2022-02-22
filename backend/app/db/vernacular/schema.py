@@ -3,6 +3,7 @@ from typing import Optional
 from pydantic import BaseModel
 
 from app.db.schemas import TableBase
+from app.db.taxon_name.schema import TaxonName
 
 
 class VernacularBase(BaseModel):
@@ -26,6 +27,7 @@ class VernacularEdit(VernacularBase):
 
 class Vernacular(VernacularBase, TableBase):
     vernacular_id: int
+    taxon_name: TaxonName
 
     class Config:
         orm_mode = True
