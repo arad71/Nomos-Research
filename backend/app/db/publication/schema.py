@@ -13,7 +13,7 @@ class BadPublication(str, Enum):
 
 
 class PublicationBase(BaseModel):
-    bad_publication: str
+    bad_publication: BadPublication
     publication: str
     publication_name: str
     doi: str
