@@ -3,13 +3,7 @@ from typing import List
 from fastapi import APIRouter, Depends, Request, Response
 
 from app.core.auth import get_current_active_superuser
-from app.db.citation.crud import (
-    create_citation,
-    delete_citation,
-    edit_citation,
-    get_citation,
-    get_citations,
-)
+from app.db.citation.crud import CitationCrud
 from app.db.citation.schema import Citation, CitationCreate, CitationEdit
 from app.db.session import get_db
 
@@ -29,7 +23,7 @@ async def citation_list(
     """
     Get all citations
     """
-    citations = get_citations(db)
+    citations = CitationCrud.get_items(db)
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = f"0-9/{len(citations)}"
     return citations
@@ -49,7 +43,7 @@ async def citation_details(
     """
     Get any citation details
     """
-    citation = get_citation(db, citation_id)
+    citation = CitationCrud.get_item(db, citation_id)
     return citation
 
 
@@ -67,7 +61,7 @@ async def citation_create(
     """
     Create a new citation
     """
-    return create_citation(db, citation, current_user.user_id)
+    return CitationCrud.create_item(db, citation, current_user.user_id)
 
 
 @r.put(
@@ -85,7 +79,7 @@ async def citation_edit(
     """
     Update existing citation
     """
-    return edit_citation(db, citation_id, citation, current_user.user_id)
+    return CitationCrud.edit_item(db, citation_id, citation, current_user.user_id)
 
 
 @r.delete(
@@ -102,4 +96,4 @@ async def citation_delete(
     """
     Delete existing citation
     """
-    return delete_citation(db, citation_id)
+    return CitationCrud.delete_item(db, citation_id)
