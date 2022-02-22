@@ -5,9 +5,20 @@ Revises:
 Create Date: 2022-02-21 19:40:21.684224-08:00
 
 """
+from enum import Enum
+
 import sqlalchemy as sa
+from sqlalchemy.dialects import postgresql
 
 from alembic import op
+
+from app.db.citation import enums as citation
+from app.db.classification_system import enums as classification_system
+from app.db.cross_reference import enums as cross_reference
+from app.db.publication import enums as publication
+from app.db.taxon_name import enums as taxon_name
+from app.db.taxon_rank import enums as taxon_rank
+from app.db.vernacular import enums as vernacular
 
 # revision identifiers, used by Alembic.
 revision = "a61b3b720423"
@@ -55,6 +66,8 @@ def upgrade():
         sa.PrimaryKeyConstraint("author_id"),
     )
     op.create_index(op.f("ix_author_author_id"), "author", ["author_id"], unique=False)
+    classification_system_classification_type = create_enum('classification_system', 'classification_type', classification_system.ClassificationType)
+    classification_system_classification_preferred = create_enum('classification_system', 'classification_preferred', classification_system.ClassificationPreferred)
     op.create_table(
         "classification_system",
         sa.Column("classification_system_id", sa.Integer(), nullable=False),
@@ -304,12 +317,13 @@ def upgrade():
         ["taxon_name_id"],
         unique=False,
     )
+    citation_author_type = create_enum("citation", "author_type", citation.AuthorType)
     op.create_table(
         "citation",
         sa.Column("citation_id", sa.Integer(), nullable=False),
         sa.Column("taxon_name_id", sa.Integer(), nullable=True),
         sa.Column("author_id", sa.Integer(), nullable=True),
-        sa.Column("author_type", sa.String(), nullable=True),
+        sa.Column("author_type", sa.Column(citation_author_type, citation.AuthorType), nullable=True),
         sa.Column("author_order", sa.Integer(), nullable=True),
         sa.Column("updated_by", sa.Integer(), nullable=True),
         sa.Column("updated_on", sa.DateTime(), nullable=True),
@@ -529,3 +543,15 @@ def downgrade():
     op.drop_index(op.f("ix_user_user_id"), table_name="user")
     op.drop_index(op.f("ix_user_email"), table_name="user")
     op.drop_table("user")
+
+
+def create_enum(table: str, column: str, enum: Enum):
+    postgresEnum = postgresql.ENUM(enum, name=table + "_" + column)
+    postgresEnum.create(op.get_bind(), checkfirst=True)
+    return postgresEnum
+
+
+def drop_enum(table: str, column: str, enum: Enum):
+    op.drop_column(table, column)
+    postgresEnum = postgresql.ENUM(enum, name=table + "_" + column)
+    postgresEnum.drop(op.get_bind())
