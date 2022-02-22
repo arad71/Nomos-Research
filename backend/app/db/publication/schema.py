@@ -1,20 +1,14 @@
-from enum import Enum
 from typing import Optional
 
 from pydantic import BaseModel
 
 from app.db.author.schema import Author
+from app.db.publication import enums
 from app.db.schemas import TableBase
 
 
-class BadPublication(str, Enum):
-    y = "y"
-    n = "n"
-    subf = "subf."
-
-
 class PublicationBase(BaseModel):
-    bad_publication: Optional[BadPublication]
+    bad_publication: Optional[enums.BadPublication]
     publication: Optional[str]
     publication_name: str
     doi: str

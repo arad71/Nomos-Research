@@ -1,42 +1,20 @@
-from enum import Enum
 from typing import Optional
 
 from pydantic import BaseModel
 
 from app.db.schemas import TableBase
 from app.db.taxon_name.schema import TaxonName
-
-
-class Language(str, Enum):
-    english = "english"
-    indigenous = "indigenous"
-
-
-class LangPref(str, Enum):
-    y = "y"
-    n = "n"
-    subf = "subf."
-
-
-class Preferred(str, Enum):
-    y = "y"
-    n = "n"
-    subf = "subf."
-
-
-class Enabled(str, Enum):
-    y = "y"
-    n = "n"
+from app.db.vernacular import enums
 
 
 class VernacularBase(BaseModel):
     taxon_name_id: int
     vernacular: str
-    language: Language
-    lang_pref: Optional[LangPref]
-    preferred: Optional[Preferred]
+    language: enums.Language
+    lang_pref: Optional[enums.LangPref]
+    preferred: Optional[enums.Preferred]
     source: Optional[str]
-    enabled: Enabled
+    enabled: enums.Enabled
     sort_order: Optional[int]
 
 
