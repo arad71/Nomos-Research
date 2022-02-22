@@ -2,7 +2,7 @@
 import os
 
 from app.db.session import SessionLocal
-from app.db.user.crud import create_user, get_user_by_email
+from app.db.user.crud import UserCrud
 from app.db.user.schema import UserCreate
 
 
@@ -17,9 +17,9 @@ def get_admin_password():
 def init() -> bool:
     admin_email = get_admin_email()
     db = SessionLocal()
-    user = get_user_by_email(db=db, email=admin_email)
+    user = UserCrud.get_user_by_email(db=db, email=admin_email)
     if user is None:
-        create_user(
+        UserCrud.create_item(
             db,
             UserCreate(
                 email=admin_email,

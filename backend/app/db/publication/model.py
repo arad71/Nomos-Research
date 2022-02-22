@@ -38,7 +38,7 @@ class Publication(Base, TableMixin):
     reference_type = Column(String)
     parent = Column(Integer, ForeignKey("publication.publication_id"))
     author = relationship(
-        "Author", secondary="publication_author", back_populates="publication"
+        "Author", secondary="publication_author", back_populates="publications"
     )
     reference_author_role = Column(String)
     language = Column(String)
