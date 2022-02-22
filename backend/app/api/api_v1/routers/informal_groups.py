@@ -3,13 +3,7 @@ from typing import List
 from fastapi import APIRouter, Depends, Request, Response
 
 from app.core.auth import get_current_active_superuser
-from app.db.informal_group.crud import (
-    create_informal_group,
-    delete_informal_group,
-    edit_informal_group,
-    get_informal_group,
-    get_informal_groups,
-)
+from app.db.informal_group.crud import InformalGroupCrud
 from app.db.informal_group.schema import (
     InformalGroup,
     InformalGroupCreate,
@@ -33,7 +27,7 @@ async def informal_group_list(
     """
     Get all informal_groups
     """
-    informal_groups = get_informal_groups(db)
+    informal_groups = InformalGroupCrud.get_item(db)
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = f"0-9/{len(informal_groups)}"
     return informal_groups
@@ -53,7 +47,7 @@ async def informal_group_details(
     """
     Get any informal_group details
     """
-    informal_group = get_informal_group(db, informal_group_id)
+    informal_group = InformalGroupCrud.get_item(db, informal_group_id)
     return informal_group
 
 
@@ -71,7 +65,7 @@ async def informal_group_create(
     """
     Create a new informal_group
     """
-    return create_informal_group(db, informal_group)
+    return InformalGroupCrud.create_item(db, informal_group, current_user.user_id)
 
 
 @r.put(
@@ -89,7 +83,9 @@ async def informal_group_edit(
     """
     Update existing informal_group
     """
-    return edit_informal_group(db, informal_group_id, informal_group)
+    return InformalGroupCrud.edit_item(
+        db, informal_group_id, informal_group, current_user.user_id
+    )
 
 
 @r.delete(
@@ -106,4 +102,4 @@ async def informal_group_delete(
     """
     Delete existing informal_group
     """
-    return delete_informal_group(db, informal_group_id)
+    return InformalGroupCrud.delete_item(db, informal_group_id)

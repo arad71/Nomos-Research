@@ -3,13 +3,7 @@ from typing import List
 from fastapi import APIRouter, Depends, Request, Response
 
 from app.core.auth import get_current_active_superuser
-from app.db.cross_reference.crud import (
-    create_cross_reference,
-    delete_cross_reference,
-    edit_cross_reference,
-    get_cross_reference,
-    get_cross_references,
-)
+from app.db.cross_reference.crud import CrossReferenceCrud
 from app.db.cross_reference.schema import (
     CrossReference,
     CrossReferenceCreate,
@@ -33,7 +27,7 @@ async def cross_reference_list(
     """
     Get all cross_references
     """
-    cross_references = get_cross_references(db)
+    cross_references = CrossReferenceCrud.get_items(db)
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = f"0-9/{len(cross_references)}"
     return cross_references
@@ -53,7 +47,7 @@ async def cross_reference_details(
     """
     Get any cross_reference details
     """
-    cross_reference = get_cross_reference(db, cross_reference_id)
+    cross_reference = CrossReferenceCrud.get_item(db, cross_reference_id)
     return cross_reference
 
 
@@ -71,7 +65,7 @@ async def cross_reference_create(
     """
     Create a new cross_reference
     """
-    return create_cross_reference(db, cross_reference)
+    return CrossReferenceCrud.create_item(db, cross_reference, current_user.user_id)
 
 
 @r.put(
@@ -89,7 +83,9 @@ async def cross_reference_edit(
     """
     Update existing cross_reference
     """
-    return edit_cross_reference(db, cross_reference_id, cross_reference)
+    return CrossReferenceCrud.edit_item(
+        db, cross_reference_id, cross_reference, current_user.user_id
+    )
 
 
 @r.delete(
@@ -106,4 +102,4 @@ async def cross_reference_delete(
     """
     Delete existing cross_reference
     """
-    return delete_cross_reference(db, cross_reference_id)
+    return CrossReferenceCrud.delete_item(db, cross_reference_id)

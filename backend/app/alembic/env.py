@@ -59,6 +59,7 @@ def run_migrations_online():
     and associate a connection with the context.
     """
     import app.db.author.model
+    import app.db.citation.model
     import app.db.classification_system.model
     import app.db.cross_reference.model
     import app.db.hierarchy.model

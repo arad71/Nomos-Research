@@ -3,13 +3,7 @@ from typing import List
 from fastapi import APIRouter, Depends, Request, Response
 
 from app.core.auth import get_current_active_superuser
-from app.db.hierarchy.crud import (
-    create_hierarchy,
-    delete_hierarchy,
-    edit_hierarchy,
-    get_hierarchies,
-    get_hierarchy,
-)
+from app.db.hierarchy.crud import HierarchyCrud
 from app.db.hierarchy.schema import Hierarchy, HierarchyCreate, HierarchyEdit
 from app.db.session import get_db
 
@@ -29,7 +23,7 @@ async def hierarchy_list(
     """
     Get all hierarchies
     """
-    hierarchies = get_hierarchies(db)
+    hierarchies = HierarchyCrud.get_items(db)
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = f"0-9/{len(hierarchies)}"
     return hierarchies
@@ -49,7 +43,7 @@ async def hierarchy_details(
     """
     Get any hierarchy details
     """
-    hierarchy = get_hierarchy(db, hierarchy_id)
+    hierarchy = HierarchyCrud.get_item(db, hierarchy_id)
     return hierarchy
 
 
@@ -63,7 +57,7 @@ async def hierarchy_create(
     """
     Create a new hierarchy
     """
-    return create_hierarchy(db, hierarchy)
+    return HierarchyCrud.create_item(db, hierarchy, current_user.user_id)
 
 
 @r.put(
@@ -81,7 +75,7 @@ async def hierarchy_edit(
     """
     Update existing hierarchy
     """
-    return edit_hierarchy(db, hierarchy_id, hierarchy)
+    return HierarchyCrud.edit_item(db, hierarchy_id, hierarchy, current_user.user_id)
 
 
 @r.delete(
@@ -98,4 +92,4 @@ async def hierarchy_delete(
     """
     Delete existing hierarchy
     """
-    return delete_hierarchy(db, hierarchy_id)
+    return HierarchyCrud.delete_item(db, hierarchy_id)

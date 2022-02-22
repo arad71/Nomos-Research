@@ -4,13 +4,7 @@ from fastapi import APIRouter, Depends, Request, Response
 
 from app.core.auth import get_current_active_superuser
 from app.db.session import get_db
-from app.db.vernacular.crud import (
-    create_vernacular,
-    delete_vernacular,
-    edit_vernacular,
-    get_vernacular,
-    get_vernaculars,
-)
+from app.db.vernacular.crud import VernacularCrud
 from app.db.vernacular.schema import Vernacular, VernacularCreate, VernacularEdit
 
 vernaculars_router = r = APIRouter(prefix="/vernacular")
@@ -29,7 +23,7 @@ async def vernacular_list(
     """
     Get all vernacular
     """
-    vernacular = get_vernaculars(db)
+    vernacular = VernacularCrud.get_items(db)
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = f"0-9/{len(vernacular)}"
     return vernacular
@@ -49,7 +43,7 @@ async def vernacular_details(
     """
     Get any vernacular details
     """
-    vernacular = get_vernacular(db, vernacular_id)
+    vernacular = VernacularCrud.get_item(db, vernacular_id)
     return vernacular
 
 
@@ -63,7 +57,7 @@ async def vernacular_create(
     """
     Create a new vernacular
     """
-    return create_vernacular(db, vernacular)
+    return VernacularCrud.create_item(db, vernacular, current_user.user_id)
 
 
 @r.put(
@@ -81,7 +75,7 @@ async def vernacular_edit(
     """
     Update existing vernacular
     """
-    return edit_vernacular(db, vernacular_id, vernacular)
+    return VernacularCrud.edit_item(db, vernacular_id, vernacular, current_user.user_id)
 
 
 @r.delete(
@@ -98,4 +92,4 @@ async def vernacular_delete(
     """
     Delete existing vernacular
     """
-    return delete_vernacular(db, vernacular_id)
+    return VernacularCrud.delete_item(db, vernacular_id)

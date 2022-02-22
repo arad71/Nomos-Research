@@ -1,12 +1,15 @@
+from typing import Optional
+
+from pydantic import BaseModel
+
 from app.db.schemas import TableBase
 
 
-# ClassificationSystem
-class ClassificationSystemBase(TableBase):
+class ClassificationSystemBase(BaseModel):
     class_desc: str
     class_type: str
-    preferred: str
-    sort_order: int
+    preferred: Optional[str]
+    sort_order: Optional[int]
 
 
 class ClassificationSystemCreate(ClassificationSystemBase):
@@ -17,7 +20,7 @@ class ClassificationSystemEdit(ClassificationSystemBase):
     pass
 
 
-class ClassificationSystem(ClassificationSystemBase):
+class ClassificationSystem(ClassificationSystemBase, TableBase):
     classification_system_id: int
 
     class Config:

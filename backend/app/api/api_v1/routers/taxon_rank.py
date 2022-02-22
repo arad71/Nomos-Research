@@ -4,13 +4,7 @@ from fastapi import APIRouter, Depends, Request, Response
 
 from app.core.auth import get_current_active_superuser
 from app.db.session import get_db
-from app.db.taxon_rank.crud import (
-    create_taxon_rank,
-    delete_taxon_rank,
-    edit_taxon_rank,
-    get_taxon_rank,
-    get_taxon_ranks,
-)
+from app.db.taxon_rank.crud import TaxonRankCrud
 from app.db.taxon_rank.schema import TaxonRank, TaxonRankCreate, TaxonRankEdit
 
 taxon_ranks_router = r = APIRouter(prefix="/taxon_ranks")
@@ -29,7 +23,7 @@ async def taxon_rank_list(
     """
     Get all taxon_ranks
     """
-    taxon_ranks = get_taxon_ranks(db)
+    taxon_ranks = TaxonRankCrud.get_items(db)
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = f"0-9/{len(taxon_ranks)}"
     return taxon_ranks
@@ -49,7 +43,7 @@ async def taxon_rank_details(
     """
     Get any taxon_rank details
     """
-    taxon_rank = get_taxon_rank(db, taxon_rank_id)
+    taxon_rank = TaxonRankCrud.get_item(db, taxon_rank_id)
     return taxon_rank
 
 
@@ -63,7 +57,7 @@ async def taxon_rank_create(
     """
     Create a new taxon_rank
     """
-    return create_taxon_rank(db, taxon_rank)
+    return TaxonRankCrud.create_item(db, taxon_rank, current_user.user_id)
 
 
 @r.put(
@@ -81,7 +75,7 @@ async def taxon_rank_edit(
     """
     Update existing taxon_rank
     """
-    return edit_taxon_rank(db, taxon_rank_id, taxon_rank)
+    return TaxonRankCrud.edit_item(db, taxon_rank_id, taxon_rank, current_user.user_id)
 
 
 @r.delete(
@@ -98,4 +92,4 @@ async def taxon_rank_delete(
     """
     Delete existing taxon_rank
     """
-    return delete_taxon_rank(db, taxon_rank_id)
+    return TaxonRankCrud.delete_item(db, taxon_rank_id)

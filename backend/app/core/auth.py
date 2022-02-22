@@ -6,7 +6,7 @@ import app.db.user.model as model
 import app.db.user.schema as schema
 from app.core import security
 from app.db import session
-from app.db.user.crud import create_user, get_user_by_email
+from app.db.user.crud import UserCrud
 
 
 async def get_current_user(
@@ -28,7 +28,7 @@ async def get_current_user(
         token_data = schema.TokenData(email=email, permissions=permissions)
     except PyJWTError:
         raise credentials_exception
-    user = get_user_by_email(db, token_data.email)
+    user = UserCrud.get_user_by_email(db, token_data.email)
     if user is None:
         raise credentials_exception
     return user
@@ -53,7 +53,7 @@ async def get_current_active_superuser(
 
 
 def authenticate_user(db, email: str, password: str):
-    user = get_user_by_email(db, email)
+    user = UserCrud.get_user_by_email(db, email)
     if not user:
         return False
     if not security.verify_password(password, user.hashed_password):
@@ -62,10 +62,10 @@ def authenticate_user(db, email: str, password: str):
 
 
 def sign_up_new_user(db, email: str, password: str):
-    user = get_user_by_email(db, email)
+    user = UserCrud.get_user_by_email(db, email)
     if user:
         return False  # User already exists
-    new_user = create_user(
+    new_user = UserCrud.create_item(
         db,
         schema.UserCreate(
             email=email,

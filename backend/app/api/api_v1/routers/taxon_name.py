@@ -4,13 +4,7 @@ from fastapi import APIRouter, Depends, Request, Response
 
 from app.core.auth import get_current_active_superuser
 from app.db.session import get_db
-from app.db.taxon_name.crud import (
-    create_taxon_name,
-    delete_taxon_name,
-    edit_taxon_name,
-    get_taxon_name,
-    get_taxon_names,
-)
+from app.db.taxon_name.crud import TaxonNameCrud
 from app.db.taxon_name.schema import TaxonName, TaxonNameCreate, TaxonNameEdit
 
 taxon_names_router = r = APIRouter(prefix="/taxon_names")
@@ -29,7 +23,7 @@ async def taxon_name_list(
     """
     Get all taxon_names
     """
-    taxon_names = get_taxon_names(db)
+    taxon_names = TaxonNameCrud.get_items(db)
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = f"0-9/{len(taxon_names)}"
     return taxon_names
@@ -49,7 +43,7 @@ async def taxon_name_details(
     """
     Get any taxon_name details
     """
-    taxon_name = get_taxon_name(db, taxon_name_id)
+    taxon_name = TaxonNameCrud.get_item(db, taxon_name_id)
     return taxon_name
 
 
@@ -63,7 +57,7 @@ async def taxon_name_create(
     """
     Create a new taxon_name
     """
-    return create_taxon_name(db, taxon_name)
+    return TaxonNameCrud.create_item(db, taxon_name, current_user.user_id)
 
 
 @r.put(
@@ -81,7 +75,7 @@ async def taxon_name_edit(
     """
     Update existing taxon_name
     """
-    return edit_taxon_name(db, taxon_name_id, taxon_name)
+    return TaxonNameCrud.edit_item(db, taxon_name_id, taxon_name, current_user.user_id)
 
 
 @r.delete(
@@ -98,4 +92,4 @@ async def taxon_name_delete(
     """
     Delete existing taxon_name
     """
-    return delete_taxon_name(db, taxon_name_id)
+    return TaxonNameCrud.delete_item(db, taxon_name_id)

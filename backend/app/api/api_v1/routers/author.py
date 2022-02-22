@@ -3,13 +3,7 @@ from typing import List
 from fastapi import APIRouter, Depends, Request, Response
 
 from app.core.auth import get_current_active_superuser
-from app.db.author.crud import (
-    create_author,
-    delete_author,
-    edit_author,
-    get_author,
-    get_authors,
-)
+from app.db.author.crud import AuthorCrud
 from app.db.author.schema import Author, AuthorCreate, AuthorEdit
 from app.db.session import get_db
 
@@ -29,7 +23,7 @@ async def author_list(
     """
     Get all authors
     """
-    authors = get_authors(db)
+    authors = AuthorCrud.get_items(db)
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = f"0-9/{len(authors)}"
     return authors
@@ -49,7 +43,7 @@ async def author_details(
     """
     Get any author details
     """
-    author = get_author(db, author_id)
+    author = AuthorCrud.get_item(db, author_id)
     return author
 
 
@@ -63,7 +57,7 @@ async def author_create(
     """
     Create a new author
     """
-    return create_author(db, author)
+    return AuthorCrud.create_item(db, author, current_user.user_id)
 
 
 @r.put(
@@ -81,7 +75,7 @@ async def author_edit(
     """
     Update existing author
     """
-    return edit_author(db, author_id, author)
+    return AuthorCrud.edit_item(db, author_id, author, current_user.user_id)
 
 
 @r.delete(
@@ -98,4 +92,4 @@ async def author_delete(
     """
     Delete existing author
     """
-    return delete_author(db, author_id)
+    return AuthorCrud.delete_item(db, author_id)
