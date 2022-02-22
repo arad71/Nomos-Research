@@ -1,14 +1,19 @@
+from datetime import datetime
+from typing import Optional
+
 from pydantic import BaseModel
 
 from app.db.schemas import TableBase
+from app.db.taxon_name.schema import TaxonName
 
 
 class CrossReferenceBase(BaseModel):
     old_name_id: int
-    new_name_id: int
+    new_name_id: Optional[int]
     cross_reference_type: str
     active: str
-    authorised_by: str
+    authorised_date: Optional[datetime]
+    authorised_by: Optional[str]
     comments: str
     notes: str
 
@@ -23,6 +28,8 @@ class CrossReferenceEdit(CrossReferenceBase):
 
 class CrossReference(CrossReferenceBase, TableBase):
     cross_reference_id: int
+    old_name: TaxonName
+    new_name: TaxonName
 
     class Config:
         orm_mode = True

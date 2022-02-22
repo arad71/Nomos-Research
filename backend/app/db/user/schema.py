@@ -1,4 +1,5 @@
 import typing as t
+from typing import Optional
 
 from pydantic import BaseModel
 
@@ -7,8 +8,8 @@ class UserBase(BaseModel):
     email: str
     is_active: bool = True
     is_superuser: bool = False
-    first_name: str = None
-    last_name: str = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
 
 
 class UserOut(UserBase):

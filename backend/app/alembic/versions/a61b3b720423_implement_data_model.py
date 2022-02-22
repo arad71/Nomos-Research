@@ -1,0 +1,531 @@
+"""Implement Data Model.
+
+Revision ID: a61b3b720423
+Revises: 
+Create Date: 2022-02-21 19:40:21.684224-08:00
+
+"""
+import sqlalchemy as sa
+
+from alembic import op
+
+# revision identifiers, used by Alembic.
+revision = "a61b3b720423"
+down_revision = None
+branch_labels = None
+depends_on = None
+
+
+def upgrade():
+    op.create_table(
+        "user",
+        sa.Column("user_id", sa.Integer(), nullable=False),
+        sa.Column("email", sa.String(), nullable=False),
+        sa.Column("first_name", sa.String(), nullable=True),
+        sa.Column("last_name", sa.String(), nullable=True),
+        sa.Column("default_kingdom", sa.Integer(), nullable=True),
+        sa.Column("default_class", sa.Integer(), nullable=True),
+        sa.Column("hashed_password", sa.String(), nullable=False),
+        sa.Column("is_active", sa.Boolean(), nullable=False),
+        sa.Column("is_superuser", sa.Boolean(), nullable=False),
+        sa.PrimaryKeyConstraint("user_id"),
+    )
+    op.create_index(op.f("ix_user_email"), "user", ["email"], unique=True)
+    op.create_index(op.f("ix_user_user_id"), "user", ["user_id"], unique=False)
+    op.create_table(
+        "author",
+        sa.Column("author_id", sa.Integer(), nullable=False),
+        sa.Column("author", sa.String(length=30), nullable=False),
+        sa.Column("surname", sa.String(length=30), nullable=True),
+        sa.Column("first_names", sa.String(length=60), nullable=True),
+        sa.Column("initials", sa.String(length=30), nullable=True),
+        sa.Column("orc_id", sa.Integer(), nullable=True),
+        sa.Column("updated_by", sa.Integer(), nullable=True),
+        sa.Column("updated_on", sa.DateTime(), nullable=True),
+        sa.Column("created_by", sa.Integer(), nullable=True),
+        sa.Column("created_on", sa.DateTime(), nullable=True),
+        sa.ForeignKeyConstraint(
+            ["created_by"],
+            ["user.user_id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["updated_by"],
+            ["user.user_id"],
+        ),
+        sa.PrimaryKeyConstraint("author_id"),
+    )
+    op.create_index(op.f("ix_author_author_id"), "author", ["author_id"], unique=False)
+    op.create_table(
+        "classification_system",
+        sa.Column("classification_system_id", sa.Integer(), nullable=False),
+        sa.Column("class_desc", sa.String(length=200), nullable=False),
+        sa.Column("class_type", sa.String(length=15), nullable=False),
+        sa.Column("preferred", sa.String(length=1), nullable=True),
+        sa.Column("sort_order", sa.Integer(), nullable=True),
+        sa.Column("updated_by", sa.Integer(), nullable=True),
+        sa.Column("updated_on", sa.DateTime(), nullable=True),
+        sa.Column("created_by", sa.Integer(), nullable=True),
+        sa.Column("created_on", sa.DateTime(), nullable=True),
+        sa.ForeignKeyConstraint(
+            ["created_by"],
+            ["user.user_id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["updated_by"],
+            ["user.user_id"],
+        ),
+        sa.PrimaryKeyConstraint("classification_system_id"),
+    )
+    op.create_index(
+        op.f("ix_classification_system_classification_system_id"),
+        "classification_system",
+        ["classification_system_id"],
+        unique=False,
+    )
+    op.create_table(
+        "kingdom",
+        sa.Column("kingdom_id", sa.Integer(), nullable=False),
+        sa.Column("kingdom_name", sa.String(length=15), nullable=False),
+        sa.Column("kingdom_desc", sa.String(length=200), nullable=True),
+        sa.Column("updated_by", sa.Integer(), nullable=True),
+        sa.Column("updated_on", sa.DateTime(), nullable=True),
+        sa.Column("created_by", sa.Integer(), nullable=True),
+        sa.Column("created_on", sa.DateTime(), nullable=True),
+        sa.ForeignKeyConstraint(
+            ["created_by"],
+            ["user.user_id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["updated_by"],
+            ["user.user_id"],
+        ),
+        sa.PrimaryKeyConstraint("kingdom_id"),
+    )
+    op.create_index(
+        op.f("ix_kingdom_kingdom_id"), "kingdom", ["kingdom_id"], unique=False
+    )
+    op.create_table(
+        "publication",
+        sa.Column("publication_id", sa.Integer(), nullable=False),
+        sa.Column("bad_publication", sa.String(length=1), nullable=True),
+        sa.Column("publication", sa.Text(), nullable=True),
+        sa.Column("publication_name", sa.Text(), nullable=True),
+        sa.Column("doi", sa.String(), nullable=True),
+        sa.Column("title", sa.String(), nullable=True),
+        sa.Column("display_title", sa.String(), nullable=True),
+        sa.Column("abbreviated_title", sa.String(), nullable=True),
+        sa.Column("year", sa.Integer(), nullable=True),
+        sa.Column("volume", sa.String(), nullable=True),
+        sa.Column("edition", sa.String(), nullable=True),
+        sa.Column("pages", sa.String(), nullable=True),
+        sa.Column("verbatim_reference", sa.String(), nullable=True),
+        sa.Column("verbatim_citation", sa.String(), nullable=True),
+        sa.Column("verbatim_author", sa.String(), nullable=True),
+        sa.Column("citation", sa.String(), nullable=True),
+        sa.Column("citation_html", sa.String(), nullable=True),
+        sa.Column("citation_author_year", sa.String(), nullable=True),
+        sa.Column("notes", sa.String(), nullable=True),
+        sa.Column("published", sa.Boolean(), nullable=True),
+        sa.Column("publisher", sa.String(), nullable=True),
+        sa.Column("published_location", sa.String(), nullable=True),
+        sa.Column("publication_date", sa.String(), nullable=True),
+        sa.Column("isbn", sa.String(), nullable=True),
+        sa.Column("issn", sa.String(), nullable=True),
+        sa.Column("bhl_url", sa.String(), nullable=True),
+        sa.Column("tl2", sa.String(), nullable=True),
+        sa.Column("reference_type", sa.String(), nullable=True),
+        sa.Column("parent", sa.Integer(), nullable=True),
+        sa.Column("reference_author_role", sa.String(), nullable=True),
+        sa.Column("language", sa.String(), nullable=True),
+        sa.Column("duplicate_of", sa.Integer(), nullable=True),
+        sa.Column("updated_by", sa.Integer(), nullable=True),
+        sa.Column("updated_on", sa.DateTime(), nullable=True),
+        sa.Column("created_by", sa.Integer(), nullable=True),
+        sa.Column("created_on", sa.DateTime(), nullable=True),
+        sa.ForeignKeyConstraint(
+            ["created_by"],
+            ["user.user_id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["duplicate_of"],
+            ["publication.publication_id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["parent"],
+            ["publication.publication_id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["updated_by"],
+            ["user.user_id"],
+        ),
+        sa.PrimaryKeyConstraint("publication_id"),
+    )
+    op.create_index(
+        op.f("ix_publication_publication_id"),
+        "publication",
+        ["publication_id"],
+        unique=False,
+    )
+    op.create_table(
+        "publication_author",
+        sa.Column("publication_id", sa.Integer(), nullable=False),
+        sa.Column("author_id", sa.Integer(), nullable=False),
+        sa.ForeignKeyConstraint(
+            ["author_id"],
+            ["author.author_id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["publication_id"],
+            ["publication.publication_id"],
+        ),
+        sa.PrimaryKeyConstraint("publication_id", "author_id"),
+    )
+    op.create_table(
+        "taxon_rank",
+        sa.Column("taxon_rank_id", sa.Integer(), nullable=False),
+        sa.Column("kingdom_id", sa.Integer(), nullable=False),
+        sa.Column("rank_name", sa.String(length=15), nullable=False),
+        sa.Column("rank_abbrev", sa.String(length=9), nullable=True),
+        sa.Column("direct_parent_rank_id", sa.Integer(), nullable=False),
+        sa.Column("required_parent_rank_id", sa.Integer(), nullable=False),
+        sa.Column("updated_by", sa.Integer(), nullable=True),
+        sa.Column("updated_on", sa.DateTime(), nullable=True),
+        sa.Column("created_by", sa.Integer(), nullable=True),
+        sa.Column("created_on", sa.DateTime(), nullable=True),
+        sa.ForeignKeyConstraint(
+            ["created_by"],
+            ["user.user_id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["direct_parent_rank_id"],
+            ["taxon_rank.taxon_rank_id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["kingdom_id"],
+            ["kingdom.kingdom_id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["required_parent_rank_id"],
+            ["taxon_rank.taxon_rank_id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["updated_by"],
+            ["user.user_id"],
+        ),
+        sa.PrimaryKeyConstraint("taxon_rank_id"),
+    )
+    op.create_index(
+        op.f("ix_taxon_rank_taxon_rank_id"),
+        "taxon_rank",
+        ["taxon_rank_id"],
+        unique=False,
+    )
+    op.create_table(
+        "taxon_name",
+        sa.Column("taxon_name_id", sa.Integer(), nullable=False),
+        sa.Column("kingdom_id", sa.Integer(), nullable=False),
+        sa.Column("rank_id", sa.Integer(), nullable=False),
+        sa.Column("rank_name", sa.String(length=15), nullable=False),
+        sa.Column("uninomial", sa.String(), nullable=True),
+        sa.Column("phylum", sa.String(), nullable=True),
+        sa.Column("class", sa.String(), nullable=True),
+        sa.Column("order", sa.String(), nullable=True),
+        sa.Column("family", sa.String(), nullable=True),
+        sa.Column("genus", sa.String(), nullable=True),
+        sa.Column("subgenus", sa.String(), nullable=True),
+        sa.Column("scientific_name", sa.String(), nullable=True),
+        sa.Column("species", sa.String(), nullable=True),
+        sa.Column("subspecies", sa.String(), nullable=True),
+        sa.Column("specific_epithet", sa.String(length=70), nullable=True),
+        sa.Column("infraspecific_epithet", sa.String(length=70), nullable=True),
+        sa.Column("publication_id", sa.Integer(), nullable=True),
+        sa.Column("volume_information", sa.String(length=100), nullable=True),
+        sa.Column("publication_year", sa.Integer(), nullable=True),
+        sa.Column("is_current", sa.String(length=1), nullable=False),
+        sa.Column("origin", sa.String(length=1), nullable=True),
+        sa.Column("informal", sa.String(length=2), nullable=True),
+        sa.Column("form_desc_yr", sa.Integer(), nullable=True),
+        sa.Column("form_desc_mn", sa.Integer(), nullable=True),
+        sa.Column("form_desc_dy", sa.Integer(), nullable=True),
+        sa.Column("comments", sa.String(length=1000), nullable=True),
+        sa.Column("contributed_by", sa.String(length=16), nullable=True),
+        sa.Column("contributed_on", sa.DateTime(), nullable=True),
+        sa.Column("validated", sa.String(length=1), nullable=False),
+        sa.Column("source", sa.String(length=10), nullable=True),
+        sa.Column("external_id", sa.String(length=10), nullable=True),
+        sa.Column("family_code", sa.String(length=5), nullable=True),
+        sa.Column("author", sa.String(length=180), nullable=True),
+        sa.Column("vernacular", sa.String(length=100), nullable=True),
+        sa.Column("editor", sa.String(length=60), nullable=True),
+        sa.Column("naturalised_status", sa.String(length=1), nullable=True),
+        sa.Column("naturalised_certainty", sa.String(length=1), nullable=True),
+        sa.Column("is_eradicated", sa.String(length=1), nullable=True),
+        sa.Column("naturalised_comments", sa.String(length=400), nullable=True),
+        sa.Column("linear_sequence", sa.Integer(), nullable=True),
+        sa.Column("family_nid", sa.Integer(), nullable=True),
+        sa.Column("all_vernaculars", sa.String(length=200), nullable=True),
+        sa.Column("notes", sa.String(length=3000), nullable=True),
+        sa.Column("reference", sa.Text(), nullable=True),
+        sa.Column("authorised_by", sa.String(length=16), nullable=True),
+        sa.Column("authorised_on", sa.DateTime(), nullable=True),
+        sa.Column("updated_by", sa.Integer(), nullable=True),
+        sa.Column("updated_on", sa.DateTime(), nullable=True),
+        sa.Column("created_by", sa.Integer(), nullable=True),
+        sa.Column("created_on", sa.DateTime(), nullable=True),
+        sa.ForeignKeyConstraint(
+            ["created_by"],
+            ["user.user_id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["family_nid"],
+            ["taxon_name.taxon_name_id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["kingdom_id"],
+            ["kingdom.kingdom_id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["publication_id"],
+            ["publication.publication_id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["rank_id"],
+            ["taxon_rank.taxon_rank_id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["updated_by"],
+            ["user.user_id"],
+        ),
+        sa.PrimaryKeyConstraint("taxon_name_id"),
+    )
+    op.create_index(
+        op.f("ix_taxon_name_taxon_name_id"),
+        "taxon_name",
+        ["taxon_name_id"],
+        unique=False,
+    )
+    op.create_table(
+        "citation",
+        sa.Column("citation_id", sa.Integer(), nullable=False),
+        sa.Column("taxon_name_id", sa.Integer(), nullable=True),
+        sa.Column("author_id", sa.Integer(), nullable=True),
+        sa.Column("author_type", sa.String(), nullable=True),
+        sa.Column("author_order", sa.Integer(), nullable=True),
+        sa.Column("updated_by", sa.Integer(), nullable=True),
+        sa.Column("updated_on", sa.DateTime(), nullable=True),
+        sa.Column("created_by", sa.Integer(), nullable=True),
+        sa.Column("created_on", sa.DateTime(), nullable=True),
+        sa.ForeignKeyConstraint(
+            ["author_id"],
+            ["author.author_id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["created_by"],
+            ["user.user_id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["taxon_name_id"],
+            ["taxon_name.taxon_name_id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["updated_by"],
+            ["user.user_id"],
+        ),
+        sa.PrimaryKeyConstraint("citation_id"),
+    )
+    op.create_index(
+        op.f("ix_citation_citation_id"), "citation", ["citation_id"], unique=False
+    )
+    op.create_table(
+        "cross_reference",
+        sa.Column("cross_reference_id", sa.Integer(), nullable=False),
+        sa.Column("old_name_id", sa.Integer(), nullable=False),
+        sa.Column("new_name_id", sa.Integer(), nullable=True),
+        sa.Column("cross_reference_type", sa.String(length=3), nullable=False),
+        sa.Column("active", sa.String(length=1), nullable=False),
+        sa.Column("authorised_by", sa.String(length=60), nullable=True),
+        sa.Column("comments", sa.String(length=1000), nullable=True),
+        sa.Column("notes", sa.String(length=3000), nullable=True),
+        sa.Column("updated_by", sa.Integer(), nullable=True),
+        sa.Column("updated_on", sa.DateTime(), nullable=True),
+        sa.Column("created_by", sa.Integer(), nullable=True),
+        sa.Column("created_on", sa.DateTime(), nullable=True),
+        sa.ForeignKeyConstraint(
+            ["created_by"],
+            ["user.user_id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["new_name_id"],
+            ["taxon_name.taxon_name_id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["old_name_id"],
+            ["taxon_name.taxon_name_id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["updated_by"],
+            ["user.user_id"],
+        ),
+        sa.PrimaryKeyConstraint("cross_reference_id"),
+    )
+    op.create_index(
+        op.f("ix_cross_reference_cross_reference_id"),
+        "cross_reference",
+        ["cross_reference_id"],
+        unique=False,
+    )
+    op.create_table(
+        "hierarchy",
+        sa.Column("hierarchy_id", sa.Integer(), nullable=False),
+        sa.Column("taxon_name_id", sa.Integer(), nullable=False),
+        sa.Column("classification_system_id", sa.Integer(), nullable=True),
+        sa.Column("parent_nid", sa.Integer(), nullable=False),
+        sa.Column("updated_by", sa.Integer(), nullable=True),
+        sa.Column("updated_on", sa.DateTime(), nullable=True),
+        sa.Column("created_by", sa.Integer(), nullable=True),
+        sa.Column("created_on", sa.DateTime(), nullable=True),
+        sa.ForeignKeyConstraint(
+            ["classification_system_id"],
+            ["classification_system.classification_system_id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["created_by"],
+            ["user.user_id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["parent_nid"],
+            ["taxon_name.taxon_name_id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["taxon_name_id"],
+            ["taxon_name.taxon_name_id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["updated_by"],
+            ["user.user_id"],
+        ),
+        sa.PrimaryKeyConstraint("hierarchy_id"),
+    )
+    op.create_index(
+        op.f("ix_hierarchy_classification_system_id"),
+        "hierarchy",
+        ["classification_system_id"],
+        unique=False,
+    )
+    op.create_index(
+        op.f("ix_hierarchy_hierarchy_id"), "hierarchy", ["hierarchy_id"], unique=False
+    )
+    op.create_table(
+        "informal_group",
+        sa.Column("informal_group_id", sa.String(length=10), nullable=False),
+        sa.Column("classification_system_id", sa.Integer(), nullable=True),
+        sa.Column("taxon_name_id", sa.Integer(), nullable=True),
+        sa.Column("updated_by", sa.Integer(), nullable=True),
+        sa.Column("updated_on", sa.DateTime(), nullable=True),
+        sa.Column("created_by", sa.Integer(), nullable=True),
+        sa.Column("created_on", sa.DateTime(), nullable=True),
+        sa.ForeignKeyConstraint(
+            ["classification_system_id"],
+            ["classification_system.classification_system_id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["created_by"],
+            ["user.user_id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["taxon_name_id"],
+            ["taxon_name.taxon_name_id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["updated_by"],
+            ["user.user_id"],
+        ),
+        sa.PrimaryKeyConstraint("informal_group_id"),
+    )
+    op.create_index(
+        op.f("ix_informal_group_classification_system_id"),
+        "informal_group",
+        ["classification_system_id"],
+        unique=False,
+    )
+    op.create_index(
+        op.f("ix_informal_group_informal_group_id"),
+        "informal_group",
+        ["informal_group_id"],
+        unique=False,
+    )
+    op.create_table(
+        "vernacular",
+        sa.Column("vernacular_id", sa.Integer(), nullable=False),
+        sa.Column("vernacular", sa.String(length=120), nullable=False),
+        sa.Column("taxon_name_id", sa.Integer(), nullable=True),
+        sa.Column("language", sa.String(length=20), nullable=False),
+        sa.Column("lang_pref", sa.String(length=1), nullable=True),
+        sa.Column("preferred", sa.String(length=1), nullable=True),
+        sa.Column("source", sa.String(length=50), nullable=True),
+        sa.Column("enabled", sa.String(length=1), nullable=False),
+        sa.Column("sort_order", sa.Integer(), nullable=True),
+        sa.Column("updated_by", sa.Integer(), nullable=True),
+        sa.Column("updated_on", sa.DateTime(), nullable=True),
+        sa.Column("created_by", sa.Integer(), nullable=True),
+        sa.Column("created_on", sa.DateTime(), nullable=True),
+        sa.ForeignKeyConstraint(
+            ["created_by"],
+            ["user.user_id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["taxon_name_id"],
+            ["taxon_name.taxon_name_id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["updated_by"],
+            ["user.user_id"],
+        ),
+        sa.PrimaryKeyConstraint("vernacular_id"),
+    )
+    op.create_index(
+        op.f("ix_vernacular_vernacular_id"),
+        "vernacular",
+        ["vernacular_id"],
+        unique=False,
+    )
+
+
+def downgrade():
+    op.drop_index(op.f("ix_vernacular_vernacular_id"), table_name="vernacular")
+    op.drop_table("vernacular")
+    op.drop_index(
+        op.f("ix_informal_group_informal_group_id"), table_name="informal_group"
+    )
+    op.drop_index(
+        op.f("ix_informal_group_classification_system_id"), table_name="informal_group"
+    )
+    op.drop_table("informal_group")
+    op.drop_index(op.f("ix_hierarchy_hierarchy_id"), table_name="hierarchy")
+    op.drop_index(op.f("ix_hierarchy_classification_system_id"), table_name="hierarchy")
+    op.drop_table("hierarchy")
+    op.drop_index(
+        op.f("ix_cross_reference_cross_reference_id"), table_name="cross_reference"
+    )
+    op.drop_table("cross_reference")
+    op.drop_index(op.f("ix_citation_citation_id"), table_name="citation")
+    op.drop_table("citation")
+    op.drop_index(op.f("ix_taxon_name_taxon_name_id"), table_name="taxon_name")
+    op.drop_table("taxon_name")
+    op.drop_index(op.f("ix_taxon_rank_taxon_rank_id"), table_name="taxon_rank")
+    op.drop_table("taxon_rank")
+    op.drop_table("publication_author")
+    op.drop_index(op.f("ix_publication_publication_id"), table_name="publication")
+    op.drop_table("publication")
+    op.drop_index(op.f("ix_kingdom_kingdom_id"), table_name="kingdom")
+    op.drop_table("kingdom")
+    op.drop_index(
+        op.f("ix_classification_system_classification_system_id"),
+        table_name="classification_system",
+    )
+    op.drop_table("classification_system")
+    op.drop_index(op.f("ix_author_author_id"), table_name="author")
+    op.drop_table("author")
+    op.drop_index(op.f("ix_user_user_id"), table_name="user")
+    op.drop_index(op.f("ix_user_email"), table_name="user")
+    op.drop_table("user")

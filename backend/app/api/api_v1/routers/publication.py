@@ -3,13 +3,7 @@ from typing import List
 from fastapi import APIRouter, Depends, Request, Response
 
 from app.core.auth import get_current_active_superuser
-from app.db.publication.crud import (
-    create_publication,
-    delete_publication,
-    edit_publication,
-    get_publication,
-    get_publications,
-)
+from app.db.publication.crud import PublicationCrud
 from app.db.publication.schema import Publication, PublicationCreate, PublicationEdit
 from app.db.session import get_db
 
@@ -29,7 +23,7 @@ async def publication_list(
     """
     Get all publications
     """
-    publications = get_publications(db)
+    publications = PublicationCrud.get_items(db)
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = f"0-9/{len(publications)}"
     return publications
@@ -49,7 +43,7 @@ async def publication_details(
     """
     Get any publication details
     """
-    publication = get_publication(db, publication_id)
+    publication = PublicationCrud.get_item(db, publication_id)
     return publication
 
 
@@ -67,7 +61,7 @@ async def publication_create(
     """
     Create a new publication
     """
-    return create_publication(db, publication, current_user.user_id)
+    return PublicationCrud.create_item(db, publication, current_user.user_id)
 
 
 @r.put(
@@ -85,7 +79,9 @@ async def publication_edit(
     """
     Update existing publication
     """
-    return edit_publication(db, publication_id, publication, current_user.user_id)
+    return PublicationCrud.edit_item(
+        db, publication_id, publication, current_user.user_id
+    )
 
 
 @r.delete(
@@ -102,4 +98,4 @@ async def publication_delete(
     """
     Delete existing publication
     """
-    return delete_publication(db, publication_id)
+    return PublicationCrud.delete_item(db, publication_id)

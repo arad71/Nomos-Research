@@ -9,6 +9,7 @@ type loginFormType = {
 const authProvider = {
   login: ({ username, password }: loginFormType) => {
     const formData = new FormData();
+    localStorage.setItem('username', username);
     formData.append('username', username);
     formData.append('password', password);
     const request = new Request(`${BASE_URL}/api/token`, {
@@ -16,26 +17,31 @@ const authProvider = {
       body: formData,
     });
     return fetch(request)
-      .then((response) => {
-        if (response.status < 200 || response.status >= 300) {
-          throw new Error(response.statusText);
-        }
-        console.log(response);
-        return response.json();
-      })
-      .then(({ access_token: accessToken }) => {
-        const decodedToken: any = decodeJwt(accessToken);
-        if (decodedToken.permissions !== 'admin') {
-          throw new Error('Forbidden');
-        }
-        localStorage.setItem('token', accessToken);
-        localStorage.setItem('permissions', decodedToken.permissions);
-      });
+        .then((response) => {
+          if (response.status < 200 || response.status >= 300) {
+            throw new Error(response.statusText);
+          }
+          console.log(response);
+          return response.json();
+        })
+        .then(({access_token: accessToken}) => {
+          const decodedToken: any = decodeJwt(accessToken);
+          if (decodedToken.permissions !== 'admin') {
+            throw new Error('Forbidden');
+          }
+          localStorage.setItem('token', accessToken);
+          localStorage.setItem('permissions', decodedToken.permissions);
+        });
   },
   logout: () => {
     localStorage.removeItem('token');
     localStorage.removeItem('permissions');
+    localStorage.removeItem('username');
     return Promise.resolve();
+  },
+  getIdentity: () => {
+    const username = localStorage.getItem('username');
+    return username;
   },
   checkError: (error: { status: number }) => {
     const status = error.status;

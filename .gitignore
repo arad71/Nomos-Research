@@ -9,3 +9,6 @@ __pycache__/
 
 # Sensitive information
 .env
+
+# too much personalisations to share
+.idea/

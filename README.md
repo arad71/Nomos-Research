@@ -1,5 +1,7 @@
 # TaxMan
 
+[![Continuous Integration / Continuous Delivery](https://github.com/BIO-WA/BDRTaxMan/actions/workflows/cicd.yml/badge.svg)](https://github.com/BIO-WA/BDRTaxMan/actions/workflows/cicd.yml)
+
 ## Features
 
 - **FastAPI** with Python 3.8
@@ -90,6 +92,14 @@ alembic revision -m "create users table"
 And fill in `upgrade` and `downgrade` methods. For more information see
 [Alembic's official documentation](https://alembic.sqlalchemy.org/en/latest/tutorial.html#create-a-migration-script).
 
+
+Using `autogenerate`:
+
+Alembic can view the status of the database and compare against the table metadata in the application, generating the “obvious” migrations based on a comparison. This is achieved using the --autogenerate option to the alembic revision command, which places so-called candidate migrations into our new migrations file. We review and modify these by hand as needed, then proceed normally.
+```
+alembic revision  --autogenerate -m "Data Model Updates."
+```
+
 ## Testing
 
 There is a helper script for both frontend and backend tests:
@@ -114,6 +124,10 @@ docker-compose run frontend test
 
 This is the same as running npm test from within the frontend directory
 
+### CI
+
+Testing is run through the continuous integration pipeline [.github/workflows/cicd.yml](.github/workflows/cicd.yml) in the `test` job.
+
 ## Linting
 
 Code style is governed by the linters used in the project. 
@@ -128,6 +142,9 @@ scripts/lint.sh
 scripts/format.sh
 ```
 
+### CI
+
+Linting is run through the continuous integration pipeline [.github/workflows/cicd.yml](.github/workflows/cicd.yml) in the `lint` job.
 
 ## Logging
 
@@ -142,7 +159,11 @@ docker-compose logs -f name_of_service # frontend|backend|db
 ```
 
 ## Deployment
-The app is deployed using GitHub actions configured through [.github/workflows/staging-deployment.yml](.github/workflows/staging-deployment.yml).
+
+The app is deployed using GitHub actions configured through [.github/workflows/cicd.yml](.github/workflows/cicd.yml).
+### Set up
+* Ensure that action.bash exists on the environment that you want to copy into.
+* Ensure that environment variables referenced in `cicd.yml` are defined in GitHub admin UI
 
 ### Configuration
 Environment specific configuration can be placed in a .env in the project directory on the deployment server.

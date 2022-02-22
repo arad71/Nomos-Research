@@ -28,27 +28,21 @@ export const Routes: FC = () => {
   const history = useHistory();
 
   return (
-    <Switch>
-      <Route path="/admin">
-        <Admin />
-      </Route>
-
-      <div className={classes.app}>
-        <header className={classes.header}>
-          <Route path="/login" component={Login} />
-          <Route path="/signup" component={SignUp} />
-          <Route
-            path="/logout"
-            render={() => {
-              logout();
-              history.push('/');
-              return null;
-            }}
-          />
-          <PrivateRoute path="/protected" component={Protected} />
-          <Route exact path="/" component={Home} />
-        </header>
-      </div>
-    </Switch>
+      <Switch>
+        <Route exact path="/" component={Admin} />
+        <div className={classes.app}>
+          <header className={classes.header}>
+            <Route path="/signup" component={SignUp} />
+            <Route
+                path="/logout"
+                render={() => {
+                  logout();
+                  history.push('/');
+                  return null;
+                }}
+            />
+          </header>
+        </div>
+      </Switch>
   );
 };
