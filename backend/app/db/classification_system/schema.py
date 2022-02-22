@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Optional
 
 from pydantic import BaseModel
 
@@ -19,8 +20,8 @@ class ClassificationPreferred(str, Enum):
 class ClassificationSystemBase(BaseModel):
     class_desc: str
     class_type: ClassificationType
-    preferred: ClassificationPreferred
-    sort_order: int
+    preferred: Optional[ClassificationPreferred]
+    sort_order: Optional[int]
 
 
 class ClassificationSystemCreate(ClassificationSystemBase):

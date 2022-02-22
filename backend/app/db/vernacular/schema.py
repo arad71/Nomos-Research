@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Optional
 
 from pydantic import BaseModel
 
@@ -32,11 +33,11 @@ class VernacularBase(BaseModel):
     taxon_name_id: int
     vernacular: str
     language: Language
-    lang_pref: LangPref
-    preferred: Preferred
-    source: str
+    lang_pref: Optional[LangPref]
+    preferred: Optional[Preferred]
+    source: Optional[str]
     enabled: Enabled
-    sort_order: int
+    sort_order: Optional[int]
 
 
 class VernacularCreate(VernacularBase):

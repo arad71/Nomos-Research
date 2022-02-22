@@ -1,4 +1,6 @@
+from datetime import datetime
 from enum import Enum
+from typing import Optional
 
 from pydantic import BaseModel
 
@@ -26,10 +28,11 @@ class Active(str, Enum):
 
 class CrossReferenceBase(BaseModel):
     old_name_id: int
-    new_name_id: int
+    new_name_id: Optional[int]
     cross_reference_type: CrossReferenceType
     active: Active
-    authorised_by: str
+    authorised_date: Optional[datetime]
+    authorised_by: Optional[str]
     comments: str
     notes: str
 

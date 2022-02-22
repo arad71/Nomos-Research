@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Optional
 
 from pydantic import BaseModel
 
@@ -13,8 +14,8 @@ class BadPublication(str, Enum):
 
 
 class PublicationBase(BaseModel):
-    bad_publication: BadPublication
-    publication: str
+    bad_publication: Optional[BadPublication]
+    publication: Optional[str]
     publication_name: str
     doi: str
     title: str

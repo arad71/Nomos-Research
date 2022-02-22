@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Optional
 
 from pydantic import BaseModel
 
@@ -18,9 +19,9 @@ class RankAbbreviation(str, Enum):
 class TaxonRankBase(BaseModel):
     kingdom_id: int
     rank_name: str
-    rank_abbrev: RankAbbreviation
+    rank_abbrev: Optional[RankAbbreviation]
     direct_parent_rank_id: int
-    required_parent_rank_id: int
+    required_parent_rank_id: Optional[int]
 
 
 class TaxonRankCreate(TaxonRankBase):
