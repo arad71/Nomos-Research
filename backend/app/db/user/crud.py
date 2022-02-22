@@ -1,5 +1,3 @@
-import typing as t
-
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 

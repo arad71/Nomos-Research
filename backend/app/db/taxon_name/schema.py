@@ -2,7 +2,9 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
+from app.db.kingdom.schema import Kingdom
 from app.db.schemas import TableBase
+from app.db.taxon_rank.schema import TaxonRank
 
 
 class TaxonNameBase(BaseModel):
@@ -10,18 +12,15 @@ class TaxonNameBase(BaseModel):
     rank_id: int
     rank_name: str
     uninomial: str
-    kingdom: str
     phylum: str
     # class is a reserved word, will this workaround be enough?
     taxon_class: str
     order: str
-    family: str
     genus: str
     subgenus: str
     scientific_name: str
     species: str
     subspecies: str
-    taxon_rank: str
     specific_epithet: str
     infraspecific_epithet: str
     publication_id: int
@@ -66,6 +65,8 @@ class TaxonNameEdit(TaxonNameBase):
 
 class TaxonName(TaxonNameBase, TableBase):
     taxon_name_id: int
+    kingdom: Kingdom
+    taxon_rank: TaxonRank
 
     class Config:
         orm_mode = True
