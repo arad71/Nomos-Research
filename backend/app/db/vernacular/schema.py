@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel
 
 from app.db.schemas import TableBase
@@ -8,11 +10,11 @@ class VernacularBase(BaseModel):
     taxon_name_id: int
     vernacular: str
     language: str
-    lang_pref: str
-    preferred: str
-    source: str
+    lang_pref: Optional[str]
+    preferred: Optional[str]
+    source: Optional[str]
     enabled: str
-    sort_order: int
+    sort_order: Optional[int]
 
 
 class VernacularCreate(VernacularBase):
