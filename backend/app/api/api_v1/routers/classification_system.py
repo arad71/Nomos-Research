@@ -3,13 +3,7 @@ from typing import List
 from fastapi import APIRouter, Depends, Request, Response
 
 from app.core.auth import get_current_active_superuser
-from app.db.classification_system.crud import (
-    create_classification_system,
-    delete_classification_system,
-    edit_classification_system,
-    get_classification_system,
-    get_classification_systems,
-)
+from app.db.classification_system.crud import ClassificationSystemCrud
 from app.db.classification_system.schema import (
     ClassificationSystem,
     ClassificationSystemCreate,
@@ -33,7 +27,7 @@ async def classification_system_list(
     """
     Get all classification_systems
     """
-    classification_systems = get_classification_systems(db)
+    classification_systems = ClassificationSystemCrud.get_items(db)
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = f"0-9/{len(classification_systems)}"
     return classification_systems
@@ -53,7 +47,9 @@ async def classification_system_details(
     """
     Get any classification_system details
     """
-    classification_system = get_classification_system(db, classification_system_id)
+    classification_system = ClassificationSystemCrud.get_item(
+        db, classification_system_id
+    )
     return classification_system
 
 
@@ -71,7 +67,9 @@ async def classification_system_create(
     """
     Create a new classification_system
     """
-    return create_classification_system(db, classification_system, current_user.user_id)
+    return ClassificationSystemCrud.create_item(
+        db, classification_system, current_user.user_id
+    )
 
 
 @r.put(
@@ -89,7 +87,7 @@ async def classification_system_edit(
     """
     Update existing classification_system
     """
-    return edit_classification_system(
+    return ClassificationSystemCrud.edit_item(
         db, classification_system_id, classification_system, current_user.user_id
     )
 
@@ -108,4 +106,4 @@ async def classification_system_delete(
     """
     Delete existing classification_system
     """
-    return delete_classification_system(db, classification_system_id)
+    return ClassificationSystemCrud.delete_item(db, classification_system_id)

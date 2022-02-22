@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel
 
 from app.db.schemas import TableBase
@@ -5,7 +7,7 @@ from app.db.schemas import TableBase
 
 class KingdomBase(BaseModel):
     kingdom_name: str
-    kingdom_desc: str
+    kingdom_desc: Optional[str]
 
 
 class KingdomCreate(KingdomBase):

@@ -36,10 +36,10 @@ class Publication(Base, TableMixin):
     bhl_url = Column(String)
     tl2 = Column(String)
     reference_type = Column(String)
-    parent = Column(Integer)
+    parent = Column(Integer, ForeignKey("publication.publication_id"))
     author = relationship(
-        "Author", secondary="publication_author", back_populates="publication"
+        "Author", secondary="publication_author", back_populates="publications"
     )
     reference_author_role = Column(String)
     language = Column(String)
-    duplicate_of = Column(Integer)
+    duplicate_of = Column(Integer, ForeignKey("publication.publication_id"))

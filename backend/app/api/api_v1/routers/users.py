@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Request, Response
 
 from app.core.auth import get_current_active_superuser, get_current_active_user
 from app.db.session import get_db
-from app.db.user.crud import create_user, delete_user, edit_user, get_user, get_users
+from app.db.user.crud import UserCrud
 from app.db.user.schema import User, UserCreate, UserEdit
 
 users_router = r = APIRouter(prefix="/users")
@@ -23,7 +23,7 @@ async def users_list(
     """
     Get all users
     """
-    users = get_users(db)
+    users = UserCrud.get_items(db)
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = f"0-9/{len(users)}"
     return users
@@ -51,7 +51,7 @@ async def user_details(
     """
     Get any user details
     """
-    user = get_user(db, user_id)
+    user = UserCrud.get_item(db, user_id)
     return user
     # return encoders.jsonable_encoder(
     #     user, skip_defaults=True, exclude_none=True,
@@ -68,7 +68,7 @@ async def user_create(
     """
     Create a new user
     """
-    return create_user(db, user)
+    return UserCrud.create_item(db, user)
 
 
 @r.put("/{user_id}", response_model=User, response_model_exclude_none=True)
@@ -82,7 +82,7 @@ async def user_edit(
     """
     Update existing user
     """
-    return edit_user(db, user_id, user)
+    return UserCrud.edit_item(db, user_id, user)
 
 
 @r.delete("/{user_id}", response_model=User, response_model_exclude_none=True)
@@ -95,4 +95,4 @@ async def user_delete(
     """
     Delete existing user
     """
-    return delete_user(db, user_id)
+    return UserCrud.delete_item(db, user_id)

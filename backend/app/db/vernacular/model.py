@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy.orm import relationship
 
 from app.db.models import TableMixin
 from app.db.session import Base
@@ -9,7 +10,8 @@ class Vernacular(Base, TableMixin):
 
     vernacular_id = Column(Integer, primary_key=True, index=True)
     vernacular = Column(String(120), nullable=False)
-    taxon_name_id = Column(Integer)
+    taxon_name_id = Column(Integer, ForeignKey("taxon_name.taxon_name_id"))
+    taxon_name = relationship("TaxonName", backref="vernaculars")
     language = Column(String(20), nullable=False)
     lang_pref = Column(String(1))
     preferred = Column(String(1))

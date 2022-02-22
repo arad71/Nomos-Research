@@ -1,3 +1,4 @@
+from app.db.author.schema import Author
 from app.db.schemas import TableBase
 
 
@@ -18,6 +19,7 @@ class CitationEdit(CitationBase):
 
 class Citation(CitationBase):
     citation_id: int
+    author: Author
 
     class Config:
         orm_mode = True
