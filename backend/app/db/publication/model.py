@@ -11,7 +11,9 @@ class Publication(Base, TableMixin):
     __tablename__ = "publication"
 
     publication_id = Column(Integer, primary_key=True, index=True)
-    bad_publication = Column(Enum(enums.BadPublication))
+    bad_publication = Column(
+        Enum(enums.BadPublication, name=__tablename__ + "__bad_publication")
+    )
     publication = Column(Text)
     publication_name = Column(Text)
     doi = Column(String)

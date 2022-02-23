@@ -28,8 +28,11 @@ class CrossReference(Base, TableMixin):
         remote_side=[TaxonName.taxon_name_id],
         backref=backref("cross_referenced_new_name"),
     )
-    cross_reference_type = Column(Enum(enums.CrossReferenceType), nullable=False)
-    active = Column(Enum(enums.Active), nullable=False)
+    cross_reference_type = Column(
+        Enum(enums.CrossReferenceType, name=__tablename__ + "__cross_reference_type"),
+        nullable=False,
+    )
+    active = Column(Enum(enums.Active, name=__tablename__ + "__active"), nullable=False)
     authorised_by = Column(String(60))
     comments = Column(String(1000))
     notes = Column(String(3000))

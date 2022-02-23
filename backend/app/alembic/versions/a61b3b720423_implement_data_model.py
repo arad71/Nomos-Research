@@ -1,24 +1,13 @@
 """Implement Data Model.
 
 Revision ID: a61b3b720423
-Revises: 
-Create Date: 2022-02-21 19:40:21.684224-08:00
+Revises:
+Create Date: 2022-02-22 22:03:53.541211-08:00
 
 """
-from enum import Enum
-
-import sqlalchemy as sa
-from sqlalchemy.dialects import postgresql
-
 from alembic import op
+import sqlalchemy as sa
 
-from app.db.citation import enums as citation
-from app.db.classification_system import enums as classification_system
-from app.db.cross_reference import enums as cross_reference
-from app.db.publication import enums as publication
-from app.db.taxon_name import enums as taxon_name
-from app.db.taxon_rank import enums as taxon_rank
-from app.db.vernacular import enums as vernacular
 
 # revision identifiers, used by Alembic.
 revision = "a61b3b720423"
@@ -66,14 +55,22 @@ def upgrade():
         sa.PrimaryKeyConstraint("author_id"),
     )
     op.create_index(op.f("ix_author_author_id"), "author", ["author_id"], unique=False)
-    classification_system_classification_type = create_enum('classification_system', 'classification_type', classification_system.ClassificationType)
-    classification_system_classification_preferred = create_enum('classification_system', 'classification_preferred', classification_system.ClassificationPreferred)
     op.create_table(
         "classification_system",
         sa.Column("classification_system_id", sa.Integer(), nullable=False),
         sa.Column("class_desc", sa.String(length=200), nullable=False),
-        sa.Column("class_type", sa.String(length=15), nullable=False),
-        sa.Column("preferred", sa.String(length=1), nullable=True),
+        sa.Column(
+            "class_type",
+            sa.Enum(
+                "informal", "hierarchical", name="classification_system__class_type"
+            ),
+            nullable=False,
+        ),
+        sa.Column(
+            "preferred",
+            sa.Enum("y", "n", "subf", name="classification_system__preferred"),
+            nullable=True,
+        ),
         sa.Column("sort_order", sa.Integer(), nullable=True),
         sa.Column("updated_by", sa.Integer(), nullable=True),
         sa.Column("updated_on", sa.DateTime(), nullable=True),
@@ -120,7 +117,11 @@ def upgrade():
     op.create_table(
         "publication",
         sa.Column("publication_id", sa.Integer(), nullable=False),
-        sa.Column("bad_publication", sa.String(length=1), nullable=True),
+        sa.Column(
+            "bad_publication",
+            sa.Enum("y", "n", "subf", name="publication__bad_publication"),
+            nullable=True,
+        ),
         sa.Column("publication", sa.Text(), nullable=True),
         sa.Column("publication_name", sa.Text(), nullable=True),
         sa.Column("doi", sa.String(), nullable=True),
@@ -198,7 +199,20 @@ def upgrade():
         sa.Column("taxon_rank_id", sa.Integer(), nullable=False),
         sa.Column("kingdom_id", sa.Integer(), nullable=False),
         sa.Column("rank_name", sa.String(length=15), nullable=False),
-        sa.Column("rank_abbrev", sa.String(length=9), nullable=True),
+        sa.Column(
+            "rank_abbrev",
+            sa.Enum(
+                "subsp",
+                "nothovar",
+                "cv",
+                "var",
+                "subvar",
+                "forma",
+                "subf",
+                name="taxon_rank__rank_abbrev",
+            ),
+            nullable=True,
+        ),
         sa.Column("direct_parent_rank_id", sa.Integer(), nullable=False),
         sa.Column("required_parent_rank_id", sa.Integer(), nullable=False),
         sa.Column("updated_by", sa.Integer(), nullable=True),
@@ -254,7 +268,11 @@ def upgrade():
         sa.Column("publication_id", sa.Integer(), nullable=True),
         sa.Column("volume_information", sa.String(length=100), nullable=True),
         sa.Column("publication_year", sa.Integer(), nullable=True),
-        sa.Column("is_current", sa.String(length=1), nullable=False),
+        sa.Column(
+            "is_current",
+            sa.Enum("y", "n", "subf", name="taxon_name__is_current"),
+            nullable=False,
+        ),
         sa.Column("origin", sa.String(length=1), nullable=True),
         sa.Column("informal", sa.String(length=2), nullable=True),
         sa.Column("form_desc_yr", sa.Integer(), nullable=True),
@@ -263,15 +281,27 @@ def upgrade():
         sa.Column("comments", sa.String(length=1000), nullable=True),
         sa.Column("contributed_by", sa.String(length=16), nullable=True),
         sa.Column("contributed_on", sa.DateTime(), nullable=True),
-        sa.Column("validated", sa.String(length=1), nullable=False),
+        sa.Column(
+            "validated",
+            sa.Enum("y", "n", "subf", name="taxon_name__validated"),
+            nullable=False,
+        ),
         sa.Column("source", sa.String(length=10), nullable=True),
         sa.Column("external_id", sa.String(length=10), nullable=True),
         sa.Column("family_code", sa.String(length=5), nullable=True),
         sa.Column("author", sa.String(length=180), nullable=True),
         sa.Column("vernacular", sa.String(length=100), nullable=True),
         sa.Column("editor", sa.String(length=60), nullable=True),
-        sa.Column("naturalised_status", sa.String(length=1), nullable=True),
-        sa.Column("naturalised_certainty", sa.String(length=1), nullable=True),
+        sa.Column(
+            "naturalised_status",
+            sa.Enum("a", "n", "m", "u", name="taxon_name__naturalised_status"),
+            nullable=True,
+        ),
+        sa.Column(
+            "naturalised_certainty",
+            sa.Enum("y", "n", name="taxon_name__naturalised_certainty"),
+            nullable=True,
+        ),
         sa.Column("is_eradicated", sa.String(length=1), nullable=True),
         sa.Column("naturalised_comments", sa.String(length=400), nullable=True),
         sa.Column("linear_sequence", sa.Integer(), nullable=True),
@@ -317,13 +347,16 @@ def upgrade():
         ["taxon_name_id"],
         unique=False,
     )
-    citation_author_type = create_enum("citation", "author_type", citation.AuthorType)
     op.create_table(
         "citation",
         sa.Column("citation_id", sa.Integer(), nullable=False),
         sa.Column("taxon_name_id", sa.Integer(), nullable=True),
         sa.Column("author_id", sa.Integer(), nullable=True),
-        sa.Column("author_type", sa.Column(citation_author_type, citation.AuthorType), nullable=True),
+        sa.Column(
+            "author_type",
+            sa.Enum("basionym", "current", "editor", name="citation__author_type"),
+            nullable=True,
+        ),
         sa.Column("author_order", sa.Integer(), nullable=True),
         sa.Column("updated_by", sa.Integer(), nullable=True),
         sa.Column("updated_on", sa.DateTime(), nullable=True),
@@ -355,8 +388,27 @@ def upgrade():
         sa.Column("cross_reference_id", sa.Integer(), nullable=False),
         sa.Column("old_name_id", sa.Integer(), nullable=False),
         sa.Column("new_name_id", sa.Integer(), nullable=True),
-        sa.Column("cross_reference_type", sa.String(length=3), nullable=False),
-        sa.Column("active", sa.String(length=1), nullable=False),
+        sa.Column(
+            "cross_reference_type",
+            sa.Enum(
+                "ogv",
+                "exc",
+                "mis",
+                "tsy",
+                "nsy",
+                "con",
+                "forma",
+                "err",
+                "isy",
+                name="cross_reference__cross_reference_type",
+            ),
+            nullable=False,
+        ),
+        sa.Column(
+            "active",
+            sa.Enum("y", "n", "subf", name="cross_reference__active"),
+            nullable=False,
+        ),
         sa.Column("authorised_by", sa.String(length=60), nullable=True),
         sa.Column("comments", sa.String(length=1000), nullable=True),
         sa.Column("notes", sa.String(length=3000), nullable=True),
@@ -473,11 +525,25 @@ def upgrade():
         sa.Column("vernacular_id", sa.Integer(), nullable=False),
         sa.Column("vernacular", sa.String(length=120), nullable=False),
         sa.Column("taxon_name_id", sa.Integer(), nullable=True),
-        sa.Column("language", sa.String(length=20), nullable=False),
-        sa.Column("lang_pref", sa.String(length=1), nullable=True),
-        sa.Column("preferred", sa.String(length=1), nullable=True),
+        sa.Column(
+            "language",
+            sa.Enum("english", "indigenous", name="vernacular__language"),
+            nullable=False,
+        ),
+        sa.Column(
+            "lang_pref",
+            sa.Enum("y", "n", "subf", name="vernacular__lang_pref"),
+            nullable=True,
+        ),
+        sa.Column(
+            "preferred",
+            sa.Enum("y", "n", "subf", name="vernacular__preferred"),
+            nullable=True,
+        ),
         sa.Column("source", sa.String(length=50), nullable=True),
-        sa.Column("enabled", sa.String(length=1), nullable=False),
+        sa.Column(
+            "enabled", sa.Enum("y", "n", name="vernacular__enabled"), nullable=False
+        ),
         sa.Column("sort_order", sa.Integer(), nullable=True),
         sa.Column("updated_by", sa.Integer(), nullable=True),
         sa.Column("updated_on", sa.DateTime(), nullable=True),
@@ -543,15 +609,3 @@ def downgrade():
     op.drop_index(op.f("ix_user_user_id"), table_name="user")
     op.drop_index(op.f("ix_user_email"), table_name="user")
     op.drop_table("user")
-
-
-def create_enum(table: str, column: str, enum: Enum):
-    postgresEnum = postgresql.ENUM(enum, name=table + "_" + column)
-    postgresEnum.create(op.get_bind(), checkfirst=True)
-    return postgresEnum
-
-
-def drop_enum(table: str, column: str, enum: Enum):
-    op.drop_column(table, column)
-    postgresEnum = postgresql.ENUM(enum, name=table + "_" + column)
-    postgresEnum.drop(op.get_bind())

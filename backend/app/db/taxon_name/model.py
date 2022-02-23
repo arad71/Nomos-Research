@@ -36,7 +36,9 @@ class TaxonName(Base, TableMixin):
     publication = relationship("Publication", backref=name_plural)
     volume_information = Column(String(100))
     publication_year = Column(Integer)
-    is_current = Column(Enum(enums.IsCurrent), nullable=False)
+    is_current = Column(
+        Enum(enums.IsCurrent, name=__tablename__ + "__is_current"), nullable=False
+    )
     origin = Column(String(1))
     informal = Column(String(2))
     form_desc_yr = Column(Integer)
@@ -45,15 +47,21 @@ class TaxonName(Base, TableMixin):
     comments = Column(String(1000))
     contributed_by = Column(String(16))
     contributed_on = Column(DateTime)
-    validated = Column(Enum(enums.Validated), nullable=False)
+    validated = Column(
+        Enum(enums.Validated, name=__tablename__ + "__validated"), nullable=False
+    )
     source = Column(String(10))
     external_id = Column(String(10))
     family_code = Column(String(5))
     author = Column(String(180))
     vernacular = Column(String(100))
     editor = Column(String(60))
-    naturalised_status = Column(Enum(enums.NaturalisedStatus))
-    naturalised_certainty = Column(Enum(enums.NaturalisedCertainty))
+    naturalised_status = Column(
+        Enum(enums.NaturalisedStatus, name=__tablename__ + "__naturalised_status")
+    )
+    naturalised_certainty = Column(
+        Enum(enums.NaturalisedCertainty, name=__tablename__ + "__naturalised_certainty")
+    )
     is_eradicated = Column(String(1))
     naturalised_comments = Column(String(400))
     linear_sequence = Column(Integer)

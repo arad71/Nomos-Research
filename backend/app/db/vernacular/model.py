@@ -13,9 +13,13 @@ class Vernacular(Base, TableMixin):
     vernacular = Column(String(120), nullable=False)
     taxon_name_id = Column(Integer, ForeignKey("taxon_name.taxon_name_id"))
     taxon_name = relationship("TaxonName", backref="vernaculars")
-    language = Column(Enum(enums.Language), nullable=False)
-    lang_pref = Column(Enum(enums.LangPref))
-    preferred = Column(Enum(enums.Preferred))
+    language = Column(
+        Enum(enums.Language, name=__tablename__ + "__language"), nullable=False
+    )
+    lang_pref = Column(Enum(enums.LangPref, name=__tablename__ + "__lang_pref"))
+    preferred = Column(Enum(enums.Preferred, name=__tablename__ + "__preferred"))
     source = Column(String(50))
-    enabled = Column(Enum(enums.Enabled), nullable=False)
+    enabled = Column(
+        Enum(enums.Enabled, name=__tablename__ + "__enabled"), nullable=False
+    )
     sort_order = Column(Integer)

@@ -16,5 +16,5 @@ class Citation(Base, TableMixin):
     taxon_name = relationship("TaxonName", backref=name_plural)
     author_id = Column(Integer, ForeignKey("author.author_id"))
     author = relationship("Author", backref=name_plural)
-    author_type = Column(Enum(enums.AuthorType))
+    author_type = Column(Enum(enums.AuthorType, name=__tablename__ + "__author_type"))
     author_order = Column(Integer())

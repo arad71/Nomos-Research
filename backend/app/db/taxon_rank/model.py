@@ -14,7 +14,9 @@ class TaxonRank(Base, TableMixin):
     kingdom_id = Column(Integer, ForeignKey("kingdom.kingdom_id"), nullable=False)
     kingdom = relationship("Kingdom", backref="taxon_ranks")
     rank_name = Column(String(15), nullable=False)
-    rank_abbrev = Column(Enum(enums.RankAbbreviation))
+    rank_abbrev = Column(
+        Enum(enums.RankAbbreviation, name=__tablename__ + "__rank_abbrev")
+    )
     direct_parent_rank_id = Column(
         Integer, ForeignKey("taxon_rank.taxon_rank_id"), nullable=False
     )
