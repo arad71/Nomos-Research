@@ -17,13 +17,14 @@ publications_router = r = APIRouter(prefix="/publications")
 )
 async def publication_list(
     response: Response,
+    range: str = "[0,10]",
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):
     """
     Get all publications
     """
-    publications = PublicationCrud.get_items(db)
+    publications = PublicationCrud.get_items(db, range=range)
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = f"0-9/{len(publications)}"
     return publications

@@ -21,13 +21,14 @@ cross_references_router = r = APIRouter(prefix="/cross_references")
 )
 async def cross_reference_list(
     response: Response,
+    range: str = "[0,10]",
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):
     """
     Get all cross_references
     """
-    cross_references = CrossReferenceCrud.get_items(db)
+    cross_references = CrossReferenceCrud.get_items(db, range=range)
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = f"0-9/{len(cross_references)}"
     return cross_references

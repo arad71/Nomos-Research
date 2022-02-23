@@ -21,13 +21,15 @@ classification_systems_router = r = APIRouter(prefix="/classification_systems")
 )
 async def classification_system_list(
     response: Response,
+    range: str = "[0,10]",
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):
     """
     Get all classification_systems
     """
-    classification_systems = ClassificationSystemCrud.get_items(db)
+
+    classification_systems = ClassificationSystemCrud.get_items(db, range=range)
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = f"0-9/{len(classification_systems)}"
     return classification_systems

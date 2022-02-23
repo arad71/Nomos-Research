@@ -17,13 +17,14 @@ taxon_names_router = r = APIRouter(prefix="/taxon_names")
 )
 async def taxon_name_list(
     response: Response,
+    range: str = "[0,10]",
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):
     """
     Get all taxon_names
     """
-    taxon_names = TaxonNameCrud.get_items(db)
+    taxon_names = TaxonNameCrud.get_items(db, range=range)
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = f"0-9/{len(taxon_names)}"
     return taxon_names
