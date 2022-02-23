@@ -10,7 +10,7 @@ class AuthorBase(BaseModel):
     surname: Optional[str]
     first_names: Optional[str]
     initials: Optional[str]
-    orc_id: Optional[int]
+    orc_id: Optional[str]
 
 
 class AuthorCreate(AuthorBase):

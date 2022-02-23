@@ -10,7 +10,7 @@ class TaxonRankBase(BaseModel):
     kingdom_id: int
     rank_name: str
     rank_abbrev: Optional[enums.RankAbbreviation]
-    direct_parent_rank_id: int
+    direct_parent_rank_id: Optional[int]
     required_parent_rank_id: Optional[int]
 
 
