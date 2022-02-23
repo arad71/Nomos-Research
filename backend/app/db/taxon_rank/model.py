@@ -14,7 +14,7 @@ class TaxonRank(Base, TableMixin):
     rank_name = Column(String(15), nullable=False)
     rank_abbrev = Column(String(9))
     direct_parent_rank_id = Column(
-        Integer, ForeignKey("taxon_rank.taxon_rank_id"), nullable=False
+        Integer, ForeignKey("taxon_rank.taxon_rank_id"), nullable=True, index=True
     )
     direct_parent_rank = relationship(
         "TaxonRank",
@@ -23,7 +23,7 @@ class TaxonRank(Base, TableMixin):
         backref=backref("direct_child_ranks"),
     )
     required_parent_rank_id = Column(
-        Integer, ForeignKey("taxon_rank.taxon_rank_id"), nullable=False
+        Integer, ForeignKey("taxon_rank.taxon_rank_id"), nullable=True, index=True
     )
     required_parent_rank = relationship(
         "TaxonRank",
