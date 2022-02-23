@@ -32,11 +32,11 @@ export const KingdomList: FC = (props) => (
       <ReferenceField source="created_by" reference="users">
         <FullNameField source="last_name" />
       </ReferenceField>
-      <DateField source="created_on" />
+      <DateField source="created_on" showTime />
       <ReferenceField source="updated_by" reference="users">
         <FullNameField source="last_name" />
       </ReferenceField>
-      <DateField source="updated_on" />
+      <DateField source="updated_on" showTime />
       <EditButton />
     </Datagrid>
   </List>
