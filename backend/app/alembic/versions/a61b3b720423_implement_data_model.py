@@ -2,7 +2,7 @@
 
 Revision ID: a61b3b720423
 Revises: 
-Create Date: 2022-02-22 19:08:15.990291-08:00
+Create Date: 2022-02-22 20:21:59.795362-08:00
 
 """
 import sqlalchemy as sa
@@ -40,7 +40,7 @@ def upgrade():
         sa.Column("surname", sa.String(length=30), nullable=True),
         sa.Column("first_names", sa.String(length=60), nullable=True),
         sa.Column("initials", sa.String(length=30), nullable=True),
-        sa.Column("orc_id", sa.Integer(), nullable=True),
+        sa.Column("orc_id", sa.String(length=255), nullable=True),
         sa.Column("updated_by", sa.Integer(), nullable=True),
         sa.Column("updated_on", sa.DateTime(), nullable=True),
         sa.Column("created_by", sa.Integer(), nullable=True),
