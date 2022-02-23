@@ -2,28 +2,34 @@ import React, { FC } from 'react';
 import {
   Create,
   SimpleForm,
-  TextField,
-  NumberField,
+  TextInput,
   required,
-  ReferenceField,
+  ReferenceInput,
+  SelectInput,
 } from 'react-admin';
 
 export const TaxonRankCreate: FC = (props) => (
   <Create {...props}>
     <SimpleForm>
-      <ReferenceField label="Kingdom" source="kingdom_id" reference="kingdoms">
-        <TextField source="kingdom_name" />
-      </ReferenceField>
-      <TextField source="rank_name" validate={[required()]} />
-      <TextField source="rank_abbrev" />
-      <NumberField source="direct_parent_rank_id" />
-      <ReferenceField
+      <ReferenceInput label="Kingdom" source="kingdom_id" reference="kingdoms">
+        <SelectInput optionText="kingdom_name" />
+      </ReferenceInput>
+      <TextInput source="rank_name" validate={[required()]} />
+      <TextInput source="rank_abbrev" />
+      <ReferenceInput
         label="Req Parent Rank"
-        source="taxon_rank_id"
+        source="direct_parent_rank_id"
         reference="taxon_ranks"
       >
-        <NumberField source="taxon_rank_id" />
-      </ReferenceField>
+        <SelectInput optionText="rank_name" />
+      </ReferenceInput>
+      <ReferenceInput
+        label="Req Parent Rank"
+        source="required_parent_rank_id"
+        reference="taxon_ranks"
+      >
+        <SelectInput optionText="rank_name" />
+      </ReferenceInput>
     </SimpleForm>
   </Create>
 );

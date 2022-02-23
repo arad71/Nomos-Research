@@ -4,9 +4,11 @@ import {
   List,
   Datagrid,
   TextField,
+  DateField,
   EditButton,
   ReferenceField,
   useRecordContext,
+  NumberField,
 } from 'react-admin';
 
 const FullNameField = (props: any) => {
@@ -25,19 +27,36 @@ export const TaxonRankList: FC = (props) => (
   <List {...props} sort={{ field: 'rank_name', order: 'DESC' }}>
     <Datagrid rowClick="show">
       <TextField source="id" />
-      <TextField source="kingdom_id" />
+      <ReferenceField source="kingdom_id" reference="kingdoms">
+        <TextField source="kingdom_name" />
+      </ReferenceField>
       <TextField source="rank_name" />
       <TextField source="rank_abbrev" />
-      <TextField source="direct_parent_rank_id" />
-      <TextField source="required_parent_rank_id" />
+      <ReferenceField
+        label="Direct Parent Rank"
+        source="direct_parent_rank_id"
+        reference="taxon_ranks"
+      >
+        <NumberField source="rank_name" />
+      </ReferenceField>
+      <ReferenceField
+        label="Req Parent Rank"
+        source="required_parent_rank_id"
+        reference="taxon_ranks"
+      >
+        <NumberField source="rank_name" />
+      </ReferenceField>
       <ReferenceField source="created_by" reference="users">
         <FullNameField source="last_name" />
       </ReferenceField>
-      <TextField source="created_on" />
+      <ReferenceField source="created_by" reference="users">
+        <FullNameField source="last_name" />
+      </ReferenceField>
+      <DateField source="created_on" />
       <ReferenceField source="updated_by" reference="users">
         <FullNameField source="last_name" />
       </ReferenceField>
-      <TextField source="updated_on" />
+      <DateField source="updated_on" />
       <EditButton />
     </Datagrid>
   </List>

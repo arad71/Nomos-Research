@@ -1,21 +1,21 @@
 import React, { FC } from 'react';
 import {
-  Edit, required,
+  Edit,
+  required,
   SimpleForm,
   TextInput,
-  maxLength, number
+  NumberInput,
 } from 'react-admin';
 
-const validateOrcId = [number('Must be an integer')]
-
 export const AuthorEdit: FC = (props) => (
-    <Edit {...props}>
-      <SimpleForm>
-        <TextInput source="author" validate={[required()]}/>
-        <TextInput source="surname" />
-        <TextInput source="first_names" />
-        <TextInput source="initials" />
-        <TextInput source="orc_id" validate={validateOrcId}/>
-      </SimpleForm>
-    </Edit>
+  <Edit {...props}>
+    <SimpleForm>
+      <NumberInput disabled source="id" />
+      <TextInput source="author" validate={[required()]} />
+      <TextInput source="surname" />
+      <TextInput source="first_names" />
+      <TextInput source="initials" />
+      <TextInput source="orc_id" />
+    </SimpleForm>
+  </Edit>
 );
