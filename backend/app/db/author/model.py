@@ -12,7 +12,7 @@ class Author(Base, TableMixin):
     surname = Column(String(30))
     first_names = Column(String(60))
     initials = Column(String(30))
-    orc_id = Column(Integer)
+    orc_id = Column(String(255))
     publications = relationship(
         "Publication", secondary="publication_author", back_populates="author"
     )

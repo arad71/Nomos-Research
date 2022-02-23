@@ -93,12 +93,25 @@ And fill in `upgrade` and `downgrade` methods. For more information see
 [Alembic's official documentation](https://alembic.sqlalchemy.org/en/latest/tutorial.html#create-a-migration-script).
 
 
-Using `autogenerate`:
+### Using `autogenerate`:
 
 Alembic can view the status of the database and compare against the table metadata in the application, generating the “obvious” migrations based on a comparison. This is achieved using the --autogenerate option to the alembic revision command, which places so-called candidate migrations into our new migrations file. We review and modify these by hand as needed, then proceed normally.
 ```
 alembic revision  --autogenerate -m "Data Model Updates."
 ```
+
+### Recreating migrations:
+
+Up until we have data that we care about in the system:
+
+In order to reset the clock on your db you need to do the following inside the backend container:
+```bash
+alembic downgrade base
+rm app/alembic/versions/a61b3b720423_implement_data_model.py
+alembic revision  --autogenerate -m "Implement Data Model." --rev-id a61b3b720423
+```
+Then run `scripts/format.sh`
+
 
 ## Testing
 
