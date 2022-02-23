@@ -7,7 +7,7 @@ export const KingdomShow: FC = (props) => {
       <SimpleForm>
         <NumberField source="id" />
         <TextField source="kingdom_name" />
-        <TextField component="pre" source="kingdom_desc" />
+        <TextField source="kingdom_desc" />
       </SimpleForm>
     </Show>
   );
