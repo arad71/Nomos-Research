@@ -7,7 +7,8 @@ import MyLoginPage from '../views/NewLogin';
 
 import { UserList, UserEdit, UserCreate } from './Users';
 import { KingdomList, KingdomEdit, KingdomCreate } from './Kingdoms';
-import { ClassificationSystemCreate, ClassificationSystemShow, ClassificationSystemEdit, ClassificationSystemList } from './classification_systems';
+import { ClassificationSystemCreate, ClassificationSystemShow, ClassificationSystemEdit, ClassificationSystemList } from './Classification_systems';
+import { AuthorCreate, AuthorShow, AuthorEdit, AuthorList } from './Authors';
 
 const httpClient = (url: any, options: any) => {
   if (!options) {
@@ -21,7 +22,7 @@ const httpClient = (url: any, options: any) => {
   return fetchUtils.fetchJson(url, options);
 };
 
-const dataProvider = restDataProvider(BACKEND_URL, {'users':'user_id','kingdoms':'kingdom_id','classification_systems':'classification_system_id'}, {}, httpClient);
+const dataProvider = restDataProvider(BACKEND_URL, {'users':'user_id','kingdoms':'kingdom_id','classification_systems':'classification_system_id','authors':'author_id'}, {}, httpClient);
 
 
 export const Admin: FC = () => {
@@ -57,6 +58,15 @@ export const Admin: FC = () => {
                 show={ClassificationSystemShow}
                 edit={ClassificationSystemEdit}
                 create={ClassificationSystemCreate}
+            />
+        ) : null,
+        permissions === 'admin' ? (
+            <Resource
+                name="authors"
+                list={AuthorList}
+                show={AuthorShow}
+                edit={AuthorEdit}
+                create={AuthorCreate}
             />
         ) : null,
       ]}
