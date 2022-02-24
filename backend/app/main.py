@@ -18,7 +18,6 @@ from app.api.api_v1.routers.users import users_router
 from app.api.api_v1.routers.vernacular import vernaculars_router
 from app.core import config
 from app.core.auth import get_current_active_user
-from app.core.celery_app import celery_app
 from app.db.session import SessionLocal
 
 app = FastAPI(title=config.PROJECT_NAME, docs_url="/api/docs", openapi_url="/api")
@@ -49,13 +48,6 @@ async def db_session_middleware(request: Request, call_next):
 @app.get("/api/v1")
 async def root():
     return {"message": "Hello World"}
-
-
-@app.get("/api/v1/task")
-async def example_task():
-    celery_app.send_task("app.tasks.example_task", args=["Hello World"])
-
-    return {"message": "success"}
 
 
 # Routers
