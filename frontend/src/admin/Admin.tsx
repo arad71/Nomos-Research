@@ -37,6 +37,12 @@ import {
   CitationEdit,
   CitationList,
 } from './Citations';
+import {
+  TaxonNameCreate,
+  TaxonNameShow,
+  TaxonNameEdit,
+  TaxonNameList,
+} from './Taxon_names';
 
 const httpClient = (url: any, options: any) => {
   if (!options) {
@@ -59,7 +65,8 @@ const dataProvider = restDataProvider(
   'authors':'author_id',
   'taxon_ranks':'taxon_rank_id',
   'publications':'publication_id',
-  'citations':'citations_id',
+  'citations':'citation_id',
+  'taxon_names':'taxon_name_id',
   },
   {},
   httpClient
@@ -135,6 +142,15 @@ export const Admin: FC = () => {
             show={CitationShow}
             edit={CitationEdit}
             create={CitationCreate}
+          />
+        ) : null,
+        permissions === 'admin' ? (
+          <Resource
+            name="taxon_names"
+            list={TaxonNameList}
+            show={TaxonNameShow}
+            edit={TaxonNameEdit}
+            create={TaxonNameCreate}
           />
         ) : null,
       ]}
