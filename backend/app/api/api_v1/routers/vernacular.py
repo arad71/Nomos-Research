@@ -26,7 +26,7 @@ async def vernacular_list(
     """
     vernacular = VernacularCrud.get_items(db, range=range)
     # This is necessary for react-admin to work
-    response.headers["Content-Range"] = f"0-9/{len(vernacular)}"
+    response.headers["Content-Range"] = f"0-9/{VernacularCrud.get_items_count(db)}"
     return vernacular
 
 

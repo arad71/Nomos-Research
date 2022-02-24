@@ -31,7 +31,9 @@ async def classification_system_list(
 
     classification_systems = ClassificationSystemCrud.get_items(db, range=range)
     # This is necessary for react-admin to work
-    response.headers["Content-Range"] = f"0-9/{len(classification_systems)}"
+    response.headers[
+        "Content-Range"
+    ] = f"0-9/{ClassificationSystemCrud.get_items_count(db)}"
     return classification_systems
 
 

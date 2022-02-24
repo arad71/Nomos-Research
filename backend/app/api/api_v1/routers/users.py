@@ -26,7 +26,7 @@ async def users_list(
     """
     users = UserCrud.get_items(db, range=range)
     # This is necessary for react-admin to work
-    response.headers["Content-Range"] = f"0-9/{len(users)}"
+    response.headers["Content-Range"] = f"0-9/{UserCrud.get_items_count(db)}"
     return users
 
 

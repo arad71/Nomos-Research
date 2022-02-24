@@ -26,7 +26,7 @@ async def publication_list(
     """
     publications = PublicationCrud.get_items(db, range=range)
     # This is necessary for react-admin to work
-    response.headers["Content-Range"] = f"0-9/{len(publications)}"
+    response.headers["Content-Range"] = f"0-9/{PublicationCrud.get_items_count(db)}"
     return publications
 
 
