@@ -1,7 +1,8 @@
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, Request, Response
 
+from app.api.dependencies.range_query import RangeQueryParameter
 from app.core.auth import get_current_active_superuser
 from app.db.citation.crud import CitationCrud
 from app.db.citation.schema import Citation, CitationCreate, CitationEdit
@@ -17,7 +18,7 @@ citations_router = r = APIRouter(prefix="/citations")
 )
 async def citation_list(
     response: Response,
-    range: str = "[0,10]",
+    range: Optional[str] = RangeQueryParameter,
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):

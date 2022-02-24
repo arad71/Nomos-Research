@@ -4,12 +4,11 @@ import typing as t
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.core.config import DEFAULT_PAGE_SIZE
 from app.db.session import Base
 
 
 class Crud:
-    DEFAULT_LIMIT: 10
-
     @classmethod
     def create_item(cls, db: Session, item: object, current_user: int):
         db_item = cls.model(**item.dict())
@@ -30,12 +29,19 @@ class Crud:
         return item
 
     @classmethod
-    def get_items(cls, db: Session, range: str = "[0, 10]") -> t.List[Base]:
+    def get_items(
+        cls, db: Session, range: str = f"[0,{DEFAULT_PAGE_SIZE}]"
+    ) -> t.List[Base]:
+        limit, skip = cls.get_skip_and_limit(range)
+        return db.query(cls.model).offset(skip).limit(limit).all()
+
+    @classmethod
+    def get_skip_and_limit(cls, range):
         range = json.loads(range)
         skip = range[0] or 0
-        limit = range[1] or Crud.DEFAULT_LIMIT
+        limit = range[1] or DEFAULT_PAGE_SIZE
         limit = limit - skip
-        return db.query(cls.model).offset(skip).limit(limit).all()
+        return limit, skip
 
     @classmethod
     def get_items_count(cls, db: Session) -> int:
