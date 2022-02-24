@@ -30,6 +30,8 @@ export const CitationList: FC = (props) => (
       <ReferenceField source="author_id" reference="authors">
         <TextField source="author" />
       </ReferenceField>
+      <TextField source="author_type" />
+      <TextField source="author_order" />
       <ReferenceField source="created_by" reference="users">
         <FullNameField source="last_name" />
       </ReferenceField>

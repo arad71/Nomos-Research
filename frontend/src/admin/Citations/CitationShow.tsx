@@ -30,6 +30,8 @@ export const CitationShow: FC = (props) => (
       <ReferenceField source="author_id" reference="authors">
         <TextField source="author" />
       </ReferenceField>
+      <TextField source="author_type" />
+      <TextField source="author_order" />
       <EditButton />
     </SimpleShowLayout>
   </Show>
