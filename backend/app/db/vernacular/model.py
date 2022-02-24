@@ -1,8 +1,9 @@
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Column, Enum, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from app.db.models import TableMixin
 from app.db.session import Base
+from app.db.vernacular import enums
 
 
 class Vernacular(Base, TableMixin):
@@ -12,9 +13,13 @@ class Vernacular(Base, TableMixin):
     vernacular = Column(String(120), nullable=False)
     taxon_name_id = Column(Integer, ForeignKey("taxon_name.taxon_name_id"))
     taxon_name = relationship("TaxonName", backref="vernaculars")
-    language = Column(String(20), nullable=False)
-    lang_pref = Column(String(1))
-    preferred = Column(String(1))
+    language = Column(
+        Enum(enums.Language, name=__tablename__ + "__language"), nullable=False
+    )
+    lang_pref = Column(Enum(enums.LangPref, name=__tablename__ + "__lang_pref"))
+    preferred = Column(Enum(enums.Preferred, name=__tablename__ + "__preferred"))
     source = Column(String(50))
-    enabled = Column(String(1), nullable=False)
+    enabled = Column(
+        Enum(enums.Enabled, name=__tablename__ + "__enabled"), nullable=False
+    )
     sort_order = Column(Integer)
