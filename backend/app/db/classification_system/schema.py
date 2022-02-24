@@ -2,13 +2,14 @@ from typing import Optional
 
 from pydantic import BaseModel
 
+from app.db.classification_system import enums
 from app.db.schemas import TableBase
 
 
 class ClassificationSystemBase(BaseModel):
     class_desc: str
-    class_type: str
-    preferred: Optional[str]
+    class_type: enums.ClassificationType
+    preferred: Optional[enums.ClassificationPreferred]
     sort_order: Optional[int]
 
 

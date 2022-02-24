@@ -1,7 +1,9 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
+from sqlalchemy.types import Enum
 
 from app.db.models import TableMixin
+from app.db.publication import enums
 from app.db.session import Base
 
 
@@ -9,7 +11,9 @@ class Publication(Base, TableMixin):
     __tablename__ = "publication"
 
     publication_id = Column(Integer, primary_key=True, index=True)
-    bad_publication = Column(String(1))
+    bad_publication = Column(
+        Enum(enums.BadPublication, name=__tablename__ + "__bad_publication")
+    )
     publication = Column(Text)
     publication_name = Column(Text)
     doi = Column(String)
