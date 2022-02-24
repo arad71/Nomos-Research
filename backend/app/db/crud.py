@@ -38,7 +38,7 @@ class Crud:
         return db.query(cls.model).offset(skip).limit(limit).all()
 
     @classmethod
-    def get_items_count(cls, db: Session) -> t.List[Base]:
+    def get_items_count(cls, db: Session) -> int:
         return db.query(cls.model).count()
 
     @classmethod
