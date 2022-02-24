@@ -6,6 +6,7 @@ import {
   TextField,
   EditButton,
   ReferenceField,
+  DateField,
   useRecordContext,
 } from 'react-admin';
 
@@ -35,11 +36,11 @@ export const CitationList: FC = (props) => (
       <ReferenceField source="created_by" reference="users">
         <FullNameField source="last_name" />
       </ReferenceField>
-      <TextField source="created_on" />
+      <DateField source="created_on" />
       <ReferenceField source="updated_by" reference="users">
         <FullNameField source="last_name" />
       </ReferenceField>
-      <TextField source="updated_on" />
+      <DateField source="updated_on" />
       <EditButton />
     </Datagrid>
   </List>

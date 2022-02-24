@@ -43,6 +43,12 @@ import {
   TaxonNameEdit,
   TaxonNameList,
 } from './Taxon_names';
+import {
+  InformalGroupCreate,
+  InformalGroupShow,
+  InformalGroupEdit,
+  InformalGroupList,
+} from './Informal_groups';
 
 const httpClient = (url: any, options: any) => {
   if (!options) {
@@ -67,6 +73,7 @@ const dataProvider = restDataProvider(
   'publications':'publication_id',
   'citations':'citation_id',
   'taxon_names':'taxon_name_id',
+  'informal_groups':'informal_group_id',
   },
   {},
   httpClient
@@ -151,6 +158,15 @@ export const Admin: FC = () => {
             show={TaxonNameShow}
             edit={TaxonNameEdit}
             create={TaxonNameCreate}
+          />
+        ) : null,
+        permissions === 'admin' ? (
+          <Resource
+            name="informal_groups"
+            list={InformalGroupList}
+            show={InformalGroupShow}
+            edit={InformalGroupEdit}
+            create={InformalGroupCreate}
           />
         ) : null,
       ]}
