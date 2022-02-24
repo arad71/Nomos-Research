@@ -26,7 +26,7 @@ async def citation_list(
     """
     citations = CitationCrud.get_items(db, range=range)
     # This is necessary for react-admin to work
-    response.headers["Content-Range"] = f"0-9/{len(citations)}"
+    response.headers["Content-Range"] = f"0-9/{CitationCrud.get_items_count(db)}"
     return citations
 
 

@@ -38,6 +38,10 @@ class Crud:
         return db.query(cls.model).offset(skip).limit(limit).all()
 
     @classmethod
+    def get_items_count(cls, db: Session) -> int:
+        return db.query(cls.model).count()
+
+    @classmethod
     def edit_item(
         cls, db: Session, id: int, values: object, current_user: int
     ) -> object:

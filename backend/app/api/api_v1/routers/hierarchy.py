@@ -26,7 +26,7 @@ async def hierarchy_list(
     """
     hierarchies = HierarchyCrud.get_items(db, range=range)
     # This is necessary for react-admin to work
-    response.headers["Content-Range"] = f"0-9/{len(hierarchies)}"
+    response.headers["Content-Range"] = f"0-9/{HierarchyCrud.get_items_count(db)}"
     return hierarchies
 
 

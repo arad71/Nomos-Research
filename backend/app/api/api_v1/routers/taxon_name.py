@@ -26,7 +26,7 @@ async def taxon_name_list(
     """
     taxon_names = TaxonNameCrud.get_items(db, range=range)
     # This is necessary for react-admin to work
-    response.headers["Content-Range"] = f"0-9/{len(taxon_names)}"
+    response.headers["Content-Range"] = f"0-9/{TaxonNameCrud.get_items_count(db)}"
     return taxon_names
 
 
