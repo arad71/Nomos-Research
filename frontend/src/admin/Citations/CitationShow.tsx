@@ -6,7 +6,7 @@ import {
   TextField,
   EditButton,
   ReferenceField,
-  useRecordContext,
+  useRecordContext, TextInput,
 } from 'react-admin';
 
 const FullNameField = (props: any) => {
@@ -30,7 +30,8 @@ export const CitationShow: FC = (props) => (
       <ReferenceField source="author_id" reference="authors">
         <TextField source="author" />
       </ReferenceField>
-      <EditButton />
+      <TextField source="author_type" />
+      <TextField source="author_order" />
     </SimpleShowLayout>
   </Show>
 );
