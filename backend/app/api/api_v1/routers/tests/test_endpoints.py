@@ -9,6 +9,7 @@ import pytest
         ("classification_systems"),
         ("cross_references"),
         ("hierarchies"),
+        ("informal_groups"),
         ("kingdoms"),
         ("publications"),
         ("taxon_names"),

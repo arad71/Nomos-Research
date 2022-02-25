@@ -5,6 +5,7 @@ from pydantic import BaseModel
 
 from app.db.kingdom.schema import Kingdom
 from app.db.schemas import TableBase
+from app.db.taxon_name import enums
 from app.db.taxon_rank.schema import TaxonRank
 
 
@@ -27,7 +28,7 @@ class TaxonNameBase(BaseModel):
     publication_id: Optional[int]
     volume_information: Optional[str]
     publication_year: Optional[int]
-    is_current: str
+    is_current: enums.IsCurrent
     origin: Optional[str]
     informal: Optional[str]
     form_desc_yr: Optional[int]
@@ -36,15 +37,15 @@ class TaxonNameBase(BaseModel):
     comments: Optional[str]
     contributed_by: Optional[str]
     contributed_on: Optional[datetime]
-    validated: str
+    validated: enums.Validated
     source: Optional[str]
     external_id: Optional[str]
     family_code: Optional[str]
     author: Optional[str]
     vernacular: Optional[str]
     editor: Optional[str]
-    naturalised_status: Optional[str]
-    naturalised_certainty: Optional[str]
+    naturalised_status: Optional[enums.NaturalisedStatus]
+    naturalised_certainty: Optional[enums.NaturalisedCertainty]
     is_eradicated: Optional[str]
     naturalised_comments: Optional[str]
     linear_sequence: Optional[int]
