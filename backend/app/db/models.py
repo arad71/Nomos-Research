@@ -12,7 +12,7 @@ class TableMixin(object):
 
     @declared_attr
     def updated_on(cls):
-        return Column(DateTime, onupdate=func.current_timestamp())
+        return Column(DateTime, default=func.current_timestamp(), onupdate=func.current_timestamp())
 
     @declared_attr
     def created_by(cls):
