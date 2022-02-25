@@ -2,3 +2,7 @@ services:
   postgres:
     ports:
       - '${DB_PUBLISH_PORT:-5432}:${DB_PORT:-5432}'
+  frontend:
+    ports:
+      # Support webpack dev server
+      - '${FRONTEND_PUBLISH_PORT:-3000}:3000'
