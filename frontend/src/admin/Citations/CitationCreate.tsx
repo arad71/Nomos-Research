@@ -16,7 +16,14 @@ export const CitationCreate: FC = (props) => (
       <ReferenceInput source="author_id" reference="authors">
         <SelectInput optionText="author" />
       </ReferenceInput>
-      <TextInput source="author_type" />
+      <SelectInput
+        source="author_type"
+        choices={[
+          { id: 'basionym', name: 'basionym' },
+          { id: 'current', name: 'current' },
+          { id: 'editor', name: 'editor' },
+        ]}
+      />
       <TextInput source="author_order" />
     </SimpleForm>
   </Create>
