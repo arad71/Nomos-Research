@@ -11,7 +11,7 @@ import {
 
 export const UserList: FC = (props) => (
   <List {...props}>
-    <Datagrid rowClick="edit">
+    <Datagrid rowClick="show">
       <TextField source="id" />
       <EmailField source="email" />
       <TextField source="first_name" />
