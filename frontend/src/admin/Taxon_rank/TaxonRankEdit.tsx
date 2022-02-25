@@ -5,7 +5,8 @@ import {
   SimpleForm,
   TextInput,
   ReferenceInput,
-  SelectInput, NumberInput,
+  SelectInput,
+  NumberInput,
 } from 'react-admin';
 
 export const TaxonRankEdit: FC = (props) => (
@@ -13,7 +14,7 @@ export const TaxonRankEdit: FC = (props) => (
     <SimpleForm>
       <NumberInput disabled source="id" />
       <ReferenceInput label="Kingdom" source="kingdom_id" reference="kingdoms">
-        <SelectInput optionText="kingdom_name" />
+        <SelectInput optionText="kingdom_name" validate={[required()]} />
       </ReferenceInput>
       <TextInput source="rank_name" validate={[required()]} />
       <TextInput source="rank_abbrev" />
