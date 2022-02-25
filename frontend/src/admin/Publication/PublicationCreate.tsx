@@ -6,6 +6,7 @@ import {
   NumberInput,
   ReferenceInput,
   SelectInput,
+  BooleanInput,
 } from 'react-admin';
 
 export const PublicationCreate: FC = (props) => (
@@ -14,8 +15,8 @@ export const PublicationCreate: FC = (props) => (
       <SelectInput
         source="bad_publication"
         choices={[
-          { id: 'Y', name: 'Y' },
-          { id: 'Y', name: 'N' },
+          { id: 'y', name: 'n' },
+          { id: 'n', name: 'n' },
         ]}
       />
       <TextInput source="publication" />
@@ -35,13 +36,7 @@ export const PublicationCreate: FC = (props) => (
       <TextInput source="citation_html" />
       <TextInput source="citation_author_year" />
       <TextInput source="notes" />
-      <SelectInput
-        source="published"
-        choices={[
-          { id: 'Y', name: 'Y' },
-          { id: 'Y', name: 'N' },
-        ]}
-      />
+      <BooleanInput label="Published" source="published" />
       <TextInput source="publisher" />
       <TextInput source="published_location" />
       <TextInput source="publication_date" />
