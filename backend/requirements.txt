@@ -19,5 +19,5 @@ pyjwt==1.7.1
 mypy==0.931
 autoflake==1.4
 flake8==4.0.1
-black==21.12b0
+black==22.1.0
 isort[colors]==5.10.1
