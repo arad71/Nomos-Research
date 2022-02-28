@@ -1,7 +1,7 @@
 // in src/users.js
 import React, { FC } from 'react';
-import { RichTextField } from 'react-admin';
 import {
+  RichTextField,
   SelectField,
   List,
   Datagrid,
@@ -12,7 +12,6 @@ import {
   useRecordContext,
   NumberField,
 } from 'react-admin';
-import {PublicationEdit, PublicationShow} from '.';
 import BadPublicationOptions from './BadPublicationOptions';
 
 const FullNameField = (props: any) => {
