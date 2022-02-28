@@ -42,7 +42,11 @@ export const PublicationShow: FC = (props) => {
         <TextField source="bhl_url" />
         <TextField source="tl2" />
         <TextField source="reference_type" />
-        <ReferenceField label="Parent" source="parent_id" reference="publications">
+        <ReferenceField
+          label="Parent"
+          source="parent_id"
+          reference="publications"
+        >
           <TextField source="publication" />
         </ReferenceField>
         <TextField source="reference_author_role" />

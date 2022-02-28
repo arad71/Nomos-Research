@@ -1,13 +1,15 @@
 // in src/users.js
 import React, { FC } from 'react';
 import {
+  NumberField,
+  SelectField,
   Show,
   SimpleShowLayout,
   TextField,
-  EditButton,
   ReferenceField,
-  useRecordContext, TextInput,
+  useRecordContext,
 } from 'react-admin';
+import AuthorType from './AuthorType';
 
 const FullNameField = (props: any) => {
   const record = useRecordContext(props);
@@ -30,8 +32,8 @@ export const CitationShow: FC = (props) => (
       <ReferenceField source="author_id" reference="authors">
         <TextField source="author" />
       </ReferenceField>
-      <TextField source="author_type" />
-      <TextField source="author_order" />
+      <SelectField source="author_type" choices={AuthorType} />
+      <NumberField source="author_order" />
     </SimpleShowLayout>
   </Show>
 );
