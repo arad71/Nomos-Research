@@ -1,25 +1,22 @@
 import React, { FC } from 'react';
 import {
+  BooleanInput,
   Create,
-  SimpleForm,
-  TextInput,
   NumberInput,
   ReferenceInput,
+  required,
   SelectInput,
-  BooleanInput,
+  SimpleForm,
+  TextInput,
 } from 'react-admin';
+import RichTextInput from 'ra-input-rich-text';
+import BadPublicationOptions from './BadPublicationOptions';
 
 export const PublicationCreate: FC = (props) => (
   <Create {...props}>
     <SimpleForm>
-      <SelectInput
-        source="bad_publication"
-        choices={[
-          { id: 'y', name: 'n' },
-          { id: 'n', name: 'n' },
-        ]}
-      />
-      <TextInput source="publication" />
+      <TextInput source="publication" validate={[required()]} />
+      <SelectInput source="bad_publication" choices={BadPublicationOptions} />
       <TextInput source="publication_name" />
       <TextInput source="doi" />
       <TextInput source="title" />
@@ -33,7 +30,7 @@ export const PublicationCreate: FC = (props) => (
       <TextInput source="verbatim_citation" />
       <TextInput source="verbatim_author" />
       <TextInput source="citation" />
-      <TextInput source="citation_html" />
+      <RichTextInput source="citation_html" />
       <TextInput source="citation_author_year" />
       <TextInput source="notes" />
       <BooleanInput label="Published" source="published" />
@@ -45,14 +42,18 @@ export const PublicationCreate: FC = (props) => (
       <TextInput source="bhl_url" />
       <TextInput source="tl2" />
       <TextInput source="reference_type" />
-      <ReferenceInput label="Parent" source="parent" reference="publications">
+      <ReferenceInput
+        label="Parent"
+        source="parent_id"
+        reference="publications"
+      >
         <SelectInput optionText="publication" />
       </ReferenceInput>
       <TextInput source="reference_author_role" />
       <TextInput source="language" />
       <ReferenceInput
         label="Duplicate Of"
-        source="duplicate_of"
+        source="duplicate_of_id"
         reference="publications"
       >
         <SelectInput optionText="publication" />
