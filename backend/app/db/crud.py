@@ -24,7 +24,6 @@ class Crud:
     @classmethod
     def get_item(cls, db: Session, id: int):
         item = db.query(cls.model).filter(getattr(cls.model, cls.id_key) == id).first()
-        print(getattr(cls.model, cls.id_key))
         if not item:
             raise HTTPException(status_code=404, detail=cls.name + " not found")
         return item
