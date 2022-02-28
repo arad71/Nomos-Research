@@ -2,7 +2,7 @@ alembic==1.4.3
 Authlib==0.14.3
 fastapi==0.65.2
 httpx==0.15.5
-ipython==7.18.1
+ipython==8.1.0
 itsdangerous==1.1.0
 Jinja2==2.11.3
 psycopg2==2.8.6
