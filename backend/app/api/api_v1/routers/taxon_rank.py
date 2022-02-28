@@ -17,15 +17,16 @@ taxon_ranks_router = r = APIRouter(prefix="/taxon_ranks")
 )
 async def taxon_rank_list(
     response: Response,
+    range: str = "[0,10]",
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):
     """
     Get all taxon_ranks
     """
-    taxon_ranks = TaxonRankCrud.get_items(db)
+    taxon_ranks = TaxonRankCrud.get_items(db, range=range)
     # This is necessary for react-admin to work
-    response.headers["Content-Range"] = f"0-9/{len(taxon_ranks)}"
+    response.headers["Content-Range"] = f"0-9/{TaxonRankCrud.get_items_count(db)}"
     return taxon_ranks
 
 
