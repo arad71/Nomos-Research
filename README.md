@@ -50,10 +50,18 @@ docker-compose restart
 
 ### Bringing containers down:
 
+Note that this will delete the containers themselves
 ```
 docker-compose down
 ```
 
+### Kill it with fire
+In order to nuke your database and everythign in it use:
+
+```bash
+docker-compose down -v
+scripts/build.sh
+```
 ### Frontend Development
 
 Alternatively to running inside docker, it can sometimes be easier
