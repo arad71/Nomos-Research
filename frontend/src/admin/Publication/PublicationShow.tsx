@@ -2,25 +2,21 @@ import React, { FC } from 'react';
 import {
   NumberField,
   ReferenceField,
-  SelectInput,
+  RichTextField,
+  SelectField,
   Show,
   SimpleShowLayout,
   TextField,
 } from 'react-admin';
+import BadPublicationOptions from './BadPublicationOptions';
 
 export const PublicationShow: FC = (props) => {
   return (
     <Show {...props}>
       <SimpleShowLayout>
         <TextField source="id" />
-        <SelectInput
-          source="bad_publication"
-          choices={[
-            { id: 'Y', name: 'Y' },
-            { id: 'Y', name: 'N' },
-          ]}
-        />
         <TextField source="publication" />
+        <SelectField source="bad_publication" choices={BadPublicationOptions} />
         <TextField source="publication_name" />
         <TextField source="doi" />
         <TextField source="title" />
@@ -34,7 +30,7 @@ export const PublicationShow: FC = (props) => {
         <TextField source="verbatim_citation" />
         <TextField source="verbatim_author" />
         <TextField source="citation" />
-        <TextField source="citation_html" />
+        <RichTextField source="citation_html" />
         <TextField source="citation_author_year" />
         <TextField source="notes" />
         <TextField source="published" />
@@ -46,14 +42,14 @@ export const PublicationShow: FC = (props) => {
         <TextField source="bhl_url" />
         <TextField source="tl2" />
         <TextField source="reference_type" />
-        <ReferenceField label="Parent" source="parent" reference="publications">
+        <ReferenceField label="Parent" source="parent_id" reference="publications">
           <TextField source="publication" />
         </ReferenceField>
         <TextField source="reference_author_role" />
         <TextField source="language" />
         <ReferenceField
           label="Duplicate Of"
-          source="duplicate_of"
+          source="duplicate_of_id"
           reference="publications"
         >
           <TextField source="publication" />
