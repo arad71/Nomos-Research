@@ -8,37 +8,37 @@ from app.db.schemas import TableBase
 
 
 class PublicationBase(BaseModel):
+    publication: str
     bad_publication: Optional[enums.BadPublication]
-    publication: Optional[str]
-    publication_name: str
-    doi: str
-    title: str
-    display_title: str
-    abbreviated_title: str
-    year: int
-    volume: str
-    edition: str
-    pages: str
-    verbatim_reference: str
-    verbatim_citation: str
-    verbatim_author: str
-    citation: str
-    citation_html: str
-    citation_author_year: str
-    notes: str
-    published: bool
-    publisher: str
-    published_location: str
-    publication_date: str
-    isbn: str
-    issn: str
-    bhl_url: str
-    tl2: str
-    reference_type: str
-    parent: int
-    reference_author_role: str
-    language: str
-    duplicate_of: int
+    publication_name: Optional[str]
+    doi: Optional[str]
+    title: Optional[str]
+    display_title: Optional[str]
+    abbreviated_title: Optional[str]
+    year: Optional[int]
+    volume: Optional[str]
+    edition: Optional[str]
+    pages: Optional[str]
+    verbatim_reference: Optional[str]
+    verbatim_citation: Optional[str]
+    verbatim_author: Optional[str]
+    citation: Optional[str]
+    citation_html: Optional[str]
+    citation_author_year: Optional[str]
+    notes: Optional[str]
+    published: Optional[bool]
+    publisher: Optional[str]
+    published_location: Optional[str]
+    publication_date: Optional[str]
+    isbn: Optional[str]
+    issn: Optional[str]
+    bhl_url: Optional[str]
+    tl2: Optional[str]
+    reference_type: Optional[str]
+    parent_id: Optional[int]
+    reference_author_role: Optional[str]
+    language: Optional[str]
+    duplicate_of_id: Optional[int]
     pass
 
 
@@ -52,7 +52,7 @@ class PublicationEdit(PublicationBase):
 
 class Publication(PublicationBase, TableBase):
     publication_id: int
-    author: Author
+    author: list[Author]
 
     class Config:
         orm_mode = True
