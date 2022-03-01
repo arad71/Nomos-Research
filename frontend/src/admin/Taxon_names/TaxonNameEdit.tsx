@@ -9,8 +9,8 @@ import {
   SimpleForm,
   TextInput,
 } from 'react-admin';
-import BooleanOptions from "../shared/BooleanOptions";
-import NaturalisedStatus from "./NaturalisedStatus";
+import BooleanOptions from '../shared/BooleanOptions';
+import NaturalisedStatus from './NaturalisedStatus';
 
 export const TaxonNameEdit: FC = (props) => (
   <Edit {...props}>
@@ -47,7 +47,11 @@ export const TaxonNameEdit: FC = (props) => (
         <SelectInput optionText="publication_name" />
       </ReferenceInput>
       <TextInput source="volume_information" />
-      <SelectInput source="is_current" choices={BooleanOptions} />
+      <SelectInput
+        source="is_current"
+        choices={BooleanOptions}
+        validate={required()}
+      />
       <TextInput source="origin" />
       <TextInput source="informal" />
       <NumberInput source="form_desc_yr" />
@@ -56,7 +60,11 @@ export const TaxonNameEdit: FC = (props) => (
       <TextInput multiline source="comments" />
       <TextInput source="contributed_by" />
       <DateTimeInput source="contributed_on" />
-      <SelectInput source="validated" choices={BooleanOptions} validate={[required()]} />
+      <SelectInput
+        source="validated"
+        choices={BooleanOptions}
+        validate={[required()]}
+      />
       <TextInput source="source" />
       <TextInput source="external_id" />
       <TextInput source="family_code" />
