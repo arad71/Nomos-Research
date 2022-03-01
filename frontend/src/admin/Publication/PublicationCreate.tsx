@@ -10,13 +10,13 @@ import {
   TextInput,
 } from 'react-admin';
 import RichTextInput from 'ra-input-rich-text';
-import BadPublicationOptions from './BadPublicationOptions';
+import BooleanOptions from '../shared/BooleanOptions';
 
 export const PublicationCreate: FC = (props) => (
   <Create {...props}>
     <SimpleForm>
       <TextInput source="publication" validate={[required()]} />
-      <SelectInput source="bad_publication" choices={BadPublicationOptions} />
+      <SelectInput source="bad_publication" choices={BooleanOptions} />
       <TextInput source="publication_name" />
       <TextInput source="doi" />
       <TextInput source="title" />
