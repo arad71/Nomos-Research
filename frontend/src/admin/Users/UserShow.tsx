@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import {
   Show,
-  SimpleForm,
+  SimpleShowLayout,
   TextField,
   NumberField,
   BooleanField,
@@ -10,14 +10,14 @@ import {
 export const UserShow: FC = (props) => {
   return (
     <Show {...props}>
-      <SimpleForm>
+      <SimpleShowLayout>
         <NumberField source="id" />
         <TextField source="email" />
         <TextField source="first_name" />
         <TextField source="last_name" />
         <BooleanField source="is_active" />
         <BooleanField source="is_superuser" />
-      </SimpleForm>
+      </SimpleShowLayout>
     </Show>
   );
 };

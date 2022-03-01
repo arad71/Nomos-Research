@@ -9,6 +9,8 @@ import {
   ReferenceInput,
   SelectInput,
 } from 'react-admin';
+import BooleanOptions from "../shared/BooleanOptions";
+import NaturalisedStatus from "./NaturalisedStatus";
 
 export const TaxonNameCreate: FC = (props) => {
   return (
@@ -45,13 +47,7 @@ export const TaxonNameCreate: FC = (props) => {
           <SelectInput optionText="publication_name" />
         </ReferenceInput>
         <TextInput source="volume_information" />
-        <SelectInput
-          source="is_current"
-          choices={[
-            { id: 'Y', name: 'Y' },
-            { id: 'Y', name: 'N' },
-          ]}
-        />
+        <SelectInput source="is_current" choices={BooleanOptions} />
         <TextInput source="origin" />
         <TextInput source="informal" />
         <NumberInput source="form_desc_yr" />
@@ -60,29 +56,15 @@ export const TaxonNameCreate: FC = (props) => {
         <TextInput multiline source="comments" />
         <TextInput source="contributed_by" />
         <DateTimeInput source="contributed_on" />
-        <TextInput source="validated" validate={[required()]} />
+        <SelectInput source="validated" choices={BooleanOptions} validate={[required()]} />
         <TextInput source="source" />
         <TextInput source="external_id" />
         <TextInput source="family_code" />
         <TextInput source="author" />
         <TextInput source="vernacular" />
         <TextInput source="editor" />
-        <SelectInput
-          source="naturalised_status"
-          choices={[
-            { id: 'a', name: 'a' },
-            { id: 'n', name: 'n' },
-            { id: 'm', name: 'm' },
-            { id: 'u', name: 'u' },
-          ]}
-        />
-        <SelectInput
-          source="naturalised_certainty"
-          choices={[
-            { id: 'Y', name: 'Y' },
-            { id: 'Y', name: 'N' },
-          ]}
-        />
+        <SelectInput source="naturalised_status" choices={NaturalisedStatus} />
+        <SelectInput source="naturalised_certainty" choices={BooleanOptions} />
         <TextInput source="is_eradicated" />
         <TextInput multiline source="naturalised_comments" />
         <NumberInput source="linear_sequence" />

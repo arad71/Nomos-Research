@@ -1,14 +1,14 @@
 import React, { FC } from 'react';
-import { Show, SimpleForm, TextField, NumberField } from 'react-admin';
+import { Show, SimpleShowLayout, TextField, NumberField } from 'react-admin';
 
 export const KingdomShow: FC = (props) => {
   return (
     <Show {...props}>
-      <SimpleForm>
+      <SimpleShowLayout>
         <NumberField source="id" />
         <TextField source="kingdom_name" />
         <TextField source="kingdom_desc" />
-      </SimpleForm>
+      </SimpleShowLayout>
     </Show>
   );
 };

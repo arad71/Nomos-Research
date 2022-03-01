@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import {NumberField, ReferenceField, Show, SimpleShowLayout, TextField} from 'react-admin';
+import {ReferenceField, Show, SimpleShowLayout, TextField} from 'react-admin';
 
 export const InformalGroupShow: FC = (props) => {
   return (
