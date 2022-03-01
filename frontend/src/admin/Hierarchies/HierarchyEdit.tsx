@@ -4,12 +4,13 @@ import {
   SimpleForm,
   SelectInput,
   ReferenceInput,
-  required,
+  required, TextInput,
 } from 'react-admin';
 
 export const HierarchyEdit: FC = (props) => (
   <Edit {...props}>
     <SimpleForm>
+      <TextInput disabled source="id" />
       <ReferenceInput
           source="taxon_name_id"
           reference="taxon_names"

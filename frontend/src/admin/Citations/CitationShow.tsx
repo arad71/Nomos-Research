@@ -26,6 +26,7 @@ FullNameField.defaultProps = { label: 'Name' };
 export const CitationShow: FC = (props) => (
   <Show {...props} sort={{ field: 'kingdom_name', order: 'DESC' }}>
     <SimpleShowLayout>
+      <NumberField source="id" />
       <ReferenceField source="taxon_name_id" reference="taxon_names">
         <TextField source="rank_name" />
       </ReferenceField>

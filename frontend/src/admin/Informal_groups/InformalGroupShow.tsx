@@ -1,10 +1,11 @@
 import React, { FC } from 'react';
-import {ReferenceField, Show, SimpleShowLayout, TextField} from 'react-admin';
+import {NumberField, ReferenceField, Show, SimpleShowLayout, TextField} from 'react-admin';
 
 export const InformalGroupShow: FC = (props) => {
   return (
     <Show {...props}>
       <SimpleShowLayout>
+        <NumberField source="id" />
         <ReferenceField
           source="classification_system_id"
           reference="classification_systems"

@@ -55,6 +55,12 @@ import {
   HierarchyEdit,
   HierarchyList,
 } from './Hierarchies';
+import {
+  CrossReferenceCreate,
+  CrossReferenceShow,
+  CrossReferenceEdit,
+  CrossReferenceList,
+} from './Cross_references';
 
 const httpClient = (url: any, options: any) => {
   if (!options) {
@@ -81,6 +87,7 @@ const dataProvider = restDataProvider(
   'taxon_names':'taxon_name_id',
   'informal_groups':'informal_group_id',
   'hierarchies':'hierarchy_id',
+  'cross_references':'cross_reference_id',
   },
   {},
   httpClient
@@ -184,6 +191,15 @@ export const Admin: FC = () => {
               edit={HierarchyEdit}
               create={HierarchyCreate}
           />
+        ) : null,
+        permissions === 'admin' ? (
+            <Resource
+                name="cross_references"
+                list={CrossReferenceList}
+                show={CrossReferenceShow}
+                edit={CrossReferenceEdit}
+                create={CrossReferenceCreate}
+            />
         ) : null,
       ]}
     </ReactAdmin>
