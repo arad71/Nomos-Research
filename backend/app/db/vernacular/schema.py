@@ -4,16 +4,17 @@ from pydantic import BaseModel
 
 from app.db.schemas import TableBase
 from app.db.taxon_name.schema import TaxonName
+from app.db.vernacular import enums
 
 
 class VernacularBase(BaseModel):
     taxon_name_id: int
     vernacular: str
-    language: str
-    lang_pref: Optional[str]
-    preferred: Optional[str]
+    language: enums.Language
+    lang_pref: Optional[enums.LangPref]
+    preferred: Optional[enums.Preferred]
     source: Optional[str]
-    enabled: str
+    enabled: enums.Enabled
     sort_order: Optional[int]
 
 

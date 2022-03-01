@@ -17,15 +17,16 @@ kingdoms_router = r = APIRouter(prefix="/kingdoms")
 )
 async def kingdom_list(
     response: Response,
+    range: str = "[0,10]",
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):
     """
     Get all kingdoms
     """
-    kingdoms = KingdomCrud.get_items(db)
+    kingdoms = KingdomCrud.get_items(db, range=range)
     # This is necessary for react-admin to work
-    response.headers["Content-Range"] = f"0-9/{len(kingdoms)}"
+    response.headers["Content-Range"] = f"0-9/{KingdomCrud.get_items_count(db)}"
     return kingdoms
 
 

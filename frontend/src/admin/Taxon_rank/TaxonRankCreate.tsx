@@ -12,12 +12,12 @@ export const TaxonRankCreate: FC = (props) => (
   <Create {...props}>
     <SimpleForm>
       <ReferenceInput label="Kingdom" source="kingdom_id" reference="kingdoms">
-        <SelectInput optionText="kingdom_name" />
+        <SelectInput optionText="kingdom_name" validate={[required()]} />
       </ReferenceInput>
       <TextInput source="rank_name" validate={[required()]} />
       <TextInput source="rank_abbrev" />
       <ReferenceInput
-        label="Req Parent Rank"
+        label="Direct Parent Rank"
         source="direct_parent_rank_id"
         reference="taxon_ranks"
       >

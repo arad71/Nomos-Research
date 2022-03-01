@@ -10,9 +10,6 @@ services:
       - backend
       - frontend
 
-  redis:
-    image: redis
-
   postgres:
     image: postgres:12
     restart: always
@@ -21,13 +18,6 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
     volumes:
       - db-data:/var/lib/postgresql/data:cached
-
-  worker:
-    image: "backend:${VERSION:-latest}"
-    build:
-      context: backend
-      dockerfile: Dockerfile
-    command: celery --app app.tasks worker --loglevel=DEBUG -Q main-queue -c 1
 
   backend:
     image: "backend:${VERSION:-latest}"

@@ -1,3 +1,4 @@
+import json
 import typing as t
 
 from fastapi import HTTPException, status
@@ -7,6 +8,8 @@ from app.db.session import Base
 
 
 class Crud:
+    DEFAULT_LIMIT: 10
+
     @classmethod
     def create_item(cls, db: Session, item: object, current_user: int):
         db_item = cls.model(**item.dict())
@@ -21,14 +24,21 @@ class Crud:
     @classmethod
     def get_item(cls, db: Session, id: int):
         item = db.query(cls.model).filter(getattr(cls.model, cls.id_key) == id).first()
-        print(getattr(cls.model, cls.id_key))
         if not item:
             raise HTTPException(status_code=404, detail=cls.name + " not found")
         return item
 
     @classmethod
-    def get_items(cls, db: Session, skip: int = 0, limit: int = 100) -> t.List[Base]:
+    def get_items(cls, db: Session, range: str = "[0, 10]") -> t.List[Base]:
+        range = json.loads(range)
+        skip = range[0] or 0
+        limit = range[1] or Crud.DEFAULT_LIMIT
+        limit = limit - skip
         return db.query(cls.model).offset(skip).limit(limit).all()
+
+    @classmethod
+    def get_items_count(cls, db: Session) -> int:
+        return db.query(cls.model).count()
 
     @classmethod
     def edit_item(
