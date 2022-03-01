@@ -1,13 +1,13 @@
 import React, { FC } from 'react';
 import {
   Create,
+  DateTimeInput,
+  NumberInput,
+  ReferenceInput,
+  required,
+  SelectInput,
   SimpleForm,
   TextInput,
-  NumberInput,
-  DateTimeInput,
-  required,
-  ReferenceInput,
-  SelectInput,
 } from 'react-admin';
 import BooleanOptions from '../shared/BooleanOptions';
 import NaturalisedStatus from './NaturalisedStatus';
@@ -30,6 +30,7 @@ export const TaxonNameCreate: FC = (props) => {
         >
           <SelectInput optionText="rank_name" />
         </ReferenceInput>
+        <TextInput source="scientific_name" validate={[required()]} />
         <TextInput source="rank_name" validate={[required()]} />
         <TextInput source="uninomial" />
         <TextInput source="phylum" />
@@ -38,7 +39,6 @@ export const TaxonNameCreate: FC = (props) => {
         <TextInput source="family" />
         <TextInput source="genus" />
         <TextInput source="sub_genus" />
-        <TextInput source="scientific_name" />
         <TextInput source="species" />
         <TextInput source="sub_species" />
         <TextInput source="specific_epithet" />
