@@ -25,6 +25,12 @@ import {
   TaxonRankEdit,
   TaxonRankList,
 } from './Taxon_rank';
+import {
+  PublicationCreate,
+  PublicationShow,
+  PublicationEdit,
+  PublicationList,
+} from './Publication';
 
 const httpClient = (url: any, options: any) => {
   if (!options) {
@@ -46,6 +52,7 @@ const dataProvider = restDataProvider(
   'classification_systems':'classification_system_id',
   'authors':'author_id',
   'taxon_ranks':'taxon_rank_id',
+  'publications':'publication_id',
   },
   {},
   httpClient
@@ -103,6 +110,15 @@ export const Admin: FC = () => {
             show={TaxonRankShow}
             edit={TaxonRankEdit}
             create={TaxonRankCreate}
+          />
+        ) : null,
+        permissions === 'admin' ? (
+          <Resource
+            name="publications"
+            list={PublicationList}
+            show={PublicationShow}
+            edit={PublicationEdit}
+            create={PublicationCreate}
           />
         ) : null,
       ]}

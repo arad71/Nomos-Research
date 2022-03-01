@@ -44,7 +44,7 @@ export const TaxonRankList: FC = (props) => (
         source="required_parent_rank_id"
         reference="taxon_ranks"
       >
-        <NumberField source="rank_name" />
+        <TextField source="rank_name" />
       </ReferenceField>
       <ReferenceField source="created_by" reference="users">
         <FullNameField source="last_name" />
