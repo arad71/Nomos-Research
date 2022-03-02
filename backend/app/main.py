@@ -59,13 +59,6 @@ app.include_router(
 )
 
 app.include_router(
-    kingdoms_router,
-    prefix="/api/v1",
-    tags=["kingdoms"],
-    dependencies=[Depends(get_current_active_user)],
-)
-
-app.include_router(
     authors_router,
     prefix="/api/v1",
     tags=["author"],
