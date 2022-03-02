@@ -24,7 +24,7 @@ const FullNameField = (props: any) => {
 FullNameField.defaultProps = { label: 'Name' };
 
 export const TaxonNameList: FC = (props) => (
-  <List {...props} sort={{ field: 'rank_name', order: 'DESC' }}>
+  <List {...props} sort={{ field: 'scientific_name', order: 'DESC' }}>
     <Datagrid rowClick="show">
       <ReferenceField source="kingdom_id" reference="kingdoms">
         <TextField source="kingdom_name" />
@@ -32,6 +32,7 @@ export const TaxonNameList: FC = (props) => (
       <ReferenceField source="rank_id" reference="taxon_ranks">
         <TextField source="rank_name" />
       </ReferenceField>
+      <TextField source="scientific_name" />
       <TextField source="rank_name" />
       <TextField source="uninomial" />
       <TextField source="phylum" />
@@ -40,7 +41,6 @@ export const TaxonNameList: FC = (props) => (
       <TextField source="family" />
       <TextField source="genus" />
       <TextField source="sub_genus" />
-      <TextField source="scientific_name" />
       <TextField source="species" />
       <TextField source="sub_species" />
       <TextField source="specific_epithet" />
@@ -55,7 +55,7 @@ export const TaxonNameList: FC = (props) => (
       <NumberField source="form_desc_yr" />
       <NumberField source="form_desc_mn" />
       <NumberField source="form_desc_dy" />
-      <TextField multiline source="comments" />
+      <TextField source="comments" />
       <TextField source="contributed_by" />
       <DateField source="contributed_on" showTime />
       <TextField source="validated" />
@@ -68,7 +68,7 @@ export const TaxonNameList: FC = (props) => (
       <TextField source="naturalised_status" />
       <TextField source="naturalised_certainty" />
       <TextField source="is_eradicated" />
-      <TextField multiline source="naturalised_comments" />
+      <TextField source="naturalised_comments" />
       <NumberField source="linear_sequence" />
       <ReferenceField
         label="Family NID"
@@ -77,8 +77,8 @@ export const TaxonNameList: FC = (props) => (
       >
         <TextField source="id" />
       </ReferenceField>
-      <TextField multiline source="all_vernaculars" />
-      <TextField multiline source="notes" />
+      <TextField source="all_vernaculars" />
+      <TextField source="notes" />
       <DateField source="authorised_on" showTime />
       <EditButton />
     </Datagrid>

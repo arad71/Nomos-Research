@@ -1,8 +1,8 @@
 """Implement Data Model.
 
 Revision ID: a61b3b720423
-Revises:
-Create Date: 2022-02-22 22:03:53.541211-08:00
+Revises: 
+Create Date: 2022-03-01 00:54:14.007270-08:00
 
 """
 import sqlalchemy as sa
@@ -118,12 +118,12 @@ def upgrade():
     op.create_table(
         "publication",
         sa.Column("publication_id", sa.Integer(), nullable=False),
+        sa.Column("publication", sa.Text(), nullable=False),
         sa.Column(
             "bad_publication",
             sa.Enum("y", "n", "subf", name="publication__bad_publication"),
             nullable=True,
         ),
-        sa.Column("publication", sa.Text(), nullable=True),
         sa.Column("publication_name", sa.Text(), nullable=True),
         sa.Column("doi", sa.String(), nullable=True),
         sa.Column("title", sa.String(), nullable=True),
@@ -149,10 +149,10 @@ def upgrade():
         sa.Column("bhl_url", sa.String(), nullable=True),
         sa.Column("tl2", sa.String(), nullable=True),
         sa.Column("reference_type", sa.String(), nullable=True),
-        sa.Column("parent", sa.Integer(), nullable=True),
+        sa.Column("parent_id", sa.Integer(), nullable=True),
         sa.Column("reference_author_role", sa.String(), nullable=True),
         sa.Column("language", sa.String(), nullable=True),
-        sa.Column("duplicate_of", sa.Integer(), nullable=True),
+        sa.Column("duplicate_of_id", sa.Integer(), nullable=True),
         sa.Column("updated_by", sa.Integer(), nullable=True),
         sa.Column("updated_on", sa.DateTime(), nullable=True),
         sa.Column("created_by", sa.Integer(), nullable=True),
@@ -162,11 +162,11 @@ def upgrade():
             ["user.user_id"],
         ),
         sa.ForeignKeyConstraint(
-            ["duplicate_of"],
+            ["duplicate_of_id"],
             ["publication.publication_id"],
         ),
         sa.ForeignKeyConstraint(
-            ["parent"],
+            ["parent_id"],
             ["publication.publication_id"],
         ),
         sa.ForeignKeyConstraint(
@@ -496,7 +496,7 @@ def upgrade():
     )
     op.create_table(
         "informal_group",
-        sa.Column("informal_group_id", sa.String(length=10), nullable=False),
+        sa.Column("informal_group_id", sa.Integer(), nullable=False),
         sa.Column("classification_system_id", sa.Integer(), nullable=True),
         sa.Column("taxon_name_id", sa.Integer(), nullable=True),
         sa.Column("updated_by", sa.Integer(), nullable=True),

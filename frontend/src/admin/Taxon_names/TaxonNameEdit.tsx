@@ -9,6 +9,8 @@ import {
   SimpleForm,
   TextInput,
 } from 'react-admin';
+import BooleanOptions from '../shared/BooleanOptions';
+import NaturalisedStatus from './NaturalisedStatus';
 
 export const TaxonNameEdit: FC = (props) => (
   <Edit {...props}>
@@ -28,6 +30,7 @@ export const TaxonNameEdit: FC = (props) => (
       >
         <SelectInput optionText="rank_name" />
       </ReferenceInput>
+      <TextInput source="scientific_name" validate={[required()]} />
       <TextInput source="rank_name" validate={[required()]} />
       <TextInput source="uninomial" />
       <TextInput source="phylum" />
@@ -36,7 +39,6 @@ export const TaxonNameEdit: FC = (props) => (
       <TextInput source="family" />
       <TextInput source="genus" />
       <TextInput source="sub_genus" />
-      <TextInput source="scientific_name" />
       <TextInput source="species" />
       <TextInput source="sub_species" />
       <TextInput source="specific_epithet" />
@@ -47,10 +49,8 @@ export const TaxonNameEdit: FC = (props) => (
       <TextInput source="volume_information" />
       <SelectInput
         source="is_current"
-        choices={[
-          { id: 'Y', name: 'Y' },
-          { id: 'Y', name: 'N' },
-        ]}
+        choices={BooleanOptions}
+        validate={required()}
       />
       <TextInput source="origin" />
       <TextInput source="informal" />
@@ -60,29 +60,19 @@ export const TaxonNameEdit: FC = (props) => (
       <TextInput multiline source="comments" />
       <TextInput source="contributed_by" />
       <DateTimeInput source="contributed_on" />
-      <TextInput source="validated" validate={[required()]} />
+      <SelectInput
+        source="validated"
+        choices={BooleanOptions}
+        validate={[required()]}
+      />
       <TextInput source="source" />
       <TextInput source="external_id" />
       <TextInput source="family_code" />
       <TextInput source="author" />
       <TextInput source="vernacular" />
       <TextInput source="editor" />
-      <SelectInput
-        source="naturalised_status"
-        choices={[
-          { id: 'a', name: 'a' },
-          { id: 'n', name: 'n' },
-          { id: 'm', name: 'm' },
-          { id: 'u', name: 'u' },
-        ]}
-      />
-      <SelectInput
-        source="naturalised_certainty"
-        choices={[
-          { id: 'Y', name: 'Y' },
-          { id: 'Y', name: 'N' },
-        ]}
-      />
+      <SelectInput source="naturalised_status" choices={NaturalisedStatus} />
+      <SelectInput source="naturalised_certainty" choices={BooleanOptions} />
       <TextInput source="is_eradicated" />
       <TextInput multiline source="naturalised_comments" />
       <NumberInput source="linear_sequence" />

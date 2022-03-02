@@ -7,6 +7,7 @@ import {
   ReferenceInput,
   SelectInput,
 } from 'react-admin';
+import RankAbbreviation from "./RankAbbreviation";
 
 export const TaxonRankCreate: FC = (props) => (
   <Create {...props}>
@@ -15,7 +16,7 @@ export const TaxonRankCreate: FC = (props) => (
         <SelectInput optionText="kingdom_name" validate={[required()]} />
       </ReferenceInput>
       <TextInput source="rank_name" validate={[required()]} />
-      <TextInput source="rank_abbrev" />
+      <SelectInput source="rank_abbrev" choices={RankAbbreviation} />
       <ReferenceInput
         label="Direct Parent Rank"
         source="direct_parent_rank_id"

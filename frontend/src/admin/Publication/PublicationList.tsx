@@ -1,6 +1,8 @@
 // in src/users.js
 import React, { FC } from 'react';
 import {
+  RichTextField,
+  SelectField,
   List,
   Datagrid,
   TextField,
@@ -9,8 +11,8 @@ import {
   ReferenceField,
   useRecordContext,
   NumberField,
-  SelectInput,
 } from 'react-admin';
+import BadPublicationOptions from './BadPublicationOptions';
 
 const FullNameField = (props: any) => {
   const record = useRecordContext(props);
@@ -25,17 +27,11 @@ const FullNameField = (props: any) => {
 FullNameField.defaultProps = { label: 'Name' };
 
 export const PublicationList: FC = (props) => (
-  <List {...props} sort={{ field: 'rank_name', order: 'DESC' }}>
+  <List {...props} sort={{ field: 'publication', order: 'DESC' }}>
     <Datagrid rowClick="show">
       <TextField source="id" />
-      <SelectInput
-        source="bad_publication"
-        choices={[
-          { id: 'Y', name: 'Y' },
-          { id: 'Y', name: 'N' },
-        ]}
-      />
       <TextField source="publication" />
+      <SelectField source="bad_publication" choices={BadPublicationOptions} />
       <TextField source="publication_name" />
       <TextField source="doi" />
       <TextField source="title" />
@@ -49,7 +45,7 @@ export const PublicationList: FC = (props) => (
       <TextField source="verbatim_citation" />
       <TextField source="verbatim_author" />
       <TextField source="citation" />
-      <TextField source="citation_html" />
+      <RichTextField source="citation_html" />
       <TextField source="citation_author_year" />
       <TextField source="notes" />
       <TextField source="published" />
@@ -61,14 +57,18 @@ export const PublicationList: FC = (props) => (
       <TextField source="bhl_url" />
       <TextField source="tl2" />
       <TextField source="reference_type" />
-      <ReferenceField label="Parent" source="parent" reference="publications">
+      <ReferenceField
+        label="Parent"
+        source="parent_id"
+        reference="publications"
+      >
         <TextField source="publication" />
       </ReferenceField>
       <TextField source="reference_author_role" />
       <TextField source="language" />
       <ReferenceField
         label="Duplicate Of"
-        source="duplicate_of"
+        source="duplicate_of_id"
         reference="publications"
       >
         <TextField source="publication" />

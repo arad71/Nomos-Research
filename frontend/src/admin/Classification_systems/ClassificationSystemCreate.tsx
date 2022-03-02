@@ -7,19 +7,15 @@ import {
   SelectInput,
   required,
 } from 'react-admin';
+import BooleanOptions from '../shared/BooleanOptions';
+import ClassificationType from "./ClassificationType";
 
 export const ClassificationSystemCreate: FC = (props) => (
   <Create {...props}>
     <SimpleForm>
       <TextInput source="class_desc" validate={[required()]} />
-      <TextInput source="class_type" validate={[required()]} />
-      <SelectInput
-        source="preferred"
-        choices={[
-          { id: 'Y', name: 'Y' },
-          { id: 'Y', name: 'N' },
-        ]}
-      />
+      <SelectInput source="class_type" choices={ClassificationType} validate={[required()]} />
+      <SelectInput source="preferred" choices={BooleanOptions} />
       <NumberInput source="sort_order" />
     </SimpleForm>
   </Create>
