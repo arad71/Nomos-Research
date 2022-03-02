@@ -1,6 +1,8 @@
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer
 from sqlalchemy.orm import relationship
+from sqlalchemy.types import Enum
 
+from app.db.citation import enums
 from app.db.models import TableMixin
 from app.db.session import Base
 
@@ -14,5 +16,5 @@ class Citation(Base, TableMixin):
     taxon_name = relationship("TaxonName", backref=name_plural)
     author_id = Column(Integer, ForeignKey("author.author_id"))
     author = relationship("Author", backref=name_plural)
-    author_type = Column(String())
+    author_type = Column(Enum(enums.AuthorType, name=__tablename__ + "__author_type"))
     author_order = Column(Integer())

@@ -1,7 +1,9 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Text
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import backref, relationship
+from sqlalchemy.types import Enum
 
 from app.db.models import TableMixin
+from app.db.publication import enums
 from app.db.session import Base
 
 
@@ -9,8 +11,10 @@ class Publication(Base, TableMixin):
     __tablename__ = "publication"
 
     publication_id = Column(Integer, primary_key=True, index=True)
-    bad_publication = Column(String(1))
-    publication = Column(Text)
+    publication = Column(Text, nullable=False)
+    bad_publication = Column(
+        Enum(enums.BadPublication, name=__tablename__ + "__bad_publication")
+    )
     publication_name = Column(Text)
     doi = Column(String)
     title = Column(String)
@@ -36,10 +40,22 @@ class Publication(Base, TableMixin):
     bhl_url = Column(String)
     tl2 = Column(String)
     reference_type = Column(String)
-    parent = Column(Integer, ForeignKey("publication.publication_id"))
+    parent_id = Column(Integer, ForeignKey("publication.publication_id"))
+    parent = relationship(
+        "Publication",
+        foreign_keys=[parent_id],
+        remote_side=[publication_id],
+        backref=backref("children"),
+    )
     author = relationship(
         "Author", secondary="publication_author", back_populates="publications"
     )
     reference_author_role = Column(String)
     language = Column(String)
-    duplicate_of = Column(Integer, ForeignKey("publication.publication_id"))
+    duplicate_of_id = Column(Integer, ForeignKey("publication.publication_id"))
+    duplicate_of = relationship(
+        "Publication",
+        foreign_keys=[duplicate_of_id],
+        remote_side=[publication_id],
+        backref=backref("duplicates"),
+    )
