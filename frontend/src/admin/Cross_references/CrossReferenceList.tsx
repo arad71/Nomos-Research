@@ -1,17 +1,17 @@
 // in src/users.js
 import React, { FC } from 'react';
 import {
-  List,
+  SelectField,
   Datagrid,
-  TextField,
-  NumberField,
   DateField,
   EditButton,
+  List,
+  NumberField,
   ReferenceField,
-  useRecordContext, ReferenceInput, required, SelectInput, TextInput,
+  TextField,
+  useRecordContext,
 } from 'react-admin';
-import CrossRefType from "./CrossRefType";
-import BooleanOptions from "../shared/BooleanOptions";
+import CrossRefType from './CrossRefType';
 
 const FullNameField = (props: any) => {
   const record = useRecordContext(props);
@@ -29,23 +29,17 @@ export const CrossReferenceList: FC = (props) => (
   <List {...props} sort={{ field: 'class_desc', order: 'DESC' }}>
     <Datagrid rowClick="show">
       <NumberField source="id" />
-      <ReferenceField
-          source="old_name_id"
-          reference="taxon_names"
-      >
+      <ReferenceField source="old_name_id" reference="taxon_names">
         <TextField source="rank_name" />
       </ReferenceField>
-      <ReferenceField
-          source="new_name_id"
-          reference="taxon_names"
-      >
+      <ReferenceField source="new_name_id" reference="taxon_names">
         <TextField source="rank_name" />
       </ReferenceField>
-      <TextField source="cross_reference_type" />
+      <SelectField source="cross_reference_type" choices={CrossRefType} />
       <TextField source="active" />
       <TextField source="authorised_by" />
-      <TextField multiline source="comments" />
-      <TextField multiline source="notes" />
+      <TextField source="comments" />
+      <TextField source="notes" />
       <ReferenceField source="created_by" reference="users">
         <FullNameField source="last_name" />
       </ReferenceField>
@@ -53,7 +47,7 @@ export const CrossReferenceList: FC = (props) => (
       <ReferenceField source="updated_by" reference="users">
         <FullNameField source="last_name" />
       </ReferenceField>
-      <DateField source="updated_on" showTime/>
+      <DateField source="updated_on" showTime />
       <EditButton />
     </Datagrid>
   </List>
