@@ -1,4 +1,4 @@
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer
 from sqlalchemy.orm import relationship
 
 from app.db.models import TableMixin
@@ -9,7 +9,7 @@ class InformalGroup(Base, TableMixin):
     __tablename__ = "informal_group"
     name_plural = "informal_groups"
 
-    informal_group_id = Column(String(10), primary_key=True, index=True)
+    informal_group_id = Column(Integer, primary_key=True, index=True)
     classification_system_id = Column(
         Integer,
         ForeignKey("classification_system.classification_system_id"),

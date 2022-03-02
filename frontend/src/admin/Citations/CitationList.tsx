@@ -29,7 +29,7 @@ export const CitationList: FC = (props) => (
   <List {...props} sort={{ field: 'kingdom_name', order: 'DESC' }}>
     <Datagrid rowClick="show">
       <ReferenceField source="taxon_name_id" reference="taxon_names">
-        <TextField source="rank_name" />
+        <TextField source="scientific_name" />
       </ReferenceField>
       <ReferenceField source="author_id" reference="authors">
         <TextField source="author" />

@@ -2,7 +2,7 @@
 
 Revision ID: a61b3b720423
 Revises: 
-Create Date: 2022-02-27 18:44:08.636967-08:00
+Create Date: 2022-03-01 00:54:14.007270-08:00
 
 """
 import sqlalchemy as sa
@@ -496,7 +496,7 @@ def upgrade():
     )
     op.create_table(
         "informal_group",
-        sa.Column("informal_group_id", sa.String(length=10), nullable=False),
+        sa.Column("informal_group_id", sa.Integer(), nullable=False),
         sa.Column("classification_system_id", sa.Integer(), nullable=True),
         sa.Column("taxon_name_id", sa.Integer(), nullable=True),
         sa.Column("updated_by", sa.Integer(), nullable=True),

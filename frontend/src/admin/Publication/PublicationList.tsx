@@ -27,7 +27,7 @@ const FullNameField = (props: any) => {
 FullNameField.defaultProps = { label: 'Name' };
 
 export const PublicationList: FC = (props) => (
-  <List {...props} sort={{ field: 'rank_name', order: 'DESC' }}>
+  <List {...props} sort={{ field: 'publication', order: 'DESC' }}>
     <Datagrid rowClick="show">
       <TextField source="id" />
       <TextField source="publication" />

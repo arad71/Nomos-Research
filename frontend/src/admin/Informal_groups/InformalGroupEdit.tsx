@@ -18,7 +18,7 @@ export const InformalGroupEdit: FC = (props) => (
         <SelectInput optionText="class_desc" />
       </ReferenceInput>
       <ReferenceInput source="taxon_name_id" reference="taxon_names">
-        <SelectInput optionText="rank_name" />
+        <SelectInput optionText="scientific_name" />
       </ReferenceInput>
     </SimpleForm>
   </Edit>
