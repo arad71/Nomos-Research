@@ -1,7 +1,8 @@
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, Request, Response
 
+from app.api.dependencies.range_query import RangeQueryParameter
 from app.core.auth import get_current_active_superuser
 from app.db.session import get_db
 from app.db.vernacular.crud import VernacularCrud
@@ -17,7 +18,7 @@ vernaculars_router = r = APIRouter(prefix="/vernaculars")
 )
 async def vernacular_list(
     response: Response,
-    range: str = "[0,10]",
+    range: Optional[str] = RangeQueryParameter,
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):
