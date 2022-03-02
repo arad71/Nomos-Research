@@ -4,18 +4,18 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.requests import Request
 
 from app.api.api_v1.routers.auth import auth_router
-from app.api.api_v1.routers.author import authors_router
-from app.api.api_v1.routers.citation import citations_router
-from app.api.api_v1.routers.classification_system import classification_systems_router
-from app.api.api_v1.routers.cross_reference import cross_references_router
-from app.api.api_v1.routers.hierarchy import hierarchies_router
+from app.api.api_v1.routers.authors import authors_router
+from app.api.api_v1.routers.citations import citations_router
+from app.api.api_v1.routers.classification_systems import classification_systems_router
+from app.api.api_v1.routers.cross_references import cross_references_router
+from app.api.api_v1.routers.hierarchies import hierarchies_router
 from app.api.api_v1.routers.informal_groups import informal_groups_router
 from app.api.api_v1.routers.kingdoms import kingdoms_router
-from app.api.api_v1.routers.publication import publications_router
-from app.api.api_v1.routers.taxon_name import taxon_names_router
-from app.api.api_v1.routers.taxon_rank import taxon_ranks_router
+from app.api.api_v1.routers.publications import publications_router
+from app.api.api_v1.routers.taxon_names import taxon_names_router
+from app.api.api_v1.routers.taxon_ranks import taxon_ranks_router
 from app.api.api_v1.routers.users import users_router
-from app.api.api_v1.routers.vernacular import vernaculars_router
+from app.api.api_v1.routers.vernaculars import vernaculars_router
 from app.core import config
 from app.core.auth import get_current_active_user
 from app.db.session import SessionLocal
@@ -59,44 +59,37 @@ app.include_router(
 )
 
 app.include_router(
-    kingdoms_router,
-    prefix="/api/v1",
-    tags=["kingdoms"],
-    dependencies=[Depends(get_current_active_user)],
-)
-
-app.include_router(
     authors_router,
     prefix="/api/v1",
-    tags=["author"],
+    tags=["authors"],
     dependencies=[Depends(get_current_active_user)],
 )
 
 app.include_router(
     classification_systems_router,
     prefix="/api/v1",
-    tags=["classification_system"],
+    tags=["classification_systems"],
     dependencies=[Depends(get_current_active_user)],
 )
 
 app.include_router(
     citations_router,
     prefix="/api/v1",
-    tags=["citation"],
+    tags=["citations"],
     dependencies=[Depends(get_current_active_user)],
 )
 
 app.include_router(
     cross_references_router,
     prefix="/api/v1",
-    tags=["cross_reference"],
+    tags=["cross_references"],
     dependencies=[Depends(get_current_active_user)],
 )
 
 app.include_router(
     hierarchies_router,
     prefix="/api/v1",
-    tags=["hierachy"],
+    tags=["hierachies"],
     dependencies=[Depends(get_current_active_user)],
 )
 
@@ -117,28 +110,28 @@ app.include_router(
 app.include_router(
     publications_router,
     prefix="/api/v1",
-    tags=["publication"],
+    tags=["publications"],
     dependencies=[Depends(get_current_active_user)],
 )
 
 app.include_router(
     taxon_names_router,
     prefix="/api/v1",
-    tags=["taxon_name"],
+    tags=["taxon_names"],
     dependencies=[Depends(get_current_active_user)],
 )
 
 app.include_router(
     taxon_ranks_router,
     prefix="/api/v1",
-    tags=["taxon_rank"],
+    tags=["taxon_ranks"],
     dependencies=[Depends(get_current_active_user)],
 )
 
 app.include_router(
     vernaculars_router,
     prefix="/api/v1",
-    tags=["vernacular"],
+    tags=["vernaculars"],
     dependencies=[Depends(get_current_active_user)],
 )
 

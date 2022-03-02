@@ -1,7 +1,8 @@
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, Request, Response
 
+from app.api.dependencies.range_query import RangeQueryParameter
 from app.core.auth import get_current_active_superuser
 from app.db.cross_reference.crud import CrossReferenceCrud
 from app.db.cross_reference.schema import (
@@ -21,7 +22,7 @@ cross_references_router = r = APIRouter(prefix="/cross_references")
 )
 async def cross_reference_list(
     response: Response,
-    range: str = "[0,10]",
+    range: Optional[str] = RangeQueryParameter,
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):

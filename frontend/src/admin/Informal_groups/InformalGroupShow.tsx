@@ -1,5 +1,11 @@
 import React, { FC } from 'react';
-import {NumberField, ReferenceField, Show, SimpleShowLayout, TextField} from 'react-admin';
+import {
+  NumberField,
+  ReferenceField,
+  Show,
+  SimpleShowLayout,
+  TextField,
+} from 'react-admin';
 
 export const InformalGroupShow: FC = (props) => {
   return (
@@ -13,7 +19,7 @@ export const InformalGroupShow: FC = (props) => {
           <TextField source="class_desc" />
         </ReferenceField>
         <ReferenceField source="taxon_name_id" reference="taxon_names">
-          <TextField source="rank_name" />
+          <TextField source="scientific_name" />
         </ReferenceField>
       </SimpleShowLayout>
     </Show>

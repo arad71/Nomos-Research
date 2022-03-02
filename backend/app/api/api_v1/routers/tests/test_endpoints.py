@@ -15,7 +15,7 @@ import pytest
         ("taxon_names"),
         ("taxon_ranks"),
         ("users"),
-        ("vernacular"),
+        ("vernaculars"),
     ],
 )
 def test_item_list(client, endpoint, superuser_token_headers):

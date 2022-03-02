@@ -24,7 +24,7 @@ const FullNameField = (props: any) => {
 FullNameField.defaultProps = { label: 'Name' };
 
 export const TaxonNameShow: FC = (props) => (
-  <Show {...props} sort={{ field: 'rank_name', order: 'DESC' }}>
+  <Show {...props} sort={{ field: 'scientific_name', order: 'DESC' }}>
     <SimpleShowLayout>
       <TextField source="id" />
       <ReferenceField source="kingdom_id" reference="kingdoms">
@@ -33,6 +33,7 @@ export const TaxonNameShow: FC = (props) => (
       <ReferenceField source="rank_id" reference="taxon_ranks">
         <TextField source="rank_name" />
       </ReferenceField>
+      <TextField source="scientific_name" />
       <TextField source="rank_name" />
       <TextField source="uninomial" />
       <TextField source="phylum" />
@@ -41,7 +42,6 @@ export const TaxonNameShow: FC = (props) => (
       <TextField source="family" />
       <TextField source="genus" />
       <TextField source="sub_genus" />
-      <TextField source="scientific_name" />
       <TextField source="species" />
       <TextField source="sub_species" />
       <TextField source="specific_epithet" />
@@ -56,7 +56,7 @@ export const TaxonNameShow: FC = (props) => (
       <NumberField source="form_desc_yr" />
       <NumberField source="form_desc_mn" />
       <NumberField source="form_desc_dy" />
-      <TextField multiline source="comments" />
+      <TextField source="comments" />
       <TextField source="contributed_by" />
       <DateField source="contributed_on" showTime />
       <TextField source="validated" />
@@ -69,7 +69,7 @@ export const TaxonNameShow: FC = (props) => (
       <TextField source="naturalised_status" />
       <TextField source="naturalised_certainty" />
       <TextField source="is_eradicated" />
-      <TextField multiline source="naturalised_comments" />
+      <TextField source="naturalised_comments" />
       <NumberField source="linear_sequence" />
       <ReferenceField
         label="Family NID"
@@ -78,8 +78,8 @@ export const TaxonNameShow: FC = (props) => (
       >
         <TextField source="id" />
       </ReferenceField>
-      <TextField multiline source="all_vernaculars" />
-      <TextField multiline source="notes" />
+      <TextField source="all_vernaculars" />
+      <TextField source="notes" />
       <DateField source="authorised_on" showTime />
       <EditButton />
     </SimpleShowLayout>

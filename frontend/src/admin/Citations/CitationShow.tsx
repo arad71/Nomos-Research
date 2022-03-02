@@ -28,7 +28,7 @@ export const CitationShow: FC = (props) => (
     <SimpleShowLayout>
       <NumberField source="id" />
       <ReferenceField source="taxon_name_id" reference="taxon_names">
-        <TextField source="rank_name" />
+        <TextField source="scientific_name" />
       </ReferenceField>
       <ReferenceField source="author_id" reference="authors">
         <TextField source="author" />
