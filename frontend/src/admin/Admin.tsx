@@ -49,6 +49,12 @@ import {
   InformalGroupEdit,
   InformalGroupList,
 } from './Informal_groups';
+import {
+  HierarchyCreate,
+  HierarchyShow,
+  HierarchyEdit,
+  HierarchyList,
+} from './Hierarchies';
 
 const httpClient = (url: any, options: any) => {
   if (!options) {
@@ -74,6 +80,7 @@ const dataProvider = restDataProvider(
     citations: 'citation_id',
     taxon_names: 'taxon_name_id',
     informal_groups: 'informal_group_id',
+    hierarchies: 'hierarchy_id',
   },
   {},
   httpClient
@@ -167,6 +174,15 @@ export const Admin: FC = () => {
             show={InformalGroupShow}
             edit={InformalGroupEdit}
             create={InformalGroupCreate}
+          />
+        ) : null,
+        permissions === 'admin' ? (
+          <Resource
+            name="hierarchies"
+            list={HierarchyList}
+            show={HierarchyShow}
+            edit={HierarchyEdit}
+            create={HierarchyCreate}
           />
         ) : null,
       ]}
