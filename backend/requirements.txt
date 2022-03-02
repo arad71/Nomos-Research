@@ -1,6 +1,6 @@
 alembic==1.7.6
 Authlib==0.15.5
-fastapi==0.65.2
+fastapi==0.74.1
 httpx==0.22.0
 ipython==8.1.0
 itsdangerous==1.1.0
