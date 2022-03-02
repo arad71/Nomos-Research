@@ -1,9 +1,10 @@
 import React, { FC } from 'react';
 import { ReferenceField, Show, SimpleShowLayout, TextField } from 'react-admin';
+import Aside from "../shared/Aside";
 
 export const InformalGroupShow: FC = (props) => {
   return (
-    <Show {...props}>
+    <Show aside={<Aside />} {...props}>
       <SimpleShowLayout>
         <ReferenceField
           source="classification_system_id"

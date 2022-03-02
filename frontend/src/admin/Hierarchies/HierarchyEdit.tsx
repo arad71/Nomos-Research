@@ -11,7 +11,7 @@ import {
 export const HierarchyEdit: FC = (props) => (
   <Edit {...props}>
     <SimpleForm>
-      <TextInput source="hierarchy_id" disabled />
+      <TextInput source="id" disabled />
       <ReferenceInput source="taxon_name_id" reference="taxon_names">
         <SelectInput optionText="rank_name" validate={required()} />
       </ReferenceInput>

@@ -143,7 +143,7 @@ const NewLogin = (props: Props) => {
               <img src={dbcaLogo} height="70%" width="70%"/>
             </Paper>
             <Typography component="h1" variant="h3" align="left">
-              Taxonomic Names Manager
+              NOMOS
             </Typography>
             <Typography component="h1" variant="h6">
               Log in
