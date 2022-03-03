@@ -1,11 +1,14 @@
 import { Typography } from '@material-ui/core';
-import {ReferenceField, DateField} from 'react-admin';
+import {ReferenceField, DateField, TextField} from 'react-admin';
 import FullNameField from './FullNameField'
 
 const Aside = () => (
   <div style={{ width: 200, margin: '1em' }}>
     <Typography variant="h6">Record Details</Typography>
     <Typography variant="body1">
+      <div>
+        ID: <TextField source="id" />
+      </div>
       <div>
         Created:
       </div>
