@@ -44,7 +44,8 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'start',
-    marginBottom: '1.5rem'
+    marginBottom: '1.5rem',
+    width: '70%',
   },
   avatar: {
     margin: theme.spacing(1),
@@ -143,7 +144,7 @@ const NewLogin = (props: Props) => {
               <img src={dbcaLogo} height="70%" width="70%"/>
             </Paper>
             <Typography component="h1" variant="h3" align="left">
-              NOMOS
+              Nomos
             </Typography>
             <Typography component="h1" variant="h6">
               Log in
