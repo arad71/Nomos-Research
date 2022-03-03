@@ -1,7 +1,8 @@
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, Request, Response
 
+from app.api.dependencies.range_query import RangeQueryParameter
 from app.core.auth import get_current_active_superuser
 from app.db.hierarchy.crud import HierarchyCrud
 from app.db.hierarchy.schema import Hierarchy, HierarchyCreate, HierarchyEdit
@@ -17,7 +18,7 @@ hierarchies_router = r = APIRouter(prefix="/hierarchies")
 )
 async def hierarchy_list(
     response: Response,
-    range: str = "[0,10]",
+    range: Optional[str] = RangeQueryParameter,
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):

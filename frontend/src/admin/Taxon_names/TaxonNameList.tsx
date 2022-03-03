@@ -80,6 +80,14 @@ export const TaxonNameList: FC = (props) => (
       <TextField source="all_vernaculars" />
       <TextField source="notes" />
       <DateField source="authorised_on" showTime />
+      <ReferenceField source="created_by" reference="users">
+        <FullNameField source="last_name" />
+      </ReferenceField>
+      <DateField source="created_on" showTime />
+      <ReferenceField source="updated_by" reference="users">
+        <FullNameField source="last_name" />
+      </ReferenceField>
+      <DateField source="updated_on" showTime />
       <EditButton />
     </Datagrid>
   </List>

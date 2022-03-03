@@ -9,6 +9,7 @@ import {
   EditButton,
   ReferenceField,
   useRecordContext,
+  DateField,
 } from 'react-admin';
 import AuthorType from './AuthorType';
 
@@ -38,11 +39,11 @@ export const CitationList: FC = (props) => (
       <ReferenceField source="created_by" reference="users">
         <FullNameField source="last_name" />
       </ReferenceField>
-      <TextField source="created_on" />
+      <DateField source="created_on" showTime />
       <ReferenceField source="updated_by" reference="users">
         <FullNameField source="last_name" />
       </ReferenceField>
-      <TextField source="updated_on" />
+      <DateField source="updated_on" showTime />
       <EditButton />
     </Datagrid>
   </List>
