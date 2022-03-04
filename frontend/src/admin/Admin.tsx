@@ -61,6 +61,12 @@ import {
   CrossReferenceEdit,
   CrossReferenceList,
 } from './Cross_references';
+import {
+  VernacularCreate,
+  VernacularShow,
+  VernacularEdit,
+  VernacularList,
+} from './Vernaculars';
 
 const httpClient = (url: any, options: any) => {
   if (!options) {
@@ -88,6 +94,7 @@ const dataProvider = restDataProvider(
     informal_groups: 'informal_group_id',
     hierarchies: 'hierarchy_id',
     cross_references: 'cross_reference_id',
+    vernaculars: 'vernacular_id',
   },
   {},
   httpClient
@@ -199,6 +206,15 @@ export const Admin: FC = () => {
             show={CrossReferenceShow}
             edit={CrossReferenceEdit}
             create={CrossReferenceCreate}
+          />
+        ) : null,
+        permissions === 'admin' ? (
+          <Resource
+            name="vernaculars"
+            list={VernacularList}
+            show={VernacularShow}
+            edit={VernacularEdit}
+            create={VernacularCreate}
           />
         ) : null,
       ]}
