@@ -71,11 +71,11 @@ export const TaxonNameList: FC = (props) => (
       <TextField source="naturalised_comments" />
       <NumberField source="linear_sequence" />
       <ReferenceField
-        label="Family NID"
+        label="Family"
         source="family_nid"
         reference="taxon_names"
       >
-        <TextField source="id" />
+        <TextField source="scientific_name" />
       </ReferenceField>
       <TextField source="all_vernaculars" />
       <TextField source="notes" />

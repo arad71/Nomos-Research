@@ -81,7 +81,7 @@ export const TaxonNameCreate: FC = (props) => {
           source="family_nid"
           reference="taxon_names"
         >
-          <SelectInput optionText="rank_name" />
+          <SelectInput optionText="scientific_name" />
         </ReferenceInput>
         <TextInput multiline source="all_vernaculars" />
         <TextInput multiline source="notes" />
