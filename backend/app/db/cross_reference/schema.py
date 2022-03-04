@@ -15,8 +15,8 @@ class CrossReferenceBase(BaseModel):
     active: enums.Active
     authorised_date: Optional[datetime]
     authorised_by: Optional[str]
-    comments: str
-    notes: str
+    comments: Optional[str]
+    notes: Optional[str]
 
 
 class CrossReferenceCreate(CrossReferenceBase):
@@ -30,7 +30,7 @@ class CrossReferenceEdit(CrossReferenceBase):
 class CrossReference(CrossReferenceBase, TableBase):
     cross_reference_id: int
     old_name: TaxonName
-    new_name: TaxonName
+    new_name: Optional[TaxonName]
 
     class Config:
         orm_mode = True

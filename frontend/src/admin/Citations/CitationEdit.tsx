@@ -19,7 +19,7 @@ export const CitationEdit: FC = (props) => (
         reference="taxon_names"
         validate={required()}
       >
-        <SelectInput optionText="rank_name" />
+        <SelectInput optionText="scientific_name" />
       </ReferenceInput>
       <ReferenceInput
         source="author_id"

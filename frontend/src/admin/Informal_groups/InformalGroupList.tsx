@@ -34,7 +34,7 @@ export const InformalGroupList: FC = (props) => (
         <TextField source="class_desc" />
       </ReferenceField>
       <ReferenceField source="taxon_name_id" reference="taxon_names">
-        <TextField source="rank_name" />
+        <TextField source="scientific_name" />
       </ReferenceField>
       <ReferenceField source="created_by" reference="users">
         <FullNameField source="last_name" />

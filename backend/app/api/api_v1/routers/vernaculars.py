@@ -1,13 +1,14 @@
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, Request, Response
 
+from app.api.dependencies.range_query import RangeQueryParameter
 from app.core.auth import get_current_active_superuser
 from app.db.session import get_db
 from app.db.vernacular.crud import VernacularCrud
 from app.db.vernacular.schema import Vernacular, VernacularCreate, VernacularEdit
 
-vernaculars_router = r = APIRouter(prefix="/vernacular")
+vernaculars_router = r = APIRouter(prefix="/vernaculars")
 
 
 @r.get(
@@ -17,17 +18,17 @@ vernaculars_router = r = APIRouter(prefix="/vernacular")
 )
 async def vernacular_list(
     response: Response,
-    range: str = "[0,10]",
+    range: Optional[str] = RangeQueryParameter,
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):
     """
-    Get all vernacular
+    Get all vernaculars
     """
-    vernacular = VernacularCrud.get_items(db, range=range)
+    vernaculars = VernacularCrud.get_items(db, range=range)
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = f"0-9/{VernacularCrud.get_items_count(db)}"
-    return vernacular
+    return vernaculars
 
 
 @r.get(
