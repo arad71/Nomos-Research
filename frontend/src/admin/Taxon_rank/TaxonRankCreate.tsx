@@ -1,13 +1,13 @@
 import React, { FC } from 'react';
 import {
   Create,
+  ReferenceInput,
+  required,
+  SelectInput,
   SimpleForm,
   TextInput,
-  required,
-  ReferenceInput,
-  SelectInput,
 } from 'react-admin';
-import RankAbbreviation from "./RankAbbreviation";
+import RankAbbreviation from './RankAbbreviation';
 
 export const TaxonRankCreate: FC = (props) => (
   <Create {...props}>

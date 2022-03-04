@@ -1,18 +1,18 @@
 // in src/users.js
 import React, { FC } from 'react';
 import {
-  RichTextField,
-  SelectField,
-  List,
   Datagrid,
-  TextField,
   DateField,
   EditButton,
-  ReferenceField,
+  List,
   NumberField,
+  ReferenceField,
+  RichTextField,
+  SelectField,
+  TextField,
 } from 'react-admin';
 import BadPublicationOptions from './BadPublicationOptions';
-import FullNameField from '../shared/FullNameField'
+import FullNameField from '../shared/FullNameField';
 
 export const PublicationList: FC = (props) => (
   <List {...props} sort={{ field: 'publication', order: 'DESC' }}>

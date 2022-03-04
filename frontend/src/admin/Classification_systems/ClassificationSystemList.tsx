@@ -1,15 +1,15 @@
 // in src/users.js
 import React, { FC } from 'react';
 import {
-  List,
   Datagrid,
-  TextField,
-  NumberField,
   DateField,
   EditButton,
+  List,
+  NumberField,
   ReferenceField,
+  TextField,
 } from 'react-admin';
-import FullNameField from '../shared/FullNameField'
+import FullNameField from '../shared/FullNameField';
 
 export const ClassificationSystemList: FC = (props) => (
   <List {...props} sort={{ field: 'class_desc', order: 'DESC' }}>

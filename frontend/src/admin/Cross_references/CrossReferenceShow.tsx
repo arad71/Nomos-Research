@@ -1,6 +1,5 @@
 import React, { FC } from 'react';
 import {
-  NumberField,
   ReferenceField,
   SelectField,
   Show,
@@ -8,17 +7,17 @@ import {
   TextField,
 } from 'react-admin';
 import CrossRefType from './CrossRefType';
+import Aside from '../shared/Aside';
 
 export const CrossReferenceShow: FC = (props) => {
   return (
-    <Show {...props}>
+    <Show {...props} aside={<Aside />}>
       <SimpleShowLayout>
-        <NumberField source="id" />
         <ReferenceField source="old_name_id" reference="taxon_names">
-          <TextField source="rank_name" />
+          <TextField source="scientific_name" />
         </ReferenceField>
         <ReferenceField source="new_name_id" reference="taxon_names">
-          <TextField source="rank_name" />
+          <TextField source="scientific_name" />
         </ReferenceField>
         <SelectField source="cross_reference_type" choices={CrossRefType} />
         <TextField source="active" />

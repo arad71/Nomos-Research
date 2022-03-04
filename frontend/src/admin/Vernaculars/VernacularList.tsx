@@ -1,13 +1,13 @@
 // in src/users.js
 import React, { FC } from 'react';
 import {
-  List,
   Datagrid,
-  TextField,
-  NumberField,
   DateField,
   EditButton,
+  List,
+  NumberField,
   ReferenceField,
+  TextField,
   useRecordContext,
 } from 'react-admin';
 

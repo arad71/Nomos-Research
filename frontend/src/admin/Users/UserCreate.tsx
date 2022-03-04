@@ -1,10 +1,10 @@
 import React, { FC } from 'react';
 import {
+  BooleanInput,
   Create,
+  PasswordInput,
   SimpleForm,
   TextInput,
-  PasswordInput,
-  BooleanInput,
 } from 'react-admin';
 
 export const UserCreate: FC = (props) => (

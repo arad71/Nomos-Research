@@ -1,20 +1,19 @@
 // in src/users.js
 import React, { FC } from 'react';
 import {
+  DateField,
+  EditButton,
+  NumberField,
+  ReferenceField,
   Show,
   SimpleShowLayout,
   TextField,
-  EditButton,
-  ReferenceField,
-  NumberField,
-  DateField,
 } from 'react-admin';
-import Aside from "../shared/Aside";
+import Aside from '../shared/Aside';
 
 export const TaxonNameShow: FC = (props) => (
-  <Show aside={<Aside />} {...props} sort={{ field: 'scientific_name', order: 'DESC' }}>
+  <Show aside={<Aside />} {...props}>
     <SimpleShowLayout>
-      <TextField source="id" />
       <ReferenceField source="kingdom_id" reference="kingdoms">
         <TextField source="kingdom_name" />
       </ReferenceField>

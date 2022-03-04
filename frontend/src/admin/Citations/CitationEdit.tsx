@@ -6,14 +6,13 @@ import {
   required,
   SelectInput,
   SimpleForm,
-  TextInput,
 } from 'react-admin';
 import AuthorType from './AuthorType';
+import Aside from '../shared/Aside';
 
 export const CitationEdit: FC = (props) => (
-  <Edit {...props}>
+  <Edit {...props} aside={<Aside />}>
     <SimpleForm>
-      <TextInput disabled source="id" />
       <ReferenceInput
         source="taxon_name_id"
         reference="taxon_names"

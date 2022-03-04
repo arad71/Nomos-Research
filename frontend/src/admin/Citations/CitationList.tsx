@@ -1,17 +1,17 @@
 // in src/users.js
 import React, { FC } from 'react';
 import {
-  NumberField,
-  SelectField,
-  List,
   Datagrid,
-  TextField,
-  EditButton,
-  ReferenceField,
   DateField,
+  EditButton,
+  List,
+  NumberField,
+  ReferenceField,
+  SelectField,
+  TextField,
 } from 'react-admin';
 import AuthorType from './AuthorType';
-import FullNameField from '../shared/FullNameField'
+import FullNameField from '../shared/FullNameField';
 
 export const CitationList: FC = (props) => (
   <List {...props} sort={{ field: 'kingdom_name', order: 'DESC' }}>

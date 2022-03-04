@@ -1,15 +1,15 @@
 // in src/users.js
 import React, { FC } from 'react';
 import {
-  List,
   Datagrid,
-  TextField,
   DateField,
   EditButton,
-  ReferenceField,
+  List,
   NumberField,
+  ReferenceField,
+  TextField,
 } from 'react-admin';
-import FullNameField from '../shared/FullNameField'
+import FullNameField from '../shared/FullNameField';
 
 export const TaxonRankList: FC = (props) => (
   <List {...props} sort={{ field: 'rank_name', order: 'DESC' }}>

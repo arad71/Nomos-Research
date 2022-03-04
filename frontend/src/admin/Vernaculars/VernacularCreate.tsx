@@ -1,18 +1,19 @@
 import React, { FC } from 'react';
 import {
   Create,
-  SimpleForm,
-  SelectInput,
+  NumberInput,
   ReferenceInput,
   required,
+  SelectInput,
+  SimpleForm,
   TextInput,
-  NumberInput,
 } from 'react-admin';
+import Aside from '../shared/Aside';
 import BooleanOptions from '../shared/BooleanOptions';
 import LanguageType from './LanguageType';
 
 export const VernacularCreate: FC = (props) => (
-  <Create {...props}>
+  <Create {...props} aside={<Aside />}>
     <SimpleForm>
       <TextInput source="vernacular" validate={required()} />
       <ReferenceInput source="taxon_name_id" reference="taxon_names">

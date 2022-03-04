@@ -1,19 +1,18 @@
 import React, { FC } from 'react';
 import {
-  NumberField, NumberInput,
+  NumberField,
   ReferenceField,
   required,
   Show,
   SimpleShowLayout,
   TextField,
 } from 'react-admin';
-import Aside from "../shared/Aside";
+import Aside from '../shared/Aside';
 
 export const TaxonRankShow: FC = (props) => {
   return (
     <Show aside={<Aside />} {...props}>
       <SimpleShowLayout>
-        <NumberField source="id" />
         <ReferenceField
           label="Kingdom"
           source="kingdom_id"

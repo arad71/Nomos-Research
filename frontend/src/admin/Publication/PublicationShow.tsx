@@ -9,13 +9,12 @@ import {
   TextField,
 } from 'react-admin';
 import BadPublicationOptions from './BadPublicationOptions';
-import Aside from "../shared/Aside";
+import Aside from '../shared/Aside';
 
 export const PublicationShow: FC = (props) => {
   return (
     <Show aside={<Aside />} {...props}>
       <SimpleShowLayout>
-        <TextField source="id" />
         <TextField source="publication" />
         <SelectField source="bad_publication" choices={BadPublicationOptions} />
         <TextField source="publication_name" />

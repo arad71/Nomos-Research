@@ -1,10 +1,10 @@
 import React, { FC } from 'react';
 import {
   Create,
-  SimpleForm,
-  SelectInput,
   ReferenceInput,
   required,
+  SelectInput,
+  SimpleForm,
   TextInput,
 } from 'react-admin';
 import BooleanOptions from '../shared/BooleanOptions';
@@ -14,10 +14,10 @@ export const CrossReferenceCreate: FC = (props) => (
   <Create {...props}>
     <SimpleForm>
       <ReferenceInput source="old_name_id" reference="taxon_names">
-        <SelectInput optionText="rank_name" validate={required()} />
+        <SelectInput optionText="scientific_name" validate={required()} />
       </ReferenceInput>
       <ReferenceInput source="new_name_id" reference="taxon_names">
-        <SelectInput optionText="rank_name" />
+        <SelectInput optionText="scientific_name" />
       </ReferenceInput>
       <SelectInput
         source="cross_reference_type"

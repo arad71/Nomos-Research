@@ -1,10 +1,10 @@
 import React, { FC } from 'react';
 import {
-  required,
   Create,
-  SimpleForm,
-  SelectInput,
   ReferenceInput,
+  required,
+  SelectInput,
+  SimpleForm,
 } from 'react-admin';
 
 export const InformalGroupCreate: FC = (props) => (

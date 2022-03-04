@@ -11,7 +11,6 @@ export const VernacularShow: FC = (props) => {
   return (
     <Show {...props}>
       <SimpleShowLayout>
-        <NumberField source="id" />
         <TextField source="vernacular" />
         <ReferenceField source="taxon_name_id" reference="taxon_names">
           <TextField source="scientific_name" />

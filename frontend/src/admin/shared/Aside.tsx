@@ -1,32 +1,29 @@
-import { Typography } from '@material-ui/core';
-import {ReferenceField, DateField, TextField} from 'react-admin';
-import FullNameField from './FullNameField'
+import React from 'react';
+import { Box, Card } from '@material-ui/core';
+import {
+  DateField,
+  ReferenceField,
+  SimpleShowLayout,
+  TextField,
+} from 'react-admin';
+import FullNameField from './FullNameField';
 
 const Aside = () => (
-  <div style={{ width: 200, margin: '1em' }}>
-    <Typography variant="h6">Record Details</Typography>
-    <Typography variant="body1">
-      <div>
-        ID: <TextField source="id" />
-      </div>
-      <div>
-        Created:
-      </div>
-      <ReferenceField source="created_by" reference="users">
-        <FullNameField source="last_name" />
-      </ReferenceField>
-      <br/>
-      <DateField source="created_on" showTime />
-      <div>
-        Updated:
-      </div>
-      <ReferenceField source="updated_by" reference="users">
-        <FullNameField source="last_name" />
-      </ReferenceField>
-      <br/>
-      <DateField source="updated_on" showTime />
-    </Typography>
-  </div>
+  <Box m="0 0 1em 1em">
+    <Card>
+      <SimpleShowLayout>
+        <TextField source="id" />
+        <ReferenceField source="created_by" reference="users" label="Created">
+          <FullNameField source="last_name" />
+        </ReferenceField>
+        <DateField source="created_on" showTime />
+        <ReferenceField source="updated_by" reference="users">
+          <FullNameField source="last_name" />
+        </ReferenceField>
+        <DateField source="updated_on" showTime />
+      </SimpleShowLayout>
+    </Card>
+  </Box>
 );
 
 export default Aside;
