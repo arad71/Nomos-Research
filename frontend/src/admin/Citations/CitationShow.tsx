@@ -15,6 +15,7 @@ import Aside from '../shared/Aside'
 export const CitationShow: FC = (props) => (
   <Show aside={<Aside />} {...props} sort={{ field: 'kingdom_name', order: 'DESC' }}>
     <SimpleShowLayout>
+      <NumberField source="id" />
       <ReferenceField source="taxon_name_id" reference="taxon_names">
         <TextField source="scientific_name" />
       </ReferenceField>

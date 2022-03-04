@@ -1,6 +1,11 @@
 import React, { FC } from 'react';
-import {ReferenceField, Show, SimpleShowLayout, TextField} from 'react-admin';
-import Aside from "../shared/Aside";
+import {
+  ReferenceField,
+  Show,
+  SimpleShowLayout,
+  TextField,
+} from 'react-admin';
+import Aside from '../shared/Aside';
 
 export const HierarchyShow: FC = (props) => {
   return (
@@ -10,8 +15,8 @@ export const HierarchyShow: FC = (props) => {
           <TextField source="rank_name" />
         </ReferenceField>
         <ReferenceField
-            source="classification_system_id"
-            reference="classification_systems"
+          source="classification_system_id"
+          reference="classification_systems"
         >
           <TextField source="class_desc" />
         </ReferenceField>

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.types import Enum
 
@@ -36,3 +36,4 @@ class CrossReference(Base, TableMixin):
     authorised_by = Column(String(60))
     comments = Column(String(1000))
     notes = Column(String(3000))
+    authorised_date = Column(DateTime, index=True)

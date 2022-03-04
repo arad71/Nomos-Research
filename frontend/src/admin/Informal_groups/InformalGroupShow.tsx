@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { ReferenceField, Show, SimpleShowLayout, TextField } from 'react-admin';
-import Aside from "../shared/Aside";
+import Aside from '../shared/Aside';
 
 export const InformalGroupShow: FC = (props) => {
   return (
