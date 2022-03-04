@@ -9,6 +9,9 @@ from app.db.session import Base
 
 class Publication(Base, TableMixin):
     __tablename__ = "publication"
+    __table_args__ = {
+        "comment": "This table stores information on each publication cited within references"
+    }
 
     publication_id = Column(Integer, primary_key=True, index=True)
     publication = Column(Text, nullable=False)

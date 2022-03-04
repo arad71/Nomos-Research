@@ -8,6 +8,7 @@ from app.db.taxon_name.model import TaxonName
 
 class Hierarchy(Base, TableMixin):
     __tablename__ = "hierarchy"
+    __table_args__ = {"comment": "This table indicates the parentage of each name"}
     name_plural = "hierarchies"
 
     hierarchy_id = Column(Integer, primary_key=True, index=True)

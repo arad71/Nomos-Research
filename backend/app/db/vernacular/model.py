@@ -8,6 +8,9 @@ from app.db.vernacular import enums
 
 class Vernacular(Base, TableMixin):
     __tablename__ = "vernacular"
+    __table_args__ = {
+        "comment": "The common or vernacular names recorded for Latin names, where they exist"
+    }
 
     vernacular_id = Column(Integer, primary_key=True, index=True)
     vernacular = Column(String(120), nullable=False)

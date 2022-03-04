@@ -9,6 +9,9 @@ from app.db.taxon_name import enums
 
 class TaxonName(Base, TableMixin):
     __tablename__ = "taxon_name"
+    __table_args__ = {
+        "comment": "All current and non-current taxon names at all levels of the hierarchy"
+    }
     name_plural = "taxon_names"
 
     taxon_name_id = Column(Integer, primary_key=True, index=True)

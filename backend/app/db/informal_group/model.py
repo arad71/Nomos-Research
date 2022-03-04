@@ -7,6 +7,9 @@ from app.db.session import Base
 
 class InformalGroup(Base, TableMixin):
     __tablename__ = "informal_group"
+    __table_args__ = {
+        "comment": "The various informal groups through which names can be classified"
+    }
     name_plural = "informal_groups"
 
     informal_group_id = Column(Integer, primary_key=True, index=True)

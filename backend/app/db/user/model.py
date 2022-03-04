@@ -5,6 +5,7 @@ from app.db.session import Base
 
 class User(Base):
     __tablename__ = "user"
+    __table_args__ = {"comment": "A list of users and their access rights"}
 
     user_id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True, nullable=False)

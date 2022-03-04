@@ -10,6 +10,9 @@ from app.db.taxon_name.model import TaxonName
 
 class CrossReference(Base, TableMixin):
     __tablename__ = "cross_reference"
+    __table_args__ = {
+        "comment": "All active and non-active transactions which change the usage of a name, usually resulting in a reference to one or more other taxa"
+    }
 
     cross_reference_id = Column(Integer, primary_key=True, index=True)
     old_name_id = Column(

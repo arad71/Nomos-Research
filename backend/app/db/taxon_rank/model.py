@@ -9,6 +9,7 @@ from app.db.taxon_rank import enums
 
 class TaxonRank(Base, TableMixin):
     __tablename__ = "taxon_rank"
+    __table_args__ = {"comment": "The ranks and their parentage"}
 
     taxon_rank_id = Column(Integer, primary_key=True, index=True)
     kingdom_id = Column(Integer, ForeignKey("kingdom.kingdom_id"), nullable=False)
