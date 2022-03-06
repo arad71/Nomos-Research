@@ -8,7 +8,7 @@ on:
   - pull_request
 
 jobs:
-  lint:
+  lint-backend:
     runs-on: ubuntu-latest
 
     steps:
@@ -35,6 +35,29 @@ jobs:
           # exit-zero treats all errors as warnings.
           flake8 . --count --exit-zero --max-complexity=10 --statistics
 
+  lint-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: npm-${{ hashFiles('package-lock.json') }}
+          restore-keys: npm-
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Build app to run linting
+        run: npm build
+
   test:
     runs-on: ubuntu-latest
 
@@ -54,7 +77,8 @@ jobs:
 
     # Only run deployment if preceding pipelines were successful
     needs:
-      - lint
+      - lint-backend
+      - lint-frontend
       - test
     if:
       contains('
