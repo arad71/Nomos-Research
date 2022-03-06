@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
 import {
+  BooleanInput,
   Edit,
+  NumberInput,
+  PasswordInput,
   SimpleForm,
   TextInput,
-  PasswordInput,
-  BooleanInput,
-  NumberInput,
 } from 'react-admin';
 
 export const UserEdit: FC = (props) => (

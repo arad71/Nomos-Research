@@ -1,10 +1,10 @@
 import React, { FC } from 'react';
-import { Edit, SimpleForm, NumberInput, TextInput } from 'react-admin';
+import { Edit, SimpleForm, TextInput } from 'react-admin';
+import Aside from '../shared/Aside';
 
 export const KingdomEdit: FC = (props) => (
-  <Edit {...props}>
+  <Edit {...props} aside={<Aside />}>
     <SimpleForm>
-      <NumberInput disabled source="id" />
       <TextInput source="kingdom_name" />
       <TextInput multiline source="kingdom_desc" />
     </SimpleForm>

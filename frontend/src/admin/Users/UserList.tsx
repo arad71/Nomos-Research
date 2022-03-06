@@ -1,12 +1,12 @@
 // in src/users.js
 import React, { FC } from 'react';
 import {
-  List,
-  Datagrid,
-  TextField,
   BooleanField,
-  EmailField,
+  Datagrid,
   EditButton,
+  EmailField,
+  List,
+  TextField,
 } from 'react-admin';
 
 export const UserList: FC = (props) => (

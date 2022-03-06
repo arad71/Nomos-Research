@@ -1,20 +1,20 @@
 import React, { FC } from 'react';
 import {
   Edit,
-  SimpleForm,
-  SelectInput,
+  NumberInput,
   ReferenceInput,
   required,
+  SelectInput,
+  SimpleForm,
   TextInput,
-  NumberInput,
 } from 'react-admin';
 import LanguageType from './LanguageType';
 import BooleanOptions from '../shared/BooleanOptions';
+import Aside from '../shared/Aside';
 
 export const VernacularEdit: FC = (props) => (
-  <Edit {...props}>
+  <Edit {...props} aside={<Aside />}>
     <SimpleForm>
-      <TextInput disabled source="id" />
       <TextInput source="vernacular" validate={required()} />
       <ReferenceInput source="taxon_name_id" reference="taxon_names">
         <SelectInput optionText="scientific_name" validate={required()} />

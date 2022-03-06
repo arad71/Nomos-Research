@@ -1,19 +1,18 @@
 import React, { FC } from 'react';
 import {
   Edit,
-  SimpleForm,
-  SelectInput,
   ReferenceInput,
   required,
-  TextInput,
+  SelectInput,
+  SimpleForm,
 } from 'react-admin';
+import Aside from '../shared/Aside';
 
 export const HierarchyEdit: FC = (props) => (
-  <Edit {...props}>
+  <Edit {...props} aside={<Aside />}>
     <SimpleForm>
-      <TextInput source="hierarchy_id" disabled />
       <ReferenceInput source="taxon_name_id" reference="taxon_names">
-        <SelectInput optionText="rank_name" validate={required()} />
+        <SelectInput optionText="scientific_name" validate={required()} />
       </ReferenceInput>
       <ReferenceInput
         source="classification_system_id"
@@ -22,7 +21,7 @@ export const HierarchyEdit: FC = (props) => (
         <SelectInput optionText="class_desc" validate={required()} />
       </ReferenceInput>
       <ReferenceInput source="parent_nid" reference="taxon_names">
-        <SelectInput optionText="rank_name" validate={required()} />
+        <SelectInput optionText="scientific_name" validate={required()} />
       </ReferenceInput>
     </SimpleForm>
   </Edit>

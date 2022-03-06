@@ -1,24 +1,24 @@
 import React, { FC } from 'react';
 import {
   Edit,
-  SimpleForm,
-  SelectInput,
   ReferenceInput,
   required,
+  SelectInput,
+  SimpleForm,
   TextInput,
 } from 'react-admin';
 import CrossRefType from './CrossRefType';
 import BooleanOptions from '../shared/BooleanOptions';
+import Aside from '../shared/Aside';
 
 export const CrossReferenceEdit: FC = (props) => (
-  <Edit {...props}>
+  <Edit {...props} aside={<Aside />}>
     <SimpleForm>
-      <TextInput disabled source="id" />
       <ReferenceInput source="old_name_id" reference="taxon_names">
-        <SelectInput optionText="rank_name" validate={required()} />
+        <SelectInput optionText="scientific_name" validate={required()} />
       </ReferenceInput>
       <ReferenceInput source="new_name_id" reference="taxon_names">
-        <SelectInput optionText="rank_name" />
+        <SelectInput optionText="scientific_name" />
       </ReferenceInput>
       <SelectInput
         source="cross_reference_type"

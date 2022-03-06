@@ -1,21 +1,25 @@
 import React, { FC } from 'react';
 import {
   Edit,
+  NumberInput,
   required,
+  SelectInput,
   SimpleForm,
   TextInput,
-  NumberInput,
-  SelectInput,
 } from 'react-admin';
-import BooleanOptions from "../shared/BooleanOptions";
-import ClassificationType from "./ClassificationType";
+import Aside from '../shared/Aside';
+import BooleanOptions from '../shared/BooleanOptions';
+import ClassificationType from './ClassificationType';
 
 export const ClassificationSystemEdit: FC = (props) => (
-  <Edit {...props}>
+  <Edit {...props} aside={<Aside />}>
     <SimpleForm>
-      <NumberInput disabled source="id" />
       <TextInput source="class_desc" validate={[required()]} />
-      <SelectInput source="class_type" choices={ClassificationType} validate={[required()]} />
+      <SelectInput
+        source="class_type"
+        choices={ClassificationType}
+        validate={[required()]}
+      />
       <SelectInput source="preferred" choices={BooleanOptions} />
       <NumberInput source="sort_order" />
     </SimpleForm>
