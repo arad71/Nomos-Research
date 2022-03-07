@@ -56,7 +56,7 @@ jobs:
         run: npm --prefix=frontend ci --ignore-scripts
 
       - name: Build app to run linting
-        run: npm --prefix=frontend build
+        run: npm --prefix=frontend run build
 
   test:
     runs-on: ubuntu-latest
