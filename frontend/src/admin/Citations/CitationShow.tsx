@@ -2,31 +2,18 @@
 import React, { FC } from 'react';
 import {
   NumberField,
+  ReferenceField,
   SelectField,
   Show,
   SimpleShowLayout,
   TextField,
-  ReferenceField,
-  useRecordContext,
 } from 'react-admin';
 import AuthorType from './AuthorType';
-
-const FullNameField = (props: any) => {
-  const record = useRecordContext(props);
-
-  return (
-    <span>
-      {record.first_name} {record.last_name}
-    </span>
-  );
-};
-
-FullNameField.defaultProps = { label: 'Name' };
+import Aside from '../shared/Aside';
 
 export const CitationShow: FC = (props) => (
-  <Show {...props} sort={{ field: 'kingdom_name', order: 'DESC' }}>
+  <Show aside={<Aside />} {...props}>
     <SimpleShowLayout>
-      <NumberField source="id" />
       <ReferenceField source="taxon_name_id" reference="taxon_names">
         <TextField source="scientific_name" />
       </ReferenceField>

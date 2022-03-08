@@ -11,11 +11,11 @@ import {
 } from 'react-admin';
 import BooleanOptions from '../shared/BooleanOptions';
 import NaturalisedStatus from './NaturalisedStatus';
+import Aside from '../shared/Aside';
 
 export const TaxonNameEdit: FC = (props) => (
-  <Edit {...props}>
+  <Edit aside={<Aside />} {...props}>
     <SimpleForm>
-      <TextInput disabled source="id" />
       <ReferenceInput
         source="kingdom_id"
         reference="kingdoms"

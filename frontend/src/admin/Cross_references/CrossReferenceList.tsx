@@ -1,13 +1,13 @@
 // in src/users.js
 import React, { FC } from 'react';
 import {
-  SelectField,
   Datagrid,
   DateField,
   EditButton,
   List,
   NumberField,
   ReferenceField,
+  SelectField,
   TextField,
   useRecordContext,
 } from 'react-admin';
@@ -30,10 +30,10 @@ export const CrossReferenceList: FC = (props) => (
     <Datagrid rowClick="show">
       <NumberField source="id" />
       <ReferenceField source="old_name_id" reference="taxon_names">
-        <TextField source="rank_name" />
+        <TextField source="scientific_name" />
       </ReferenceField>
       <ReferenceField source="new_name_id" reference="taxon_names">
-        <TextField source="rank_name" />
+        <TextField source="scientific_name" />
       </ReferenceField>
       <SelectField source="cross_reference_type" choices={CrossRefType} />
       <TextField source="active" />

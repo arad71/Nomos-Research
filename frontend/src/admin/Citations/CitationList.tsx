@@ -1,29 +1,17 @@
 // in src/users.js
 import React, { FC } from 'react';
 import {
-  NumberField,
-  SelectField,
-  List,
   Datagrid,
-  TextField,
-  EditButton,
-  ReferenceField,
-  useRecordContext,
   DateField,
+  EditButton,
+  List,
+  NumberField,
+  ReferenceField,
+  SelectField,
+  TextField,
 } from 'react-admin';
 import AuthorType from './AuthorType';
-
-const FullNameField = (props: any) => {
-  const record = useRecordContext(props);
-
-  return (
-    <span>
-      {record.first_name} {record.last_name}
-    </span>
-  );
-};
-
-FullNameField.defaultProps = { label: 'Name' };
+import FullNameField from '../shared/FullNameField';
 
 export const CitationList: FC = (props) => (
   <List {...props} sort={{ field: 'kingdom_name', order: 'DESC' }}>

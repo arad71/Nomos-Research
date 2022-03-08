@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
 import {
-  NumberInput,
-  required,
   Create,
-  SimpleForm,
+  NumberInput,
   ReferenceInput,
+  required,
   SelectInput,
+  SimpleForm,
 } from 'react-admin';
 import AuthorType from './AuthorType';
 

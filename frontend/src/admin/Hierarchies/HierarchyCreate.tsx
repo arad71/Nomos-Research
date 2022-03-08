@@ -11,7 +11,7 @@ export const HierarchyCreate: FC = (props) => (
   <Create {...props}>
     <SimpleForm>
       <ReferenceInput source="taxon_name_id" reference="taxon_names">
-        <SelectInput optionText="rank_name" validate={required()} />
+        <SelectInput optionText="scientific_name" validate={required()} />
       </ReferenceInput>
       <ReferenceInput
         source="classification_system_id"
@@ -20,7 +20,7 @@ export const HierarchyCreate: FC = (props) => (
         <SelectInput optionText="class_desc" validate={required()} />
       </ReferenceInput>
       <ReferenceInput source="parent_nid" reference="taxon_names">
-        <SelectInput optionText="rank_name" validate={required()} />
+        <SelectInput optionText="scientific_name" validate={required()} />
       </ReferenceInput>
     </SimpleForm>
   </Create>

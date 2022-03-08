@@ -1,16 +1,10 @@
 import React, { FC } from 'react';
-import {
-  Edit,
-  required,
-  SimpleForm,
-  TextInput,
-  NumberInput,
-} from 'react-admin';
+import { Edit, required, SimpleForm, TextInput } from 'react-admin';
+import Aside from '../shared/Aside';
 
 export const AuthorEdit: FC = (props) => (
-  <Edit {...props}>
+  <Edit {...props} aside={<Aside />}>
     <SimpleForm>
-      <NumberInput disabled source="id" />
       <TextInput source="author" validate={[required()]} />
       <TextInput source="surname" />
       <TextInput source="first_names" />

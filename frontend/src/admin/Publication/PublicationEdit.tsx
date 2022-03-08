@@ -2,20 +2,20 @@ import React, { FC } from 'react';
 import {
   BooleanInput,
   Edit,
+  NumberInput,
+  ReferenceInput,
+  required,
+  SelectInput,
   SimpleForm,
   TextInput,
-  ReferenceInput,
-  SelectInput,
-  NumberInput,
-  required,
 } from 'react-admin';
 import RichTextInput from 'ra-input-rich-text';
 import BadPublicationOptions from './BadPublicationOptions';
+import Aside from '../shared/Aside';
 
 export const PublicationEdit: FC = (props) => (
-  <Edit {...props}>
+  <Edit {...props} aside={<Aside />}>
     <SimpleForm>
-      <NumberInput disabled source="id" />
       <TextInput source="publication" validate={[required()]} />
       <SelectInput source="bad_publication" choices={BadPublicationOptions} />
       <TextInput source="publication_name" />

@@ -1,19 +1,17 @@
 import React, { FC } from 'react';
 import {
   Edit,
+  ReferenceInput,
   required,
+  SelectInput,
   SimpleForm,
   TextInput,
-  ReferenceInput,
-  SelectInput,
-  NumberInput,
 } from 'react-admin';
-import RankAbbreviation from "./RankAbbreviation";
+import RankAbbreviation from './RankAbbreviation';
 
 export const TaxonRankEdit: FC = (props) => (
   <Edit {...props}>
     <SimpleForm>
-      <NumberInput disabled source="id" />
       <ReferenceInput label="Kingdom" source="kingdom_id" reference="kingdoms">
         <SelectInput optionText="kingdom_name" validate={[required()]} />
       </ReferenceInput>
