@@ -14,9 +14,18 @@ class CrossReference(Base, TableMixin):
         "comment": "All active and non-active transactions which change the usage of a name, usually resulting in a reference to one or more other taxa"
     }
 
-    cross_reference_id = Column(Integer, primary_key=True, index=True)
+    cross_reference_id = Column(
+        Integer,
+        primary_key=True,
+        index=True,
+        comment="The unique record number for this cross-reference",
+    )
     old_name_id = Column(
-        Integer, ForeignKey("taxon_name.taxon_name_id"), nullable=False
+        # original comment "Th old NameID, or NameID this reference is about" fixed typo?
+        Integer,
+        ForeignKey("taxon_name.taxon_name_id"),
+        nullable=False,
+        comment="The old NameID, or NameID this reference is about",
     )
     old_name = relationship(
         "TaxonName",
@@ -24,7 +33,11 @@ class CrossReference(Base, TableMixin):
         remote_side=[TaxonName.taxon_name_id],
         backref=backref("cross_referenced_old_name"),
     )
-    new_name_id = Column(Integer, ForeignKey("taxon_name.taxon_name_id"))
+    new_name_id = Column(
+        Integer,
+        ForeignKey("taxon_name.taxon_name_id"),
+        comment="The new NameID, or the NameID of the name this reference points to",
+    )
     new_name = relationship(
         "TaxonName",
         foreign_keys=[new_name_id],
@@ -34,9 +47,19 @@ class CrossReference(Base, TableMixin):
     cross_reference_type = Column(
         Enum(enums.CrossReferenceType, name=__tablename__ + "__cross_reference_type"),
         nullable=False,
+        comment="The type of cross-reference",
     )
-    active = Column(Enum(enums.Active, name=__tablename__ + "__active"), nullable=False)
-    authorised_by = Column(String(60))
-    comments = Column(String(1000))
+    active = Column(
+        Enum(enums.Active, name=__tablename__ + "__active"),
+        nullable=False,
+        comment="Flag indicating if this reference is active or not",
+    )
+    # Was previously YR/MN/DY columns, comment derived from original
+    authorised_date = Column(DateTime, index=True, comment="The date of authorisation")
+    authorised_by = Column(
+        String(60), comment="The person who authorised this cross-reference"
+    )
+    comments = Column(
+        String(1000), comment="Other informative comments about the cross-reference"
+    )
     notes = Column(String(3000))
-    authorised_date = Column(DateTime, index=True)

@@ -13,15 +13,29 @@ class Vernacular(Base, TableMixin):
     }
 
     vernacular_id = Column(Integer, primary_key=True, index=True)
-    vernacular = Column(String(120), nullable=False)
-    taxon_name_id = Column(Integer, ForeignKey("taxon_name.taxon_name_id"))
+    vernacular = Column(
+        String(120), nullable=False, comment="A common name for this scientific name"
+    )
+    taxon_name_id = Column(
+        Integer,
+        ForeignKey("taxon_name.taxon_name_id"),
+        comment="The TaxonID for this name",
+    )
     taxon_name = relationship("TaxonName", backref="vernaculars")
     language = Column(
-        Enum(enums.Language, name=__tablename__ + "__language"), nullable=False
+        Enum(enums.Language, name=__tablename__ + "__language"),
+        nullable=False,
+        comment="The language or of origin of this name",
     )
-    lang_pref = Column(Enum(enums.LangPref, name=__tablename__ + "__lang_pref"))
-    preferred = Column(Enum(enums.Preferred, name=__tablename__ + "__preferred"))
-    source = Column(String(50))
+    lang_pref = Column(
+        Enum(enums.LangPref, name=__tablename__ + "__lang_pref"),
+        comment="Type of name (EU=European, AB = Aboriginal)",
+    )
+    preferred = Column(
+        Enum(enums.Preferred, name=__tablename__ + "__preferred"),
+        comment="Flag indicatin if this is the overall preferred vernacular name for this latin name",
+    )
+    source = Column(String(50), comment="The source or contributor of this name")
     enabled = Column(
         Enum(enums.Enabled, name=__tablename__ + "__enabled"), nullable=False
     )

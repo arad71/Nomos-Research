@@ -13,7 +13,10 @@ class Hierarchy(Base, TableMixin):
 
     hierarchy_id = Column(Integer, primary_key=True, index=True)
     taxon_name_id = Column(
-        Integer, ForeignKey("taxon_name.taxon_name_id"), nullable=False
+        Integer,
+        ForeignKey("taxon_name.taxon_name_id"),
+        nullable=False,
+        comment="Unique identifier for name",
     )
     taxon_name = relationship(
         "TaxonName",
@@ -25,9 +28,15 @@ class Hierarchy(Base, TableMixin):
         Integer,
         ForeignKey("classification_system.classification_system_id"),
         index=True,
+        comment="The taxonomic classification system used for this parentage",
     )
     classification_system = relationship("ClassificationSystem", backref=name_plural)
-    parent_nid = Column(Integer, ForeignKey("taxon_name.taxon_name_id"), nullable=False)
+    parent_nid = Column(
+        Integer,
+        ForeignKey("taxon_name.taxon_name_id"),
+        nullable=False,
+        comment="Parent NameID of this taxon name",
+    )
     parent = relationship(
         "TaxonName",
         foreign_keys=[parent_nid],

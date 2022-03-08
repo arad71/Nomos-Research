@@ -13,10 +13,16 @@ class Publication(Base, TableMixin):
         "comment": "This table stores information on each publication cited within references"
     }
 
-    publication_id = Column(Integer, primary_key=True, index=True)
+    publication_id = Column(
+        Integer,
+        primary_key=True,
+        index=True,
+        comment="The unique ID of this publication.",
+    )
     publication = Column(Text, nullable=False)
     bad_publication = Column(
-        Enum(enums.BadPublication, name=__tablename__ + "__bad_publication")
+        Enum(enums.BadPublication, name=__tablename__ + "__bad_publication"),
+        comment="Flag indicating if this is a bad publication which should be ignored in reports",
     )
     publication_name = Column(Text)
     doi = Column(String)
