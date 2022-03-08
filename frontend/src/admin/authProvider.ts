@@ -17,21 +17,21 @@ const authProvider = {
       body: formData,
     });
     return fetch(request)
-        .then((response) => {
-          if (response.status < 200 || response.status >= 300) {
-            throw new Error(response.statusText);
-          }
-          console.log(response);
-          return response.json();
-        })
-        .then(({access_token: accessToken}) => {
-          const decodedToken: any = decodeJwt(accessToken);
-          if (decodedToken.permissions !== 'admin') {
-            throw new Error('Forbidden');
-          }
-          localStorage.setItem('token', accessToken);
-          localStorage.setItem('permissions', decodedToken.permissions);
-        });
+      .then((response) => {
+        if (response.status < 200 || response.status >= 300) {
+          throw new Error(response.statusText);
+        }
+        console.log(response);
+        return response.json();
+      })
+      .then(({ access_token: accessToken }) => {
+        const decodedToken: any = decodeJwt(accessToken);
+        if (decodedToken.permissions !== 'admin') {
+          throw new Error('Forbidden');
+        }
+        localStorage.setItem('token', accessToken);
+        localStorage.setItem('permissions', decodedToken.permissions);
+      });
   },
   logout: () => {
     localStorage.removeItem('token');
@@ -40,8 +40,7 @@ const authProvider = {
     return Promise.resolve();
   },
   getIdentity: () => {
-    const username = localStorage.getItem('username');
-    return username;
+    return localStorage.getItem('username');
   },
   checkError: (error: { status: number }) => {
     const status = error.status;
