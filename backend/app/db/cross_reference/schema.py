@@ -1,21 +1,24 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.db.cross_reference import enums
+from app.db.cross_reference.constants import *
 from app.db.schemas import TableBase
 from app.db.taxon_name.schema import TaxonName
 
 
 class CrossReferenceBase(BaseModel):
-    old_name_id: int
-    new_name_id: Optional[int]
-    cross_reference_type: enums.CrossReferenceType
-    active: enums.Active
+    old_name_id: int = Field(description=OLD_NAME_ID)
+    new_name_id: Optional[int] = Field(description=NEW_NAME_ID)
+    cross_reference_type: enums.CrossReferenceType = Field(
+        description=CROSS_REFERENCE_TYPE
+    )
+    active: enums.Active = Field(description=ACTIVE)
     authorised_date: Optional[datetime]
-    authorised_by: Optional[str]
-    comments: Optional[str]
+    authorised_by: Optional[str] = Field(description=AUTHORISED_BY)
+    comments: Optional[str] = Field(description=COMMENTS)
     notes: Optional[str]
 
 
@@ -28,9 +31,10 @@ class CrossReferenceEdit(CrossReferenceBase):
 
 
 class CrossReference(CrossReferenceBase, TableBase):
-    cross_reference_id: int
+    cross_reference_id: int = Field(description=CROSS_REFERENCE_ID)
     old_name: TaxonName
     new_name: Optional[TaxonName]
 
     class Config:
         orm_mode = True
+        schema_extra = {"description": TABLE_DESCRIPTION}

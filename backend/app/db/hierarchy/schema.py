@@ -1,14 +1,15 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.db.classification_system.schema import ClassificationSystem
+from app.db.hierarchy.constants import *
 from app.db.schemas import TableBase
 from app.db.taxon_name.schema import TaxonName
 
 
 class HierarchyBase(BaseModel):
-    taxon_name_id: int
-    classification_system_id: int
-    parent_nid: int
+    taxon_name_id: int = Field(description=TAXON_NAME_ID)
+    classification_system_id: int = Field(description=CLASSIFICATION_SYSTEM_ID)
+    parent_nid: int = Field(description=PARENT_NAME_ID)
     pass
 
 
@@ -28,3 +29,4 @@ class Hierarchy(HierarchyBase, TableBase):
 
     class Config:
         orm_mode = True
+        schema_extra = {"description": TABLE_DESCRIPTION}

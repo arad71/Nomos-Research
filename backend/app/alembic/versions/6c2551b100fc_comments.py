@@ -63,7 +63,7 @@ def upgrade():
         "citation",
         "taxon_name_id",
         existing_type=sa.INTEGER(),
-        comment="NAMEID this author applies to",
+        comment="Taxon Name ID this author applies to",
         existing_nullable=True,
     )
     op.alter_column(
@@ -305,7 +305,7 @@ def downgrade():
         "taxon_name_id",
         existing_type=sa.INTEGER(),
         comment=None,
-        existing_comment="NAMEID this author applies to",
+        existing_comment="Taxon Name ID this author applies to",
         existing_nullable=True,
     )
     op.drop_table_comment(
