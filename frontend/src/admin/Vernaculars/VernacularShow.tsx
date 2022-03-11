@@ -6,10 +6,11 @@ import {
   SimpleShowLayout,
   TextField,
 } from 'react-admin';
+import Aside from "../shared/Aside";
 
 export const VernacularShow: FC = (props) => {
   return (
-    <Show {...props}>
+    <Show {...props} aside={<Aside/>}>
       <SimpleShowLayout>
         <TextField source="vernacular" />
         <ReferenceField source="taxon_name_id" reference="taxon_names">
