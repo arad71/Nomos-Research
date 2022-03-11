@@ -31,7 +31,7 @@ export const InformalGroupList: FC = (props) => (
       <ReferenceField source="updated_by" reference="users">
         <FullNameField source="last_name" />
       </ReferenceField>
-      <DateField source="updated_on" />
+      <DateField source="updated_on" showTime />
       <EditButton />
     </Datagrid>
   </List>
