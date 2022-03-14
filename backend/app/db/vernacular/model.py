@@ -4,38 +4,47 @@ from sqlalchemy.orm import relationship
 from app.db.models import TableMixin
 from app.db.session import Base
 from app.db.vernacular import enums
+from app.db.vernacular.constants import (
+    LANG_PREF,
+    LANGUAGE,
+    PREFERRED,
+    SOURCE,
+    TABLE_DESCRIPTION,
+    TAXON_NAME_ID,
+    VERNACULAR,
+)
 
 
 class Vernacular(Base, TableMixin):
     __tablename__ = "vernacular"
-    __table_args__ = {
-        "comment": "The common or vernacular names recorded for Latin names, where they exist"
-    }
+    __table_args__ = {"comment": TABLE_DESCRIPTION}
 
     vernacular_id = Column(Integer, primary_key=True, index=True)
-    vernacular = Column(
-        String(120), nullable=False, comment="A common name for this scientific name"
-    )
+    vernacular = Column(String(120), nullable=False, comment=VERNACULAR, doc=VERNACULAR)
     taxon_name_id = Column(
         Integer,
         ForeignKey("taxon_name.taxon_name_id"),
-        comment="The TaxonID for this name",
+        comment=TAXON_NAME_ID,
+        doc=TAXON_NAME_ID,
     )
     taxon_name = relationship("TaxonName", backref="vernaculars")
     language = Column(
         Enum(enums.Language, name=__tablename__ + "__language"),
         nullable=False,
-        comment="The language or of origin of this name",
+        comment=LANGUAGE,
+        doc=LANGUAGE,
     )
     lang_pref = Column(
         Enum(enums.LangPref, name=__tablename__ + "__lang_pref"),
-        comment="Type of name (EU=European, AB = Aboriginal)",
+        comment=LANG_PREF,
+        doc=LANG_PREF,
     )
     preferred = Column(
         Enum(enums.Preferred, name=__tablename__ + "__preferred"),
-        comment="Flag indicatin if this is the overall preferred vernacular name for this latin name",
+        comment=PREFERRED,
+        doc=PREFERRED,
     )
-    source = Column(String(50), comment="The source or contributor of this name")
+    source = Column(String(50), comment=SOURCE, doc=SOURCE)
     enabled = Column(
         Enum(enums.Enabled, name=__tablename__ + "__enabled"), nullable=False
     )

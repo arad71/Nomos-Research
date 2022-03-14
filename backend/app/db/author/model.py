@@ -1,7 +1,14 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
 
-from app.db.author.constants import *
+from app.db.author.constants import (
+    AUTHOR,
+    FIRST_NAMES,
+    INITIALS,
+    ORC_ID,
+    SURNAME,
+    TABLE_DESCRIPTION,
+)
 from app.db.models import TableMixin
 from app.db.session import Base
 

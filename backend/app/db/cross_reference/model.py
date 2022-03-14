@@ -3,7 +3,16 @@ from sqlalchemy.orm import backref, relationship
 from sqlalchemy.types import Enum
 
 from app.db.cross_reference import enums
-from app.db.cross_reference.constants import *
+from app.db.cross_reference.constants import (
+    ACTIVE,
+    AUTHORISED_BY,
+    COMMENTS,
+    CROSS_REFERENCE_ID,
+    CROSS_REFERENCE_TYPE,
+    NEW_NAME_ID,
+    OLD_NAME_ID,
+    TABLE_DESCRIPTION,
+)
 from app.db.models import TableMixin
 from app.db.session import Base
 from app.db.taxon_name.model import TaxonName
@@ -21,7 +30,6 @@ class CrossReference(Base, TableMixin):
         doc=CROSS_REFERENCE_ID,
     )
     old_name_id = Column(
-        # original comment "Th old NameID, or NameID this reference is about" fixed typo?
         Integer,
         ForeignKey("taxon_name.taxon_name_id"),
         nullable=False,

@@ -2,7 +2,14 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
-from app.db.author.constants import *
+from app.db.author.constants import (
+    AUTHOR,
+    FIRST_NAMES,
+    INITIALS,
+    ORC_ID,
+    SURNAME,
+    TABLE_DESCRIPTION,
+)
 from app.db.schemas import TableBase
 
 

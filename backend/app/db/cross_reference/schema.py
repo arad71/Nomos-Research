@@ -4,7 +4,16 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 from app.db.cross_reference import enums
-from app.db.cross_reference.constants import *
+from app.db.cross_reference.constants import (
+    ACTIVE,
+    AUTHORISED_BY,
+    COMMENTS,
+    CROSS_REFERENCE_ID,
+    CROSS_REFERENCE_TYPE,
+    NEW_NAME_ID,
+    OLD_NAME_ID,
+    TABLE_DESCRIPTION,
+)
 from app.db.schemas import TableBase
 from app.db.taxon_name.schema import TaxonName
 

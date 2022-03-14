@@ -5,32 +5,43 @@ from sqlalchemy.types import Enum
 from app.db.models import TableMixin
 from app.db.session import Base
 from app.db.taxon_rank import enums
+from app.db.taxon_rank.constants import (
+    DIRECT_PARENT,
+    KINGDOM_ID,
+    RANK_ABBREVIATION,
+    RANK_NAME,
+    REQUIRED_PARENT,
+    TABLE_DESCRIPTION,
+)
 
 
 class TaxonRank(Base, TableMixin):
     __tablename__ = "taxon_rank"
-    __table_args__ = {"comment": "The ranks and their parentage"}
+    __table_args__ = {"comment": TABLE_DESCRIPTION}
 
     taxon_rank_id = Column(Integer, primary_key=True, index=True)
     kingdom_id = Column(
         Integer,
         ForeignKey("kingdom.kingdom_id"),
         nullable=False,
-        comment="The kingdom ID this rank and its parentage applies to",
+        comment=KINGDOM_ID,
+        doc=KINGDOM_ID,
     )
     kingdom = relationship("Kingdom", backref="taxon_ranks")
     # New comment does not match new column name?
-    rank_name = Column(String(15), nullable=False, comment="The ID of this rank")
+    rank_name = Column(String(15), nullable=False, comment=RANK_NAME, doc=RANK_NAME)
     rank_abbrev = Column(
         Enum(enums.RankAbbreviation, name=__tablename__ + "__rank_abbrev"),
-        comment="The rank abbreviation (generally for ranks below species)",
+        comment=RANK_ABBREVIATION,
+        doc=RANK_ABBREVIATION,
     )
     direct_parent_rank_id = Column(
         Integer,
         ForeignKey("taxon_rank.taxon_rank_id"),
         nullable=True,
         index=True,
-        comment="The direct parent of this rank",
+        comment=DIRECT_PARENT,
+        doc=DIRECT_PARENT,
     )
     direct_parent_rank = relationship(
         "TaxonRank",
@@ -43,7 +54,8 @@ class TaxonRank(Base, TableMixin):
         ForeignKey("taxon_rank.taxon_rank_id"),
         nullable=True,
         index=True,
-        comment="The mandatory, or required parent, of this rank",
+        comment=REQUIRED_PARENT,
+        doc=REQUIRED_PARENT,
     )
     required_parent_rank = relationship(
         "TaxonRank",

@@ -4,25 +4,30 @@ from sqlalchemy.types import Enum
 
 from app.db.models import TableMixin
 from app.db.publication import enums
+from app.db.publication.constants import (
+    BAD_PUBLICATION,
+    PUBLICATION_ID,
+    TABLE_DESCRIPTION,
+)
 from app.db.session import Base
 
 
 class Publication(Base, TableMixin):
     __tablename__ = "publication"
-    __table_args__ = {
-        "comment": "This table stores information on each publication cited within references"
-    }
+    __table_args__ = {"comment": TABLE_DESCRIPTION}
 
     publication_id = Column(
         Integer,
         primary_key=True,
         index=True,
-        comment="The unique ID of this publication.",
+        comment=PUBLICATION_ID,
+        doc=PUBLICATION_ID,
     )
     publication = Column(Text, nullable=False)
     bad_publication = Column(
         Enum(enums.BadPublication, name=__tablename__ + "__bad_publication"),
-        comment="Flag indicating if this is a bad publication which should be ignored in reports",
+        comment=BAD_PUBLICATION,
+        doc=BAD_PUBLICATION,
     )
     publication_name = Column(Text)
     doi = Column(String)

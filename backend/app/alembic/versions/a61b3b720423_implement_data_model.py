@@ -1,7 +1,7 @@
 """Implement Data Model.
 
 Revision ID: a61b3b720423
-Revises: 
+Revises:
 Create Date: 2022-03-02 00:50:07.245328-08:00
 
 """

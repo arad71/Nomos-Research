@@ -3,7 +3,12 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.types import Enum
 
 from app.db.citation import enums
-from app.db.citation.constants import *
+from app.db.citation.constants import (
+    AUTHOR_ORDER,
+    AUTHOR_TYPE,
+    TABLE_DESCRIPTION,
+    TAXON_NAME_ID,
+)
 from app.db.models import TableMixin
 from app.db.session import Base
 

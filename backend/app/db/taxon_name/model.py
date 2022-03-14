@@ -5,38 +5,66 @@ from sqlalchemy.types import Enum
 from app.db.models import TableMixin
 from app.db.session import Base
 from app.db.taxon_name import enums
+from app.db.taxon_name.constants import (
+    AUTHOR,
+    COMMENTS,
+    CONTRIBUTED_BY,
+    CONTRIBUTED_ON,
+    EXTERNAL_ID,
+    FAMILY_CODE,
+    FAMILY_NID,
+    FORM_DESC_DY,
+    FORM_DESC_MN,
+    FORM_DESC_YR,
+    INFORMAL,
+    IS_CURRENT,
+    IS_ERADICATED,
+    KINGDOM_ID,
+    LINEAR_SEQUENCE,
+    NATURALISED_COMMENTS,
+    ORIGIN,
+    PUBLICATION_ID,
+    PUBLICATION_YEAR,
+    RANK_ID,
+    RANK_NAME,
+    SOURCE,
+    TABLE_DESCRIPTION,
+    TAXON_NAME_ID,
+    VALIDATED,
+    VERNACULAR,
+    VOLUME_INFORMATION,
+)
 
 
 class TaxonName(Base, TableMixin):
     __tablename__ = "taxon_name"
-    __table_args__ = {
-        "comment": "All current and non-current taxon names at all levels of the hierarchy"
-    }
+    __table_args__ = {"comment": TABLE_DESCRIPTION}
     name_plural = "taxon_names"
 
-    taxon_name_id = Column(
-        Integer, primary_key=True, index=True, comment="Unique identifier for name"
-    )
+    taxon_name_id = Column(Integer, primary_key=True, index=True, comment=TAXON_NAME_ID)
     # Derived from what? is this comment still true?
     kingdom_id = Column(
         Integer,
         ForeignKey("kingdom.kingdom_id"),
         nullable=False,
-        comment="Kingdom this name belongs to. A derived field",
+        comment=KINGDOM_ID,
+        doc=KINGDOM_ID,
     )
     kingdom = relationship("Kingdom", backref=name_plural)
     rank_id = Column(
         Integer,
         ForeignKey("taxon_rank.taxon_rank_id"),
         nullable=False,
-        comment="The rank ID of this name",
+        comment=RANK_ID,
+        doc=RANK_ID,
     )
     taxon_rank = relationship("TaxonRank", backref=name_plural)
     # Are we using/keeping this? is this comment still true?
     rank_name = Column(
         String(15),
         nullable=False,
-        comment="A duplicate of the rankname field in HBTRanks. To aid performance.",
+        comment=RANK_NAME,
+        doc=RANK_NAME,
     )
     uninomial = Column(String)
     # kingdom = Column(String)
@@ -56,63 +84,68 @@ class TaxonName(Base, TableMixin):
     publication_id = Column(
         Integer,
         ForeignKey("publication.publication_id"),
-        comment="The publication ID of the publication this name was published in",
+        comment=PUBLICATION_ID,
+        doc=PUBLICATION_ID,
     )
     publication = relationship("Publication", backref=name_plural)
     volume_information = Column(
         String(100),
-        comment="The volume information of the publication this name was published in",
+        comment=VOLUME_INFORMATION,
+        doc=VOLUME_INFORMATION,
     )
-    publication_year = Column(Integer, comment="The year of publication")
+    publication_year = Column(Integer, comment=PUBLICATION_YEAR, doc=PUBLICATION_YEAR)
     # This comment does not match our Enum, should we change the Enum or the comment?
     is_current = Column(
         Enum(enums.IsCurrent, name=__tablename__ + "__is_current"),
         nullable=False,
-        comment="Current status, Y = current, N = not current",
+        comment=IS_CURRENT,
+        doc=IS_CURRENT,
     )
     origin = Column(
         String(1),
-        comment="Flag indicating whether taxon has been naturalised in Western Australia. * = naturalised",
+        comment=ORIGIN,
+        doc=ORIGIN,
     )
     informal = Column(
         String(2),
-        comment="Flag indicating whether name is used informally but not yet formally published",
+        comment=INFORMAL,
+        doc=INFORMAL,
     )
     # Elsewhere we have moved YR/MN/DY into a single date field. Do we want to here?
-    form_desc_yr = Column(Integer, comment="Year of date the taxon formally described")
-    form_desc_mn = Column(Integer, comment="Month of date formally described")
-    form_desc_dy = Column(Integer, comment="Day of date formally described")
-    comments = Column(String(1000), comment="Comments about name")
+    form_desc_yr = Column(Integer, comment=FORM_DESC_YR)
+    form_desc_mn = Column(Integer, comment=FORM_DESC_MN)
+    form_desc_dy = Column(Integer, comment=FORM_DESC_DY)
+    comments = Column(String(1000), comment=COMMENTS)
     contributed_by = Column(
         String(16),
-        comment="Person authorising entry of this name. This will be the name of a taxonomist who can vouch for the correctness of the record.",
+        comment=CONTRIBUTED_BY,
+        doc=CONTRIBUTED_BY,
     )
-    contributed_on = Column(DateTime, comment="Date this entry was authorised on")
+    contributed_on = Column(DateTime, comment=CONTRIBUTED_ON)
     validated = Column(
         Enum(enums.Validated, name=__tablename__ + "__validated"),
         nullable=False,
-        comment="Flag indicating whether record is validated or not. By default all records entered manually are validated, all records entered from an external source are unvalidated.",
+        comment=VALIDATED,
+        doc=VALIDATED,
     )
     source = Column(
         String(10),
-        comment="A code representing an external source this record was derived from. eg. CAVP",
+        comment=SOURCE,
+        doc=SOURCE,
     )
     external_id = Column(
         String(10),
-        comment="An identifier associated with the external record (if one exists).",
+        comment=EXTERNAL_ID,
+        doc=EXTERNAL_ID,
     )
-    family_code = Column(
-        String(5),
-        comment="The family code of this name if it is of rank below family. This field has been retained for backward compatibility and because it is used as part of Herbarium curatorial procedures.",
-    )
+    family_code = Column(String(5), comment=FAMILY_CODE, doc=FAMILY_CODE)
     # Is this still true/needed?
-    author = Column(
-        String(180), comment="Derived field. Denormalised for performance reasons."
-    )
+    author = Column(String(180), comment=AUTHOR, doc=AUTHOR)
     # Is this still true/needed?
     vernacular = Column(
         String(100),
-        comment="Derived from HBTVErnaculars to aid performance and querying",
+        comment=VERNACULAR,
+        doc=VERNACULAR,
     )
     editor = Column(String(60))
     naturalised_status = Column(
@@ -124,21 +157,22 @@ class TaxonName(Base, TableMixin):
     # Comment doesn't seem to match column
     is_eradicated = Column(
         String(1),
-        comment='Nat Status is a superset of ORIGIN. See domain for values. "A" = old "*"',
+        comment=IS_ERADICATED,
+        doc=IS_ERADICATED,
     )
     # Comment doesn't seem to match column
     naturalised_comments = Column(
         String(400),
-        comment="Is this taxon definitely naturalised. Y = Yes N = there is some doubt whether it is really naturalised.",
+        comment=NATURALISED_COMMENTS,
+        doc=NATURALISED_COMMENTS,
     )
     # Comment doesn't seem to match column
-    linear_sequence = Column(
-        Integer, comment="If this is an alien, has it been eradicated?"
-    )
+    linear_sequence = Column(Integer, comment=LINEAR_SEQUENCE, doc=LINEAR_SEQUENCE)
     family_nid = Column(
         Integer,
         ForeignKey("taxon_name.taxon_name_id"),
-        comment="The NameID of the family that is a parent of this taxon",
+        comment=FAMILY_NID,
+        doc=FAMILY_NID,
     )
     all_vernaculars = Column(String(200))
     notes = Column(String(3000))

@@ -1,15 +1,20 @@
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.db.author.schema import Author
 from app.db.publication import enums
+from app.db.publication.constants import (
+    BAD_PUBLICATION,
+    PUBLICATION_ID,
+    TABLE_DESCRIPTION,
+)
 from app.db.schemas import TableBase
 
 
 class PublicationBase(BaseModel):
     publication: str
-    bad_publication: Optional[enums.BadPublication]
+    bad_publication: Optional[enums.BadPublication] = Field(description=BAD_PUBLICATION)
     publication_name: Optional[str]
     doi: Optional[str]
     title: Optional[str]
@@ -51,8 +56,9 @@ class PublicationEdit(PublicationBase):
 
 
 class Publication(PublicationBase, TableBase):
-    publication_id: int
+    publication_id: int = Field(description=PUBLICATION_ID)
     author: list[Author]
 
     class Config:
         orm_mode = True
+        schema_extra = {"description": TABLE_DESCRIPTION}

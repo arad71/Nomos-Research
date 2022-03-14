@@ -1,11 +1,17 @@
 from sqlalchemy import Boolean, Column, Integer, String
 
 from app.db.session import Base
+from app.db.user.constants import (
+    DEFAULT_CLASS,
+    DEFAULT_KINGDOM,
+    EMAIL,
+    TABLE_DESCRIPTION,
+)
 
 
 class User(Base):
     __tablename__ = "user"
-    __table_args__ = {"comment": "A list of users and their access rights"}
+    __table_args__ = {"comment": TABLE_DESCRIPTION}
 
     user_id = Column(Integer, primary_key=True, index=True)
     email = Column(
@@ -13,16 +19,16 @@ class User(Base):
         unique=True,
         index=True,
         nullable=False,
-        comment="The email address of this user",
+        comment=EMAIL,
+        doc=EMAIL,
     )
     first_name = Column(String)
     last_name = Column(String)
-    default_kingdom = Column(
-        Integer, comment="The default kingdom this user will save taxon names with"
-    )
+    default_kingdom = Column(Integer, comment=DEFAULT_KINGDOM, doc=DEFAULT_KINGDOM)
     default_class = Column(
         Integer,
-        comment="The default classification system this user will save taxon names with",
+        comment=DEFAULT_CLASS,
+        doc=DEFAULT_CLASS,
     )
     hashed_password = Column(String, nullable=False)
     is_active = Column(Boolean, default=True, nullable=False)

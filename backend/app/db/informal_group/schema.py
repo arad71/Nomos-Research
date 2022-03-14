@@ -1,11 +1,12 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.db.classification_system.schema import ClassificationSystem
+from app.db.informal_group.constants import CLASSIFICATION_SYSTEM_ID, TABLE_DESCRIPTION
 from app.db.schemas import TableBase
 
 
 class InformalGroupBase(BaseModel):
-    classification_system_id: int
+    classification_system_id: int = Field(description=CLASSIFICATION_SYSTEM_ID)
     taxon_name_id: int
 
 
@@ -23,3 +24,4 @@ class InformalGroup(InformalGroupBase, TableBase):
 
     class Config:
         orm_mode = True
+        schema_extra = {"description": TABLE_DESCRIPTION}

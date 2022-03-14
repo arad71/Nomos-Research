@@ -2,7 +2,12 @@ from pydantic import BaseModel, Field
 
 from app.db.author.schema import Author
 from app.db.citation import enums
-from app.db.citation.constants import *
+from app.db.citation.constants import (
+    AUTHOR_ORDER,
+    AUTHOR_TYPE,
+    TABLE_DESCRIPTION,
+    TAXON_NAME_ID,
+)
 from app.db.schemas import TableBase
 
 

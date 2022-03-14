@@ -1,7 +1,12 @@
 from pydantic import BaseModel, Field
 
 from app.db.classification_system.schema import ClassificationSystem
-from app.db.hierarchy.constants import *
+from app.db.hierarchy.constants import (
+    CLASSIFICATION_SYSTEM_ID,
+    PARENT_NAME_ID,
+    TABLE_DESCRIPTION,
+    TAXON_NAME_ID,
+)
 from app.db.schemas import TableBase
 from app.db.taxon_name.schema import TaxonName
 

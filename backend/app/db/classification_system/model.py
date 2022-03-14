@@ -2,7 +2,14 @@ from sqlalchemy import Column, Integer, String
 from sqlalchemy.types import Enum
 
 from app.db.classification_system import enums
-from app.db.classification_system.constants import *
+from app.db.classification_system.constants import (
+    CLASS_TYPE,
+    CLASSIFICATION_SYSTEM_ID,
+    DESCRIPTION,
+    PREFERRED,
+    SORT_ORDER,
+    TABLE_DESCRIPTION,
+)
 from app.db.models import TableMixin
 from app.db.session import Base
 
