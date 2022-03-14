@@ -1,0 +1,6 @@
+REQUIRED_PARENT = "The mandatory, or required parent, of this rank"
+DIRECT_PARENT = "The direct parent of this rank"
+RANK_ABBREVIATION = "The rank abbreviation (generally for ranks below species)"
+RANK_NAME = "The ID of this rank"
+KINGDOM_ID = "The kingdom ID this rank and its parentage applies to"
+TABLE_DESCRIPTION = "The ranks and their parentage"

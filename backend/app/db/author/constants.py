@@ -1,0 +1,6 @@
+TABLE_DESCRIPTION = "A list of all validly recognised authors."
+ORC_ID = "Open Researcher and Contributor ID."
+INITIALS = "Author initials (excluding surname)"
+FIRST_NAMES = "First names of author"
+SURNAME = "Surname of author"
+AUTHOR = "Standard Brummit and Powell abbreviation for this author"
