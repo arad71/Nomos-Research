@@ -1,6 +1,7 @@
 from app.db.dataimport import DataImportBase
 from app.db.kingdom.model import Kingdom
 from app.db.taxon_rank.model import TaxonRank as TaxonRankModel
+from app.db.user.model import User as UserModel
 
 
 class ImportTaxonRank(DataImportBase):
@@ -18,7 +19,13 @@ class ImportTaxonRank(DataImportBase):
                 row["REQ_PARENT_RID"], row["RANK_ID"]
             ),
             "legacy_id": row["RANK_ID"],
+            "created_by": self.current_user,
+            "updated_by": self.map_row_by_unique_key(
+                UserModel, "legacy_id_name", row["UPDATED_BY"], "user_id"
+            ),
+            "updated_on": row["UPDATED_ON"],
         }
+
         self.insert(
             item, TaxonRankModel, f"uc_{TaxonRankModel.__tablename__}_legacy_id"
         )

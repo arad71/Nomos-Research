@@ -3,6 +3,7 @@ from app.db.kingdom.model import Kingdom
 from app.db.publication.model import Publication
 from app.db.taxon_name.model import TaxonName as TaxonNameModel
 from app.db.taxon_rank.model import TaxonRank
+from app.db.user.model import User as UserModel
 
 
 class ImportTaxonName(DataImportBase):
@@ -57,6 +58,11 @@ class ImportTaxonName(DataImportBase):
             "authorised_by": row["AUTHORISED_BY"],
             "authorised_on": self.get_datetime(row["AUTHORISED_ON"], "%d/%b/%y"),
             "legacy_id": row["NAME_ID"],
+            "created_by": self.current_user,
+            "updated_by": self.map_row_by_unique_key(
+                UserModel, "legacy_id_name", row["UPDATED_BY"], "user_id"
+            ),
+            "updated_on": row["UPDATED_ON"],
         }
 
         self.insert(

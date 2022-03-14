@@ -1,6 +1,7 @@
 from app.db.cross_reference.model import CrossReference as CrossReferenceModel
 from app.db.dataimport import DataImportBase
 from app.db.taxon_name.model import TaxonName
+from app.db.user.model import User as UserModel
 
 
 class ImportCrossReference(DataImportBase):
@@ -21,6 +22,14 @@ class ImportCrossReference(DataImportBase):
             "comments": row["COMMENTS"],
             "notes": row["NOTES"],
             "legacy_id": row["XREF_ID"],
+            "created_by": self.map_row_by_unique_key(
+                UserModel, "legacy_id_name", row["ADDED_BY"], "user_id"
+            ),
+            "created_on": row["ADDED_ON"],
+            "updated_by": self.map_row_by_unique_key(
+                UserModel, "legacy_id_name", row["UPDATED_BY"], "user_id"
+            ),
+            "updated_on": row["UPDATED_ON"],
         }
         self.insert(
             item,
