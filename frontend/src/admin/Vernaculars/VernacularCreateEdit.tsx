@@ -4,11 +4,11 @@ import {
   required,
   SelectInput,
   SimpleForm,
-  TextInput
-} from "react-admin";
-import React, {FC} from "react";
-import LanguageType from "./LanguageType";
-import BooleanOptions from "../shared/BooleanOptions";
+  TextInput,
+} from 'react-admin';
+import React, { FC } from 'react';
+import LanguageType from './LanguageType';
+import BooleanOptions from '../shared/BooleanOptions';
 
 export const VernacularCreateEdit: FC = (props) => (
   <SimpleForm {...props}>

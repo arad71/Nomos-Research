@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { Edit } from 'react-admin';
 import Aside from '../shared/Aside';
-import {ClassSystemCreateEdit} from "./ClassSystemCreateEdit";
+import { ClassSystemCreateEdit } from './ClassSystemCreateEdit';
 
 export const ClassificationSystemEdit: FC = (props) => (
   <Edit {...props} aside={<Aside />}>

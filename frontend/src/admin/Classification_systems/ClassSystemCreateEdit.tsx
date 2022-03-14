@@ -1,7 +1,13 @@
-import {NumberInput, required, SelectInput, SimpleForm, TextInput} from "react-admin";
-import React, {FC} from "react";
-import ClassificationType from "./ClassificationType";
-import BooleanOptions from "../shared/BooleanOptions";
+import {
+  NumberInput,
+  required,
+  SelectInput,
+  SimpleForm,
+  TextInput,
+} from 'react-admin';
+import React, { FC } from 'react';
+import ClassificationType from './ClassificationType';
+import BooleanOptions from '../shared/BooleanOptions';
 
 export const ClassSystemCreateEdit: FC = (props) => (
   <SimpleForm {...props}>

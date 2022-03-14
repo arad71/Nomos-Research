@@ -3,10 +3,10 @@ import {
   required,
   SelectInput,
   SimpleForm,
-  TextInput
-} from "react-admin";
-import React, {FC} from "react";
-import RankAbbreviation from "./RankAbbreviation";
+  TextInput,
+} from 'react-admin';
+import React, { FC } from 'react';
+import RankAbbreviation from './RankAbbreviation';
 
 export const TaxonRankCreateEdit: FC = (props) => (
   <SimpleForm {...props}>

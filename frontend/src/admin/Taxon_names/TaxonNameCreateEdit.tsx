@@ -5,11 +5,12 @@ import {
   required,
   SelectInput,
   SimpleForm,
-  TextInput
-} from "react-admin";
-import React, {FC} from "react";
-import BooleanOptions from "../shared/BooleanOptions";
-import NaturalisedStatus from "./NaturalisedStatus";
+  TextInput,
+} from 'react-admin';
+
+import React, { FC } from 'react';
+import BooleanOptions from '../shared/BooleanOptions';
+import NaturalisedStatus from './NaturalisedStatus';
 
 export const TaxonNameCreateEdit: FC = (props) => (
   <SimpleForm {...props}>
