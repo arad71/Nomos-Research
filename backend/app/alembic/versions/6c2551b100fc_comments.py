@@ -144,7 +144,6 @@ def upgrade():
         existing_comment=None,
         schema=None,
     )
-    op.drop_column("citation", "legacy_id")
     op.alter_column(
         "classification_system",
         "classification_system_id",
@@ -222,7 +221,6 @@ def upgrade():
         existing_comment=None,
         schema=None,
     )
-    op.drop_column("classification_system", "legacy_id_name")
     op.alter_column(
         "cross_reference",
         "cross_reference_id",
@@ -475,7 +473,6 @@ def upgrade():
     op.create_table_comment(
         "kingdom", "The various kingdoms", existing_comment=None, schema=None
     )
-    op.drop_column("kingdom", "legacy_id")
     op.alter_column(
         "publication",
         "publication_id",
@@ -530,7 +527,6 @@ def upgrade():
         existing_comment=None,
         schema=None,
     )
-    op.drop_column("publication", "legacy_id")
     op.alter_column(
         "taxon_name",
         "taxon_name_id",
@@ -751,7 +747,6 @@ def upgrade():
         existing_comment=None,
         schema=None,
     )
-    op.drop_column("taxon_name", "legacy_id")
     op.alter_column(
         "taxon_rank",
         "kingdom_id",
@@ -830,7 +825,6 @@ def upgrade():
         existing_comment=None,
         schema=None,
     )
-    op.drop_column("taxon_rank", "legacy_id")
     op.alter_column(
         "user",
         "email",
@@ -1055,10 +1049,6 @@ def downgrade():
         existing_comment="The email address of this user",
         existing_nullable=False,
     )
-    op.add_column(
-        "taxon_rank",
-        sa.Column("legacy_id", sa.INTEGER(), autoincrement=False, nullable=True),
-    )
     op.drop_table_comment(
         "taxon_rank", existing_comment="The ranks and their parentage", schema=None
     )
@@ -1142,10 +1132,6 @@ def downgrade():
         comment=None,
         existing_comment="The kingdom ID this rank and its parentage applies to",
         existing_nullable=False,
-    )
-    op.add_column(
-        "taxon_name",
-        sa.Column("legacy_id", sa.INTEGER(), autoincrement=False, nullable=True),
     )
     op.drop_table_comment(
         "taxon_name",
@@ -1396,10 +1382,6 @@ def downgrade():
             "nextval('taxon_name_taxon_name_id_seq'::regclass)"
         ),
     )
-    op.add_column(
-        "publication",
-        sa.Column("legacy_id", sa.INTEGER(), autoincrement=False, nullable=True),
-    )
     op.drop_table_comment(
         "publication",
         existing_comment="This table stores information on each publication cited within references",
@@ -1458,10 +1440,6 @@ def downgrade():
         existing_server_default=sa.text(
             "nextval('publication_publication_id_seq'::regclass)"
         ),
-    )
-    op.add_column(
-        "kingdom",
-        sa.Column("legacy_id", sa.INTEGER(), autoincrement=False, nullable=True),
     )
     op.drop_table_comment(
         "kingdom", existing_comment="The various kingdoms", schema=None
@@ -1743,10 +1721,6 @@ def downgrade():
         existing_nullable=False,
         autoincrement=True,
     )
-    op.add_column(
-        "classification_system",
-        sa.Column("legacy_id_name", sa.VARCHAR(), autoincrement=False, nullable=True),
-    )
     op.drop_table_comment(
         "classification_system",
         existing_comment="The hierarchical classification systems supported within the WA Herbarium",
@@ -1831,10 +1805,6 @@ def downgrade():
         existing_server_default=sa.text(
             "nextval('classification_system_classification_system_id_seq'::regclass)"
         ),
-    )
-    op.add_column(
-        "citation",
-        sa.Column("legacy_id", sa.INTEGER(), autoincrement=False, nullable=True),
     )
     op.drop_table_comment(
         "citation",
