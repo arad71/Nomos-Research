@@ -25,7 +25,6 @@ class CrossReference(Base, TableMixin):
     cross_reference_id = Column(
         Integer,
         primary_key=True,
-        index=True,
         comment=CROSS_REFERENCE_ID,
         doc=CROSS_REFERENCE_ID,
     )

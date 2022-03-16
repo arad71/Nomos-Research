@@ -14,9 +14,7 @@ class Kingdom(Base, TableMixin):
     __tablename__ = "kingdom"
     __table_args__ = {"comment": TABLE_DESCRIPTION}
 
-    kingdom_id = Column(
-        Integer, primary_key=True, index=True, comment=KINGDOM_ID, doc=KINGDOM_ID
-    )
+    kingdom_id = Column(Integer, primary_key=True, comment=KINGDOM_ID, doc=KINGDOM_ID)
     kingdom_name = Column(
         String(15), nullable=False, comment=KINGDOM_NAME, doc=KINGDOM_NAME
     )

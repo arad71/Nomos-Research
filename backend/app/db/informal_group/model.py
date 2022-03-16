@@ -11,7 +11,7 @@ class InformalGroup(Base, TableMixin):
     __table_args__ = {"comment": TABLE_DESCRIPTION}
     name_plural = "informal_groups"
 
-    informal_group_id = Column(Integer, primary_key=True, index=True)
+    informal_group_id = Column(Integer, primary_key=True)
     classification_system_id = Column(
         Integer,
         ForeignKey("classification_system.classification_system_id"),

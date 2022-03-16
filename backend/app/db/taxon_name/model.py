@@ -41,7 +41,7 @@ class TaxonName(Base, TableMixin):
     __table_args__ = {"comment": TABLE_DESCRIPTION}
     name_plural = "taxon_names"
 
-    taxon_name_id = Column(Integer, primary_key=True, index=True, comment=TAXON_NAME_ID)
+    taxon_name_id = Column(Integer, primary_key=True, comment=TAXON_NAME_ID)
     # Derived from what? is this comment still true?
     kingdom_id = Column(
         Integer,

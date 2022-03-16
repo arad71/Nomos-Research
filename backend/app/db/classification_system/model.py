@@ -21,7 +21,6 @@ class ClassificationSystem(Base, TableMixin):
     classification_system_id = Column(
         Integer,
         primary_key=True,
-        index=True,
         comment=CLASSIFICATION_SYSTEM_ID,
         doc=CLASSIFICATION_SYSTEM_ID,
     )

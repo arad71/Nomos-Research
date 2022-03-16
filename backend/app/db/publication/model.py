@@ -19,7 +19,6 @@ class Publication(Base, TableMixin):
     publication_id = Column(
         Integer,
         primary_key=True,
-        index=True,
         comment=PUBLICATION_ID,
         doc=PUBLICATION_ID,
     )

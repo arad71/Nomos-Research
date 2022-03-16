@@ -17,7 +17,7 @@ class Author(Base, TableMixin):
     __tablename__ = "author"
     __table_args__ = {"comment": TABLE_DESCRIPTION}
 
-    author_id = Column(Integer, primary_key=True, index=True)
+    author_id = Column(Integer, primary_key=True)
     author = Column(
         String(30),
         nullable=False,

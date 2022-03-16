@@ -19,7 +19,7 @@ class Vernacular(Base, TableMixin):
     __tablename__ = "vernacular"
     __table_args__ = {"comment": TABLE_DESCRIPTION}
 
-    vernacular_id = Column(Integer, primary_key=True, index=True)
+    vernacular_id = Column(Integer, primary_key=True)
     vernacular = Column(String(120), nullable=False, comment=VERNACULAR, doc=VERNACULAR)
     taxon_name_id = Column(
         Integer,

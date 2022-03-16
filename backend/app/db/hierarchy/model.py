@@ -17,7 +17,7 @@ class Hierarchy(Base, TableMixin):
     __table_args__ = {"comment": TABLE_DESCRIPTION}
     name_plural = "hierarchies"
 
-    hierarchy_id = Column(Integer, primary_key=True, index=True)
+    hierarchy_id = Column(Integer, primary_key=True)
     taxon_name_id = Column(
         Integer,
         ForeignKey("taxon_name.taxon_name_id"),

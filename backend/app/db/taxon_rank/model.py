@@ -19,7 +19,7 @@ class TaxonRank(Base, TableMixin):
     __tablename__ = "taxon_rank"
     __table_args__ = {"comment": TABLE_DESCRIPTION}
 
-    taxon_rank_id = Column(Integer, primary_key=True, index=True)
+    taxon_rank_id = Column(Integer, primary_key=True)
     kingdom_id = Column(
         Integer,
         ForeignKey("kingdom.kingdom_id"),

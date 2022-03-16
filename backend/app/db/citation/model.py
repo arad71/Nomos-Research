@@ -18,7 +18,7 @@ class Citation(Base, TableMixin):
     __table_args__ = {"comment": TABLE_DESCRIPTION}
     name_plural = "citations"
 
-    citation_id = Column(Integer, primary_key=True, index=True)
+    citation_id = Column(Integer, primary_key=True)
     taxon_name_id = Column(
         Integer,
         ForeignKey("taxon_name.taxon_name_id"),

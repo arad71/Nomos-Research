@@ -13,7 +13,7 @@ class User(Base):
     __tablename__ = "user"
     __table_args__ = {"comment": TABLE_DESCRIPTION}
 
-    user_id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, primary_key=True)
     email = Column(
         String,
         unique=True,
