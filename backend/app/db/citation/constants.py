@@ -1,6 +1,5 @@
 AUTHOR_ORDER = (
-    "The order in which authors should appear. The value itself is meaningless and"
-    ""
+    "The order in which authors should appear. The value itself is meaningless and "
     "serves solely as part of an ORDER BY clause when assembling the citation."
 )
 AUTHOR_TYPE = "The type of author entry"
