@@ -1,5 +1,6 @@
-from sqlalchemy import Column, ForeignKey, Integer
+from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
+from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy.types import Enum
 
 from app.db.citation import enums
@@ -15,7 +16,15 @@ from app.db.session import Base
 
 class Citation(Base, TableMixin):
     __tablename__ = "citation"
-    __table_args__ = {"comment": TABLE_DESCRIPTION}
+    __table_args__ = (
+        UniqueConstraint(
+            "legacy_id_name",
+            "taxon_name_id",
+            "author_type",
+            name=f"uc_{ __tablename__}_legacy_id",
+        ),
+        {"comment": TABLE_DESCRIPTION},
+    )
     name_plural = "citations"
 
     citation_id = Column(Integer, primary_key=True)
@@ -38,3 +47,4 @@ class Citation(Base, TableMixin):
         comment=AUTHOR_ORDER,
         doc=AUTHOR_ORDER,
     )
+    legacy_id_name = Column(String())

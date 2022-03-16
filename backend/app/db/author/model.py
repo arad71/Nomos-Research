@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
+from sqlalchemy.schema import UniqueConstraint
 
 from app.db.author.constants import (
     AUTHOR,
@@ -15,7 +16,10 @@ from app.db.session import Base
 
 class Author(Base, TableMixin):
     __tablename__ = "author"
-    __table_args__ = {"comment": TABLE_DESCRIPTION}
+    __table_args__ = (
+        UniqueConstraint("legacy_id_name", name=f"uc_{ __tablename__}_legacy_id"),
+        {"comment": TABLE_DESCRIPTION},
+    )
 
     author_id = Column(Integer, primary_key=True)
     author = Column(
@@ -30,3 +34,4 @@ class Author(Base, TableMixin):
     publications = relationship(
         "Publication", secondary="publication_author", back_populates="author"
     )
+    legacy_id_name = Column(String())

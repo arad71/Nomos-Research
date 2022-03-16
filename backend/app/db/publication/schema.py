@@ -44,6 +44,7 @@ class PublicationBase(BaseModel):
     reference_author_role: Optional[str]
     language: Optional[str]
     duplicate_of_id: Optional[int]
+    legacy_id: Optional[int]
     pass
 
 

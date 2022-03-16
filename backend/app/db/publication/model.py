@@ -1,5 +1,6 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import backref, relationship
+from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy.types import Enum
 
 from app.db.models import TableMixin
@@ -14,7 +15,10 @@ from app.db.session import Base
 
 class Publication(Base, TableMixin):
     __tablename__ = "publication"
-    __table_args__ = {"comment": TABLE_DESCRIPTION}
+    __table_args__ = (
+        UniqueConstraint("legacy_id", name=f"uc_{ __tablename__}_legacy_id"),
+        {"comment": TABLE_DESCRIPTION},
+    )
 
     publication_id = Column(
         Integer,
@@ -72,3 +76,4 @@ class Publication(Base, TableMixin):
         remote_side=[publication_id],
         backref=backref("duplicates"),
     )
+    legacy_id = Column(Integer)

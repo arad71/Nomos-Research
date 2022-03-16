@@ -1,5 +1,6 @@
 from sqlalchemy import Column, ForeignKey, Integer
 from sqlalchemy.orm import backref, relationship
+from sqlalchemy.schema import UniqueConstraint
 
 from app.db.hierarchy.constants import (
     CLASSIFICATION_SYSTEM_ID,
@@ -14,7 +15,14 @@ from app.db.taxon_name.model import TaxonName
 
 class Hierarchy(Base, TableMixin):
     __tablename__ = "hierarchy"
-    __table_args__ = {"comment": TABLE_DESCRIPTION}
+    __table_args__ = (
+        UniqueConstraint(
+            "taxon_name_id",
+            "classification_system_id",
+            name=f"uc_{ __tablename__}_legacy_id",
+        ),
+        {"comment": TABLE_DESCRIPTION},
+    )
     name_plural = "hierarchies"
 
     hierarchy_id = Column(Integer, primary_key=True)

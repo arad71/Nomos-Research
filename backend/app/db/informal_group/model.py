@@ -1,5 +1,6 @@
 from sqlalchemy import Column, ForeignKey, Integer
 from sqlalchemy.orm import relationship
+from sqlalchemy.schema import UniqueConstraint
 
 from app.db.informal_group.constants import CLASSIFICATION_SYSTEM_ID, TABLE_DESCRIPTION
 from app.db.models import TableMixin
@@ -8,7 +9,14 @@ from app.db.session import Base
 
 class InformalGroup(Base, TableMixin):
     __tablename__ = "informal_group"
-    __table_args__ = {"comment": TABLE_DESCRIPTION}
+    __table_args__ = (
+        UniqueConstraint(
+            "classification_system_id",
+            "taxon_name_id",
+            name=f"uc_{ __tablename__}_legacy_id",
+        ),
+        {"comment": TABLE_DESCRIPTION},
+    )
     name_plural = "informal_groups"
 
     informal_group_id = Column(Integer, primary_key=True)

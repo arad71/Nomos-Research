@@ -1,5 +1,6 @@
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import backref, relationship
+from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy.types import Enum
 
 from app.db.models import TableMixin
@@ -17,7 +18,12 @@ from app.db.taxon_rank.constants import (
 
 class TaxonRank(Base, TableMixin):
     __tablename__ = "taxon_rank"
-    __table_args__ = {"comment": TABLE_DESCRIPTION}
+    __table_args__ = (
+        UniqueConstraint(
+            "legacy_id", "kingdom_id", name=f"uc_{ __tablename__}_legacy_id"
+        ),
+        {"comment": TABLE_DESCRIPTION},
+    )
 
     taxon_rank_id = Column(Integer, primary_key=True)
     kingdom_id = Column(
@@ -63,3 +69,4 @@ class TaxonRank(Base, TableMixin):
         remote_side=[taxon_rank_id],
         backref=backref("required_child_ranks"),
     )
+    legacy_id = Column(Integer)

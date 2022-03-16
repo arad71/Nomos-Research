@@ -1,5 +1,6 @@
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
+from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy.types import Enum
 
 from app.db.models import TableMixin
@@ -38,7 +39,10 @@ from app.db.taxon_name.constants import (
 
 class TaxonName(Base, TableMixin):
     __tablename__ = "taxon_name"
-    __table_args__ = {"comment": TABLE_DESCRIPTION}
+    __table_args__ = (
+        UniqueConstraint("legacy_id", name=f"uc_{ __tablename__}_legacy_id"),
+        {"comment": TABLE_DESCRIPTION},
+    )
     name_plural = "taxon_names"
 
     taxon_name_id = Column(Integer, primary_key=True, comment=TAXON_NAME_ID)
@@ -179,3 +183,4 @@ class TaxonName(Base, TableMixin):
     reference = Column(Text)
     authorised_by = Column(String(16))
     authorised_on = Column(DateTime)
+    legacy_id = Column(Integer)

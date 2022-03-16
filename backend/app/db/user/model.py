@@ -1,4 +1,5 @@
 from sqlalchemy import Boolean, Column, Integer, String
+from sqlalchemy.schema import UniqueConstraint
 
 from app.db.session import Base
 from app.db.user.constants import (
@@ -11,7 +12,10 @@ from app.db.user.constants import (
 
 class User(Base):
     __tablename__ = "user"
-    __table_args__ = {"comment": TABLE_DESCRIPTION}
+    __table_args__ = (
+        UniqueConstraint("legacy_id_name", name=f"uc_{ __tablename__}_legacy_id"),
+        {"comment": TABLE_DESCRIPTION},
+    )
 
     user_id = Column(Integer, primary_key=True)
     email = Column(
@@ -33,3 +37,4 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     is_active = Column(Boolean, default=True, nullable=False)
     is_superuser = Column(Boolean, default=False, nullable=False)
+    legacy_id_name = Column(String())
