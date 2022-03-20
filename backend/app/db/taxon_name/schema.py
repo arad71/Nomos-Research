@@ -84,6 +84,7 @@ class TaxonNameBase(BaseModel):
     reference: Optional[str]
     authorised_by: Optional[str]
     authorised_on: Optional[datetime]
+    legacy_id: Optional[int]
 
 
 class TaxonNameCreate(TaxonNameBase):

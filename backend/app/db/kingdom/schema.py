@@ -14,6 +14,7 @@ from app.db.schemas import TableBase
 class KingdomBase(BaseModel):
     kingdom_name: str = Field(description=KINGDOM_NAME)
     kingdom_desc: Optional[str] = Field(description=KINGDOM_DESCRIPTION)
+    legacy_id: Optional[int]
 
 
 class KingdomCreate(KingdomBase):

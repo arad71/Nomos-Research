@@ -1,5 +1,6 @@
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import backref, relationship
+from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy.types import Enum
 
 from app.db.cross_reference import enums
@@ -20,12 +21,14 @@ from app.db.taxon_name.model import TaxonName
 
 class CrossReference(Base, TableMixin):
     __tablename__ = "cross_reference"
-    __table_args__ = {"comment": TABLE_DESCRIPTION}
+    __table_args__ = (
+        UniqueConstraint("legacy_id", name=f"uc_{ __tablename__}_legacy_id"),
+        {"comment": TABLE_DESCRIPTION},
+    )
 
     cross_reference_id = Column(
         Integer,
         primary_key=True,
-        index=True,
         comment=CROSS_REFERENCE_ID,
         doc=CROSS_REFERENCE_ID,
     )
@@ -71,3 +74,4 @@ class CrossReference(Base, TableMixin):
     authorised_by = Column(String(60), comment=AUTHORISED_BY, doc=AUTHORISED_BY)
     comments = Column(String(1000), comment=COMMENTS, doc=COMMENTS)
     notes = Column(String(3000))
+    legacy_id = Column(Integer)

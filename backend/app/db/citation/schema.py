@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel, Field
 
 from app.db.author.schema import Author
@@ -16,6 +18,7 @@ class CitationBase(BaseModel):
     author_id: int
     author_type: enums.AuthorType = Field(description=AUTHOR_TYPE)
     author_order: int = Field(description=AUTHOR_ORDER)
+    legacy_id_name: Optional[str]
 
 
 class CitationCreate(CitationBase):

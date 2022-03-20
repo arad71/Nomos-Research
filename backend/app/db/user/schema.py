@@ -12,6 +12,7 @@ class UserBase(BaseModel):
     is_superuser: bool = False
     first_name: Optional[str] = None
     last_name: Optional[str] = None
+    legacy_id_name: Optional[str] = None
 
 
 class UserOut(UserBase):

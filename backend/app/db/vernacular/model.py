@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Enum, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
+from sqlalchemy.schema import UniqueConstraint
 
 from app.db.models import TableMixin
 from app.db.session import Base
@@ -17,9 +18,17 @@ from app.db.vernacular.constants import (
 
 class Vernacular(Base, TableMixin):
     __tablename__ = "vernacular"
-    __table_args__ = {"comment": TABLE_DESCRIPTION}
+    __table_args__ = (
+        UniqueConstraint(
+            "taxon_name_id",
+            "vernacular",
+            "language",
+            name=f"uc_{ __tablename__}_legacy_id",
+        ),
+        {"comment": TABLE_DESCRIPTION},
+    )
 
-    vernacular_id = Column(Integer, primary_key=True, index=True)
+    vernacular_id = Column(Integer, primary_key=True)
     vernacular = Column(String(120), nullable=False, comment=VERNACULAR, doc=VERNACULAR)
     taxon_name_id = Column(
         Integer,
