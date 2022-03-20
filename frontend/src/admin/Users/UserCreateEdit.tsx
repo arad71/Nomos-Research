@@ -2,9 +2,10 @@ import {
   BooleanInput,
   PasswordInput,
   SimpleForm,
-  TextInput
-} from "react-admin";
-import React, {FC} from "react";
+  TextInput,
+} from 'react-admin';
+
+import React, { FC } from 'react';
 
 export const UserCreateEdit: FC = (props) => (
   <SimpleForm {...props}>

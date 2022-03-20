@@ -1,5 +1,5 @@
-import {SimpleForm, TextInput} from "react-admin";
-import React, {FC} from "react";
+import { SimpleForm, TextInput } from 'react-admin';
+import React, { FC } from 'react';
 
 export const KingdomCreateEdit: FC = (props) => (
   <SimpleForm {...props}>

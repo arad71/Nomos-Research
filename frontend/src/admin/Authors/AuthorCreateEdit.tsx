@@ -1,5 +1,5 @@
-import {required, SimpleForm, TextInput} from "react-admin";
-import React, {FC} from "react";
+import { required, SimpleForm, TextInput } from 'react-admin';
+import React, { FC } from 'react';
 
 export const AuthorCreateEdit: FC = (props) => (
   <SimpleForm {...props}>

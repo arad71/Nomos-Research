@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { Edit } from 'react-admin';
 import Aside from '../shared/Aside';
-import {CitationCreateEdit} from "./CitationCreateEdit";
+import { CitationCreateEdit } from './CitationCreateEdit';
 
 export const CitationEdit: FC = (props) => (
   <Edit {...props} aside={<Aside />}>

@@ -1,7 +1,15 @@
-import {BooleanInput, NumberInput, ReferenceInput, required, SelectInput, SimpleForm, TextInput} from "react-admin";
-import React, {FC} from "react";
-import BadPublicationOptions from "./BadPublicationOptions";
-import RichTextInput from "ra-input-rich-text";
+import {
+  BooleanInput,
+  NumberInput,
+  ReferenceInput,
+  required,
+  SelectInput,
+  SimpleForm,
+  TextInput,
+} from 'react-admin';
+import React, { FC } from 'react';
+import BadPublicationOptions from './BadPublicationOptions';
+import RichTextInput from 'ra-input-rich-text';
 
 export const PublicationCreateEdit: FC = (props) => (
   <SimpleForm {...props}>
@@ -32,11 +40,7 @@ export const PublicationCreateEdit: FC = (props) => (
     <TextInput source="bhl_url" />
     <TextInput source="tl2" />
     <TextInput source="reference_type" />
-    <ReferenceInput
-      label="Parent"
-      source="parent_id"
-      reference="publications"
-    >
+    <ReferenceInput label="Parent" source="parent_id" reference="publications">
       <SelectInput optionText="publication" />
     </ReferenceInput>
     <TextInput source="reference_author_role" />
