@@ -85,7 +85,7 @@ class DataImportBase:
             .first()
         )
         if not result:
-            DataImportError(
+            raise DataImportError(
                 "Unable to map row with " + unique_key_field + ": '" + unique_key + "'"
             )
 
