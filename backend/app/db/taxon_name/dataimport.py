@@ -2,7 +2,6 @@ from app.db.dataimport import DataImportBase
 from app.db.kingdom.model import Kingdom
 from app.db.publication.model import Publication
 from app.db.taxon_name.model import TaxonName as TaxonNameModel
-from app.db.taxon_rank.model import TaxonRank
 from app.db.user.model import User as UserModel
 
 
@@ -62,22 +61,9 @@ class ImportTaxonName(DataImportBase):
             "updated_by": self.map_row_by_unique_key(
                 UserModel, "legacy_id_name", row["UPDATED_BY"], "user_id"
             ),
-            "updated_on": row["UPDATED_ON"],
+            "updated_on": row["UPDATED_ON"] or None,
         }
 
         self.insert(
             item, TaxonNameModel, f"uc_{TaxonNameModel.__tablename__}_legacy_id"
         )
-
-    def map_taxon_rank_by_legacy_id(self, legacy_id: str, kingdom_id: str):
-        if not legacy_id or not kingdom_id:
-            return None
-
-        result = (
-            self.db.query(TaxonRank)
-            .filter(getattr(TaxonRank, "legacy_id") == legacy_id)
-            .filter(getattr(TaxonRank, "kingdom_id") == kingdom_id)
-            .first()
-        )
-
-        return getattr(result, "taxon_rank_id")

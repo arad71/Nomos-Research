@@ -6,6 +6,9 @@ import traceback
 from pydantic import ValidationError
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 
+from app.db.taxon_rank.model import TaxonRank
+from app.db.user.model import User as UserModel
+
 
 class DataImportBase:
     def __init__(self, db, current_user):
@@ -97,6 +100,27 @@ class DataImportBase:
             return None
 
         return datetime.datetime.strptime(value, current_format)
+
+    def map_taxon_rank_by_legacy_id(self, legacy_id: str, kingdom_id: str):
+        if not legacy_id or not kingdom_id:
+            return None
+
+        result = (
+            self.db.query(TaxonRank)
+            .filter(getattr(TaxonRank, "legacy_id") == legacy_id)
+            .filter(getattr(TaxonRank, "kingdom_id") == kingdom_id)
+            .first()
+        )
+
+        return getattr(result, "taxon_rank_id")
+
+    def map_user_or_default(self, legacy_id):
+        if not legacy_id:
+            return self.current_user
+
+        return self.map_row_by_unique_key(
+            UserModel, "legacy_id_name", legacy_id, "user_id"
+        )
 
 
 class DataImportError(Exception):
