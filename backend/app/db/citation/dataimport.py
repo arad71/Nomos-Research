@@ -2,6 +2,7 @@ from app.db.author.model import Author
 from app.db.citation.model import Citation as CitationModel
 from app.db.dataimport import DataImportBase
 from app.db.taxon_name.model import TaxonName
+from app.db.user.model import User as UserModel
 
 
 class ImportCitation(DataImportBase):
@@ -16,5 +17,10 @@ class ImportCitation(DataImportBase):
             "author_type": self.map_enum_base(row["AUTHOR_TYPE"]),
             "author_order": row["AUTHOR_ORD"],
             "legacy_id_name": row["AUTHOR"],
+            "created_by": self.current_user,
+            "updated_by": self.map_row_by_unique_key(
+                UserModel, "legacy_id_name", row["UPDATED_BY"], "user_id"
+            ),
+            "updated_on": row["UPDATED_ON"],
         }
         self.insert(item, CitationModel, f"uc_{CitationModel.__tablename__}_legacy_id")

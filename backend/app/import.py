@@ -28,7 +28,10 @@ if __name__ == "__main__":
     admin_id = get_admin_id()
 
     print("Data Import")
-    ImportUser(db, admin_id).ingest("HBTUSERS_DATA_TABLE.csv")
+
+    import_user = ImportUser(db, admin_id)
+    import_user.ingest("HBTUSERS_DATA_TABLE.csv")
+    import_user.insert_stub_records()
     ImportAuthor(db, admin_id).ingest("HBTAUTHORS_DATA_TABLE.csv")
     ImportKingdom(db, admin_id).ingest("HBTKINGDOMS_DATA_TABLE.csv")
     ImportPublication(db, admin_id).ingest("HBTPUBLICATIONS_DATA_TABLE.csv")

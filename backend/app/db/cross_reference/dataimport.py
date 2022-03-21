@@ -21,6 +21,10 @@ class ImportCrossReference(DataImportBase):
             "comments": row["COMMENTS"],
             "notes": row["NOTES"],
             "legacy_id": row["XREF_ID"],
+            "created_by": self.map_user_or_default(row["ADDED_BY"]),
+            "created_on": row["ADDED_ON"] or None,
+            "updated_by": self.map_user_or_default(row["UPDATED_BY"]),
+            "updated_on": row["UPDATED_ON"] or None,
         }
         self.insert(
             item,
