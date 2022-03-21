@@ -6,6 +6,37 @@ from app.db.user.model import User as UserModel
 
 
 class ImportUser(DataImportBase):
+    def insert_stub_records(self):
+        # Data set currently requires the following stub records to be added
+        stub_users = [
+            "LOUISEBI",
+            "SUEC",
+            "KAYEV",
+            "EVELYNM",
+            "MERIELF",
+            # Cross Reference
+            "HAMLEY_V",
+            "CARROL_S",
+            "FALCON_M",
+            "VERYAR_K",
+            "CURRY_S",
+            "WALKER_A",
+        ]
+        for s in stub_users:
+            self.insert(
+                {
+                    "email": s + "@stub",
+                    "is_active": False,
+                    "is_superuser": False,
+                    "first_name": None,
+                    "last_name": None,
+                    "hashed_password": self.generate_password(),
+                    "legacy_id_name": s,
+                },
+                UserModel,
+                f"uc_{UserModel.__tablename__}_legacy_id",
+            )
+
     def import_row(self, row):
         item = {
             "email": row["EMAIL"],
