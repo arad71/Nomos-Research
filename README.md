@@ -25,7 +25,7 @@ Starting the project
 ```bash
 scripts/build.sh
 ```
-This will start up your containers and create the super user if it does not already exist. 
+This will start up your containers and create the super user if it does not already exist.
 
 And navigate to http://localhost:8000
 
@@ -35,6 +35,17 @@ Auto-generated docs will be at
 http://localhost:8000/api/docs
 
 You will be able to log into http://localhost:8000/admin using: username "admin@taxman.com" password "password"
+
+### Initial data load
+Once you have set up the initial database you can import the data from WA Census data supply:
+
+* Download the WAcensus zip file from Raw  data section of https://dev.azure.com/BIO-WA/WA-BDR/_wiki/wikis/BDR-WA.wiki/19/WA-Herbarium-WACensus-DF
+* Extract the contents ensuring that the CSV files exist in the following directory:
+  * backend/legacy_data
+* Import data using:
+```
+docker-compose run --rm backend python app/import.py
+```
 
 ### Rebuilding containers:
 
@@ -151,8 +162,8 @@ Testing is run through the continuous integration pipeline [.github/workflows/ci
 
 ## Linting
 
-Code style is governed by the linters used in the project. 
-For details of those linters please look at the contents of the lint.sh and format.sh scripts. 
+Code style is governed by the linters used in the project.
+For details of those linters please look at the contents of the lint.sh and format.sh scripts.
 There are two scripts which call the backend linters:
 
 ```bash
