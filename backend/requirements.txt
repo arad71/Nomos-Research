@@ -18,7 +18,7 @@ python-multipart==0.0.5
 pyjwt==2.3.0
 python-dateutil==2.8.2
 
-mypy==0.940
+mypy==0.941
 autoflake==1.4
 flake8==4.0.1
 black==22.1.0
