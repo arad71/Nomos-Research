@@ -1,7 +1,11 @@
 import random
 import string
 
+from app.db.classification_system.model import (
+    ClassificationSystem as ClassificationSystemModel,
+)
 from app.db.dataimport import DataImportBase
+from app.db.kingdom.model import Kingdom as KingdomModel
 from app.db.user.model import User as UserModel
 
 
@@ -45,9 +49,6 @@ class ImportUser(DataImportBase):
             "first_name": self.map_first_name(row["FULL_NAME"]),
             "last_name": self.map_last_name(row["FULL_NAME"]),
             "hashed_password": self.generate_password(),
-            # TODO Map these to new data imported? Second parse after importing these tables?
-            # "default_kingdom": row["DEFAULT_KINGDOM"],
-            # "default_class": row["DEFAULT_CLASS"],
             "legacy_id_name": row["USERNAME"],
         }
         self.insert(item, UserModel, f"uc_{UserModel.__tablename__}_legacy_id")
@@ -68,3 +69,22 @@ class ImportUser(DataImportBase):
             )
             for _ in range(32)
         )
+
+
+class ImportUserDefaults(DataImportBase):
+    def import_row(self, row):
+        item = {
+            "default_kingdom": self.map_row_by_unique_key(
+                KingdomModel, "legacy_id", row["DEFAULT_KINGDOM"], "kingdom_id"
+            ),
+            "default_class": self.map_row_by_unique_key(
+                ClassificationSystemModel,
+                "legacy_id_name",
+                row["DEFAULT_CLASS"],
+                "classification_system_id",
+            ),
+        }
+        self.db.query(UserModel).filter(
+            getattr(UserModel, "legacy_id_name") == row["USERNAME"]
+        ).update(item)
+        self.db.commit()

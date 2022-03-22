@@ -13,7 +13,7 @@ from app.db.session import SessionLocal
 from app.db.taxon_name.dataimport import ImportTaxonName, ImportTaxonNameFamilyNid
 from app.db.taxon_rank.dataimport import ImportTaxonRank
 from app.db.user.crud import UserCrud
-from app.db.user.dataimport import ImportUser
+from app.db.user.dataimport import ImportUser, ImportUserDefaults
 from app.db.vernacular.dataimport import ImportVernacular
 
 
@@ -32,6 +32,7 @@ if __name__ == "__main__":
     import_user = ImportUser(db, admin_id)
     import_user.ingest("HBTUSERS_DATA_TABLE.csv")
     import_user.insert_stub_records()
+    ImportUserDefaults(db, admin_id).ingest("HBTUSERS_DATA_TABLE.csv")
     ImportAuthor(db, admin_id).ingest("HBTAUTHORS_DATA_TABLE.csv")
     ImportKingdom(db, admin_id).ingest("HBTKINGDOMS_DATA_TABLE.csv")
     ImportPublication(db, admin_id).ingest("HBTPUBLICATIONS_DATA_TABLE.csv")
