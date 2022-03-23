@@ -106,7 +106,7 @@ class DataImportBase:
         result = (
             self.db.query(model)
             .filter(getattr(model, unique_key_field) == unique_key)
-            .first()
+            .one_or_none()
         )
         if not result:
             raise DataImportError(
@@ -130,7 +130,7 @@ class DataImportBase:
             self.db.query(TaxonRank)
             .filter(getattr(TaxonRank, "legacy_id") == legacy_id)
             .filter(getattr(TaxonRank, "kingdom_id") == kingdom_id)
-            .first()
+            .one_or_none()
         )
 
         return getattr(result, "taxon_rank_id")
