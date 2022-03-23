@@ -1,27 +1,15 @@
 // in src/users.js
 import React, { FC } from 'react';
 import {
-  List,
   Datagrid,
-  TextField,
-  NumberField,
   DateField,
   EditButton,
+  List,
+  NumberField,
   ReferenceField,
-  useRecordContext,
+  TextField,
 } from 'react-admin';
-
-const FullNameField = (props: any) => {
-  const record = useRecordContext(props);
-
-  return (
-    <span>
-      {record.first_name} {record.last_name}
-    </span>
-  );
-};
-
-FullNameField.defaultProps = { label: 'Name' };
+import FullNameField from '../shared/FullNameField';
 
 export const InformalGroupList: FC = (props) => (
   <List {...props} sort={{ field: 'class_desc', order: 'DESC' }}>
@@ -43,7 +31,7 @@ export const InformalGroupList: FC = (props) => (
       <ReferenceField source="updated_by" reference="users">
         <FullNameField source="last_name" />
       </ReferenceField>
-      <DateField source="updated_on" />
+      <DateField source="updated_on" showTime />
       <EditButton />
     </Datagrid>
   </List>

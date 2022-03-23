@@ -8,7 +8,12 @@ from app.db.session import Base
 class TableMixin(object):
     @declared_attr
     def updated_by(cls):
-        return Column(Integer, ForeignKey("user.user_id"))
+        # original comment "Teh person who updated this record" fixed typo
+        return Column(
+            Integer,
+            ForeignKey("user.user_id"),
+            comment="The person who updated this record",
+        )
 
     @declared_attr
     def updated_on(cls):
@@ -16,15 +21,26 @@ class TableMixin(object):
             DateTime,
             default=func.current_timestamp(),
             onupdate=func.current_timestamp(),
+            comment="The date this record was updated on",
         )
 
     @declared_attr
     def created_by(cls):
-        return Column(Integer, ForeignKey("user.user_id"))
+        # derived comment from update
+        return Column(
+            Integer,
+            ForeignKey("user.user_id"),
+            comment="The person who created this record",
+        )
 
     @declared_attr
     def created_on(cls):
-        return Column(DateTime, default=func.current_timestamp())
+        # derived comment from update
+        return Column(
+            DateTime,
+            default=func.current_timestamp(),
+            comment="The date this record was created on",
+        )
 
 
 class PublicationAuthor(Base):

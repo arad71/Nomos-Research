@@ -1,13 +1,11 @@
 import React, { FC } from 'react';
-import { Create, SimpleForm, TextInput, required } from 'react-admin';
+import { Create } from 'react-admin';
+import { KingdomCreateEdit } from './KingdomCreateEdit';
 
 export const KingdomCreate: FC = (props) => {
   return (
     <Create {...props}>
-      <SimpleForm>
-        <TextInput source="kingdom_name" validate={[required()]} />
-        <TextInput multiline source="kingdom_desc" />
-      </SimpleForm>
+      <KingdomCreateEdit />
     </Create>
   );
 };

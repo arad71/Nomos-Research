@@ -1,15 +1,18 @@
 import typing as t
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+
+from app.db.user.constants import EMAIL, TABLE_DESCRIPTION
 
 
 class UserBase(BaseModel):
-    email: str
+    email: str = Field(description=EMAIL)
     is_active: bool = True
     is_superuser: bool = False
     first_name: Optional[str] = None
     last_name: Optional[str] = None
+    legacy_id_name: Optional[str] = None
 
 
 class UserOut(UserBase):
@@ -21,6 +24,7 @@ class UserCreate(UserBase):
 
     class Config:
         orm_mode = True
+        schema_extra = {"description": TABLE_DESCRIPTION}
 
 
 class UserEdit(UserBase):

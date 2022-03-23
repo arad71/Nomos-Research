@@ -1,10 +1,10 @@
 import React, { FC } from 'react';
 import {
+  BooleanField,
+  NumberField,
   Show,
   SimpleShowLayout,
   TextField,
-  NumberField,
-  BooleanField,
 } from 'react-admin';
 
 export const UserShow: FC = (props) => {

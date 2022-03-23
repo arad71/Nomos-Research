@@ -1,16 +1,25 @@
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.db.classification_system import enums
+from app.db.classification_system.constants import (
+    CLASS_TYPE,
+    CLASSIFICATION_SYSTEM_ID,
+    DESCRIPTION,
+    PREFERRED,
+    SORT_ORDER,
+    TABLE_DESCRIPTION,
+)
 from app.db.schemas import TableBase
 
 
 class ClassificationSystemBase(BaseModel):
-    class_desc: str
-    class_type: enums.ClassificationType
-    preferred: Optional[enums.ClassificationPreferred]
-    sort_order: Optional[int]
+    class_desc: str = Field(description=DESCRIPTION)
+    class_type: enums.ClassificationType = Field(description=CLASS_TYPE)
+    preferred: Optional[enums.ClassificationPreferred] = Field(description=PREFERRED)
+    sort_order: Optional[int] = Field(description=SORT_ORDER)
+    legacy_id_name: Optional[str]
 
 
 class ClassificationSystemCreate(ClassificationSystemBase):
@@ -22,7 +31,8 @@ class ClassificationSystemEdit(ClassificationSystemBase):
 
 
 class ClassificationSystem(ClassificationSystemBase, TableBase):
-    classification_system_id: int
+    classification_system_id: int = Field(description=CLASSIFICATION_SYSTEM_ID)
 
     class Config:
         orm_mode = True
+        schema_extra = {"description": TABLE_DESCRIPTION}

@@ -1,22 +1,75 @@
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
+from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy.types import Enum
 
 from app.db.models import TableMixin
 from app.db.session import Base
 from app.db.taxon_name import enums
+from app.db.taxon_name.constants import (
+    AUTHOR,
+    COMMENTS,
+    CONTRIBUTED_BY,
+    CONTRIBUTED_ON,
+    EXTERNAL_ID,
+    FAMILY_CODE,
+    FAMILY_NID,
+    FORM_DESC_DY,
+    FORM_DESC_MN,
+    FORM_DESC_YR,
+    INFORMAL,
+    IS_CURRENT,
+    IS_ERADICATED,
+    KINGDOM_ID,
+    LINEAR_SEQUENCE,
+    NATURALISED_COMMENTS,
+    ORIGIN,
+    PUBLICATION_ID,
+    PUBLICATION_YEAR,
+    RANK_ID,
+    RANK_NAME,
+    SOURCE,
+    TABLE_DESCRIPTION,
+    TAXON_NAME_ID,
+    VALIDATED,
+    VERNACULAR,
+    VOLUME_INFORMATION,
+)
 
 
 class TaxonName(Base, TableMixin):
     __tablename__ = "taxon_name"
+    __table_args__ = (
+        UniqueConstraint("legacy_id", name=f"uc_{ __tablename__}_legacy_id"),
+        {"comment": TABLE_DESCRIPTION},
+    )
     name_plural = "taxon_names"
 
-    taxon_name_id = Column(Integer, primary_key=True, index=True)
-    kingdom_id = Column(Integer, ForeignKey("kingdom.kingdom_id"), nullable=False)
+    taxon_name_id = Column(Integer, primary_key=True, comment=TAXON_NAME_ID)
+    # Derived from what? is this comment still true?
+    kingdom_id = Column(
+        Integer,
+        ForeignKey("kingdom.kingdom_id"),
+        nullable=False,
+        comment=KINGDOM_ID,
+        doc=KINGDOM_ID,
+    )
     kingdom = relationship("Kingdom", backref=name_plural)
-    rank_id = Column(Integer, ForeignKey("taxon_rank.taxon_rank_id"), nullable=False)
+    rank_id = Column(
+        Integer,
+        ForeignKey("taxon_rank.taxon_rank_id"),
+        nullable=False,
+        comment=RANK_ID,
+        doc=RANK_ID,
+    )
     taxon_rank = relationship("TaxonRank", backref=name_plural)
-    rank_name = Column(String(15), nullable=False)
+    # Are we using/keeping this? is this comment still true?
+    rank_name = Column(
+        String(15),
+        nullable=False,
+        comment=RANK_NAME,
+        doc=RANK_NAME,
+    )
     uninomial = Column(String)
     # kingdom = Column(String)
     phylum = Column(String)
@@ -32,29 +85,72 @@ class TaxonName(Base, TableMixin):
     # taxon_rank = Column(String(9))
     specific_epithet = Column(String(70))
     infraspecific_epithet = Column(String(70))
-    publication_id = Column(Integer, ForeignKey("publication.publication_id"))
+    publication_id = Column(
+        Integer,
+        ForeignKey("publication.publication_id"),
+        comment=PUBLICATION_ID,
+        doc=PUBLICATION_ID,
+    )
     publication = relationship("Publication", backref=name_plural)
-    volume_information = Column(String(100))
-    publication_year = Column(Integer)
+    volume_information = Column(
+        String(100),
+        comment=VOLUME_INFORMATION,
+        doc=VOLUME_INFORMATION,
+    )
+    publication_year = Column(Integer, comment=PUBLICATION_YEAR, doc=PUBLICATION_YEAR)
+    # This comment does not match our Enum, should we change the Enum or the comment?
     is_current = Column(
-        Enum(enums.IsCurrent, name=__tablename__ + "__is_current"), nullable=False
+        Enum(enums.IsCurrent, name=__tablename__ + "__is_current"),
+        nullable=False,
+        comment=IS_CURRENT,
+        doc=IS_CURRENT,
     )
-    origin = Column(String(1))
-    informal = Column(String(2))
-    form_desc_yr = Column(Integer)
-    form_desc_mn = Column(Integer)
-    form_desc_dy = Column(Integer)
-    comments = Column(String(1000))
-    contributed_by = Column(String(16))
-    contributed_on = Column(DateTime)
+    origin = Column(
+        String(1),
+        comment=ORIGIN,
+        doc=ORIGIN,
+    )
+    informal = Column(
+        String(2),
+        comment=INFORMAL,
+        doc=INFORMAL,
+    )
+    # Elsewhere we have moved YR/MN/DY into a single date field. Do we want to here?
+    form_desc_yr = Column(Integer, comment=FORM_DESC_YR)
+    form_desc_mn = Column(Integer, comment=FORM_DESC_MN)
+    form_desc_dy = Column(Integer, comment=FORM_DESC_DY)
+    comments = Column(String(1000), comment=COMMENTS)
+    contributed_by = Column(
+        String(16),
+        comment=CONTRIBUTED_BY,
+        doc=CONTRIBUTED_BY,
+    )
+    contributed_on = Column(DateTime, comment=CONTRIBUTED_ON)
     validated = Column(
-        Enum(enums.Validated, name=__tablename__ + "__validated"), nullable=False
+        Enum(enums.Validated, name=__tablename__ + "__validated"),
+        nullable=False,
+        comment=VALIDATED,
+        doc=VALIDATED,
     )
-    source = Column(String(10))
-    external_id = Column(String(10))
-    family_code = Column(String(5))
-    author = Column(String(180))
-    vernacular = Column(String(100))
+    source = Column(
+        String(10),
+        comment=SOURCE,
+        doc=SOURCE,
+    )
+    external_id = Column(
+        String(10),
+        comment=EXTERNAL_ID,
+        doc=EXTERNAL_ID,
+    )
+    family_code = Column(String(5), comment=FAMILY_CODE, doc=FAMILY_CODE)
+    # Is this still true/needed?
+    author = Column(String(180), comment=AUTHOR, doc=AUTHOR)
+    # Is this still true/needed?
+    vernacular = Column(
+        String(100),
+        comment=VERNACULAR,
+        doc=VERNACULAR,
+    )
     editor = Column(String(60))
     naturalised_status = Column(
         Enum(enums.NaturalisedStatus, name=__tablename__ + "__naturalised_status")
@@ -62,12 +158,29 @@ class TaxonName(Base, TableMixin):
     naturalised_certainty = Column(
         Enum(enums.NaturalisedCertainty, name=__tablename__ + "__naturalised_certainty")
     )
-    is_eradicated = Column(String(1))
-    naturalised_comments = Column(String(400))
-    linear_sequence = Column(Integer)
-    family_nid = Column(Integer, ForeignKey("taxon_name.taxon_name_id"))
+    # Comment doesn't seem to match column
+    is_eradicated = Column(
+        String(1),
+        comment=IS_ERADICATED,
+        doc=IS_ERADICATED,
+    )
+    # Comment doesn't seem to match column
+    naturalised_comments = Column(
+        String(400),
+        comment=NATURALISED_COMMENTS,
+        doc=NATURALISED_COMMENTS,
+    )
+    # Comment doesn't seem to match column
+    linear_sequence = Column(Integer, comment=LINEAR_SEQUENCE, doc=LINEAR_SEQUENCE)
+    family_nid = Column(
+        Integer,
+        ForeignKey("taxon_name.taxon_name_id"),
+        comment=FAMILY_NID,
+        doc=FAMILY_NID,
+    )
     all_vernaculars = Column(String(200))
     notes = Column(String(3000))
     reference = Column(Text)
     authorised_by = Column(String(16))
     authorised_on = Column(DateTime)
+    legacy_id = Column(Integer)

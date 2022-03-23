@@ -1,27 +1,15 @@
 // in src/users.js
 import React, { FC } from 'react';
 import {
-  List,
   Datagrid,
-  TextField,
-  NumberField,
   DateField,
   EditButton,
+  List,
+  NumberField,
   ReferenceField,
-  useRecordContext,
+  TextField,
 } from 'react-admin';
-
-const FullNameField = (props: any) => {
-  const record = useRecordContext(props);
-
-  return (
-    <span>
-      {record.first_name} {record.last_name}
-    </span>
-  );
-};
-
-FullNameField.defaultProps = { label: 'Name' };
+import FullNameField from '../shared/FullNameField';
 
 export const TaxonNameList: FC = (props) => (
   <List {...props} sort={{ field: 'scientific_name', order: 'DESC' }}>
@@ -71,11 +59,11 @@ export const TaxonNameList: FC = (props) => (
       <TextField source="naturalised_comments" />
       <NumberField source="linear_sequence" />
       <ReferenceField
-        label="Family NID"
+        label="Family"
         source="family_nid"
         reference="taxon_names"
       >
-        <TextField source="id" />
+        <TextField source="scientific_name" />
       </ReferenceField>
       <TextField source="all_vernaculars" />
       <TextField source="notes" />

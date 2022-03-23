@@ -1,32 +1,19 @@
 // in src/users.js
 import React, { FC } from 'react';
 import {
+  DateField,
+  EditButton,
+  NumberField,
+  ReferenceField,
   Show,
   SimpleShowLayout,
   TextField,
-  EditButton,
-  ReferenceField,
-  useRecordContext,
-  NumberField,
-  DateField,
 } from 'react-admin';
-
-const FullNameField = (props: any) => {
-  const record = useRecordContext(props);
-
-  return (
-    <span>
-      {record.first_name} {record.last_name}
-    </span>
-  );
-};
-
-FullNameField.defaultProps = { label: 'Name' };
+import Aside from '../shared/Aside';
 
 export const TaxonNameShow: FC = (props) => (
-  <Show {...props} sort={{ field: 'scientific_name', order: 'DESC' }}>
+  <Show aside={<Aside />} {...props}>
     <SimpleShowLayout>
-      <TextField source="id" />
       <ReferenceField source="kingdom_id" reference="kingdoms">
         <TextField source="kingdom_name" />
       </ReferenceField>
@@ -72,11 +59,11 @@ export const TaxonNameShow: FC = (props) => (
       <TextField source="naturalised_comments" />
       <NumberField source="linear_sequence" />
       <ReferenceField
-        label="Family NID"
+        label="Family"
         source="family_nid"
         reference="taxon_names"
       >
-        <TextField source="id" />
+        <TextField source="scientific_name" />
       </ReferenceField>
       <TextField source="all_vernaculars" />
       <TextField source="notes" />

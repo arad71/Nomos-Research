@@ -1,30 +1,18 @@
 // in src/users.js
 import React, { FC } from 'react';
 import {
-  RichTextField,
-  SelectField,
-  List,
   Datagrid,
-  TextField,
   DateField,
   EditButton,
-  ReferenceField,
-  useRecordContext,
+  List,
   NumberField,
+  ReferenceField,
+  RichTextField,
+  SelectField,
+  TextField,
 } from 'react-admin';
 import BadPublicationOptions from './BadPublicationOptions';
-
-const FullNameField = (props: any) => {
-  const record = useRecordContext(props);
-
-  return (
-    <span>
-      {record.first_name} {record.last_name}
-    </span>
-  );
-};
-
-FullNameField.defaultProps = { label: 'Name' };
+import FullNameField from '../shared/FullNameField';
 
 export const PublicationList: FC = (props) => (
   <List {...props} sort={{ field: 'publication', order: 'DESC' }}>

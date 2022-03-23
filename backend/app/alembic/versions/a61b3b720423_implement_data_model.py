@@ -1,8 +1,8 @@
 """Implement Data Model.
 
 Revision ID: a61b3b720423
-Revises: 
-Create Date: 2022-03-01 00:54:14.007270-08:00
+Revises:
+Create Date: 2022-03-02 00:50:07.245328-08:00
 
 """
 import sqlalchemy as sa
@@ -425,6 +425,7 @@ def upgrade():
         sa.Column("authorised_by", sa.String(length=60), nullable=True),
         sa.Column("comments", sa.String(length=1000), nullable=True),
         sa.Column("notes", sa.String(length=3000), nullable=True),
+        sa.Column("authorised_date", sa.DateTime(), nullable=True),
         sa.Column("updated_by", sa.Integer(), nullable=True),
         sa.Column("updated_on", sa.DateTime(), nullable=True),
         sa.Column("created_by", sa.Integer(), nullable=True),
@@ -446,6 +447,12 @@ def upgrade():
             ["user.user_id"],
         ),
         sa.PrimaryKeyConstraint("cross_reference_id"),
+    )
+    op.create_index(
+        op.f("ix_cross_reference_authorised_date"),
+        "cross_reference",
+        ["authorised_date"],
+        unique=False,
     )
     op.create_index(
         op.f("ix_cross_reference_cross_reference_id"),
@@ -601,6 +608,9 @@ def downgrade():
     op.drop_table("hierarchy")
     op.drop_index(
         op.f("ix_cross_reference_cross_reference_id"), table_name="cross_reference"
+    )
+    op.drop_index(
+        op.f("ix_cross_reference_authorised_date"), table_name="cross_reference"
     )
     op.drop_table("cross_reference")
     op.drop_index(op.f("ix_citation_citation_id"), table_name="citation")
