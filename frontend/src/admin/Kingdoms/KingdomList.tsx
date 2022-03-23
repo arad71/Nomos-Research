@@ -10,6 +10,7 @@ import {
   TextField,
 } from 'react-admin';
 import FullNameField from '../shared/FullNameField';
+import MyEditButton from '../styles/EditButton';
 
 export const KingdomList: FC = (props) => (
   <List {...props} sort={{ field: 'kingdom_name', order: 'DESC' }}>
@@ -25,7 +26,7 @@ export const KingdomList: FC = (props) => (
         <FullNameField source="last_name" />
       </ReferenceField>
       <DateField source="updated_on" showTime />
-      <EditButton />
+      <MyEditButton />
     </Datagrid>
   </List>
 );
