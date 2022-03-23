@@ -1,4 +1,4 @@
-from app.db.dataimport import DataImportBase, DataImportError
+from app.db.dataimport import DataImportBase
 from app.db.kingdom.model import Kingdom
 from app.db.taxon_rank.model import TaxonRank as TaxonRankModel
 from app.db.user.model import User as UserModel
