@@ -6,9 +6,54 @@ from app.db.user.model import User as UserModel
 
 
 class ImportTaxonName(DataImportBase):
-    def import_row(self, row):
+    def __init__(self, db, current_user):
+        super().__init__(db, current_user)
+        self.data_model = TaxonNameModel
+        self.upsert_constraint = f"uc_{TaxonNameModel.__tablename__}_legacy_id"
+        self.update_cols = (
+            "kingdom_id",
+            "rank_name",
+            "genus",
+            "subgenus",
+            "specific_epithet",
+            "infraspecific_epithet",
+            "publication_id",
+            "volume_information",
+            "publication_year",
+            "is_current",
+            "origin",
+            "informal",
+            "form_desc_yr",
+            "form_desc_mn",
+            "form_desc_dy",
+            "comments",
+            "contributed_by",
+            "contributed_on",
+            "validated",
+            "source",
+            "external_id",
+            "family_code",
+            "author",
+            "vernacular",
+            "editor",
+            "naturalised_status",
+            "naturalised_certainty",
+            "is_eradicated",
+            "naturalised_comments",
+            "linear_sequence",
+            "all_vernaculars",
+            "notes",
+            "reference",
+            "authorised_by",
+            "authorised_on",
+            "legacy_id",
+            "created_by",
+            "updated_by",
+            "updated_on",
+        )
 
-        item = {
+    def row_mapping(self, row):
+        return {
             "kingdom_id": self.map_row_by_unique_key(
                 Kingdom, "legacy_id", row["KINGDOM_ID"], "kingdom_id"
             ),
@@ -60,20 +105,18 @@ class ImportTaxonName(DataImportBase):
             "updated_on": row["UPDATED_ON"] or None,
         }
 
-        self.insert(
-            item, TaxonNameModel, f"uc_{TaxonNameModel.__tablename__}_legacy_id"
-        )
-
-
-class ImportTaxonNameFamilyNid(DataImportBase):
     def import_row(self, row):
+        self.values.append(self.row_mapping(row))
 
-        item = {
-            "family_nid": self.map_row_by_unique_key(
-                TaxonNameModel, "legacy_id", row["FAMILY_NID"], "taxon_name_id"
-            ),
-        }
-        self.db.query(TaxonNameModel).filter(
-            getattr(TaxonNameModel, "legacy_id") == row["NAME_ID"]
-        ).update(item)
-        self.db.commit()
+
+class ImportTaxonNameFamilyNid(ImportTaxonName):
+    def __init__(self, db, current_user):
+        super().__init__(db, current_user)
+        self.update_cols = (*self.update_cols, "family_nid")
+
+    def import_row(self, row):
+        item = self.row_mapping(row)
+        item["family_nid"] = self.map_row_by_unique_key(
+            TaxonNameModel, "legacy_id", row["FAMILY_NID"], "taxon_name_id"
+        )
+        self.values.append(item)

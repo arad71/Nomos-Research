@@ -10,6 +10,20 @@ from app.db.user.model import User as UserModel
 
 
 class ImportUser(DataImportBase):
+    def __init__(self, db, current_user):
+        super().__init__(db, current_user)
+        self.data_model = UserModel
+        self.upsert_constraint = f"uc_{UserModel.__tablename__}_legacy_id"
+        self.update_cols = (
+            "email",
+            "is_active",
+            "is_superuser",
+            "first_name",
+            "last_name",
+            "hashed_password",
+            "legacy_id_name",
+        )
+
     def insert_stub_records(self):
         # Data set currently requires the following stub records to be added
         stub_users = [
@@ -41,8 +55,8 @@ class ImportUser(DataImportBase):
                 f"uc_{UserModel.__tablename__}_legacy_id",
             )
 
-    def import_row(self, row):
-        item = {
+    def row_mapping(self, row):
+        return {
             "email": row["EMAIL"],
             "is_active": False,
             "is_superuser": False,
@@ -51,7 +65,9 @@ class ImportUser(DataImportBase):
             "hashed_password": self.generate_password(),
             "legacy_id_name": row["USERNAME"],
         }
-        self.insert(item, UserModel, f"uc_{UserModel.__tablename__}_legacy_id")
+
+    def import_row(self, row):
+        self.values.append(self.row_mapping(row))
 
     @staticmethod
     def map_first_name(full_name):
@@ -71,20 +87,20 @@ class ImportUser(DataImportBase):
         )
 
 
-class ImportUserDefaults(DataImportBase):
+class ImportUserDefaults(ImportUser):
+    def __init__(self, db, current_user):
+        super().__init__(db, current_user)
+        self.update_cols = (*self.update_cols, "default_kingdom", "default_class")
+
     def import_row(self, row):
-        item = {
-            "default_kingdom": self.map_row_by_unique_key(
-                KingdomModel, "legacy_id", row["DEFAULT_KINGDOM"], "kingdom_id"
-            ),
-            "default_class": self.map_row_by_unique_key(
-                ClassificationSystemModel,
-                "legacy_id_name",
-                row["DEFAULT_CLASS"],
-                "classification_system_id",
-            ),
-        }
-        self.db.query(UserModel).filter(
-            getattr(UserModel, "legacy_id_name") == row["USERNAME"]
-        ).update(item)
-        self.db.commit()
+        item = self.row_mapping(row)
+        item["default_kingdom"] = self.map_row_by_unique_key(
+            KingdomModel, "legacy_id", row["DEFAULT_KINGDOM"], "kingdom_id"
+        )
+        item["default_class"] = self.map_row_by_unique_key(
+            ClassificationSystemModel,
+            "legacy_id_name",
+            row["DEFAULT_CLASS"],
+            "classification_system_id",
+        )
+        self.values.append(item)

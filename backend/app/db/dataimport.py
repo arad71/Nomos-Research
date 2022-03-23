@@ -14,6 +14,10 @@ class DataImportBase:
     def __init__(self, db, current_user):
         self.db = db
         self.current_user = current_user
+        self.data_model = None
+        self.values = []
+        self.upsert_constraint = None
+        self.update_cols = []
 
     def ingest(self, import_file: str):
         path = os.getcwd() + f"/legacy_data/{import_file}"
@@ -46,6 +50,9 @@ class DataImportBase:
                     print(".", flush=True, end="")
                     if line_count % 10000 == 0:
                         print("", flush=True)
+
+            if self.values:
+                self.bulk_insert()
             print()
             print(f"{success_count}/{line_count}.")
             print()
@@ -61,6 +68,21 @@ class DataImportBase:
             return val.lower()
         return None
 
+    def bulk_insert(self):
+        insert_statement = pg_insert(self.data_model)
+
+        # TODO should we add a variable here to allow update?
+        if self.upsert_constraint:
+            insert_statement = insert_statement.on_conflict_do_update(
+                constraint=self.upsert_constraint,
+                set_={
+                    k: getattr(insert_statement.excluded, k) for k in self.update_cols
+                },
+            )
+
+        self.db.execute(insert_statement, self.values)
+        self.db.commit()
+
     def insert(self, data: dict, model: object, upsert_constraint: str = None):
         insert_statement = pg_insert(model).values(data)
         # TODO should we add a variable here to allow update?
@@ -68,7 +90,6 @@ class DataImportBase:
             insert_statement = insert_statement.on_conflict_do_update(
                 constraint=upsert_constraint, set_=data
             )
-
         self.db.execute(insert_statement)
         self.db.commit()
 
@@ -85,7 +106,7 @@ class DataImportBase:
         result = (
             self.db.query(model)
             .filter(getattr(model, unique_key_field) == unique_key)
-            .first()
+            .one_or_none()
         )
         if not result:
             raise DataImportError(
@@ -109,7 +130,7 @@ class DataImportBase:
             self.db.query(TaxonRank)
             .filter(getattr(TaxonRank, "legacy_id") == legacy_id)
             .filter(getattr(TaxonRank, "kingdom_id") == kingdom_id)
-            .first()
+            .one_or_none()
         )
 
         return getattr(result, "taxon_rank_id")
