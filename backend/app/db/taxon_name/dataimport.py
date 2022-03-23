@@ -47,10 +47,6 @@ class ImportTaxonName(DataImportBase):
             "is_eradicated": row["IS_ERADICATED"],
             "naturalised_comments": row["NATURALISED_COMMENTS"],
             "linear_sequence": row["LINEAR_SEQUENCE"] or None,
-            # TODO need to handle this relationship.
-            #  Collate rows that reference records that do not exist yet and update when we insert them?
-            #  second pass at the end?
-            # "family_nid": row['FAMILY_NID'],
             "all_vernaculars": row["ALL_VERNACULARS"],
             "notes": row["NOTES"],
             "reference": row["REFERENCE"],
@@ -67,3 +63,17 @@ class ImportTaxonName(DataImportBase):
         self.insert(
             item, TaxonNameModel, f"uc_{TaxonNameModel.__tablename__}_legacy_id"
         )
+
+
+class ImportTaxonNameFamilyNid(DataImportBase):
+    def import_row(self, row):
+
+        item = {
+            "family_nid": self.map_row_by_unique_key(
+                TaxonNameModel, "legacy_id", row["FAMILY_NID"], "taxon_name_id"
+            ),
+        }
+        self.db.query(TaxonNameModel).filter(
+            getattr(TaxonNameModel, "legacy_id") == row["NAME_ID"]
+        ).update(item)
+        self.db.commit()

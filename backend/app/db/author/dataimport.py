@@ -10,7 +10,6 @@ class ImportAuthor(DataImportBase):
             "surname": row["SURNAME"],
             "first_names": row["FIRST_NAMES"],
             "initials": row["INITIALS"],
-            "orc_id": "",
             "legacy_id_name": row["AUTHOR"],
             "created_by": self.current_user,
             "updated_by": self.map_row_by_unique_key(
