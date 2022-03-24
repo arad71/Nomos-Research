@@ -4,6 +4,7 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 from app.db.user.constants import EMAIL, TABLE_DESCRIPTION
+from app.db.user_role.schema import UserRole
 
 
 class UserBase(BaseModel):
@@ -35,6 +36,7 @@ class UserEdit(UserBase):
 
 class User(UserBase):
     user_id: int
+    user_role: Optional[UserRole]
 
     class Config:
         orm_mode = True

@@ -18,7 +18,9 @@ class UserCrud(crud.Crud):
         return db.query(model).filter(model.email == email).first()
 
     @classmethod
-    def create_item(cls, db: Session, user: schema.UserCreate):
+    def create_item(
+        cls, db: Session, user: schema.UserCreate, raise_exception: bool = True
+    ):
         hashed_password = get_password_hash(user.password)
         db_user = model(
             first_name=user.first_name,

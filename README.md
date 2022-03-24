@@ -25,7 +25,7 @@ Starting the project
 ```bash
 scripts/build.sh
 ```
-This will start up your containers and create the super user if it does not already exist. 
+This will start up your containers and create the super user if it does not already exist.
 
 And navigate to http://localhost:8000
 
@@ -61,6 +61,16 @@ In order to nuke your database and everythign in it use:
 ```bash
 docker-compose down -v
 scripts/build.sh
+```
+
+### Logging
+
+Logging is done using the excellent loguru:
+
+```python
+from loguru import logger
+
+logger.info("The meaning of life: {}", 42)
 ```
 ### Frontend Development
 
@@ -151,8 +161,8 @@ Testing is run through the continuous integration pipeline [.github/workflows/ci
 
 ## Linting
 
-Code style is governed by the linters used in the project. 
-For details of those linters please look at the contents of the lint.sh and format.sh scripts. 
+Code style is governed by the linters used in the project.
+For details of those linters please look at the contents of the lint.sh and format.sh scripts.
 There are two scripts which call the backend linters:
 
 ```bash

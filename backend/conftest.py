@@ -13,7 +13,7 @@ from app.main import app
 
 
 def get_test_db_url() -> str:
-    return f"{config.SQLALCHEMY_DATABASE_URI}_test"
+    return f"{config.settings.SQLALCHEMY_DATABASE_URI}_test"
 
 
 @pytest.fixture
@@ -25,6 +25,7 @@ def test_db():
     # Connect to the test database
     engine = create_engine(
         get_test_db_url(),
+        pool_pre_ping=True,
     )
 
     connection = engine.connect()
