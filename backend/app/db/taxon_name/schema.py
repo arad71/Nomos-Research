@@ -57,7 +57,7 @@ class TaxonNameBase(BaseModel):
     publication_id: Optional[int] = Field(description=PUBLICATION_ID)
     volume_information: Optional[str] = Field(description=VOLUME_INFORMATION)
     publication_year: Optional[int] = Field(description=PUBLICATION_YEAR)
-    is_current: enums.IsCurrent = Field(description=IS_CURRENT)
+    is_current: bool = Field(description=IS_CURRENT)
     origin: Optional[str] = Field(description=ORIGIN)
     informal: Optional[str] = Field(description=INFORMAL)
     form_desc_yr: Optional[int] = Field(description=FORM_DESC_YR)
@@ -66,7 +66,7 @@ class TaxonNameBase(BaseModel):
     comments: Optional[str] = Field(description=COMMENTS)
     contributed_by: Optional[str] = Field(description=CONTRIBUTED_BY)
     contributed_on: Optional[datetime] = Field(description=CONTRIBUTED_ON)
-    validated: enums.Validated = Field(description=VALIDATED)
+    validated: bool = Field(description=VALIDATED)
     source: Optional[str] = Field(description=SOURCE)
     external_id: Optional[str] = Field(description=EXTERNAL_ID)
     family_code: Optional[str] = Field(description=FAMILY_CODE)
@@ -74,7 +74,7 @@ class TaxonNameBase(BaseModel):
     vernacular: Optional[str] = Field(description=VERNACULAR)
     editor: Optional[str]
     naturalised_status: Optional[enums.NaturalisedStatus]
-    naturalised_certainty: Optional[enums.NaturalisedCertainty]
+    naturalised_certainty: Optional[bool]
     is_eradicated: Optional[str] = Field(description=IS_ERADICATED)
     naturalised_comments: Optional[str] = Field(description=NATURALISED_COMMENTS)
     linear_sequence: Optional[int] = Field(description=LINEAR_SEQUENCE)

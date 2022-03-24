@@ -4,10 +4,10 @@ import {
   SelectInput,
   SimpleForm,
   TextInput,
+  NullableBooleanInput,
 } from 'react-admin';
 import React, { FC } from 'react';
 import ClassificationType from './ClassificationType';
-import BooleanOptions from '../shared/BooleanOptions';
 
 export const ClassSystemCreateEdit: FC = (props) => (
   <SimpleForm {...props}>
@@ -17,7 +17,7 @@ export const ClassSystemCreateEdit: FC = (props) => (
       choices={ClassificationType}
       validate={[required()]}
     />
-    <SelectInput source="preferred" choices={BooleanOptions} />
+    <NullableBooleanInput label="Preferred" source="preferred" />
     <NumberInput source="sort_order" />
   </SimpleForm>
 );

@@ -8,6 +8,7 @@ import {
   NumberField,
   ReferenceField,
   TextField,
+  BooleanField,
 } from 'react-admin';
 import FullNameField from '../shared/FullNameField';
 
@@ -37,7 +38,7 @@ export const TaxonNameList: FC = (props) => (
         <TextField source="publication_name" />
       </ReferenceField>
       <TextField source="volume_information" />
-      <TextField source="is_current" />
+      <BooleanField source="is_current" />
       <TextField source="origin" />
       <TextField source="informal" />
       <NumberField source="form_desc_yr" />
@@ -46,7 +47,7 @@ export const TaxonNameList: FC = (props) => (
       <TextField source="comments" />
       <TextField source="contributed_by" />
       <DateField source="contributed_on" showTime />
-      <TextField source="validated" />
+      <BooleanField source="validated" />
       <TextField source="source" />
       <TextField source="external_id" />
       <TextField source="family_code" />
@@ -54,7 +55,7 @@ export const TaxonNameList: FC = (props) => (
       <TextField source="vernacular" />
       <TextField source="editor" />
       <TextField source="naturalised_status" />
-      <TextField source="naturalised_certainty" />
+      <BooleanField source="naturalised_certainty" />
       <TextField source="is_eradicated" />
       <TextField source="naturalised_comments" />
       <NumberField source="linear_sequence" />

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy.types import Enum
@@ -64,7 +64,7 @@ class CrossReference(Base, TableMixin):
         doc=CROSS_REFERENCE_TYPE,
     )
     active = Column(
-        Enum(enums.Active, name=__tablename__ + "__active"),
+        Boolean,
         nullable=False,
         comment=ACTIVE,
         doc=ACTIVE,

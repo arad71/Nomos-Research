@@ -1,3 +1,5 @@
+import datetime
+
 from app.db.dataimport import DataImportBase
 from app.db.kingdom.model import Kingdom
 from app.db.publication.model import Publication
@@ -71,7 +73,7 @@ class ImportTaxonName(DataImportBase):
             ),
             "volume_information": row["VOL_INFO"],
             "publication_year": row["PUB_YEAR"] or None,
-            "is_current": self.map_enum_base(row["IS_CURRENT"]),
+            "is_current": self.map_y_n_to_bool(row["IS_CURRENT"]),
             "origin": row["ORIGIN"],
             "informal": row["INFORMAL"],
             "form_desc_yr": row["FORM_DESC_YR"] or None,
@@ -80,7 +82,7 @@ class ImportTaxonName(DataImportBase):
             "comments": row["COMMENTS"],
             "contributed_by": row["CONTRIBUTED_BY"],
             "contributed_on": self.get_datetime(row["CONTRIBUTED_ON"], "%d/%b/%y"),
-            "validated": self.map_enum_base(row["VALIDATED"]),
+            "validated": self.map_y_n_to_bool(row["VALIDATED"]),
             "source": row["SOURCE"],
             "external_id": row["EXTERNAL_ID"],
             "family_code": row["FAMILY_CODE"],
@@ -88,7 +90,7 @@ class ImportTaxonName(DataImportBase):
             "vernacular": row["VERNACULAR"],
             "editor": row["EDITOR"],
             "naturalised_status": self.map_enum_base(row["NATURALISED_STATUS"]),
-            "naturalised_certainty": self.map_enum_base(row["NATURALISED_CERTAINTY"]),
+            "naturalised_certainty": self.map_y_n_to_bool(row["NATURALISED_CERTAINTY"]),
             "is_eradicated": row["IS_ERADICATED"],
             "naturalised_comments": row["NATURALISED_COMMENTS"],
             "linear_sequence": row["LINEAR_SEQUENCE"] or None,
