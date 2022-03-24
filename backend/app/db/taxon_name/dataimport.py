@@ -1,3 +1,5 @@
+import datetime
+
 from app.db.dataimport import DataImportBase
 from app.db.kingdom.model import Kingdom
 from app.db.publication.model import Publication
@@ -99,10 +101,8 @@ class ImportTaxonName(DataImportBase):
             "authorised_on": self.get_datetime(row["AUTHORISED_ON"], "%d/%b/%y"),
             "legacy_id": row["NAME_ID"],
             "created_by": self.current_user,
-            "updated_by": self.map_row_by_unique_key(
-                UserModel, "legacy_id_name", row["UPDATED_BY"], "user_id"
-            ),
-            "updated_on": row["UPDATED_ON"] or None,
+            "updated_by": self.map_user_or_default(row["UPDATED_BY"]),
+            "updated_on": row["UPDATED_ON"] or datetime.datetime.now(),
         }
 
     def import_row(self, row):
