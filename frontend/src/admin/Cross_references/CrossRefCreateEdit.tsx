@@ -1,7 +1,13 @@
-import { ReferenceInput, required, SelectInput, SimpleForm, TextInput} from "react-admin";
-import React, {FC} from "react";
-import BooleanOptions from "../shared/BooleanOptions";
-import CrossRefType from "./CrossRefType";
+import {
+  ReferenceInput,
+  required,
+  SelectInput,
+  SimpleForm,
+  TextInput,
+} from 'react-admin';
+import React, { FC } from 'react';
+import BooleanOptions from '../shared/BooleanOptions';
+import CrossRefType from './CrossRefType';
 
 export const CrossRefCreateEdit: FC = (props) => (
   <SimpleForm {...props}>

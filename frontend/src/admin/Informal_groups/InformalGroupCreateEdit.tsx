@@ -1,5 +1,5 @@
-import { ReferenceInput, required, SelectInput, SimpleForm } from "react-admin";
-import React, {FC} from "react";
+import { ReferenceInput, required, SelectInput, SimpleForm } from 'react-admin';
+import React, { FC } from 'react';
 
 export const InformalGroupCreateEdit: FC = (props) => (
   <SimpleForm {...props}>

@@ -19,6 +19,7 @@ class ClassificationSystemBase(BaseModel):
     class_type: enums.ClassificationType = Field(description=CLASS_TYPE)
     preferred: Optional[enums.ClassificationPreferred] = Field(description=PREFERRED)
     sort_order: Optional[int] = Field(description=SORT_ORDER)
+    legacy_id_name: Optional[str]
 
 
 class ClassificationSystemCreate(ClassificationSystemBase):

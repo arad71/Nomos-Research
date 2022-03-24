@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String
+from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy.types import Enum
 
 from app.db.classification_system import enums
@@ -16,12 +17,14 @@ from app.db.session import Base
 
 class ClassificationSystem(Base, TableMixin):
     __tablename__ = "classification_system"
-    __table_args__ = {"comment": TABLE_DESCRIPTION}
+    __table_args__ = (
+        UniqueConstraint("legacy_id_name", name=f"uc_{ __tablename__}_legacy_id"),
+        {"comment": TABLE_DESCRIPTION},
+    )
 
     classification_system_id = Column(
         Integer,
         primary_key=True,
-        index=True,
         comment=CLASSIFICATION_SYSTEM_ID,
         doc=CLASSIFICATION_SYSTEM_ID,
     )
@@ -40,3 +43,4 @@ class ClassificationSystem(Base, TableMixin):
         doc=PREFERRED,
     )
     sort_order = Column(Integer, comment=SORT_ORDER, doc=SORT_ORDER)
+    legacy_id_name = Column(String())

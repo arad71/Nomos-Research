@@ -1,6 +1,12 @@
-import {NumberInput, ReferenceInput, required, SelectInput, SimpleForm } from "react-admin";
-import React, {FC} from "react";
-import AuthorType from "./AuthorType";
+import {
+  NumberInput,
+  ReferenceInput,
+  required,
+  SelectInput,
+  SimpleForm,
+} from 'react-admin';
+import React, { FC } from 'react';
+import AuthorType from './AuthorType';
 
 export const CitationCreateEdit: FC = (props) => (
   <SimpleForm {...props}>
@@ -19,10 +25,6 @@ export const CitationCreateEdit: FC = (props) => (
       <SelectInput optionText="author" />
     </ReferenceInput>
     <SelectInput source="author_type" choices={AuthorType} />
-    <NumberInput
-      source="author_order"
-      validate={required()}
-      initialValue={0}
-    />
+    <NumberInput source="author_order" validate={required()} initialValue={0} />
   </SimpleForm>
 );
