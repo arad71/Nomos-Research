@@ -1,5 +1,6 @@
 import csv
 import datetime
+import functools
 import os
 import traceback
 
@@ -93,6 +94,7 @@ class DataImportBase:
         self.db.execute(insert_statement)
         self.db.commit()
 
+    @functools.cache
     def map_row_by_unique_key(
         self,
         model: object,
