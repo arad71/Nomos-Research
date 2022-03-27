@@ -5,6 +5,7 @@ import {
   Show,
   SimpleShowLayout,
   TextField,
+  BooleanField,
 } from 'react-admin';
 import Aside from '../shared/Aside';
 
@@ -18,7 +19,7 @@ export const VernacularShow: FC = (props) => {
         </ReferenceField>
         <TextField source="language" />
         <TextField source="lang_pref" />
-        <TextField source="preferred" />
+        <BooleanField source="preferred" />
         <TextField source="source" />
         <TextField source="enabled" />
         <NumberField source="sort_order" />

@@ -8,10 +8,9 @@ import {
   NumberField,
   ReferenceField,
   RichTextField,
-  SelectField,
   TextField,
+  BooleanField,
 } from 'react-admin';
-import BadPublicationOptions from './BadPublicationOptions';
 import FullNameField from '../shared/FullNameField';
 
 export const PublicationList: FC = (props) => (
@@ -19,7 +18,7 @@ export const PublicationList: FC = (props) => (
     <Datagrid rowClick="show">
       <TextField source="id" />
       <TextField source="publication" />
-      <SelectField source="bad_publication" choices={BadPublicationOptions} />
+      <BooleanField source="bad_publication" />
       <TextField source="publication_name" />
       <TextField source="doi" />
       <TextField source="title" />

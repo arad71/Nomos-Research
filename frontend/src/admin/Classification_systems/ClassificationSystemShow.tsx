@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Show, SimpleShowLayout, TextField } from 'react-admin';
+import { Show, SimpleShowLayout, TextField, BooleanField } from 'react-admin';
 import Aside from '../shared/Aside';
 
 export const ClassificationSystemShow: FC = (props) => {
@@ -8,7 +8,7 @@ export const ClassificationSystemShow: FC = (props) => {
       <SimpleShowLayout>
         <TextField source="class_desc" />
         <TextField source="class_type" />
-        <TextField source="preferred" />
+        <BooleanField source="preferred" />
         <TextField source="sort_order" />
       </SimpleShowLayout>
     </Show>

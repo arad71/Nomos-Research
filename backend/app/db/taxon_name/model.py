@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy.types import Enum
@@ -100,7 +100,7 @@ class TaxonName(Base, TableMixin):
     publication_year = Column(Integer, comment=PUBLICATION_YEAR, doc=PUBLICATION_YEAR)
     # This comment does not match our Enum, should we change the Enum or the comment?
     is_current = Column(
-        Enum(enums.IsCurrent, name=__tablename__ + "__is_current"),
+        Boolean,
         nullable=False,
         comment=IS_CURRENT,
         doc=IS_CURRENT,
@@ -127,7 +127,7 @@ class TaxonName(Base, TableMixin):
     )
     contributed_on = Column(DateTime, comment=CONTRIBUTED_ON)
     validated = Column(
-        Enum(enums.Validated, name=__tablename__ + "__validated"),
+        Boolean,
         nullable=False,
         comment=VALIDATED,
         doc=VALIDATED,
@@ -155,9 +155,7 @@ class TaxonName(Base, TableMixin):
     naturalised_status = Column(
         Enum(enums.NaturalisedStatus, name=__tablename__ + "__naturalised_status")
     )
-    naturalised_certainty = Column(
-        Enum(enums.NaturalisedCertainty, name=__tablename__ + "__naturalised_certainty")
-    )
+    naturalised_certainty = Column(Boolean)
     # Comment doesn't seem to match column
     is_eradicated = Column(
         String(1),

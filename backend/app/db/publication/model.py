@@ -4,7 +4,6 @@ from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy.types import Enum
 
 from app.db.models import TableMixin
-from app.db.publication import enums
 from app.db.publication.constants import (
     BAD_PUBLICATION,
     PUBLICATION_ID,
@@ -28,7 +27,7 @@ class Publication(Base, TableMixin):
     )
     publication = Column(Text, nullable=False)
     bad_publication = Column(
-        Enum(enums.BadPublication, name=__tablename__ + "__bad_publication"),
+        Boolean,
         comment=BAD_PUBLICATION,
         doc=BAD_PUBLICATION,
     )

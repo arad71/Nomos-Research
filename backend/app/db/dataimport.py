@@ -145,6 +145,18 @@ class DataImportBase:
             UserModel, "legacy_id_name", legacy_id, "user_id"
         )
 
+    def map_y_n_to_bool(self, val):
+        if not val:
+            return None
+
+        if val.lower() == "y":
+            return True
+
+        if val.lower() == "n":
+            return False
+
+        raise DataImportError("Unable to Map val to bool")
+
 
 class DataImportError(Exception):
     pass

@@ -28,7 +28,7 @@ class ImportClassificationSystem(DataImportBase):
             {
                 "class_desc": row["CLASS_DESC"],
                 "class_type": self.map_enum_base(row["CLASS_TYPE"]),
-                "preferred": self.map_enum_base(row["PREFERRED"]),
+                "preferred": self.map_y_n_to_bool(row["PREFERRED"]),
                 "sort_order": row["SORT_ORDER"] or None,
                 "legacy_id_name": row["CLASS_ID"],
                 "created_by": self.current_user,

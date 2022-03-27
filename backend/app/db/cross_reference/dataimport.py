@@ -36,7 +36,7 @@ class ImportCrossReference(DataImportBase):
                 "cross_reference_type": self.map_cross_reference_type_enum(
                     row["XREF_TYPE"]
                 ),
-                "active": self.map_enum_base(row["ACTIVE"]),
+                "active": self.map_y_n_to_bool(row["ACTIVE"]),
                 "authorised_date": self.map_authorised_date(row),
                 "authorised_by": row["AUTHORISED_BY"],
                 "comments": row["COMMENTS"],

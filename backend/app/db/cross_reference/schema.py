@@ -24,7 +24,7 @@ class CrossReferenceBase(BaseModel):
     cross_reference_type: enums.CrossReferenceType = Field(
         description=CROSS_REFERENCE_TYPE
     )
-    active: enums.Active = Field(description=ACTIVE)
+    active: bool = Field(description=ACTIVE)
     authorised_date: Optional[datetime]
     authorised_by: Optional[str] = Field(description=AUTHORISED_BY)
     comments: Optional[str] = Field(description=COMMENTS)
