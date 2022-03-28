@@ -13,7 +13,9 @@ class ImportCrossReference(DataImportBase):
             "new_name_id",
             "cross_reference_type",
             "active",
-            "authorised_date",
+            "authorised_yr",
+            "authorised_mn",
+            "authorised_dy",
             "authorised_by",
             "comments",
             "notes",
@@ -37,7 +39,9 @@ class ImportCrossReference(DataImportBase):
                     row["XREF_TYPE"]
                 ),
                 "active": self.map_y_n_to_bool(row["ACTIVE"]),
-                "authorised_date": self.map_authorised_date(row),
+                "authorised_yr": row["AUTHORISED_YR"] or None,
+                "authorised_mn": row["AUTHORISED_MN"] or None,
+                "authorised_dy": row["AUTHORISED_DY"] or None,
                 "authorised_by": row["AUTHORISED_BY"],
                 "comments": row["COMMENTS"],
                 "notes": row["NOTES"],
@@ -47,28 +51,6 @@ class ImportCrossReference(DataImportBase):
                 "updated_by": self.map_user_or_default(row["UPDATED_BY"]),
                 "updated_on": row["UPDATED_ON"] or None,
             }
-        )
-
-    @staticmethod
-    def map_authorised_date(row):
-        # TODO some data has year only, can this database field type support this? How to handle?
-        if (
-            not row["AUTHORISED_YR"]
-            or not row["AUTHORISED_MN"]
-            or not row["AUTHORISED_DY"]
-        ):
-            if row["AUTHORISED_YR"] or row["AUTHORISED_MN"] or row["AUTHORISED_DY"]:
-                print(
-                    f"\nSkipping Authorised date. Unable to map- AUTHORISED_YR: {row['AUTHORISED_YR']} AUTHORISED_MN: {row['AUTHORISED_MN']} AUTHORISED_DY: {row['AUTHORISED_DY']}"
-                )
-            return None
-
-        return "/".join(
-            [
-                row["AUTHORISED_YR"],
-                row["AUTHORISED_MN"],
-                row["AUTHORISED_DY"],
-            ]
         )
 
     def map_cross_reference_type_enum(self, val):

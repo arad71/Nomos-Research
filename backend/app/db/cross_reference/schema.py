@@ -25,7 +25,9 @@ class CrossReferenceBase(BaseModel):
         description=CROSS_REFERENCE_TYPE
     )
     active: bool = Field(description=ACTIVE)
-    authorised_date: Optional[datetime]
+    authorised_yr: Optional[int]
+    authorised_mn: Optional[int]
+    authorised_dy: Optional[int]
     authorised_by: Optional[str] = Field(description=AUTHORISED_BY)
     comments: Optional[str] = Field(description=COMMENTS)
     notes: Optional[str]
