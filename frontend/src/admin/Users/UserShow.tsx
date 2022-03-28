@@ -16,7 +16,6 @@ export const UserShow: FC = (props) => {
         <TextField source="first_name" />
         <TextField source="last_name" />
         <BooleanField source="is_active" />
-        <BooleanField source="is_superuser" />
       </SimpleShowLayout>
     </Show>
   );
