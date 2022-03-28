@@ -2,7 +2,6 @@ import typing as t
 
 import pytest
 from fastapi.testclient import TestClient
-from loguru import logger
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import create_database, database_exists, drop_database
@@ -143,14 +142,11 @@ def test_superuser(test_db) -> User:
     test_db.commit()
     test_db.refresh(role)
 
-    logger.debug('----------------------------')
-    logger.debug(role.role_id)
     user_role = UserRoleModel(
        role_id=role.role_id,
        user_id=user.user_id
     )
     test_db.add(user_role)
-    logger.debug(user_role)
     test_db.commit()
     return user
 
