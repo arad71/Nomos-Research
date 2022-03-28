@@ -69,7 +69,6 @@ class CrossReference(Base, TableMixin):
         comment=ACTIVE,
         doc=ACTIVE,
     )
-    # Was previously YR/MN/DY columns, comment derived from original
     authorised_date = Column(DateTime, index=True, comment="The date of authorisation")
     authorised_by = Column(String(60), comment=AUTHORISED_BY, doc=AUTHORISED_BY)
     comments = Column(String(1000), comment=COMMENTS, doc=COMMENTS)
