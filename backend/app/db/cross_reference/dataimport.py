@@ -51,7 +51,8 @@ class ImportCrossReference(DataImportBase):
 
     @staticmethod
     def map_authorised_date(row):
-        # TODO some data has year only, can this database field type support this? How to handle?
+        # TODO some data has year only, can this database field type support this?
+        #  How to handle?
         if (
             not row["AUTHORISED_YR"]
             or not row["AUTHORISED_MN"]
@@ -59,7 +60,9 @@ class ImportCrossReference(DataImportBase):
         ):
             if row["AUTHORISED_YR"] or row["AUTHORISED_MN"] or row["AUTHORISED_DY"]:
                 print(
-                    f"\nSkipping Authorised date. Unable to map- AUTHORISED_YR: {row['AUTHORISED_YR']} AUTHORISED_MN: {row['AUTHORISED_MN']} AUTHORISED_DY: {row['AUTHORISED_DY']}"
+                    "\nSkipping Authorised date. Unable to map- AUTHORISED_YR:"
+                    f" {row['AUTHORISED_YR']} AUTHORISED_MN:"
+                    f" {row['AUTHORISED_MN']} AUTHORISED_DY: {row['AUTHORISED_DY']}"
                 )
             return None
 

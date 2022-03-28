@@ -1,9 +1,10 @@
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, Depends, Request, Response, Security
 
 from app.api.dependencies.range_query import RangeQueryParameter
-from app.core.auth import get_current_active_superuser, get_current_active_user
+from app.core.auth import get_current_active_user
+from app.db.role.constants import Role
 from app.db.session import get_db
 from app.db.user.crud import UserCrud
 from app.db.user.schema import User, UserCreate, UserEdit
@@ -20,7 +21,7 @@ async def users_list(
     response: Response,
     range: Optional[str] = RangeQueryParameter,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Get all users
@@ -32,7 +33,7 @@ async def users_list(
 
 
 @r.get("/me", response_model=User, response_model_exclude_none=True)
-async def user_me(current_user=Depends(get_current_active_user)):
+async def user_me(current_user: User = Depends(get_current_active_user)):
     """
     Get own user
     """
@@ -48,16 +49,13 @@ async def user_details(
     request: Request,
     user_id: int,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Get any user details
     """
     user = UserCrud.get_item(db, user_id)
     return user
-    # return encoders.jsonable_encoder(
-    #     user, skip_defaults=True, exclude_none=True,
-    # )
 
 
 @r.post("", response_model=User, response_model_exclude_none=True)
@@ -65,7 +63,13 @@ async def user_create(
     request: Request,
     user: UserCreate,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
+    current_user: User = Security(
+        get_current_active_user,
+        scopes=[
+            Role.APPLICATION_SUPPORT["name"],
+            Role.SUPER_ADMIN["name"],
+        ],
+    ),
 ):
     """
     Create a new user
@@ -79,7 +83,13 @@ async def user_edit(
     user_id: int,
     user: UserEdit,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
+    current_user: User = Security(
+        get_current_active_user,
+        scopes=[
+            Role.APPLICATION_SUPPORT["name"],
+            Role.SUPER_ADMIN["name"],
+        ],
+    ),
 ):
     """
     Update existing user
@@ -92,7 +102,13 @@ async def user_delete(
     request: Request,
     user_id: int,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
+    current_user: User = Security(
+        get_current_active_user,
+        scopes=[
+            Role.APPLICATION_SUPPORT["name"],
+            Role.SUPER_ADMIN["name"],
+        ],
+    ),
 ):
     """
     Delete existing user

@@ -11,12 +11,14 @@ class UserRole(Base):
         ForeignKey("user.user_id"),
         primary_key=True,
         nullable=False,
+        autoincrement=False,
     )
     role_id = Column(
         Integer,
         ForeignKey("role.role_id"),
         primary_key=True,
         nullable=False,
+        autoincrement=False,
     )
 
     role = relationship("Role", backref="user_role")

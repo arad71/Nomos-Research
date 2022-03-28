@@ -22,7 +22,7 @@ async def role_list(
     # current_user=Depends(get_current_active_superuser),
 ):
     """
-    Get all roles
+    Get all scopes
     """
     roles = RoleCrud.get_items(db, range=range)
     # This is necessary for react-admin to work

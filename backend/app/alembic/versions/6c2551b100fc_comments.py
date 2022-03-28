@@ -107,7 +107,11 @@ def upgrade():
         "citation",
         "author_order",
         existing_type=sa.INTEGER(),
-        comment="The order in which authors should appear. The value itself is meaningless and serves solely as part of an ORDER BY clause when assembling the citation.",
+        comment=(
+            "The order in which authors should appear. The value itself is meaningless"
+            " and serves solely as part of an ORDER BY clause when assembling the"
+            " citation."
+        ),
         existing_nullable=True,
     )
     op.alter_column(
@@ -140,7 +144,8 @@ def upgrade():
     )
     op.create_table_comment(
         "citation",
-        "A list of all authors associated with this name,  including basionym / original authors and editors",
+        "A list of all authors associated with this name,  including basionym /"
+        " original authors and editors",
         existing_comment=None,
         schema=None,
     )
@@ -148,7 +153,9 @@ def upgrade():
         "classification_system",
         "classification_system_id",
         existing_type=sa.INTEGER(),
-        comment="Primary key. The taxonomic classification system used for this parentage",
+        comment=(
+            "Primary key. The taxonomic classification system used for this parentage"
+        ),
         existing_nullable=False,
         autoincrement=True,
         existing_server_default=sa.text(
@@ -168,7 +175,10 @@ def upgrade():
         existing_type=postgresql.ENUM(
             "informal", "hierarchical", name="classification_system__class_type"
         ),
-        comment="The type of classification system: INFORMAL - non-hierarchical informal grouping; HIERARCHICAL - a formal hierarchical grouping ",
+        comment=(
+            "The type of classification system: INFORMAL - non-hierarchical informal"
+            " grouping; HIERARCHICAL - a formal hierarchical grouping "
+        ),
         existing_nullable=False,
     )
     op.alter_column(
@@ -177,7 +187,10 @@ def upgrade():
         existing_type=postgresql.ENUM(
             "y", "n", "subf", name="classification_system__preferred"
         ),
-        comment="Because a taxon can belong to more than one group this field provides a mechanism choosing a single preferred group ",
+        comment=(
+            "Because a taxon can belong to more than one group this field provides a"
+            " mechanism choosing a single preferred group "
+        ),
         existing_nullable=True,
     )
     op.alter_column(
@@ -319,7 +332,8 @@ def upgrade():
     )
     op.create_table_comment(
         "cross_reference",
-        "All active and non-active transactions which change the usage of a name, usually resulting in a reference to one or more other taxa ",
+        "All active and non-active transactions which change the usage of a name,"
+        " usually resulting in a reference to one or more other taxa ",
         existing_comment=None,
         schema=None,
     )
@@ -382,7 +396,10 @@ def upgrade():
         "informal_group",
         "classification_system_id",
         existing_type=sa.INTEGER(),
-        comment="The taxonomic classification system used for this parentage (non-hierarchical)",
+        comment=(
+            "The taxonomic classification system used for this parentage"
+            " (non-hierarchical)"
+        ),
         existing_nullable=True,
     )
     op.alter_column(
@@ -490,7 +507,10 @@ def upgrade():
         existing_type=postgresql.ENUM(
             "y", "n", "subf", name="publication__bad_publication"
         ),
-        comment="Flag indicating if this is a bad publication which should be ignored in reports",
+        comment=(
+            "Flag indicating if this is a bad publication which should be ignored in"
+            " reports"
+        ),
         existing_nullable=True,
     )
     op.alter_column(
@@ -591,14 +611,20 @@ def upgrade():
         "taxon_name",
         "origin",
         existing_type=sa.VARCHAR(length=1),
-        comment="Flag indicating whether taxon has been naturalised in Western Australia. * = naturalised",
+        comment=(
+            "Flag indicating whether taxon has been naturalised in Western Australia. *"
+            " = naturalised"
+        ),
         existing_nullable=True,
     )
     op.alter_column(
         "taxon_name",
         "informal",
         existing_type=sa.VARCHAR(length=2),
-        comment="Flag indicating whether name is used informally but not yet formally published",
+        comment=(
+            "Flag indicating whether name is used informally but not yet formally"
+            " published"
+        ),
         existing_nullable=True,
     )
     op.alter_column(
@@ -633,7 +659,10 @@ def upgrade():
         "taxon_name",
         "contributed_by",
         existing_type=sa.VARCHAR(length=16),
-        comment="Person authorising entry of this name. This will be the name of a taxonomist who can vouch for the correctness of the record.",
+        comment=(
+            "Person authorising entry of this name. This will be the name of a"
+            " taxonomist who can vouch for the correctness of the record."
+        ),
         existing_nullable=True,
     )
     op.alter_column(
@@ -647,14 +676,21 @@ def upgrade():
         "taxon_name",
         "validated",
         existing_type=postgresql.ENUM("y", "n", "subf", name="taxon_name__validated"),
-        comment="Flag indicating whether record is validated or not. By default all records entered manually are validated, all records entered from an external source are unvalidated",
+        comment=(
+            "Flag indicating whether record is validated or not. By default all records"
+            " entered manually are validated, all records entered from an external"
+            " source are unvalidated"
+        ),
         existing_nullable=False,
     )
     op.alter_column(
         "taxon_name",
         "source",
         existing_type=sa.VARCHAR(length=10),
-        comment="A code representing an external source this record was derived from. eg. CAVP",
+        comment=(
+            "A code representing an external source this record was derived from. eg."
+            " CAVP"
+        ),
         existing_nullable=True,
     )
     op.alter_column(
@@ -668,7 +704,11 @@ def upgrade():
         "taxon_name",
         "family_code",
         existing_type=sa.VARCHAR(length=5),
-        comment="The family code of this name if it is of rank below family.This field has been retained for backward compatibility and because it is used as part of Herbarium curatorial procedures.",
+        comment=(
+            "The family code of this name if it is of rank below family.This field has"
+            " been retained for backward compatibility and because it is used as part"
+            " of Herbarium curatorial procedures."
+        ),
         existing_nullable=True,
     )
     op.alter_column(
@@ -689,14 +729,19 @@ def upgrade():
         "taxon_name",
         "is_eradicated",
         existing_type=sa.VARCHAR(length=1),
-        comment='Nat Status is a superset of ORIGIN. See domain for values. "A" = old "*"',
+        comment=(
+            'Nat Status is a superset of ORIGIN. See domain for values. "A" = old "*"'
+        ),
         existing_nullable=True,
     )
     op.alter_column(
         "taxon_name",
         "naturalised_comments",
         existing_type=sa.VARCHAR(length=400),
-        comment="Is this taxon definitely naturalised.Y = Yes N = there is some doubt whether it is really naturalised.",
+        comment=(
+            "Is this taxon definitely naturalised.Y = Yes N = there is some doubt"
+            " whether it is really naturalised."
+        ),
         existing_nullable=True,
     )
     op.alter_column(
@@ -843,7 +888,9 @@ def upgrade():
         "user",
         "default_class",
         existing_type=sa.INTEGER(),
-        comment="The default classification system this user will save taxon names with",
+        comment=(
+            "The default classification system this user will save taxon names with"
+        ),
         existing_nullable=True,
     )
     op.create_table_comment(
@@ -886,7 +933,10 @@ def upgrade():
         "vernacular",
         "preferred",
         existing_type=postgresql.ENUM("y", "n", "subf", name="vernacular__preferred"),
-        comment="Flag indicating if this is the overall preferred vernacular name for this latin name",
+        comment=(
+            "Flag indicating if this is the overall preferred vernacular name for this"
+            " latin name"
+        ),
         existing_nullable=True,
     )
     op.alter_column(
@@ -937,7 +987,9 @@ def downgrade():
     # ### commands auto generated by Alembic - please adjust! ###
     op.drop_table_comment(
         "vernacular",
-        existing_comment="The common or vernacular names recorded for Latin names, where they exist",
+        existing_comment=(
+            "The common or vernacular names recorded for Latin names, where they exist"
+        ),
         schema=None,
     )
     op.alter_column(
@@ -985,7 +1037,10 @@ def downgrade():
         "preferred",
         existing_type=postgresql.ENUM("y", "n", "subf", name="vernacular__preferred"),
         comment=None,
-        existing_comment="Flag indicating if this is the overall preferred vernacular name for this latin name",
+        existing_comment=(
+            "Flag indicating if this is the overall preferred vernacular name for this"
+            " latin name"
+        ),
         existing_nullable=True,
     )
     op.alter_column(
@@ -1030,7 +1085,9 @@ def downgrade():
         "default_class",
         existing_type=sa.INTEGER(),
         comment=None,
-        existing_comment="The default classification system this user will save taxon names with",
+        existing_comment=(
+            "The default classification system this user will save taxon names with"
+        ),
         existing_nullable=True,
     )
     op.alter_column(
@@ -1135,7 +1192,9 @@ def downgrade():
     )
     op.drop_table_comment(
         "taxon_name",
-        existing_comment="All current and non-current taxon names at all levels of the hierarchy",
+        existing_comment=(
+            "All current and non-current taxon names at all levels of the hierarchy"
+        ),
         schema=None,
     )
     op.alter_column(
@@ -1191,7 +1250,10 @@ def downgrade():
         "naturalised_comments",
         existing_type=sa.VARCHAR(length=400),
         comment=None,
-        existing_comment="Is this taxon definitely naturalised.Y = Yes N = there is some doubt whether it is really naturalised.",
+        existing_comment=(
+            "Is this taxon definitely naturalised.Y = Yes N = there is some doubt"
+            " whether it is really naturalised."
+        ),
         existing_nullable=True,
     )
     op.alter_column(
@@ -1199,7 +1261,9 @@ def downgrade():
         "is_eradicated",
         existing_type=sa.VARCHAR(length=1),
         comment=None,
-        existing_comment='Nat Status is a superset of ORIGIN. See domain for values. "A" = old "*"',
+        existing_comment=(
+            'Nat Status is a superset of ORIGIN. See domain for values. "A" = old "*"'
+        ),
         existing_nullable=True,
     )
     op.alter_column(
@@ -1223,7 +1287,11 @@ def downgrade():
         "family_code",
         existing_type=sa.VARCHAR(length=5),
         comment=None,
-        existing_comment="The family code of this name if it is of rank below family.This field has been retained for backward compatibility and because it is used as part of Herbarium curatorial procedures.",
+        existing_comment=(
+            "The family code of this name if it is of rank below family.This field has"
+            " been retained for backward compatibility and because it is used as part"
+            " of Herbarium curatorial procedures."
+        ),
         existing_nullable=True,
     )
     op.alter_column(
@@ -1231,7 +1299,9 @@ def downgrade():
         "external_id",
         existing_type=sa.VARCHAR(length=10),
         comment=None,
-        existing_comment="An identifier associated with the external record (if one exists).",
+        existing_comment=(
+            "An identifier associated with the external record (if one exists)."
+        ),
         existing_nullable=True,
     )
     op.alter_column(
@@ -1239,7 +1309,10 @@ def downgrade():
         "source",
         existing_type=sa.VARCHAR(length=10),
         comment=None,
-        existing_comment="A code representing an external source this record was derived from. eg. CAVP",
+        existing_comment=(
+            "A code representing an external source this record was derived from. eg."
+            " CAVP"
+        ),
         existing_nullable=True,
     )
     op.alter_column(
@@ -1247,7 +1320,11 @@ def downgrade():
         "validated",
         existing_type=postgresql.ENUM("y", "n", "subf", name="taxon_name__validated"),
         comment=None,
-        existing_comment="Flag indicating whether record is validated or not. By default all records entered manually are validated, all records entered from an external source are unvalidated",
+        existing_comment=(
+            "Flag indicating whether record is validated or not. By default all records"
+            " entered manually are validated, all records entered from an external"
+            " source are unvalidated"
+        ),
         existing_nullable=False,
     )
     op.alter_column(
@@ -1263,7 +1340,10 @@ def downgrade():
         "contributed_by",
         existing_type=sa.VARCHAR(length=16),
         comment=None,
-        existing_comment="Person authorising entry of this name. This will be the name of a taxonomist who can vouch for the correctness of the record.",
+        existing_comment=(
+            "Person authorising entry of this name. This will be the name of a"
+            " taxonomist who can vouch for the correctness of the record."
+        ),
         existing_nullable=True,
     )
     op.alter_column(
@@ -1303,7 +1383,10 @@ def downgrade():
         "informal",
         existing_type=sa.VARCHAR(length=2),
         comment=None,
-        existing_comment="Flag indicating whether name is used informally but not yet formally published",
+        existing_comment=(
+            "Flag indicating whether name is used informally but not yet formally"
+            " published"
+        ),
         existing_nullable=True,
     )
     op.alter_column(
@@ -1311,7 +1394,10 @@ def downgrade():
         "origin",
         existing_type=sa.VARCHAR(length=1),
         comment=None,
-        existing_comment="Flag indicating whether taxon has been naturalised in Western Australia. * = naturalised",
+        existing_comment=(
+            "Flag indicating whether taxon has been naturalised in Western Australia. *"
+            " = naturalised"
+        ),
         existing_nullable=True,
     )
     op.alter_column(
@@ -1335,7 +1421,9 @@ def downgrade():
         "volume_information",
         existing_type=sa.VARCHAR(length=100),
         comment=None,
-        existing_comment="The volume information of the publication this name was published in",
+        existing_comment=(
+            "The volume information of the publication this name was published in"
+        ),
         existing_nullable=True,
     )
     op.alter_column(
@@ -1343,7 +1431,9 @@ def downgrade():
         "publication_id",
         existing_type=sa.INTEGER(),
         comment=None,
-        existing_comment="The publication ID of the publication this name was published in",
+        existing_comment=(
+            "The publication ID of the publication this name was published in"
+        ),
         existing_nullable=True,
     )
     op.alter_column(
@@ -1351,7 +1441,9 @@ def downgrade():
         "rank_name",
         existing_type=sa.VARCHAR(length=15),
         comment=None,
-        existing_comment="A duplicate of the rankname field in HBTRanks. To aid performance.",
+        existing_comment=(
+            "A duplicate of the rankname field in HBTRanks. To aid performance."
+        ),
         existing_nullable=False,
     )
     op.alter_column(
@@ -1384,7 +1476,9 @@ def downgrade():
     )
     op.drop_table_comment(
         "publication",
-        existing_comment="This table stores information on each publication cited within references",
+        existing_comment=(
+            "This table stores information on each publication cited within references"
+        ),
         schema=None,
     )
     op.alter_column(
@@ -1426,7 +1520,10 @@ def downgrade():
             "y", "n", "subf", name="publication__bad_publication"
         ),
         comment=None,
-        existing_comment="Flag indicating if this is a bad publication which should be ignored in reports",
+        existing_comment=(
+            "Flag indicating if this is a bad publication which should be ignored in"
+            " reports"
+        ),
         existing_nullable=True,
     )
     op.alter_column(
@@ -1504,7 +1601,9 @@ def downgrade():
     )
     op.drop_table_comment(
         "informal_group",
-        existing_comment="The various informal groups through which names can be classified",
+        existing_comment=(
+            "The various informal groups through which names can be classified"
+        ),
         schema=None,
     )
     op.alter_column(
@@ -1544,7 +1643,10 @@ def downgrade():
         "classification_system_id",
         existing_type=sa.INTEGER(),
         comment=None,
-        existing_comment="The taxonomic classification system used for this parentage (non-hierarchical)",
+        existing_comment=(
+            "The taxonomic classification system used for this parentage"
+            " (non-hierarchical)"
+        ),
         existing_nullable=True,
     )
     op.drop_table_comment(
@@ -1610,7 +1712,10 @@ def downgrade():
     )
     op.drop_table_comment(
         "cross_reference",
-        existing_comment="All active and non-active transactions which change the usage of a name, usually resulting in a reference to one or more other taxa ",
+        existing_comment=(
+            "All active and non-active transactions which change the usage of a name,"
+            " usually resulting in a reference to one or more other taxa "
+        ),
         schema=None,
     )
     op.alter_column(
@@ -1701,7 +1806,9 @@ def downgrade():
         "new_name_id",
         existing_type=sa.INTEGER(),
         comment=None,
-        existing_comment="The new NameID, or the NameID of the name this reference points to",
+        existing_comment=(
+            "The new NameID, or the NameID of the name this reference points to"
+        ),
         existing_nullable=True,
     )
     op.alter_column(
@@ -1723,7 +1830,9 @@ def downgrade():
     )
     op.drop_table_comment(
         "classification_system",
-        existing_comment="The hierarchical classification systems supported within the WA Herbarium",
+        existing_comment=(
+            "The hierarchical classification systems supported within the WA Herbarium"
+        ),
         schema=None,
     )
     op.alter_column(
@@ -1763,7 +1872,9 @@ def downgrade():
         "sort_order",
         existing_type=sa.INTEGER(),
         comment=None,
-        existing_comment="An optional value to sort the order classification system categories",
+        existing_comment=(
+            "An optional value to sort the order classification system categories"
+        ),
         existing_nullable=True,
     )
     op.alter_column(
@@ -1773,7 +1884,10 @@ def downgrade():
             "y", "n", "subf", name="classification_system__preferred"
         ),
         comment=None,
-        existing_comment="Because a taxon can belong to more than one group this field provides a mechanism choosing a single preferred group ",
+        existing_comment=(
+            "Because a taxon can belong to more than one group this field provides a"
+            " mechanism choosing a single preferred group "
+        ),
         existing_nullable=True,
     )
     op.alter_column(
@@ -1783,7 +1897,10 @@ def downgrade():
             "informal", "hierarchical", name="classification_system__class_type"
         ),
         comment=None,
-        existing_comment="The type of classification system: INFORMAL - non-hierarchical informal grouping; HIERARCHICAL - a formal hierarchical grouping ",
+        existing_comment=(
+            "The type of classification system: INFORMAL - non-hierarchical informal"
+            " grouping; HIERARCHICAL - a formal hierarchical grouping "
+        ),
         existing_nullable=False,
     )
     op.alter_column(
@@ -1799,7 +1916,9 @@ def downgrade():
         "classification_system_id",
         existing_type=sa.INTEGER(),
         comment=None,
-        existing_comment="Primary key. The taxonomic classification system used for this parentage",
+        existing_comment=(
+            "Primary key. The taxonomic classification system used for this parentage"
+        ),
         existing_nullable=False,
         autoincrement=True,
         existing_server_default=sa.text(
@@ -1808,7 +1927,10 @@ def downgrade():
     )
     op.drop_table_comment(
         "citation",
-        existing_comment="A list of all authors associated with this name,  including basionym / original authors and editors",
+        existing_comment=(
+            "A list of all authors associated with this name,  including basionym /"
+            " original authors and editors"
+        ),
         schema=None,
     )
     op.alter_column(
@@ -1848,7 +1970,11 @@ def downgrade():
         "author_order",
         existing_type=sa.INTEGER(),
         comment=None,
-        existing_comment="The order in which authors should appear. The value itself is meaningless and serves solely as part of an ORDER BY clause when assembling the citation.",
+        existing_comment=(
+            "The order in which authors should appear. The value itself is meaningless"
+            " and serves solely as part of an ORDER BY clause when assembling the"
+            " citation."
+        ),
         existing_nullable=True,
     )
     op.alter_column(

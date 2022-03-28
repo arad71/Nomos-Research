@@ -16,7 +16,9 @@ def init_db(db: Session) -> None:
     user_crud = UserCrud()
     # Create 1st Superuser
     user = user_crud.get_user_by_email(db, email=settings.FIRST_SUPER_ADMIN_EMAIL)
-    if not user:
+    if user:
+        logger.debug("User {} exists", settings.FIRST_SUPER_ADMIN_EMAIL)
+    else:
         logger.debug("Creating user")
         user_in = UserCreate(
             email=settings.FIRST_SUPER_ADMIN_EMAIL,

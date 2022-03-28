@@ -2,13 +2,17 @@ import typing as t
 
 import pytest
 from fastapi.testclient import TestClient
+from loguru import logger
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import create_database, database_exists, drop_database
 
 from app.core import config, security
+from app.db.role.constants import Role
+from app.db.role.model import Role as RoleModel
 from app.db.session import Base, get_db
 from app.db.user.model import User
+from app.db.user_role.model import UserRole as UserRoleModel
 from app.main import app
 
 
@@ -126,9 +130,27 @@ def test_superuser(test_db) -> User:
     user = User(
         email="fakeadmin@email.com",
         hashed_password=get_password_hash(),
-        is_superuser=True,
     )
     test_db.add(user)
+    test_db.commit()
+    test_db.refresh(user)
+    role = RoleModel(
+        name=Role.SUPER_ADMIN["name"],
+        description=Role.SUPER_ADMIN["description"]
+    )
+
+    test_db.add(role)
+    test_db.commit()
+    test_db.refresh(role)
+
+    logger.debug('----------------------------')
+    logger.debug(role.role_id)
+    user_role = UserRoleModel(
+       role_id=role.role_id,
+       user_id=user.user_id
+    )
+    test_db.add(user_role)
+    logger.debug(user_role)
     test_db.commit()
     return user
 

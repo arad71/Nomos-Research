@@ -6,6 +6,7 @@ import app.db.user.model as model
 import app.db.user.schema as schema
 from app.core import security
 from app.db import session
+from app.db.role.constants import Role
 from app.db.user.crud import UserCrud
 
 
@@ -45,7 +46,7 @@ async def get_current_active_user(
 async def get_current_active_superuser(
     current_user: model.User = Depends(get_current_user),
 ) -> model.User:
-    if not current_user.is_superuser:
+    if not current_user.has_role(Role.SUPER_ADMIN):
         raise HTTPException(
             status_code=403, detail="The user doesn't have enough privileges"
         )
@@ -71,7 +72,6 @@ def sign_up_new_user(db, email: str, password: str):
             email=email,
             password=password,
             is_active=True,
-            is_superuser=False,
         ),
     )
     return new_user

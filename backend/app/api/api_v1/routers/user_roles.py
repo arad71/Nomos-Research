@@ -3,7 +3,6 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, Security
 from sqlalchemy.orm import Session
 
-# from app import crud, models, schemas
 from app.core.auth import get_current_active_user
 from app.db.role.constants import Role
 from app.db.session import get_db
@@ -19,7 +18,13 @@ def assign_user_role(
     *,
     db: Session = Depends(get_db),
     user_role_in: UserRoleCreate,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Security(
+        get_current_active_user,
+        scopes=[
+            Role.APPLICATION_SUPPORT["name"],
+            Role.SUPER_ADMIN["name"],
+        ],
+    ),
 ) -> Any:
     """
     Assign a role to a user after creation of a user
@@ -45,7 +50,6 @@ def update_user_role(
         scopes=[
             Role.APPLICATION_SUPPORT["name"],
             Role.SUPER_ADMIN["name"],
-            Role.OFFICER["name"],
         ],
     ),
 ) -> Any:

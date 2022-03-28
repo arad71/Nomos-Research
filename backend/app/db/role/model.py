@@ -9,5 +9,5 @@ class Role(Base):
     __table_args__ = {"comment": TABLE_DESCRIPTION}
 
     role_id = Column(Integer, primary_key=True)
-    name = Column(String(100), index=True)
+    name = Column(String(100), index=True, nullable=False)
     description = Column(Text)

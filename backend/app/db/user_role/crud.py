@@ -1,5 +1,4 @@
 import app.db.crud as crud
-from app.db.role.model import Role
 from app.db.user_role.model import UserRole
 
 

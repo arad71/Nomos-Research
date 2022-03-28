@@ -2,20 +2,20 @@ import pytest
 
 
 @pytest.mark.parametrize(
-    ("endpoint"),
+    "endpoint",
     [
-        ("authors"),
-        ("citations"),
-        ("classification_systems"),
-        ("cross_references"),
-        ("hierarchies"),
-        ("informal_groups"),
-        ("kingdoms"),
-        ("publications"),
-        ("taxon_names"),
-        ("taxon_ranks"),
-        ("users"),
-        ("vernaculars"),
+        "authors",
+        "citations",
+        "classification_systems",
+        "cross_references",
+        "hierarchies",
+        "informal_groups",
+        "kingdoms",
+        "publications",
+        "taxon_names",
+        "taxon_ranks",
+        "users",
+        "vernaculars",
     ],
 )
 def test_item_list(client, endpoint, superuser_token_headers):

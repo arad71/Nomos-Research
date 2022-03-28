@@ -1,15 +1,12 @@
 from typing import Optional
 
-from pydantic import UUID4, BaseModel
-
-# Shared properties
-from sqlalchemy import Integer
+from pydantic import BaseModel
 
 from app.db.role.constants import TABLE_DESCRIPTION
 
 
 class RoleBase(BaseModel):
-    name: Optional[str]
+    name: str
     description: Optional[str]
 
 
