@@ -69,7 +69,9 @@ class CrossReference(Base, TableMixin):
         comment=ACTIVE,
         doc=ACTIVE,
     )
-    authorised_date = Column(DateTime, index=True, comment="The date of authorisation")
+    authorised_yr = Column(Integer, index=True, comment="The year of authorisation")
+    authorised_mn = Column(Integer, index=True, comment="The month of authorisation")
+    authorised_dy = Column(Integer, index=True, comment="The day of authorisation")
     authorised_by = Column(String(60), comment=AUTHORISED_BY, doc=AUTHORISED_BY)
     comments = Column(String(1000), comment=COMMENTS, doc=COMMENTS)
     notes = Column(String(3000))
