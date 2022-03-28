@@ -324,24 +324,6 @@ def upgrade():
         sa.Column("reference", sa.Text(), nullable=True),
         sa.Column("authorised_by", sa.String(length=16), nullable=True),
         sa.Column("authorised_on", sa.DateTime(), nullable=True),
-        sa.Column(
-            "authorised_yr",
-            sa.Integer(),
-            nullable=True,
-            comment="The year of authorisation",
-        ),
-        sa.Column(
-            "authorised_mn",
-            sa.Integer(),
-            nullable=True,
-            comment="The month of authorisation",
-        ),
-        sa.Column(
-            "authorised_dy",
-            sa.Integer(),
-            nullable=True,
-            comment="The day of authorisation",
-        ),
         sa.Column("updated_by", sa.Integer(), nullable=True),
         sa.Column("updated_on", sa.DateTime(), nullable=True),
         sa.Column("created_by", sa.Integer(), nullable=True),
@@ -441,9 +423,11 @@ def upgrade():
             nullable=False,
         ),
         sa.Column("authorised_by", sa.String(length=60), nullable=True),
+        sa.Column("authorised_yr", sa.Integer(), nullable=True),
+        sa.Column("authorised_mn", sa.Integer(), nullable=True),
+        sa.Column("authorised_dy", sa.Integer(), nullable=True),
         sa.Column("comments", sa.String(length=1000), nullable=True),
         sa.Column("notes", sa.String(length=3000), nullable=True),
-        sa.Column("authorised_date", sa.DateTime(), nullable=True),
         sa.Column("updated_by", sa.Integer(), nullable=True),
         sa.Column("updated_on", sa.DateTime(), nullable=True),
         sa.Column("created_by", sa.Integer(), nullable=True),
@@ -465,12 +449,6 @@ def upgrade():
             ["user.user_id"],
         ),
         sa.PrimaryKeyConstraint("cross_reference_id"),
-    )
-    op.create_index(
-        op.f("ix_cross_reference_authorised_date"),
-        "cross_reference",
-        ["authorised_date"],
-        unique=False,
     )
     op.create_index(
         op.f("ix_cross_reference_cross_reference_id"),
@@ -624,9 +602,6 @@ def downgrade():
     op.drop_table("hierarchy")
     op.drop_index(
         op.f("ix_cross_reference_cross_reference_id"), table_name="cross_reference"
-    )
-    op.drop_index(
-        op.f("ix_cross_reference_authorised_date"), table_name="cross_reference"
     )
     op.drop_table("cross_reference")
     op.drop_index(op.f("ix_citation_citation_id"), table_name="citation")
