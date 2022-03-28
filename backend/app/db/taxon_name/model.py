@@ -46,7 +46,6 @@ class TaxonName(Base, TableMixin):
     name_plural = "taxon_names"
 
     taxon_name_id = Column(Integer, primary_key=True, comment=TAXON_NAME_ID)
-    # Derived from what? is this comment still true?
     kingdom_id = Column(
         Integer,
         ForeignKey("kingdom.kingdom_id"),
@@ -63,7 +62,6 @@ class TaxonName(Base, TableMixin):
         doc=RANK_ID,
     )
     taxon_rank = relationship("TaxonRank", backref=name_plural)
-    # Are we using/keeping this? is this comment still true?
     rank_name = Column(
         String(15),
         nullable=False,
@@ -73,7 +71,6 @@ class TaxonName(Base, TableMixin):
     uninomial = Column(String)
     # kingdom = Column(String)
     phylum = Column(String)
-    # class is a reserved word, will this workaround be enough?
     taxon_class = Column(String, name="class", key="class")
     order = Column(String)
     family = Column(String)
@@ -98,7 +95,6 @@ class TaxonName(Base, TableMixin):
         doc=VOLUME_INFORMATION,
     )
     publication_year = Column(Integer, comment=PUBLICATION_YEAR, doc=PUBLICATION_YEAR)
-    # This comment does not match our Enum, should we change the Enum or the comment?
     is_current = Column(
         Boolean,
         nullable=False,
@@ -115,7 +111,6 @@ class TaxonName(Base, TableMixin):
         comment=INFORMAL,
         doc=INFORMAL,
     )
-    # Elsewhere we have moved YR/MN/DY into a single date field. Do we want to here?
     form_desc_yr = Column(Integer, comment=FORM_DESC_YR)
     form_desc_mn = Column(Integer, comment=FORM_DESC_MN)
     form_desc_dy = Column(Integer, comment=FORM_DESC_DY)
@@ -143,9 +138,7 @@ class TaxonName(Base, TableMixin):
         doc=EXTERNAL_ID,
     )
     family_code = Column(String(5), comment=FAMILY_CODE, doc=FAMILY_CODE)
-    # Is this still true/needed?
     author = Column(String(180), comment=AUTHOR, doc=AUTHOR)
-    # Is this still true/needed?
     vernacular = Column(
         String(100),
         comment=VERNACULAR,
@@ -156,19 +149,16 @@ class TaxonName(Base, TableMixin):
         Enum(enums.NaturalisedStatus, name=__tablename__ + "__naturalised_status")
     )
     naturalised_certainty = Column(Boolean)
-    # Comment doesn't seem to match column
     is_eradicated = Column(
         String(1),
         comment=IS_ERADICATED,
         doc=IS_ERADICATED,
     )
-    # Comment doesn't seem to match column
     naturalised_comments = Column(
         String(400),
         comment=NATURALISED_COMMENTS,
         doc=NATURALISED_COMMENTS,
     )
-    # Comment doesn't seem to match column
     linear_sequence = Column(Integer, comment=LINEAR_SEQUENCE, doc=LINEAR_SEQUENCE)
     family_nid = Column(
         Integer,
