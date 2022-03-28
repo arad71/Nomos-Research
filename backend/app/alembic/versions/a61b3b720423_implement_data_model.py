@@ -456,6 +456,24 @@ def upgrade():
         ["cross_reference_id"],
         unique=False,
     )
+    op.create_index(
+        op.f("ix_cross_reference_authorised_dy"),
+        "cross_reference",
+        ["authorised_dy"],
+        unique=False,
+    )
+    op.create_index(
+        op.f("ix_cross_reference_authorised_mn"),
+        "cross_reference",
+        ["authorised_mn"],
+        unique=False,
+    )
+    op.create_index(
+        op.f("ix_cross_reference_authorised_yr"),
+        "cross_reference",
+        ["authorised_yr"],
+        unique=False,
+    )
     op.create_table(
         "hierarchy",
         sa.Column("hierarchy_id", sa.Integer(), nullable=False),
@@ -602,6 +620,15 @@ def downgrade():
     op.drop_table("hierarchy")
     op.drop_index(
         op.f("ix_cross_reference_cross_reference_id"), table_name="cross_reference"
+    )
+    op.drop_index(
+        op.f("ix_cross_reference_authorised_yr"), table_name="cross_reference"
+    )
+    op.drop_index(
+        op.f("ix_cross_reference_authorised_mn"), table_name="cross_reference"
+    )
+    op.drop_index(
+        op.f("ix_cross_reference_authorised_dy"), table_name="cross_reference"
     )
     op.drop_table("cross_reference")
     op.drop_index(op.f("ix_citation_citation_id"), table_name="citation")
