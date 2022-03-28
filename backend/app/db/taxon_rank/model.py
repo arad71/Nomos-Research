@@ -34,7 +34,6 @@ class TaxonRank(Base, TableMixin):
         doc=KINGDOM_ID,
     )
     kingdom = relationship("Kingdom", backref="taxon_ranks")
-    # New comment does not match new column name?
     rank_name = Column(String(15), nullable=False, comment=RANK_NAME, doc=RANK_NAME)
     rank_abbrev = Column(
         Enum(enums.RankAbbreviation, name=__tablename__ + "__rank_abbrev"),

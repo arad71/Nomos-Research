@@ -4,9 +4,9 @@ import {
   SelectInput,
   SimpleForm,
   TextInput,
+  BooleanInput,
 } from 'react-admin';
 import React, { FC } from 'react';
-import BooleanOptions from '../shared/BooleanOptions';
 import CrossRefType from './CrossRefType';
 
 export const CrossRefCreateEdit: FC = (props) => (
@@ -22,11 +22,7 @@ export const CrossRefCreateEdit: FC = (props) => (
       choices={CrossRefType}
       validate={required()}
     />
-    <SelectInput
-      source="active"
-      choices={BooleanOptions}
-      validate={required()}
-    />
+    <BooleanInput label="Active" source="active" validate={required()} />
     <TextInput source="authorised_by" />
     <TextInput multiline source="comments" />
     <TextInput multiline source="notes" />

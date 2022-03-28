@@ -21,7 +21,7 @@ class ImportPublication(DataImportBase):
     def import_row(self, row):
         self.values.append(
             {
-                "bad_publication": self.map_enum_base(row["BAD_PUBLICATION"]),
+                "bad_publication": self.map_y_n_to_bool(row["BAD_PUBLICATION"]),
                 "publication": row["PUBLICATION"],
                 "publication_name": row["PUBLICATION_NAME"],
                 "legacy_id": row["PUB_ID"],

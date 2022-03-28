@@ -8,7 +8,6 @@ from app.db.session import Base
 class TableMixin(object):
     @declared_attr
     def updated_by(cls):
-        # original comment "Teh person who updated this record" fixed typo
         return Column(
             Integer,
             ForeignKey("user.user_id"),
@@ -26,7 +25,6 @@ class TableMixin(object):
 
     @declared_attr
     def created_by(cls):
-        # derived comment from update
         return Column(
             Integer,
             ForeignKey("user.user_id"),
@@ -35,7 +33,6 @@ class TableMixin(object):
 
     @declared_attr
     def created_on(cls):
-        # derived comment from update
         return Column(
             DateTime,
             default=func.current_timestamp(),

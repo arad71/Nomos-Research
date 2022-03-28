@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy.types import Enum
@@ -64,13 +64,14 @@ class CrossReference(Base, TableMixin):
         doc=CROSS_REFERENCE_TYPE,
     )
     active = Column(
-        Enum(enums.Active, name=__tablename__ + "__active"),
+        Boolean,
         nullable=False,
         comment=ACTIVE,
         doc=ACTIVE,
     )
-    # Was previously YR/MN/DY columns, comment derived from original
-    authorised_date = Column(DateTime, index=True, comment="The date of authorisation")
+    authorised_yr = Column(Integer, index=True, comment="The year of authorisation")
+    authorised_mn = Column(Integer, index=True, comment="The month of authorisation")
+    authorised_dy = Column(Integer, index=True, comment="The day of authorisation")
     authorised_by = Column(String(60), comment=AUTHORISED_BY, doc=AUTHORISED_BY)
     comments = Column(String(1000), comment=COMMENTS, doc=COMMENTS)
     notes = Column(String(3000))

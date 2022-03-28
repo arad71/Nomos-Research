@@ -10,6 +10,7 @@ import {
   SelectField,
   TextField,
   useRecordContext,
+  BooleanField,
 } from 'react-admin';
 import CrossRefType from './CrossRefType';
 
@@ -36,7 +37,7 @@ export const CrossReferenceList: FC = (props) => (
         <TextField source="scientific_name" />
       </ReferenceField>
       <SelectField source="cross_reference_type" choices={CrossRefType} />
-      <TextField source="active" />
+      <BooleanField source="active" />
       <TextField source="authorised_by" />
       <TextField source="comments" />
       <TextField source="notes" />

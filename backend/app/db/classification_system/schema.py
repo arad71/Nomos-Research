@@ -17,7 +17,7 @@ from app.db.schemas import TableBase
 class ClassificationSystemBase(BaseModel):
     class_desc: str = Field(description=DESCRIPTION)
     class_type: enums.ClassificationType = Field(description=CLASS_TYPE)
-    preferred: Optional[enums.ClassificationPreferred] = Field(description=PREFERRED)
+    preferred: Optional[bool] = Field(description=PREFERRED)
     sort_order: Optional[int] = Field(description=SORT_ORDER)
     legacy_id_name: Optional[str]
 

@@ -1,5 +1,6 @@
 import csv
 import datetime
+import functools
 import os
 import traceback
 
@@ -93,6 +94,7 @@ class DataImportBase:
         self.db.execute(insert_statement)
         self.db.commit()
 
+    @functools.cache
     def map_row_by_unique_key(
         self,
         model: object,
@@ -142,6 +144,18 @@ class DataImportBase:
         return self.map_row_by_unique_key(
             UserModel, "legacy_id_name", legacy_id, "user_id"
         )
+
+    def map_y_n_to_bool(self, val):
+        if not val:
+            return None
+
+        if val.lower() == "y":
+            return True
+
+        if val.lower() == "n":
+            return False
+
+        raise DataImportError("Unable to Map val to bool")
 
 
 class DataImportError(Exception):

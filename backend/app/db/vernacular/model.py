@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Enum, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Column, Enum, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 from sqlalchemy.schema import UniqueConstraint
 
@@ -44,17 +44,15 @@ class Vernacular(Base, TableMixin):
         doc=LANGUAGE,
     )
     lang_pref = Column(
-        Enum(enums.LangPref, name=__tablename__ + "__lang_pref"),
+        Boolean,
         comment=LANG_PREF,
         doc=LANG_PREF,
     )
     preferred = Column(
-        Enum(enums.Preferred, name=__tablename__ + "__preferred"),
+        Boolean,
         comment=PREFERRED,
         doc=PREFERRED,
     )
     source = Column(String(50), comment=SOURCE, doc=SOURCE)
-    enabled = Column(
-        Enum(enums.Enabled, name=__tablename__ + "__enabled"), nullable=False
-    )
+    enabled = Column(Boolean, nullable=False)
     sort_order = Column(Integer)

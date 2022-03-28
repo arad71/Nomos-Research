@@ -69,7 +69,7 @@ def upgrade():
         ),
         sa.Column(
             "preferred",
-            sa.Enum("y", "n", "subf", name="classification_system__preferred"),
+            sa.Boolean,
             nullable=True,
         ),
         sa.Column("sort_order", sa.Integer(), nullable=True),
@@ -121,7 +121,7 @@ def upgrade():
         sa.Column("publication", sa.Text(), nullable=False),
         sa.Column(
             "bad_publication",
-            sa.Enum("y", "n", "subf", name="publication__bad_publication"),
+            sa.Boolean,
             nullable=True,
         ),
         sa.Column("publication_name", sa.Text(), nullable=True),
@@ -283,7 +283,7 @@ def upgrade():
         sa.Column("publication_year", sa.Integer(), nullable=True),
         sa.Column(
             "is_current",
-            sa.Enum("y", "n", "subf", name="taxon_name__is_current"),
+            sa.Boolean,
             nullable=False,
         ),
         sa.Column("origin", sa.String(length=1), nullable=True),
@@ -296,7 +296,7 @@ def upgrade():
         sa.Column("contributed_on", sa.DateTime(), nullable=True),
         sa.Column(
             "validated",
-            sa.Enum("y", "n", "subf", name="taxon_name__validated"),
+            sa.Boolean,
             nullable=False,
         ),
         sa.Column("source", sa.String(length=10), nullable=True),
@@ -312,7 +312,7 @@ def upgrade():
         ),
         sa.Column(
             "naturalised_certainty",
-            sa.Enum("y", "n", name="taxon_name__naturalised_certainty"),
+            sa.Boolean,
             nullable=True,
         ),
         sa.Column("is_eradicated", sa.String(length=1), nullable=True),
@@ -324,6 +324,24 @@ def upgrade():
         sa.Column("reference", sa.Text(), nullable=True),
         sa.Column("authorised_by", sa.String(length=16), nullable=True),
         sa.Column("authorised_on", sa.DateTime(), nullable=True),
+        sa.Column(
+            "authorised_yr",
+            sa.Integer(),
+            nullable=True,
+            comment="The year of authorisation",
+        ),
+        sa.Column(
+            "authorised_mn",
+            sa.Integer(),
+            nullable=True,
+            comment="The month of authorisation",
+        ),
+        sa.Column(
+            "authorised_dy",
+            sa.Integer(),
+            nullable=True,
+            comment="The day of authorisation",
+        ),
         sa.Column("updated_by", sa.Integer(), nullable=True),
         sa.Column("updated_on", sa.DateTime(), nullable=True),
         sa.Column("created_by", sa.Integer(), nullable=True),
@@ -419,7 +437,7 @@ def upgrade():
         ),
         sa.Column(
             "active",
-            sa.Enum("y", "n", "subf", name="cross_reference__active"),
+            sa.Boolean,
             nullable=False,
         ),
         sa.Column("authorised_by", sa.String(length=60), nullable=True),
@@ -552,18 +570,16 @@ def upgrade():
         ),
         sa.Column(
             "lang_pref",
-            sa.Enum("y", "n", "subf", name="vernacular__lang_pref"),
+            sa.Boolean,
             nullable=True,
         ),
         sa.Column(
             "preferred",
-            sa.Enum("y", "n", "subf", name="vernacular__preferred"),
+            sa.Boolean,
             nullable=True,
         ),
         sa.Column("source", sa.String(length=50), nullable=True),
-        sa.Column(
-            "enabled", sa.Enum("y", "n", name="vernacular__enabled"), nullable=False
-        ),
+        sa.Column("enabled", sa.Boolean, nullable=False),
         sa.Column("sort_order", sa.Integer(), nullable=True),
         sa.Column("updated_by", sa.Integer(), nullable=True),
         sa.Column("updated_on", sa.DateTime(), nullable=True),

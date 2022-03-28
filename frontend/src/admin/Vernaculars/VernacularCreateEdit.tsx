@@ -5,10 +5,10 @@ import {
   SelectInput,
   SimpleForm,
   TextInput,
+  BooleanInput,
 } from 'react-admin';
 import React, { FC } from 'react';
 import LanguageType from './LanguageType';
-import BooleanOptions from '../shared/BooleanOptions';
 
 export const VernacularCreateEdit: FC = (props) => (
   <SimpleForm {...props}>
@@ -21,22 +21,10 @@ export const VernacularCreateEdit: FC = (props) => (
       choices={LanguageType}
       validate={required()}
     />
-    <SelectInput
-      source="lang_pref"
-      choices={BooleanOptions}
-      validate={required()}
-    />
-    <SelectInput
-      source="preferred"
-      choices={BooleanOptions}
-      validate={required()}
-    />
+    <BooleanInput label="Lang Pref" source="lang_pref" validate={required()} />
+    <BooleanInput label="preferred" source="preferred" validate={required()} />
     <TextInput source="source" />
-    <SelectInput
-      source="enabled"
-      choices={BooleanOptions}
-      validate={required()}
-    />
+    <BooleanInput label="Enabled" source="enabled" validate={required()} />
     <NumberInput source="sort_order" />
   </SimpleForm>
 );
