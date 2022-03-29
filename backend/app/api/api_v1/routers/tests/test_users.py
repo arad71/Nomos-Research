@@ -4,10 +4,10 @@ from app.db.user import model
 def test_get_users(client, test_superuser, superuser_token_headers):
     response = client.get("/api/v1/users", headers=superuser_token_headers)
     assert response.status_code == 200
-    response_user = response.json()
+    response_list = response.json()
     # We don't need to compare the role here
-    response_user.pop("user_role")
-    assert response_user == [
+    response_list[0].pop("user_role")
+    assert response_list == [
         {
             "user_id": test_superuser.user_id,
             "email": test_superuser.email,
@@ -47,7 +47,9 @@ def test_edit_user(client, test_superuser, superuser_token_headers):
     assert response.status_code == 200
     new_user["user_id"] = test_superuser.user_id
     new_user.pop("password")
-    assert response.json() == new_user
+    response_json = response.json()
+    response_json.pop("user_role")
+    assert response_json == new_user
 
 
 def test_edit_user_not_found(client, test_db, superuser_token_headers):
@@ -75,6 +77,7 @@ def test_get_user(
         "user_id": test_user.user_id,
         "email": test_user.email,
         "is_active": bool(test_user.is_active),
+        "user_role": [],
     }
 
 

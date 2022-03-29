@@ -13,7 +13,6 @@ from app.db.user_role.schema import UserRoleCreate
 
 def init_db(db: Session) -> None:
     logger.info("Initializing database")
-    user_crud = UserCrud()
     # Create 1st Superuser
     password = settings.FIRST_SUPER_ADMIN_PASSWORD
     user = ensure_user(
