@@ -25,17 +25,13 @@ def assign_user_role(
             Role.SUPER_ADMIN["name"],
         ],
     ),
-) -> Any:
+) -> UserRole:
     """
     Assign a role to a user after creation of a user
     """
-    user_role = UserRoleCrud.get_by_user_id(db, user_id=user_role_in.user_id)
-    if user_role:
-        raise HTTPException(
-            status_code=409,
-            detail="This user has already been assigned a role.",
-        )
-    user_role = UserRoleCrud.create_item(db, item=user_role_in)
+    user_role = UserRoleCrud.get_by_ids(db, user_id=user_role_in.user_id, role_id=user_role_in.role_id)
+    if user_role is None:
+        user_role = UserRoleCrud.create_item(db, item=user_role_in)
     return user_role
 
 
