@@ -6,7 +6,7 @@ from pydantic import BaseSettings, PostgresDsn, validator
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "Nomos - Taxonomic Names Management Tool"
-    ENVIRONMENT: Optional[str]
+    ENVIRONMENT: str
     DEFAULT_PAGE_SIZE: int = 10
 
     FIRST_SUPER_ADMIN_EMAIL: str = "admin@taxman.com"
