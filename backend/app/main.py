@@ -72,7 +72,7 @@ app.include_router(
 app.include_router(
     user_roles_router,
     prefix=API_V1_URL,
-    tags=["roles"],
+    tags=["user-roles"],
     dependencies=[Depends(get_current_active_user)],
 )
 
