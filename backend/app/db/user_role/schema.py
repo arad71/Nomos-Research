@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from app.db.role.schema import Role
 
 # Shared properties
+from app.db.user_role.constants import TABLE_DESCRIPTION
 
 
 class UserRoleBase(BaseModel):
@@ -18,21 +19,14 @@ class UserRoleCreate(UserRoleBase):
 
 
 # Properties to receive via API on update
-class UserRoleUpdate(BaseModel):
-    role_id: int
+class UserRoleEdit(BaseModel):
+    pass
 
 
-class UserRoleInDBBase(UserRoleBase):
+class UserRole(UserRoleBase):
+    user_role_id: int
     role: Role
 
     class Config:
         orm_mode = True
-
-
-# Additional properties to return via API
-class UserRole(UserRoleInDBBase):
-    pass
-
-
-class UserRoleInDB(UserRoleInDBBase):
-    pass
+        schema_extra = {"description": TABLE_DESCRIPTION}

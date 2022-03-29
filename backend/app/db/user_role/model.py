@@ -6,17 +6,16 @@ from app.db.session import Base
 
 class UserRole(Base):
     __tablename__ = "user_role"
+    user_role_id = Column(Integer, primary_key=True)
     user_id = Column(
         Integer,
         ForeignKey("user.user_id"),
-        primary_key=True,
         nullable=False,
         autoincrement=False,
     )
     role_id = Column(
         Integer,
         ForeignKey("role.role_id"),
-        primary_key=True,
         nullable=False,
         autoincrement=False,
     )

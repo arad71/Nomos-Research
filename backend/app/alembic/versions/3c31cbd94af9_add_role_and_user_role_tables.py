@@ -33,6 +33,7 @@ def upgrade():
     op.create_index(op.f("ix_role_name"), "role", ["name"], unique=False)
     op.create_table(
         "user_role",
+        sa.Column("user_role_id", sa.Integer(), nullable=False),
         sa.Column("user_id", sa.Integer(), nullable=False),
         sa.Column("role_id", sa.Integer(), nullable=False),
         sa.ForeignKeyConstraint(
@@ -43,7 +44,7 @@ def upgrade():
             ["user_id"],
             ["user.user_id"],
         ),
-        sa.PrimaryKeyConstraint("user_id", "role_id"),
+        sa.PrimaryKeyConstraint("user_role_id"),
     )
     op.create_unique_constraint("unique_user_role", "user_role", ["user_id", "role_id"])
     op.drop_column("user", "is_superuser")
