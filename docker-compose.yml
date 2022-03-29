@@ -38,6 +38,7 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-password}
       DB_PORT: ${DB_PORT:-5432}
       DB_NAME: ${DB_NAME:-postgres}
+      ENVIRONMENT: ${ENVIRONMENT:-"local"}
       DATABASE_URL: 'postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-password}@${DB_HOST:-postgres}:${DB_PORT:-5432}/${DB_NAME:-postgres}'
     depends_on:
       - "postgres"
