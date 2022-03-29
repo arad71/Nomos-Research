@@ -4,6 +4,10 @@ import restDataProvider from 'ra-data-rest-client';
 import { BACKEND_URL } from '../config';
 import authProvider from './authProvider';
 import MyLoginPage from '../views/NewLogin';
+import MyLayout from '../MyLayout';
+import Dashboard from '../Dashboard';
+import ArticleIcon from '@material-ui/icons/Article';
+import BookIcon from '@material-ui/icons/Book';
 
 import { UserList, UserShow, UserEdit, UserCreate } from './Users';
 import {
@@ -104,6 +108,8 @@ export const Admin: FC = () => {
   return (
     <ReactAdmin
       loginPage={MyLoginPage}
+      dashboard={Dashboard}
+      layout={MyLayout}
       authProvider={authProvider}
       dataProvider={dataProvider}
     >
@@ -179,6 +185,7 @@ export const Admin: FC = () => {
             show={TaxonNameShow}
             edit={TaxonNameEdit}
             create={TaxonNameCreate}
+            icon={BookIcon}
           />
         ) : null,
         permissions === 'admin' ? (
