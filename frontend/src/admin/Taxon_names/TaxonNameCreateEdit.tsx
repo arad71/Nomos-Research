@@ -6,10 +6,11 @@ import {
   SelectInput,
   SimpleForm,
   TextInput,
+  BooleanInput,
+  NullableBooleanInput,
 } from 'react-admin';
 
 import React, { FC } from 'react';
-import BooleanOptions from '../shared/BooleanOptions';
 import NaturalisedStatus from './NaturalisedStatus';
 
 export const TaxonNameCreateEdit: FC = (props) => (
@@ -45,11 +46,7 @@ export const TaxonNameCreateEdit: FC = (props) => (
       <SelectInput optionText="publication_name" />
     </ReferenceInput>
     <TextInput source="volume_information" />
-    <SelectInput
-      source="is_current"
-      choices={BooleanOptions}
-      validate={required()}
-    />
+    <BooleanInput label="Current" source="is_current" validate={required()} />
     <TextInput source="origin" />
     <TextInput source="informal" />
     <NumberInput source="form_desc_yr" />
@@ -58,9 +55,9 @@ export const TaxonNameCreateEdit: FC = (props) => (
     <TextInput multiline source="comments" />
     <TextInput source="contributed_by" />
     <DateTimeInput source="contributed_on" />
-    <SelectInput
+    <BooleanInput
+      label="Validated"
       source="validated"
-      choices={BooleanOptions}
       validate={[required()]}
     />
     <TextInput source="source" />
@@ -70,7 +67,10 @@ export const TaxonNameCreateEdit: FC = (props) => (
     <TextInput source="vernacular" />
     <TextInput source="editor" />
     <SelectInput source="naturalised_status" choices={NaturalisedStatus} />
-    <SelectInput source="naturalised_certainty" choices={BooleanOptions} />
+    <NullableBooleanInput
+      label="Naturalised Certainty"
+      source="naturalised_certainty"
+    />
     <TextInput source="is_eradicated" />
     <TextInput multiline source="naturalised_comments" />
     <NumberInput source="linear_sequence" />

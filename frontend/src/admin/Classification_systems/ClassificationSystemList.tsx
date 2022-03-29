@@ -8,6 +8,7 @@ import {
   NumberField,
   ReferenceField,
   TextField,
+  BooleanField,
 } from 'react-admin';
 import FullNameField from '../shared/FullNameField';
 
@@ -17,7 +18,7 @@ export const ClassificationSystemList: FC = (props) => (
       <NumberField source="id" />
       <TextField source="class_desc" />
       <TextField source="class_type" />
-      <TextField source="preferred" />
+      <BooleanField source="preferred" />
       <TextField source="sort_order" />
       <ReferenceField source="created_by" reference="users">
         <FullNameField source="last_name" />

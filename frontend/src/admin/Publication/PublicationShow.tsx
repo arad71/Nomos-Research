@@ -3,12 +3,11 @@ import {
   NumberField,
   ReferenceField,
   RichTextField,
-  SelectField,
   Show,
   SimpleShowLayout,
   TextField,
+  BooleanField,
 } from 'react-admin';
-import BadPublicationOptions from './BadPublicationOptions';
 import Aside from '../shared/Aside';
 
 export const PublicationShow: FC = (props) => {
@@ -16,7 +15,7 @@ export const PublicationShow: FC = (props) => {
     <Show aside={<Aside />} {...props}>
       <SimpleShowLayout>
         <TextField source="publication" />
-        <SelectField source="bad_publication" choices={BadPublicationOptions} />
+        <BooleanField source="bad_publication" />
         <TextField source="publication_name" />
         <TextField source="doi" />
         <TextField source="title" />

@@ -20,10 +20,10 @@ class VernacularBase(BaseModel):
     taxon_name_id: int = Field(description=TAXON_NAME_ID)
     vernacular: str = Field(description=VERNACULAR)
     language: enums.Language = Field(description=LANGUAGE)
-    lang_pref: Optional[enums.LangPref] = Field(description=LANG_PREF)
-    preferred: Optional[enums.Preferred] = Field(description=PREFERRED)
+    lang_pref: Optional[bool] = Field(description=LANG_PREF)
+    preferred: Optional[bool] = Field(description=PREFERRED)
     source: Optional[str] = Field(description=SOURCE)
-    enabled: enums.Enabled
+    enabled: bool
     sort_order: Optional[int]
 
 

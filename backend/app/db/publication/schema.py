@@ -3,7 +3,6 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 from app.db.author.schema import Author
-from app.db.publication import enums
 from app.db.publication.constants import (
     BAD_PUBLICATION,
     PUBLICATION_ID,
@@ -14,7 +13,7 @@ from app.db.schemas import TableBase
 
 class PublicationBase(BaseModel):
     publication: str
-    bad_publication: Optional[enums.BadPublication] = Field(description=BAD_PUBLICATION)
+    bad_publication: Optional[bool] = Field(description=BAD_PUBLICATION)
     publication_name: Optional[str]
     doi: Optional[str]
     title: Optional[str]

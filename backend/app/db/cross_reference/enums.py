@@ -11,9 +11,3 @@ class CrossReferenceType(str, Enum):
     forma = "forma"
     err = "err"
     isy = "isy"
-
-
-class Active(str, Enum):
-    y = "y"
-    n = "n"
-    subf = "subf."

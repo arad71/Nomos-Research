@@ -69,7 +69,7 @@ def upgrade():
         ),
         sa.Column(
             "preferred",
-            sa.Enum("y", "n", "subf", name="classification_system__preferred"),
+            sa.Boolean,
             nullable=True,
         ),
         sa.Column("sort_order", sa.Integer(), nullable=True),
@@ -121,7 +121,7 @@ def upgrade():
         sa.Column("publication", sa.Text(), nullable=False),
         sa.Column(
             "bad_publication",
-            sa.Enum("y", "n", "subf", name="publication__bad_publication"),
+            sa.Boolean,
             nullable=True,
         ),
         sa.Column("publication_name", sa.Text(), nullable=True),
@@ -283,7 +283,7 @@ def upgrade():
         sa.Column("publication_year", sa.Integer(), nullable=True),
         sa.Column(
             "is_current",
-            sa.Enum("y", "n", "subf", name="taxon_name__is_current"),
+            sa.Boolean,
             nullable=False,
         ),
         sa.Column("origin", sa.String(length=1), nullable=True),
@@ -296,7 +296,7 @@ def upgrade():
         sa.Column("contributed_on", sa.DateTime(), nullable=True),
         sa.Column(
             "validated",
-            sa.Enum("y", "n", "subf", name="taxon_name__validated"),
+            sa.Boolean,
             nullable=False,
         ),
         sa.Column("source", sa.String(length=10), nullable=True),
@@ -312,7 +312,7 @@ def upgrade():
         ),
         sa.Column(
             "naturalised_certainty",
-            sa.Enum("y", "n", name="taxon_name__naturalised_certainty"),
+            sa.Boolean,
             nullable=True,
         ),
         sa.Column("is_eradicated", sa.String(length=1), nullable=True),
@@ -419,13 +419,15 @@ def upgrade():
         ),
         sa.Column(
             "active",
-            sa.Enum("y", "n", "subf", name="cross_reference__active"),
+            sa.Boolean,
             nullable=False,
         ),
         sa.Column("authorised_by", sa.String(length=60), nullable=True),
+        sa.Column("authorised_yr", sa.Integer(), nullable=True),
+        sa.Column("authorised_mn", sa.Integer(), nullable=True),
+        sa.Column("authorised_dy", sa.Integer(), nullable=True),
         sa.Column("comments", sa.String(length=1000), nullable=True),
         sa.Column("notes", sa.String(length=3000), nullable=True),
-        sa.Column("authorised_date", sa.DateTime(), nullable=True),
         sa.Column("updated_by", sa.Integer(), nullable=True),
         sa.Column("updated_on", sa.DateTime(), nullable=True),
         sa.Column("created_by", sa.Integer(), nullable=True),
@@ -449,15 +451,27 @@ def upgrade():
         sa.PrimaryKeyConstraint("cross_reference_id"),
     )
     op.create_index(
-        op.f("ix_cross_reference_authorised_date"),
-        "cross_reference",
-        ["authorised_date"],
-        unique=False,
-    )
-    op.create_index(
         op.f("ix_cross_reference_cross_reference_id"),
         "cross_reference",
         ["cross_reference_id"],
+        unique=False,
+    )
+    op.create_index(
+        op.f("ix_cross_reference_authorised_dy"),
+        "cross_reference",
+        ["authorised_dy"],
+        unique=False,
+    )
+    op.create_index(
+        op.f("ix_cross_reference_authorised_mn"),
+        "cross_reference",
+        ["authorised_mn"],
+        unique=False,
+    )
+    op.create_index(
+        op.f("ix_cross_reference_authorised_yr"),
+        "cross_reference",
+        ["authorised_yr"],
         unique=False,
     )
     op.create_table(
@@ -552,18 +566,16 @@ def upgrade():
         ),
         sa.Column(
             "lang_pref",
-            sa.Enum("y", "n", "subf", name="vernacular__lang_pref"),
+            sa.Boolean,
             nullable=True,
         ),
         sa.Column(
             "preferred",
-            sa.Enum("y", "n", "subf", name="vernacular__preferred"),
+            sa.Boolean,
             nullable=True,
         ),
         sa.Column("source", sa.String(length=50), nullable=True),
-        sa.Column(
-            "enabled", sa.Enum("y", "n", name="vernacular__enabled"), nullable=False
-        ),
+        sa.Column("enabled", sa.Boolean, nullable=False),
         sa.Column("sort_order", sa.Integer(), nullable=True),
         sa.Column("updated_by", sa.Integer(), nullable=True),
         sa.Column("updated_on", sa.DateTime(), nullable=True),
@@ -610,7 +622,13 @@ def downgrade():
         op.f("ix_cross_reference_cross_reference_id"), table_name="cross_reference"
     )
     op.drop_index(
-        op.f("ix_cross_reference_authorised_date"), table_name="cross_reference"
+        op.f("ix_cross_reference_authorised_yr"), table_name="cross_reference"
+    )
+    op.drop_index(
+        op.f("ix_cross_reference_authorised_mn"), table_name="cross_reference"
+    )
+    op.drop_index(
+        op.f("ix_cross_reference_authorised_dy"), table_name="cross_reference"
     )
     op.drop_table("cross_reference")
     op.drop_index(op.f("ix_citation_citation_id"), table_name="citation")
