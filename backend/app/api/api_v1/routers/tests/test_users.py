@@ -4,12 +4,14 @@ from app.db.user import model
 def test_get_users(client, test_superuser, superuser_token_headers):
     response = client.get("/api/v1/users", headers=superuser_token_headers)
     assert response.status_code == 200
-    assert response.json() == [
+    response_user = response.json()
+    # We don't need to compare the role here
+    response_user.pop("user_role")
+    assert response_user == [
         {
             "user_id": test_superuser.user_id,
             "email": test_superuser.email,
             "is_active": test_superuser.is_active,
-            "is_superuser": test_superuser.is_superuser,
         }
     ]
 
@@ -32,7 +34,6 @@ def test_edit_user(client, test_superuser, superuser_token_headers):
     new_user = {
         "email": "newemail@email.com",
         "is_active": False,
-        "is_superuser": True,
         "first_name": "Joe",
         "last_name": "Smith",
         "password": "new_password",
@@ -53,7 +54,6 @@ def test_edit_user_not_found(client, test_db, superuser_token_headers):
     new_user = {
         "email": "newemail@email.com",
         "is_active": False,
-        "is_superuser": False,
         "password": "new_password",
     }
     response = client.put(
@@ -75,7 +75,6 @@ def test_get_user(
         "user_id": test_user.user_id,
         "email": test_user.email,
         "is_active": bool(test_user.is_active),
-        "is_superuser": test_user.is_superuser,
     }
 
 
@@ -103,7 +102,12 @@ def test_unauthenticated_routes(client):
 
 
 def test_unauthorized_routes(client, user_token_headers):
-    response = client.get("/api/v1/users", headers=user_token_headers)
-    assert response.status_code == 403
-    response = client.get("/api/v1/users/123", headers=user_token_headers)
+    new_user = {
+        "email": "newemail@email.com",
+        "is_active": False,
+        "first_name": "Joe",
+        "last_name": "Smith",
+        "password": "new_password",
+    }
+    response = client.post("/api/v1/users", json=new_user, headers=user_token_headers)
     assert response.status_code == 403

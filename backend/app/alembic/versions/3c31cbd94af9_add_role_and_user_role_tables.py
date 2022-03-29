@@ -1,0 +1,60 @@
+"""Add Role and User Role tables.
+
+Revision ID: 3c31cbd94af9
+Revises: 1f341cfdfd41
+Create Date: 2022-03-16 06:27:35.522070-07:00
+
+"""
+import sqlalchemy as sa
+
+from alembic import op
+
+# revision identifiers, used by Alembic.
+revision = "3c31cbd94af9"
+down_revision = "1f341cfdfd41"
+branch_labels = None
+depends_on = None
+
+
+def upgrade():
+    op.create_table(
+        "role",
+        sa.Column("role_id", sa.Integer(), nullable=False),
+        sa.Column("name", sa.String(length=100), nullable=False),
+        sa.Column("description", sa.Text(), nullable=True),
+        sa.PrimaryKeyConstraint("role_id"),
+    )
+    op.create_table_comment(
+        "role",
+        "List of roles available in the system.",
+        existing_comment=None,
+        schema=None,
+    )
+    op.create_index(op.f("ix_role_name"), "role", ["name"], unique=False)
+    op.create_table(
+        "user_role",
+        sa.Column("user_id", sa.Integer(), nullable=False),
+        sa.Column("role_id", sa.Integer(), nullable=False),
+        sa.ForeignKeyConstraint(
+            ["role_id"],
+            ["role.role_id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["user_id"],
+            ["user.user_id"],
+        ),
+        sa.PrimaryKeyConstraint("user_id", "role_id"),
+    )
+    op.create_unique_constraint("unique_user_role", "user_role", ["user_id", "role_id"])
+    op.drop_column("user", "is_superuser")
+
+
+def downgrade():
+    op.drop_constraint("unique_user_role", "user_role", type_="unique")
+    op.add_column(
+        "user",
+        sa.Column("is_superuser", sa.BOOLEAN(), autoincrement=False, nullable=False),
+    )
+    op.drop_table("user_role")
+    op.drop_index(op.f("ix_role_name"), table_name="role")
+    op.drop_table("role")

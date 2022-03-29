@@ -21,21 +21,17 @@ const authProvider = {
         if (response.status < 200 || response.status >= 300) {
           throw new Error(response.statusText);
         }
-        console.log(response);
         return response.json();
       })
       .then(({ access_token: accessToken }) => {
         const decodedToken: any = decodeJwt(accessToken);
-        if (decodedToken.permissions !== 'admin') {
-          throw new Error('Forbidden');
-        }
         localStorage.setItem('token', accessToken);
-        localStorage.setItem('permissions', decodedToken.permissions);
+        localStorage.setItem('scopes', decodedToken.scopes);
       });
   },
   logout: () => {
     localStorage.removeItem('token');
-    localStorage.removeItem('permissions');
+    localStorage.removeItem('scopes');
     localStorage.removeItem('username');
     return Promise.resolve();
   },
@@ -53,7 +49,7 @@ const authProvider = {
   checkAuth: () =>
     localStorage.getItem('token') ? Promise.resolve() : Promise.reject(),
   getPermissions: () => {
-    const role = localStorage.getItem('permissions');
+    const role = localStorage.getItem('scopes');
     return role ? Promise.resolve(role) : Promise.reject();
   },
 };

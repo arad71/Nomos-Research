@@ -7,13 +7,16 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import create_database, database_exists, drop_database
 
 from app.core import config, security
+from app.db.role.constants import Role
+from app.db.role.model import Role as RoleModel
 from app.db.session import Base, get_db
 from app.db.user.model import User
+from app.db.user_role.model import UserRole as UserRoleModel
 from app.main import app
 
 
 def get_test_db_url() -> str:
-    return f"{config.SQLALCHEMY_DATABASE_URI}_test"
+    return f"{config.settings.SQLALCHEMY_DATABASE_URI}_test"
 
 
 @pytest.fixture
@@ -25,6 +28,7 @@ def test_db():
     # Connect to the test database
     engine = create_engine(
         get_test_db_url(),
+        pool_pre_ping=True,
     )
 
     connection = engine.connect()
@@ -125,9 +129,24 @@ def test_superuser(test_db) -> User:
     user = User(
         email="fakeadmin@email.com",
         hashed_password=get_password_hash(),
-        is_superuser=True,
     )
     test_db.add(user)
+    test_db.commit()
+    test_db.refresh(user)
+    role = RoleModel(
+        name=Role.SUPER_ADMIN["name"],
+        description=Role.SUPER_ADMIN["description"]
+    )
+
+    test_db.add(role)
+    test_db.commit()
+    test_db.refresh(role)
+
+    user_role = UserRoleModel(
+       role_id=role.role_id,
+       user_id=user.user_id
+    )
+    test_db.add(user_role)
     test_db.commit()
     return user
 
