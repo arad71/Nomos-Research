@@ -23,13 +23,14 @@ informal_groups_router = r = APIRouter(prefix="/informal_groups")
 async def informal_group_list(
     response: Response,
     range: Optional[str] = RangeQueryParameter,
+    sort: Optional[str] = None,
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):
     """
     Get all informal_groups
     """
-    informal_groups = InformalGroupCrud.get_items(db, range=range)
+    informal_groups = InformalGroupCrud.get_items(db, range=range, sort=sort)
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = f"0-9/{InformalGroupCrud.get_items_count(db)}"
     return informal_groups
