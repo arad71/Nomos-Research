@@ -9,6 +9,7 @@ import {
   ReferenceField,
   TextField,
   useRecordContext,
+  BooleanField,
 } from 'react-admin';
 
 const FullNameField = (props: any) => {
@@ -32,10 +33,10 @@ export const VernacularList: FC = (props) => (
         <TextField source="scientific_name" />
       </ReferenceField>
       <TextField source="language" />
-      <TextField source="lang_pref" />
-      <TextField source="preferred" />
+      <BooleanField source="lang_pref" />
+      <BooleanField source="preferred" />
       <TextField source="source" />
-      <TextField source="enabled" />
+      <BooleanField source="enabled" />
       <NumberField source="sort_order" />
       <ReferenceField source="created_by" reference="users">
         <FullNameField source="last_name" />

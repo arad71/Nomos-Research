@@ -270,9 +270,23 @@ def upgrade():
     )
     op.alter_column(
         "cross_reference",
-        "authorised_date",
-        existing_type=postgresql.TIMESTAMP(),
-        comment="The date of authorisation",
+        "authorised_yr",
+        existing_type=sa.INTEGER(),
+        comment="The year of authorisation",
+        existing_nullable=True,
+    )
+    op.alter_column(
+        "cross_reference",
+        "authorised_mn",
+        existing_type=sa.INTEGER(),
+        comment="The month of authorisation",
+        existing_nullable=True,
+    )
+    op.alter_column(
+        "cross_reference",
+        "authorised_dy",
+        existing_type=sa.INTEGER(),
+        comment="The day of authorisation",
         existing_nullable=True,
     )
     op.alter_column(

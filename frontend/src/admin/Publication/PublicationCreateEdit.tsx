@@ -6,15 +6,15 @@ import {
   SelectInput,
   SimpleForm,
   TextInput,
+  NullableBooleanInput,
 } from 'react-admin';
 import React, { FC } from 'react';
-import BadPublicationOptions from './BadPublicationOptions';
 import RichTextInput from 'ra-input-rich-text';
 
 export const PublicationCreateEdit: FC = (props) => (
   <SimpleForm {...props}>
     <TextInput source="publication" validate={[required()]} />
-    <SelectInput source="bad_publication" choices={BadPublicationOptions} />
+    <NullableBooleanInput label="Bad Publication" source="bad_publication" />
     <TextInput source="publication_name" />
     <TextInput source="doi" />
     <TextInput source="title" />

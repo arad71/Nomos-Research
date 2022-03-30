@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Boolean, Column, Integer, String
 from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy.types import Enum
 
@@ -38,7 +38,7 @@ class ClassificationSystem(Base, TableMixin):
         doc=CLASS_TYPE,
     )
     preferred = Column(
-        Enum(enums.ClassificationPreferred, name=__tablename__ + "__preferred"),
+        Boolean,
         comment=PREFERRED,
         doc=PREFERRED,
     )
