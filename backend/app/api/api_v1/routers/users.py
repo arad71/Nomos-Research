@@ -19,13 +19,14 @@ users_router = r = APIRouter(prefix="/users")
 async def users_list(
     response: Response,
     range: Optional[str] = RangeQueryParameter,
+    sort: Optional[str] = None,
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):
     """
     Get all users
     """
-    users = UserCrud.get_items(db, range=range)
+    users = UserCrud.get_items(db, range=range, sort=sort)
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = f"0-9/{UserCrud.get_items_count(db)}"
     return users
