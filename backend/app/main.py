@@ -89,7 +89,7 @@ app.include_router(
 app.include_router(
     hierarchies_router,
     prefix="/api/v1",
-    tags=["hierachies"],
+    tags=["hierarchies"],
     dependencies=[Depends(get_current_active_user)],
 )
 
