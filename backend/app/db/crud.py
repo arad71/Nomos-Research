@@ -30,16 +30,30 @@ class Crud:
 
     @classmethod
     def get_items(
-        cls, db: Session, range: str = f"[0,{DEFAULT_PAGE_SIZE}]", sort: str = None
+        cls,
+        db: Session,
+        range: str = f"[0,{DEFAULT_PAGE_SIZE}]",
+        sort: str = None,
+        list_filter: str = None,
     ) -> t.List[Base]:
         limit, skip = cls.get_skip_and_limit(range)
         query = db.query(cls.model)
+
         if sort:
             sort_by, sort_dir = cls.get_sort(sort)
             direction = desc if sort_dir == "DESC" else asc
             if hasattr(cls.model, sort_by):
                 query = query.order_by(direction(getattr(cls.model, sort_by)))
 
+        if list_filter:
+            filter_items = json.loads(list_filter)
+            for column in filter_items:
+                if hasattr(cls.model, column) and filter_items[column]:
+                    query = query.filter(
+                        getattr(cls.model, column).like(
+                            "%" + filter_items[column] + "%"
+                        )
+                    )
         return query.offset(skip).limit(limit).all()
 
     @classmethod
