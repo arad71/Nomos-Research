@@ -20,13 +20,16 @@ async def taxon_name_list(
     response: Response,
     range: Optional[str] = RangeQueryParameter,
     sort: Optional[str] = None,
+    filter: Optional[str] = None,
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):
     """
     Get all taxon_names
     """
-    taxon_names = TaxonNameCrud.get_items(db, range=range, sort=sort)
+    taxon_names = TaxonNameCrud.get_items(
+        db, range=range, sort=sort, list_filter=filter
+    )
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = f"0-9/{TaxonNameCrud.get_items_count(db)}"
     return taxon_names
