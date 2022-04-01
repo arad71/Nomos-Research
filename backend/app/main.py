@@ -107,7 +107,7 @@ app.include_router(
 app.include_router(
     hierarchies_router,
     prefix=API_V1_URL,
-    tags=["hierachies"],
+    tags=["hierarchies"],
     dependencies=[Depends(get_current_active_user)],
 )
 
