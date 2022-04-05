@@ -4,7 +4,23 @@ import jwt
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/token")
+from app.db.role.constants import Role
+
+
+def get_scopes() -> dict:
+    scopes = {"me": "Read information about the current user."}
+    for role_name, role_value in Role.__dict__.items():
+        if role_name[:2] != "__":
+            scopes.update({role_value["name"]: role_value["description"]})
+    print("*******scopes")
+    print(scopes)
+    return scopes
+
+
+oauth2_scheme = OAuth2PasswordBearer(
+    tokenUrl="/api/token",
+    scopes=get_scopes(),
+)
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

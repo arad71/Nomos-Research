@@ -15,11 +15,14 @@ class UserCrud(crud.Crud):
 
     @classmethod
     def get_user_by_email(cls, db: Session, email: str) -> schema.UserBase:
-        return db.query(model).filter(model.email == email).first()
+        return db.query(model).filter(model.email == email).one_or_none()
 
     @classmethod
     def create_item(
-        cls, db: Session, user: schema.UserCreate, raise_exception: bool = True
+        cls,
+        db: Session,
+        user: schema.UserCreate,
+        raise_exception: bool = True,
     ):
         hashed_password = get_password_hash(user.password)
         db_user = model(

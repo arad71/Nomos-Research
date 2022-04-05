@@ -8,8 +8,6 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import create_database, database_exists, drop_database
 
 from app.core import config, security
-from app.db.role.constants import Role
-from app.db.role.model import Role as RoleModel
 from app.db.author.model import Author
 from app.db.citation.model import Citation
 from app.db.classification_system.model import ClassificationSystem
@@ -18,6 +16,8 @@ from app.db.hierarchy.model import Hierarchy
 from app.db.informal_group.model import InformalGroup
 from app.db.kingdom.model import Kingdom
 from app.db.publication.model import Publication
+from app.db.role.constants import Role
+from app.db.role.model import Role as RoleModel
 from app.db.session import Base, get_db
 from app.db.taxon_name.model import TaxonName
 from app.db.taxon_rank.model import TaxonRank
