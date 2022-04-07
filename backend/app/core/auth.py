@@ -1,4 +1,4 @@
-from typing import Any, Callable, Optional, Sequence
+from typing import Any, Callable, Optional, Sequence, Union
 
 import jwt
 from fastapi import Depends, HTTPException, Security, status
@@ -13,6 +13,7 @@ from app.core import security
 from app.db import session
 from app.db.role.constants import Role
 from app.db.user.crud import UserCrud
+from app.db.user.model import User
 
 
 async def get_current_user(
@@ -92,7 +93,7 @@ async def get_current_active_superuser(
     return current_user
 
 
-def authenticate_user(db, email: str, password: str) -> model.User | False:
+def authenticate_user(db, email: str, password: str) -> Union[bool, User]:
     user = UserCrud.get_user_by_email(db, email)
     if not user:
         return False
