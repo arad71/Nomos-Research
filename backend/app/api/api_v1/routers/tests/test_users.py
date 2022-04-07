@@ -114,3 +114,7 @@ def test_unauthorized_routes(client, user_token_headers):
     }
     response = client.post("/api/v1/users", json=new_user, headers=user_token_headers)
     assert response.status_code == 403
+    response = client.put("/api/v1/users/1", json=new_user, headers=user_token_headers)
+    assert response.status_code == 403
+    response = client.delete("/api/v1/users/123", headers=user_token_headers)
+    assert response.status_code == 403
