@@ -37,7 +37,9 @@ class UserCrud(crud.Crud):
         return db_user
 
     @classmethod
-    def edit_item(cls, db: Session, user_id: int, user: schema.UserEdit, **kwargs) -> User:
+    def edit_item(
+        cls, db: Session, user_id: int, user: schema.UserEdit, **kwargs
+    ) -> User:
         db_user = UserCrud.get_item(db, user_id)
         if not db_user:
             raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")

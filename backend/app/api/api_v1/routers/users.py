@@ -105,7 +105,11 @@ async def user_edit(
     """
     Update existing user
     """
-    return UserCrud.edit_item(db, user_id, user, )
+    return UserCrud.edit_item(
+        db,
+        user_id,
+        user,
+    )
 
 
 @r.delete(
