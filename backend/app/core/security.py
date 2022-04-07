@@ -9,7 +9,7 @@ from app.db.role.constants import Role
 
 
 def get_scopes() -> dict:
-    scopes = {"me": "Read information about the current user."}
+    scopes = {}
     for role_name, role_value in Role.__dict__.items():
         # skip private methods and properties that have been defined by the object being a dict
         if role_name[:2] != "__":
