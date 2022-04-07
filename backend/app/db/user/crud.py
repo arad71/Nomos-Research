@@ -5,7 +5,6 @@ import app.db.crud as crud
 import app.db.user.schema as schema
 from app.core.security import get_password_hash
 from app.db.user.model import User
-from app.db.user.model import User as model
 
 
 class UserCrud(crud.Crud):
@@ -14,8 +13,8 @@ class UserCrud(crud.Crud):
     name = "User"
 
     @classmethod
-    def get_user_by_email(cls, db: Session, email: str) -> schema.UserBase:
-        return db.query(model).filter(model.email == email).one_or_none()
+    def get_user_by_email(cls, db: Session, email: str) -> User:
+        return db.query(User).filter(User.email == email).one_or_none()
 
     @classmethod
     def create_item(
@@ -25,7 +24,7 @@ class UserCrud(crud.Crud):
         raise_exception: bool = True,
     ):
         hashed_password = get_password_hash(user.password)
-        db_user = model(
+        db_user = User(
             first_name=user.first_name,
             last_name=user.last_name,
             email=user.email,
@@ -38,7 +37,7 @@ class UserCrud(crud.Crud):
         return db_user
 
     @classmethod
-    def edit_item(cls, db: Session, user_id: int, user: schema.UserEdit) -> schema.User:
+    def edit_item(cls, db: Session, user_id: int, user: schema.UserEdit, **kwargs) -> User:
         db_user = UserCrud.get_item(db, user_id)
         if not db_user:
             raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")

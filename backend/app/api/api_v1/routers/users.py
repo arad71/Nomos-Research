@@ -1,9 +1,9 @@
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, Request, Response, Security
+from fastapi import APIRouter, Depends, Response
 
 from app.api.dependencies.range_query import RangeQueryParameter
-from app.core.auth import get_current_active_user
+from app.core.auth import authorize, get_current_active_user
 from app.db.role.constants import Role
 from app.db.session import get_db
 from app.db.user.crud import UserCrud
@@ -16,6 +16,7 @@ users_router = r = APIRouter(prefix="/users")
     "",
     response_model=List[User],
     response_model_exclude_none=True,
+    dependencies=[authorize()],
 )
 async def users_list(
     response: Response,
@@ -23,7 +24,6 @@ async def users_list(
     sort: Optional[str] = None,
     filter: Optional[str] = None,
     db=Depends(get_db),
-    current_user: User = Depends(get_current_active_user),
 ):
     """
     Get all users
@@ -46,12 +46,13 @@ async def user_me(current_user: User = Depends(get_current_active_user)):
     "/{user_id}",
     response_model=User,
     response_model_exclude_none=True,
+    dependencies=[
+        authorize(),
+    ],
 )
 async def user_details(
-    request: Request,
     user_id: int,
     db=Depends(get_db),
-    current_user: User = Depends(get_current_active_user),
 ):
     """
     Get any user details
@@ -60,18 +61,22 @@ async def user_details(
     return user
 
 
-@r.post("", response_model=User, response_model_exclude_none=True)
+@r.post(
+    "",
+    response_model=User,
+    response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.APPLICATION_SUPPORT["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
 async def user_create(
-    request: Request,
     user: UserCreate,
     db=Depends(get_db),
-    current_user: User = Security(
-        get_current_active_user,
-        scopes=[
-            Role.APPLICATION_SUPPORT["name"],
-            Role.SUPER_ADMIN["name"],
-        ],
-    ),
 ):
     """
     Create a new user
@@ -79,38 +84,46 @@ async def user_create(
     return UserCrud.create_item(db, user)
 
 
-@r.put("/{user_id}", response_model=User, response_model_exclude_none=True)
+@r.put(
+    "/{user_id}",
+    response_model=User,
+    response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.APPLICATION_SUPPORT["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
 async def user_edit(
-    request: Request,
     user_id: int,
     user: UserEdit,
     db=Depends(get_db),
-    current_user: User = Security(
-        get_current_active_user,
-        scopes=[
-            Role.APPLICATION_SUPPORT["name"],
-            Role.SUPER_ADMIN["name"],
-        ],
-    ),
 ):
     """
     Update existing user
     """
-    return UserCrud.edit_item(db, user_id, user)
+    return UserCrud.edit_item(db, user_id, user, )
 
 
-@r.delete("/{user_id}", response_model=User, response_model_exclude_none=True)
+@r.delete(
+    "/{user_id}",
+    response_model=User,
+    response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.APPLICATION_SUPPORT["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
 async def user_delete(
-    request: Request,
     user_id: int,
     db=Depends(get_db),
-    current_user: User = Security(
-        get_current_active_user,
-        scopes=[
-            Role.APPLICATION_SUPPORT["name"],
-            Role.SUPER_ADMIN["name"],
-        ],
-    ),
 ):
     """
     Delete existing user

@@ -1,11 +1,11 @@
-import inspect
-from pprint import pprint
+from typing import Any, Callable, Optional, Sequence
 
 import jwt
 from fastapi import Depends, HTTPException, Security, status
 from fastapi.security import SecurityScopes
 from jwt import PyJWTError
 from loguru import logger
+from pydantic import ValidationError
 
 import app.db.user.model as model
 import app.db.user.schema as schema
@@ -19,9 +19,7 @@ async def get_current_user(
     security_scopes: SecurityScopes,
     db=Depends(session.get_db),
     token: str = Depends(security.oauth2_scheme),
-):
-    print(inspect.currentframe())
-    print(locals())
+) -> model.User:
     if security_scopes.scopes:
         authenticate_value = f'Bearer scope="{security_scopes.scope_str}"'
     else:
@@ -31,7 +29,6 @@ async def get_current_user(
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": authenticate_value},
     )
-    pprint(authenticate_value)
 
     try:
         payload = jwt.decode(
@@ -40,53 +37,62 @@ async def get_current_user(
         email: str = payload.get("sub")
         if email is None:
             raise credentials_exception
-        token_data = schema.TokenData(**payload)
-    except PyJWTError:
+        token_scopes = payload.get("scopes", [])
+        token_data = schema.TokenData(email=email, scopes=token_scopes)
+    except (PyJWTError, ValidationError):
         logger.error("Error Decoding Token", exc_info=True)
         raise credentials_exception
 
     user = UserCrud.get_user_by_email(db, email)
     if user is None:
         raise credentials_exception
-    if security_scopes.scopes and not token_data.scopes:
-        pprint("bar")
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Not enough permissions",
-            headers={"WWW-Authenticate": authenticate_value},
+
+    if security_scopes.scopes:
+        # Find which roles from the required scopes are included in the user's scopes
+        permission_intersection = set(security_scopes.scopes).intersection(
+            set(token_data.scopes)
         )
-    if security_scopes.scopes and token_data.scopes not in security_scopes.scopes:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Not enough permissions",
-            headers={"WWW-Authenticate": authenticate_value},
-        )
-    pprint("last")
+        if not permission_intersection:
+            logger.debug("Scope not granted", exc_info=True)
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Not enough permissions",
+                headers={"WWW-Authenticate": authenticate_value},
+            )
     return user
 
 
 async def get_current_active_user(
-    current_user: model.User = Security(
-        get_current_user,
-        scopes=[],
-    ),
-) -> schema.User:
+    current_user=Security(get_current_user, scopes=[], use_cache=False),
+) -> model.User:
     if not current_user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
 
 
-async def get_current_active_superuser(
-    current_user: model.User = Depends(get_current_user),
+def authorize(
+    scopes: Sequence[str] = None,
+    dependency: Optional[Callable[..., Any]] = get_current_active_user,
 ) -> model.User:
-    if not current_user.has_role(Role.SUPER_ADMIN):
-        raise HTTPException(
-            status_code=403, detail="The user doesn't have enough privileges"
-        )
+    """
+    Check the user is active and has required permissions (scopes) to accessible
+
+    Wrapper for FastAPI Security. If Security is used as a dependency directly it seems to fail due to cache. Wrapping it avoids this problem.
+    :param scopes: Security roles / scopes that the user needs
+    :param dependency: Dependency to check. Defaults to get_current_active_user
+
+    :return: User
+    """
+    return Security(dependency=dependency, scopes=scopes)
+
+
+async def get_current_active_superuser(
+    current_user: model.User = authorize(scopes=[Role.SUPER_ADMIN["name"]]),
+) -> model.User:
     return current_user
 
 
-def authenticate_user(db, email: str, password: str):
+def authenticate_user(db, email: str, password: str) -> model.User | False:
     user = UserCrud.get_user_by_email(db, email)
     if not user:
         return False

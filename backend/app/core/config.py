@@ -16,7 +16,7 @@ class Settings(BaseSettings):
 
     API_V1_STR: str = "/api/v1"
     SECRET_KEY: str = "super_secret"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24
 
     DB_HOST: str
     DB_USER: str
