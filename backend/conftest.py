@@ -193,14 +193,14 @@ def test_author(test_db, test_superuser) -> Author:
 
     now = datetime.datetime.utcnow()
     author = Author(
-        author = "Test Author",
-        surname = "Author",
-        first_names = "Test",
-        initials = "TA",
-        updated_by = test_superuser.user_id,
-        updated_on = now,
-        created_by = test_superuser.user_id,
-        created_on = now
+        author="Test Author",
+        surname="Author",
+        first_names="Test",
+        initials="TA",
+        updated_by=test_superuser.user_id,
+        updated_on=now,
+        created_by=test_superuser.user_id,
+        created_on=now
     )
     test_db.add(author)
     test_db.commit()
@@ -215,14 +215,14 @@ def test_citation(test_db, test_taxon_name, test_author, test_superuser) -> Cita
 
     now = datetime.datetime.utcnow()
     citation = Citation(
-        taxon_name_id = test_taxon_name.taxon_name_id,
-        author_id = test_author.author_id,
-        author_type = "current",
-        author_order = 0,
-        updated_by = test_superuser.user_id,
-        updated_on = now,
-        created_by = test_superuser.user_id,
-        created_on = now
+        taxon_name_id=test_taxon_name.taxon_name_id,
+        author_id=test_author.author_id,
+        author_type="current",
+        author_order=0,
+        updated_by=test_superuser.user_id,
+        updated_on=now,
+        created_by=test_superuser.user_id,
+        created_on=now
     )
     test_db.add(citation)
     test_db.commit()
@@ -237,13 +237,13 @@ def test_classification_system(test_db, test_superuser) -> ClassificationSystem:
 
     now = datetime.datetime.utcnow()
     classification_system = ClassificationSystem(
-        class_desc = "CLASS_DESC",
-        class_type = "informal",
-        preferred = True,
-        updated_by = test_superuser.user_id,
-        updated_on = now,
-        created_by = test_superuser.user_id,
-        created_on = now
+        class_desc="CLASS_DESC",
+        class_type="informal",
+        preferred=True,
+        updated_by=test_superuser.user_id,
+        updated_on=now,
+        created_by=test_superuser.user_id,
+        created_on=now
     )
     test_db.add(classification_system)
     test_db.commit()
@@ -258,13 +258,13 @@ def test_cross_reference(test_db, test_taxon_name, test_superuser) -> CrossRefer
 
     now = datetime.datetime.utcnow()
     cross_reference = CrossReference(
-        old_name_id = test_taxon_name.taxon_name_id,
-        cross_reference_type = "mis",
-        active = True,
-        updated_by = test_superuser.user_id,
-        updated_on = now,
-        created_by = test_superuser.user_id,
-        created_on = now
+        old_name_id=test_taxon_name.taxon_name_id,
+        cross_reference_type="mis",
+        active=True,
+        updated_by=test_superuser.user_id,
+        updated_on=now,
+        created_by=test_superuser.user_id,
+        created_on=now
     )
     test_db.add(cross_reference)
     test_db.commit()
@@ -272,20 +272,21 @@ def test_cross_reference(test_db, test_taxon_name, test_superuser) -> CrossRefer
 
 
 @pytest.fixture
-def test_hierarchy(test_db, test_taxon_name, test_classification_system, test_taxon_name_2, test_superuser) -> Hierarchy:
+def test_hierarchy(test_db, test_taxon_name, test_classification_system, test_taxon_name_2,
+                   test_superuser) -> Hierarchy:
     """
     Hierarchy for testing
     """
 
     now = datetime.datetime.utcnow()
     hierarchy = Hierarchy(
-        taxon_name_id = test_taxon_name.taxon_name_id,
-        classification_system_id = test_classification_system.classification_system_id,
-        parent_nid = test_taxon_name_2.taxon_name_id,
-        updated_by = test_superuser.user_id,
-        updated_on = now,
-        created_by = test_superuser.user_id,
-        created_on = now
+        taxon_name_id=test_taxon_name.taxon_name_id,
+        classification_system_id=test_classification_system.classification_system_id,
+        parent_nid=test_taxon_name_2.taxon_name_id,
+        updated_by=test_superuser.user_id,
+        updated_on=now,
+        created_by=test_superuser.user_id,
+        created_on=now
     )
     test_db.add(hierarchy)
     test_db.commit()
@@ -300,12 +301,12 @@ def test_informal_group(test_db, test_taxon_name, test_classification_system, te
 
     now = datetime.datetime.utcnow()
     informal_group = InformalGroup(
-        taxon_name_id = test_taxon_name.taxon_name_id,
-        classification_system_id = test_classification_system.classification_system_id,
-        updated_by = test_superuser.user_id,
-        updated_on = now,
-        created_by = test_superuser.user_id,
-        created_on = now
+        taxon_name_id=test_taxon_name.taxon_name_id,
+        classification_system_id=test_classification_system.classification_system_id,
+        updated_by=test_superuser.user_id,
+        updated_on=now,
+        created_by=test_superuser.user_id,
+        created_on=now
     )
     test_db.add(informal_group)
     test_db.commit()
@@ -320,12 +321,12 @@ def test_kingdom(test_db, test_superuser) -> Kingdom:
 
     now = datetime.datetime.utcnow()
     kingdom = Kingdom(
-        kingdom_name = "Kingdom1",
-        kingdom_desc = "Kingdom Description",
-        updated_by = test_superuser.user_id,
-        updated_on = now,
-        created_by = test_superuser.user_id,
-        created_on = now
+        kingdom_name="Kingdom1",
+        kingdom_desc="Kingdom Description",
+        updated_by=test_superuser.user_id,
+        updated_on=now,
+        created_by=test_superuser.user_id,
+        created_on=now
     )
     test_db.add(kingdom)
     test_db.commit()
@@ -340,13 +341,13 @@ def test_publication(test_db, test_superuser) -> Publication:
 
     now = datetime.datetime.utcnow()
     publication = Publication(
-        bad_publication = False,
-        publication = "PUBLICATION",
-        publication_name = "PUBLICATION_NAME",
-        updated_by = test_superuser.user_id,
-        updated_on = now,
-        created_by = test_superuser.user_id,
-        created_on = now
+        bad_publication=False,
+        publication="PUBLICATION",
+        publication_name="PUBLICATION_NAME",
+        updated_by=test_superuser.user_id,
+        updated_on=now,
+        created_by=test_superuser.user_id,
+        created_on=now
     )
     test_db.add(publication)
     test_db.commit()
@@ -361,15 +362,15 @@ def test_taxon_name(test_db, test_kingdom, test_taxon_rank, test_publication, te
 
     now = datetime.datetime.utcnow()
     taxon_name = TaxonName(
-        kingdom_id = test_kingdom.kingdom_id,
-        rank_id = test_taxon_rank.taxon_rank_id,
-        rank_name = "Rank Name",
-        is_current = True,
-        validated = True,
-        updated_by = test_superuser.user_id,
-        updated_on = now,
-        created_by = test_superuser.user_id,
-        created_on = now
+        kingdom_id=test_kingdom.kingdom_id,
+        rank_id=test_taxon_rank.taxon_rank_id,
+        rank_name="Rank Name",
+        is_current=True,
+        validated=True,
+        updated_by=test_superuser.user_id,
+        updated_on=now,
+        created_by=test_superuser.user_id,
+        created_on=now
     )
     test_db.add(taxon_name)
     test_db.commit()
@@ -384,15 +385,15 @@ def test_taxon_name_2(test_db, test_kingdom, test_taxon_rank, test_publication, 
 
     now = datetime.datetime.utcnow()
     taxon_name = TaxonName(
-        kingdom_id = test_kingdom.kingdom_id,
-        rank_id = test_taxon_rank.taxon_rank_id,
-        rank_name = "Rank Name 2",
-        is_current = True,
-        validated = True,
-        updated_by = test_superuser.user_id,
-        updated_on = now,
-        created_by = test_superuser.user_id,
-        created_on = now
+        kingdom_id=test_kingdom.kingdom_id,
+        rank_id=test_taxon_rank.taxon_rank_id,
+        rank_name="Rank Name 2",
+        is_current=True,
+        validated=True,
+        updated_by=test_superuser.user_id,
+        updated_on=now,
+        created_by=test_superuser.user_id,
+        created_on=now
     )
     test_db.add(taxon_name)
     test_db.commit()
@@ -407,13 +408,13 @@ def test_taxon_rank(test_db, test_kingdom, test_superuser) -> TaxonRank:
 
     now = datetime.datetime.utcnow()
     taxon_rank = TaxonRank(
-        kingdom_id = test_kingdom.kingdom_id,
-        rank_name = "Rank Name 1",
-        rank_abbrev = "subvar.",
-        updated_by = test_superuser.user_id,
-        updated_on = now,
-        created_by = test_superuser.user_id,
-        created_on = now
+        kingdom_id=test_kingdom.kingdom_id,
+        rank_name="Rank Name 1",
+        rank_abbrev="subvar.",
+        updated_by=test_superuser.user_id,
+        updated_on=now,
+        created_by=test_superuser.user_id,
+        created_on=now
     )
     test_db.add(taxon_rank)
     test_db.commit()
@@ -428,14 +429,14 @@ def test_vernacular(test_db, test_taxon_name, test_superuser) -> Vernacular:
 
     now = datetime.datetime.utcnow()
     vernacular = Vernacular(
-        taxon_name_id = test_taxon_name.taxon_name_id,
-        vernacular = "Vernacular 1",
-        language = "english",
-        enabled = True,
-        updated_by = test_superuser.user_id,
-        updated_on = now,
-        created_by = test_superuser.user_id,
-        created_on = now
+        taxon_name_id=test_taxon_name.taxon_name_id,
+        vernacular="Vernacular 1",
+        language="english",
+        enabled=True,
+        updated_by=test_superuser.user_id,
+        updated_on=now,
+        created_by=test_superuser.user_id,
+        created_on=now
     )
     test_db.add(vernacular)
     test_db.commit()
@@ -473,12 +474,14 @@ def superuser_token_headers(
     monkeypatch.setattr(security, "verify_password", verify_password_mock)
     return token_headers_for_user(client, test_password, test_superuser, monkeypatch)
 
+
 @pytest.fixture
 def reader_token_headers(
     client: TestClient, test_reader, test_password, monkeypatch
 ) -> t.Dict[str, str]:
     monkeypatch.setattr(security, "verify_password", verify_password_mock)
     return token_headers_for_user(client, test_password, test_reader, monkeypatch)
+
 
 @pytest.fixture
 def officer_token_headers(
@@ -487,12 +490,14 @@ def officer_token_headers(
     monkeypatch.setattr(security, "verify_password", verify_password_mock)
     return token_headers_for_user(client, test_password, test_officer, monkeypatch)
 
+
 @pytest.fixture
 def manager_token_headers(
     client: TestClient, test_manager, test_password, monkeypatch
 ) -> t.Dict[str, str]:
     monkeypatch.setattr(security, "verify_password", verify_password_mock)
     return token_headers_for_user(client, test_password, test_manager, monkeypatch)
+
 
 @pytest.fixture
 def app_support_token_headers(
