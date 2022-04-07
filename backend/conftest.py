@@ -137,26 +137,48 @@ def test_superuser(test_db) -> User:
     """
     Superuser for testing
     """
+    return create_user_with_role(Role.SUPER_ADMIN, test_db)
 
+
+@pytest.fixture
+def test_reader(test_db) -> User:
+    return create_user_with_role(Role.READER, test_db)
+
+
+@pytest.fixture
+def test_officer(test_db) -> User:
+    return create_user_with_role(Role.OFFICER, test_db)
+
+
+@pytest.fixture
+def test_manager(test_db) -> User:
+    return create_user_with_role(Role.MANAGER, test_db)
+
+
+@pytest.fixture
+def test_app_support(test_db) -> User:
+    return create_user_with_role(Role.APPLICATION_SUPPORT, test_db)
+
+
+def create_user_with_role(role, test_db):
+    role_name = role["name"]
     user = User(
-        email="fakeadmin@email.com",
+        email=f"{role_name}@email.com",
         hashed_password=get_password_hash(),
     )
     test_db.add(user)
     test_db.commit()
     test_db.refresh(user)
     role = RoleModel(
-        name=Role.SUPER_ADMIN["name"],
-        description=Role.SUPER_ADMIN["description"]
+        name=role_name,
+        description=role["description"]
     )
-
     test_db.add(role)
     test_db.commit()
     test_db.refresh(role)
-
     user_role = UserRoleModel(
-       role_id=role.role_id,
-       user_id=user.user_id
+        role_id=role.role_id,
+        user_id=user.user_id
     )
     test_db.add(user_role)
     test_db.commit()
@@ -428,10 +450,13 @@ def verify_password_mock(first: str, second: str) -> bool:
 def user_token_headers(
     client: TestClient, test_user, test_password, monkeypatch
 ) -> t.Dict[str, str]:
-    monkeypatch.setattr(security, "verify_password", verify_password_mock)
+    return token_headers_for_user(client, test_password, test_user, monkeypatch)
 
+
+def token_headers_for_user(client, test_password, user, monkeypatch):
+    monkeypatch.setattr(security, "verify_password", verify_password_mock)
     login_data = {
-        "username": test_user.email,
+        "username": user.email,
         "password": test_password,
     }
     r = client.post("/api/token", data=login_data)
@@ -446,13 +471,32 @@ def superuser_token_headers(
     client: TestClient, test_superuser, test_password, monkeypatch
 ) -> t.Dict[str, str]:
     monkeypatch.setattr(security, "verify_password", verify_password_mock)
+    return token_headers_for_user(client, test_password, test_superuser, monkeypatch)
 
-    login_data = {
-        "username": test_superuser.email,
-        "password": test_password,
-    }
-    r = client.post("/api/token", data=login_data)
-    tokens = r.json()
-    a_token = tokens["access_token"]
-    headers = {"Authorization": f"Bearer {a_token}"}
-    return headers
+@pytest.fixture
+def reader_token_headers(
+    client: TestClient, test_reader, test_password, monkeypatch
+) -> t.Dict[str, str]:
+    monkeypatch.setattr(security, "verify_password", verify_password_mock)
+    return token_headers_for_user(client, test_password, test_reader, monkeypatch)
+
+@pytest.fixture
+def officer_token_headers(
+    client: TestClient, test_officer, test_password, monkeypatch
+) -> t.Dict[str, str]:
+    monkeypatch.setattr(security, "verify_password", verify_password_mock)
+    return token_headers_for_user(client, test_password, test_officer, monkeypatch)
+
+@pytest.fixture
+def manager_token_headers(
+    client: TestClient, test_manager, test_password, monkeypatch
+) -> t.Dict[str, str]:
+    monkeypatch.setattr(security, "verify_password", verify_password_mock)
+    return token_headers_for_user(client, test_password, test_manager, monkeypatch)
+
+@pytest.fixture
+def app_support_token_headers(
+    client: TestClient, test_app_support, test_password, monkeypatch
+) -> t.Dict[str, str]:
+    monkeypatch.setattr(security, "verify_password", verify_password_mock)
+    return token_headers_for_user(client, test_password, test_app_support, monkeypatch)

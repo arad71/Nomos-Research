@@ -1,3 +1,7 @@
+import pytest
+from conftest import reader_token_headers
+
+from app.db.role.constants import Role
 from app.db.user import model
 
 
@@ -118,3 +122,50 @@ def test_unauthorized_routes(client, user_token_headers):
     assert response.status_code == 403
     response = client.delete("/api/v1/users/123", headers=user_token_headers)
     assert response.status_code == 403
+
+
+@pytest.mark.parametrize(
+    "method,endpoint,status",
+    [
+        ("get", "/api/v1/users", 200),
+        ("get", "/api/v1/users/me", 200),
+        ("put", "/api/v1/users/1", 403),
+        ("delete", "/api/v1/users/1", 403),
+        ("post", "/api/v1/users", 403),
+    ],
+)
+def test_reader_permissions(client, reader_token_headers, method, endpoint, status):
+    response = getattr(client, method)(endpoint, headers=reader_token_headers)
+    assert response.status_code == status
+
+
+@pytest.mark.parametrize(
+    "method,endpoint,status",
+    [
+        ("get", "/api/v1/users", 200),
+        ("get", "/api/v1/users/me", 200),
+        ("put", "/api/v1/users/1", 403),
+        ("delete", "/api/v1/users/1", 403),
+        ("post", "/api/v1/users", 403),
+    ],
+)
+def test_manager_permissions(client, manager_token_headers, method, endpoint, status):
+    response = getattr(client, method)(endpoint, headers=manager_token_headers)
+    assert response.status_code == status
+
+
+@pytest.mark.parametrize(
+    "method,endpoint,status",
+    [
+        ("get", "/api/v1/users", 200),
+        ("get", "/api/v1/users/me", 200),
+        ("put", "/api/v1/users/1", 422),
+        ("delete", "/api/v1/users/1", 404),
+        ("post", "/api/v1/users", 422),
+    ],
+)
+def test_app_support_permissions(
+    client, app_support_token_headers, method, endpoint, status
+):
+    response = getattr(client, method)(endpoint, headers=app_support_token_headers)
+    assert response.status_code == status
