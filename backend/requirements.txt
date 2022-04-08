@@ -1,5 +1,5 @@
 alembic==1.7.7
-Authlib==0.15.5
+Authlib==1.0.1
 fastapi==0.75.1
 httpx==0.22.0
 ipython==8.2.0
