@@ -17,7 +17,6 @@ from app.db.taxon_name.constants import (
     FORM_DESC_DY,
     FORM_DESC_MN,
     FORM_DESC_YR,
-    INFORMAL,
     IS_CURRENT,
     IS_ERADICATED,
     KINGDOM_ID,
@@ -106,10 +105,8 @@ class TaxonName(Base, TableMixin):
         comment=ORIGIN,
         doc=ORIGIN,
     )
-    informal = Column(
-        String(2),
-        comment=INFORMAL,
-        doc=INFORMAL,
+    publication_status = Column(
+        Enum(enums.PublicationStatus, name=__tablename__ + "__publication_status")
     )
     form_desc_yr = Column(Integer, comment=FORM_DESC_YR)
     form_desc_mn = Column(Integer, comment=FORM_DESC_MN)

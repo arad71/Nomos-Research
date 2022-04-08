@@ -1,6 +1,6 @@
 import datetime
 
-from app.db.dataimport import DataImportBase
+from app.db.dataimport import DataImportBase, DataImportError
 from app.db.kingdom.model import Kingdom
 from app.db.publication.model import Publication
 from app.db.taxon_name.model import TaxonName as TaxonNameModel
@@ -24,7 +24,7 @@ class ImportTaxonName(DataImportBase):
             "publication_year",
             "is_current",
             "origin",
-            "informal",
+            "publication_status",
             "form_desc_yr",
             "form_desc_mn",
             "form_desc_dy",
@@ -76,7 +76,7 @@ class ImportTaxonName(DataImportBase):
             "publication_year": row["PUB_YEAR"] or None,
             "is_current": self.map_y_n_to_bool(row["IS_CURRENT"]),
             "origin": row["ORIGIN"] or None,
-            "informal": row["INFORMAL"] or None,
+            "publication_status": self.map_publication_status(row["INFORMAL"]),
             "form_desc_yr": row["FORM_DESC_YR"] or None,
             "form_desc_mn": row["FORM_DESC_MN"] or None,
             "form_desc_dy": row["FORM_DESC_DY"] or None,
@@ -109,6 +109,19 @@ class ImportTaxonName(DataImportBase):
 
     def import_row(self, row):
         self.values.append(self.row_mapping(row))
+
+    @classmethod
+    def map_publication_status(cls, val):
+        if not val:
+            return "published"
+
+        if val == "MS":
+            return "manuscript_name"
+
+        if val == "PN":
+            return "phrase_name"
+
+        raise DataImportError(f'Unable to map publication status: "{val}"')
 
 
 class ImportTaxonNameFamilyNid(ImportTaxonName):

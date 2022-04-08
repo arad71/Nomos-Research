@@ -31,9 +31,6 @@ COMMENTS = "Comments about name"
 FORM_DESC_DY = "Day of date formally described"
 FORM_DESC_MN = "Month of date formally described"
 FORM_DESC_YR = "Year of date the taxon formally described"
-INFORMAL = (
-    "Flag indicating whether name is used informally but not yet formally published"
-)
 ORIGIN = (
     "Flag indicating whether taxon has been naturalised in Western Australia. "
     "* = naturalised"
