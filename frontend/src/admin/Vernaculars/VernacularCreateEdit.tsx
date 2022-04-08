@@ -21,10 +21,25 @@ export const VernacularCreateEdit: FC = (props) => (
       choices={LanguageType}
       validate={required()}
     />
-    <BooleanInput label="Lang Pref" source="lang_pref" validate={required()} />
-    <BooleanInput label="preferred" source="preferred" validate={required()} />
+    <BooleanInput
+      label="Lang Pref"
+      source="lang_pref"
+      validate={required()}
+      defaultValue={false}
+    />
+    <BooleanInput
+      label="preferred"
+      source="preferred"
+      validate={required()}
+      defaultValue={false}
+    />
     <TextInput source="source" />
-    <BooleanInput label="Enabled" source="enabled" validate={required()} />
+    <BooleanInput
+      label="Enabled"
+      source="enabled"
+      validate={required()}
+      defaultValue={false}
+    />
     <NumberInput source="sort_order" />
   </SimpleForm>
 );

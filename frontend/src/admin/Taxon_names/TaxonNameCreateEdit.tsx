@@ -46,7 +46,12 @@ export const TaxonNameCreateEdit: FC = (props) => (
       <SelectInput optionText="publication_name" />
     </ReferenceInput>
     <TextInput source="volume_information" />
-    <BooleanInput label="Current" source="is_current" validate={required()} />
+    <BooleanInput
+      label="Current"
+      source="is_current"
+      validate={required()}
+      defaultValue={false}
+    />
     <TextInput source="origin" />
     <TextInput source="informal" />
     <NumberInput source="form_desc_yr" />
@@ -58,7 +63,8 @@ export const TaxonNameCreateEdit: FC = (props) => (
     <BooleanInput
       label="Validated"
       source="validated"
-      validate={[required()]}
+      validate={required()}
+      defaultValue={false}
     />
     <TextInput source="source" />
     <TextInput source="external_id" />
