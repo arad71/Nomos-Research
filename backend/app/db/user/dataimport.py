@@ -17,7 +17,6 @@ class ImportUser(DataImportBase):
         self.update_cols = (
             "email",
             "is_active",
-            "is_superuser",
             "first_name",
             "last_name",
             "hashed_password",
@@ -45,7 +44,6 @@ class ImportUser(DataImportBase):
                 {
                     "email": s + "@stub",
                     "is_active": False,
-                    "is_superuser": False,
                     "first_name": None,
                     "last_name": None,
                     "hashed_password": self.generate_password(),
@@ -59,7 +57,6 @@ class ImportUser(DataImportBase):
         return {
             "email": row["EMAIL"],
             "is_active": False,
-            "is_superuser": False,
             "first_name": self.map_first_name(row["FULL_NAME"]),
             "last_name": self.map_last_name(row["FULL_NAME"]),
             "hashed_password": self.generate_password(),

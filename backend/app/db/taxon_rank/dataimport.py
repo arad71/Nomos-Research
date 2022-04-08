@@ -43,7 +43,8 @@ class ImportTaxonRank(DataImportBase):
             "updated_on": row["UPDATED_ON"],
         }
 
-        # We must insert these as we map them due to rows referencing other rows in this table.
+        # We must insert these as we map them due to rows referencing other rows in
+        # this table.
         self.insert(
             item, TaxonRankModel, f"uc_{TaxonRankModel.__tablename__}_legacy_id"
         )

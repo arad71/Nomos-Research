@@ -5,13 +5,13 @@ from fastapi import HTTPException, status
 from sqlalchemy import asc, desc
 from sqlalchemy.orm import Session
 
-from app.core.config import DEFAULT_PAGE_SIZE
+from app.core.config import settings
 from app.db.session import Base
 
 
 class Crud:
     @classmethod
-    def create_item(cls, db: Session, item: object, current_user: int):
+    def create_item(cls, db: Session, item: object, current_user: int = None):
         db_item = cls.model(**item.dict())
         setattr(db_item, "created_by", current_user)
         setattr(db_item, "updated_by", current_user)
@@ -29,10 +29,15 @@ class Crud:
         return item
 
     @classmethod
+    def get_by_property(cls, db: Session, property: str, value: any):
+        item = db.query(cls.model).filter(getattr(cls.model, property) == value).first()
+        return item
+
+    @classmethod
     def get_items(
         cls,
         db: Session,
-        range: str = f"[0,{DEFAULT_PAGE_SIZE}]",
+        range: str = f"[0,{settings.DEFAULT_PAGE_SIZE}]",
         sort: str = None,
         list_filter: str = None,
     ) -> t.List[Base]:
@@ -62,7 +67,7 @@ class Crud:
     def get_skip_and_limit(cls, range):
         range = json.loads(range)
         skip = range[0] or 0
-        limit = range[1] or DEFAULT_PAGE_SIZE
+        limit = range[1] or settings.DEFAULT_PAGE_SIZE
         limit = limit - skip
         return limit, skip
 

@@ -73,6 +73,16 @@ In order to nuke your database and everythign in it use:
 docker-compose down -v
 scripts/build.sh
 ```
+
+### Logging
+
+Logging is done using the excellent loguru:
+
+```python
+from loguru import logger
+
+logger.info("The meaning of life: {}", 42)
+```
 ### Frontend Development
 
 Alternatively to running inside docker, it can sometimes be easier
