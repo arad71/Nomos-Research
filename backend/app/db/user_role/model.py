@@ -1,5 +1,5 @@
 from sqlalchemy import Column, ForeignKey, Integer, UniqueConstraint
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import backref, relationship
 
 from app.db.session import Base
 
@@ -20,7 +20,11 @@ class UserRole(Base):
         autoincrement=False,
     )
 
-    role = relationship("Role", backref="user_role")
-    user = relationship("User", backref="user_role")
+    role = relationship(
+        "Role", backref=backref("user_role", cascade="all, delete-orphan")
+    )
+    user = relationship(
+        "User", backref=backref("user_role", cascade="all, delete-orphan")
+    )
 
     __table_args__ = (UniqueConstraint("user_id", "role_id", name="unique_user_role"),)
