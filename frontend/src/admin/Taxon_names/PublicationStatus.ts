@@ -1,6 +1,6 @@
 const PublicationStatus = [
-  { id: 'published', name: 'published' },
-  { id: 'manuscript_name', name: 'manuscript name' },
-  { id: 'phrase_name', name: 'phrase name' },
+  { id: 'published', name: 'Published' },
+  { id: 'manuscript_name', name: 'Manuscript' },
+  { id: 'phrase_name', name: 'Phrase Name' },
 ];
 export default PublicationStatus;

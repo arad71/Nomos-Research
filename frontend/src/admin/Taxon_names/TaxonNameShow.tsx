@@ -40,7 +40,7 @@ export const TaxonNameShow: FC = (props) => (
       <TextField source="volume_information" />
       <BooleanField source="is_current" />
       <TextField source="origin" />
-      <TextField source="informal" />
+      <TextField source="publication_status" />
       <NumberField source="form_desc_yr" />
       <NumberField source="form_desc_mn" />
       <NumberField source="form_desc_dy" />
