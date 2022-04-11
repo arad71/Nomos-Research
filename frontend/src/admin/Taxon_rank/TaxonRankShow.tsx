@@ -36,6 +36,7 @@ export const TaxonRankShow: FC = (props) => {
         >
           <NumberField source="rank_name" />
         </ReferenceField>
+        <TextField source="uninomial" />
       </SimpleShowLayout>
     </Show>
   );

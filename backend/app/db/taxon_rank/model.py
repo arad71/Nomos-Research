@@ -68,4 +68,5 @@ class TaxonRank(Base, TableMixin):
         remote_side=[taxon_rank_id],
         backref=backref("required_child_ranks"),
     )
+    uninomial = Column(String)
     legacy_id = Column(Integer)

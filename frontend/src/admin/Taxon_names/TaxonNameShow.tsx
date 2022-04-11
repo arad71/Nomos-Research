@@ -23,7 +23,6 @@ export const TaxonNameShow: FC = (props) => (
       </ReferenceField>
       <TextField source="scientific_name" />
       <TextField source="rank_name" />
-      <TextField source="uninomial" />
       <TextField source="phylum" />
       <TextField source="class" />
       <TextField source="order" />

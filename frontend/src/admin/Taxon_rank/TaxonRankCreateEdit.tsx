@@ -29,5 +29,6 @@ export const TaxonRankCreateEdit: FC = (props) => (
     >
       <SelectInput optionText="rank_name" />
     </ReferenceInput>
+    <TextInput source="uninomial" />
   </SimpleForm>
 );

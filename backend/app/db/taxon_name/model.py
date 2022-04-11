@@ -68,7 +68,6 @@ class TaxonName(Base, TableMixin):
         comment=RANK_NAME,
         doc=RANK_NAME,
     )
-    uninomial = Column(String)
     # kingdom = Column(String)
     phylum = Column(String)
     taxon_class = Column(String, name="class", key="class")
