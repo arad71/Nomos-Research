@@ -41,7 +41,6 @@ from app.db.taxon_rank.schema import TaxonRank
 class TaxonNameBase(BaseModel):
     kingdom_id: int = Field(description=KINGDOM_ID)
     rank_id: int = Field(description=RANK_ID)
-    rank_name: str = Field(description=RANK_NAME)
     uninomial: Optional[str]
     phylum: Optional[str]
     # class is a reserved word, will this workaround be enough?

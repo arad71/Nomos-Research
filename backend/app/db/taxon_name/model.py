@@ -62,12 +62,6 @@ class TaxonName(Base, TableMixin):
         doc=RANK_ID,
     )
     taxon_rank = relationship("TaxonRank", backref=name_plural)
-    rank_name = Column(
-        String(15),
-        nullable=False,
-        comment=RANK_NAME,
-        doc=RANK_NAME,
-    )
     uninomial = Column(String)
     # kingdom = Column(String)
     phylum = Column(String)

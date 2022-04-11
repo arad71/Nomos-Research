@@ -14,7 +14,6 @@ class ImportTaxonName(DataImportBase):
         self.upsert_constraint = f"uc_{TaxonNameModel.__tablename__}_legacy_id"
         self.update_cols = (
             "kingdom_id",
-            "rank_name",
             "genus",
             "subgenus",
             "specific_epithet",
@@ -63,7 +62,6 @@ class ImportTaxonName(DataImportBase):
                 row["RANK_ID"],
                 row["KINGDOM_ID"],
             ),
-            "rank_name": row["RANK_NAME"] or None,
             "genus": row["NAME1"] or None,
             "specific_epithet": row["NAME2"] or None,
             "infraspecific_epithet": row["NAME3"] or None,
