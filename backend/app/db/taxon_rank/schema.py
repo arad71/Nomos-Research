@@ -20,7 +20,7 @@ class TaxonRankBase(BaseModel):
     rank_abbrev: Optional[enums.RankAbbreviation] = Field(description=RANK_ABBREVIATION)
     direct_parent_rank_id: Optional[int] = Field(description=DIRECT_PARENT)
     required_parent_rank_id: Optional[int] = Field(description=REQUIRED_PARENT)
-    uninomial: Optional[str]
+    uninomial: bool
     legacy_id: Optional[int]
 
 

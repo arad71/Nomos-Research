@@ -11,14 +11,14 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "1c5d80976f40"
-down_revision = "b954fb86cb91"
+down_revision = "3c31cbd94af9"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
     op.drop_column("taxon_name", "uninomial")
-    op.add_column("taxon_rank", sa.Column("uninomial", sa.String(), nullable=True))
+    op.add_column("taxon_rank", sa.Column("uninomial", sa.Boolean(), nullable=False))
 
 
 def downgrade():

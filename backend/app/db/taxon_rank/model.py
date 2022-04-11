@@ -1,4 +1,4 @@
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer, String, Boolean
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy.types import Enum
@@ -68,5 +68,5 @@ class TaxonRank(Base, TableMixin):
         remote_side=[taxon_rank_id],
         backref=backref("required_child_ranks"),
     )
-    uninomial = Column(String)
+    uninomial = Column(Boolean, default=False)
     legacy_id = Column(Integer)
