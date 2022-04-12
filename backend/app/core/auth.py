@@ -78,7 +78,8 @@ def authorize(
     """
     Check the user is active and has required permissions (scopes) to accessible
 
-    Wrapper for FastAPI Security. If Security is used as a dependency directly it seems to fail due to cache. Wrapping it avoids this problem.
+    Wrapper for FastAPI Security. If Security is used as a dependency directly it seems
+     to fail due to cache. Wrapping it avoids this problem.
     :param scopes: Security roles / scopes that the user needs
     :param dependency: Dependency to check. Defaults to get_current_active_user
 
