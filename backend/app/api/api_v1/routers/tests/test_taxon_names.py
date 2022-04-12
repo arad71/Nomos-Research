@@ -14,7 +14,6 @@ def test_get_taxon_names(
             "kingdom": response_json["kingdom"],
             "rank_id": test_taxon_rank.taxon_rank_id,
             "taxon_rank": response_json["taxon_rank"],
-            "rank_name": "Rank Name",
             "is_current": True,
             "validated": True,
             "updated_by": test_taxon_name.updated_by,
@@ -52,7 +51,6 @@ def test_edit_taxon_name(
     new_taxon_name = {
         "kingdom_id": test_kingdom.kingdom_id,
         "rank_id": test_taxon_rank.taxon_rank_id,
-        "rank_name": test_taxon_name.rank_name,
         "is_current": test_taxon_name.is_current,
         "validated": test_taxon_name.validated,
         "updated_by": test_superuser.user_id,
@@ -120,7 +118,6 @@ def test_get_taxon_name(
         "kingdom": response_json["kingdom"],
         "rank_id": test_taxon_name.rank_id,
         "taxon_rank": response_json["taxon_rank"],
-        "rank_name": test_taxon_name.rank_name,
         "is_current": test_taxon_name.is_current,
         "validated": test_taxon_name.validated,
         "updated_by": test_taxon_name.updated_by,

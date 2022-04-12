@@ -31,7 +31,6 @@ export const TaxonNameCreateEdit: FC = (props) => (
       <SelectInput optionText="rank_name" />
     </ReferenceInput>
     <TextInput source="scientific_name" validate={[required()]} />
-    <TextInput source="rank_name" validate={[required()]} />
     <TextInput source="uninomial" />
     <TextInput source="phylum" />
     <TextInput source="class" />

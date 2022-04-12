@@ -366,7 +366,6 @@ def test_taxon_name(
     taxon_name = TaxonName(
         kingdom_id=test_kingdom.kingdom_id,
         rank_id=test_taxon_rank.taxon_rank_id,
-        rank_name="Rank Name",
         is_current=True,
         validated=True,
         updated_by=test_superuser.user_id,
@@ -391,7 +390,6 @@ def test_taxon_name_2(
     taxon_name = TaxonName(
         kingdom_id=test_kingdom.kingdom_id,
         rank_id=test_taxon_rank.taxon_rank_id,
-        rank_name="Rank Name 2",
         is_current=True,
         validated=True,
         updated_by=test_superuser.user_id,
