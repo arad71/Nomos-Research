@@ -6,7 +6,7 @@ function backend() {
     docker-compose run --rm backend "$@"
 }
 # Check whitespace for better diffs
-backend black --diff --check --color app
+backend black --diff --check --color .
 # Sort imports
 backend isort --diff --check --color .
 # stop the build if there are Python syntax errors or undefined names
