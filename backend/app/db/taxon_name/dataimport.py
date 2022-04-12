@@ -4,7 +4,6 @@ from app.db.dataimport import DataImportBase, DataImportError
 from app.db.kingdom.model import Kingdom
 from app.db.publication.model import Publication
 from app.db.taxon_name.model import TaxonName as TaxonNameModel
-from app.db.user.model import User as UserModel
 
 
 class ImportTaxonName(DataImportBase):

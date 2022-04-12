@@ -51,7 +51,8 @@ class Crud:
                 query = query.order_by(direction(getattr(cls.model, sort_by)))
 
         if list_filter:
-            # TODO: Implement additional filters as per https://github.com/BIO-WA/BDRTaxMan/pull/162
+            # TODO: Implement additional filters as per
+            #  https://github.com/BIO-WA/BDRTaxMan/pull/162
             filter_items = json.loads(list_filter)
             for column in filter_items:
                 if hasattr(cls.model, column) and filter_items[column]:
