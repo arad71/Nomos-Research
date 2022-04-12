@@ -27,9 +27,11 @@ async def kingdom_list(
     """
     Get all kingdoms
     """
-    kingdoms = KingdomCrud.get_items(db, range=range, sort=sort, list_filter=filter)
+    total, kingdoms = KingdomCrud.get_items(
+        db, range=range, sort=sort, list_filter=filter
+    )
     # This is necessary for react-admin to work
-    response.headers["Content-Range"] = f"0-9/{KingdomCrud.get_items_count(db)}"
+    response.headers["Content-Range"] = f"0-9/{total}"
     return kingdoms
 
 

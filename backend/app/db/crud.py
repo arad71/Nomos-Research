@@ -61,7 +61,12 @@ class Crud:
                         query = query.filter(attr.in_(filter_value))
                     else:
                         query = query.filter(attr == filter_value)
-        return query.offset(skip).limit(limit).all()
+
+        # Number of filtered results without offset or limit
+        total = query.count()
+        # Results with limit and offset
+        results = query.offset(skip).limit(limit).all()
+        return total, results
 
     @classmethod
     def get_skip_and_limit(cls, range):

@@ -25,7 +25,7 @@ async def role_list(
     """
     Get all scopes
     """
-    roles = RoleCrud.get_items(db, range=range)
+    total, roles = RoleCrud.get_items(db, range=range)
     # This is necessary for react-admin to work
-    response.headers["Content-Range"] = f"0-9/{RoleCrud.get_items_count(db)}"
+    response.headers["Content-Range"] = f"0-9/{total}"
     return roles

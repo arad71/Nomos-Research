@@ -27,11 +27,11 @@ async def publication_list(
     """
     Get all publications
     """
-    publications = PublicationCrud.get_items(
+    total, publications = PublicationCrud.get_items(
         db, range=range, sort=sort, list_filter=filter
     )
     # This is necessary for react-admin to work
-    response.headers["Content-Range"] = f"0-9/{PublicationCrud.get_items_count(db)}"
+    response.headers["Content-Range"] = f"0-9/{total}"
     return publications
 
 
