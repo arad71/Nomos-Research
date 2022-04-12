@@ -68,6 +68,7 @@ class Crud:
         range = json.loads(range)
         skip = range[0] or 0
         limit = range[1] or settings.DEFAULT_PAGE_SIZE
+        limit = limit + 1
         limit = limit - skip
         return limit, skip
 
