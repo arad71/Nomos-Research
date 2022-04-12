@@ -40,8 +40,8 @@ class Crud:
         range: str = f"[0,{settings.DEFAULT_PAGE_SIZE}]",
         sort: str = None,
         list_filter: str = None,
-    ) -> t.List[Base]:
-        limit, skip = cls.get_skip_and_limit(range)
+    ) -> (t.List[Base], str):
+        limit, skip, range_str = cls.get_skip_and_limit(range)
         query = db.query(cls.model)
 
         if sort:
@@ -62,15 +62,21 @@ class Crud:
                         query = query.filter(attr.in_(filter_value))
                     else:
                         query = query.filter(attr == filter_value)
-        return query.offset(skip).limit(limit).all()
+
+        # Number of filtered results without offset or limit
+        total = query.count()
+        content_range = f"{range_str}/{total}"
+        # Results with limit and offset
+        results = query.offset(skip).limit(limit).all()
+        return results, content_range
 
     @classmethod
     def get_skip_and_limit(cls, range):
         range = json.loads(range)
-        skip = range[0] or 0
-        limit = range[1] or settings.DEFAULT_PAGE_SIZE
-        limit = limit - skip
-        return limit, skip
+        start = range[0] or 0
+        end = range[1] or settings.DEFAULT_PAGE_SIZE
+        limit = end - start + 1
+        return limit, start, f"{start}-{end}"
 
     @classmethod
     def get_sort(cls, sort):
