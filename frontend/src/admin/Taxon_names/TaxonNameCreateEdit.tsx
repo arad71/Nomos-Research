@@ -12,6 +12,7 @@ import {
 
 import React, { FC } from 'react';
 import NaturalisedStatus from './NaturalisedStatus';
+import PublicationStatus from './PublicationStatus';
 
 export const TaxonNameCreateEdit: FC = (props) => (
   <SimpleForm {...props}>
@@ -53,7 +54,7 @@ export const TaxonNameCreateEdit: FC = (props) => (
       defaultValue={false}
     />
     <TextInput source="origin" />
-    <TextInput source="informal" />
+    <SelectInput source="publication_status" choices={PublicationStatus} />
     <NumberInput source="form_desc_yr" />
     <NumberInput source="form_desc_mn" />
     <NumberInput source="form_desc_dy" />
