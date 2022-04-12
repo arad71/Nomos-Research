@@ -260,6 +260,7 @@ def test_cross_reference(test_db, test_taxon_name, test_superuser) -> CrossRefer
     cross_reference = CrossReference(
         old_name_id=test_taxon_name.taxon_name_id,
         cross_reference_type="mis",
+        new_name_id=test_taxon_name.taxon_name_id,
         active=True,
         updated_by=test_superuser.user_id,
         updated_on=now,
@@ -272,8 +273,13 @@ def test_cross_reference(test_db, test_taxon_name, test_superuser) -> CrossRefer
 
 
 @pytest.fixture
-def test_hierarchy(test_db, test_taxon_name, test_classification_system, test_taxon_name_2,
-                   test_superuser) -> Hierarchy:
+def test_hierarchy(
+    test_db,
+    test_taxon_name,
+    test_classification_system,
+    test_taxon_name_2,
+    test_superuser
+) -> Hierarchy:
     """
     Hierarchy for testing
     """

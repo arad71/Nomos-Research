@@ -5,6 +5,7 @@ from starlette.requests import Request
 
 from app.api.api_v1.routers.auth import auth_router
 from app.api.api_v1.routers.authors import authors_router
+from app.api.api_v1.routers.checklist import checklist_router
 from app.api.api_v1.routers.citations import citations_router
 from app.api.api_v1.routers.classification_systems import classification_systems_router
 from app.api.api_v1.routers.cross_references import cross_references_router
@@ -151,6 +152,13 @@ app.include_router(
     prefix=API_V1_URL,
     tags=["vernaculars"],
     dependencies=[Depends(get_current_active_user)],
+)
+
+app.include_router(
+    checklist_router,
+    prefix=API_V1_URL,
+    tags=["checklist"],
+    dependencies=[],
 )
 
 app.include_router(auth_router, prefix="/api", tags=["auth"])
