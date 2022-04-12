@@ -28,9 +28,9 @@ async def user_role_list(
     """
     Get all user_roles
     """
-    total, user_roles = UserRoleCrud.get_items(db, range=range)
+    user_roles, content_range = UserRoleCrud.get_items(db, range=range)
     # This is necessary for react-admin to work
-    response.headers["Content-Range"] = f"0-9/{total}"
+    response.headers["Content-Range"] = content_range
     return user_roles
 
 

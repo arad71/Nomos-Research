@@ -27,11 +27,11 @@ async def vernacular_list(
     """
     Get all vernaculars
     """
-    total, vernaculars = VernacularCrud.get_items(
+    vernaculars, content_range = VernacularCrud.get_items(
         db, range=range, sort=sort, list_filter=filter
     )
     # This is necessary for react-admin to work
-    response.headers["Content-Range"] = f"0-9/{total}"
+    response.headers["Content-Range"] = content_range
     return vernaculars
 
 

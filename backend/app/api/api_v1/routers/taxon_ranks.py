@@ -27,11 +27,11 @@ async def taxon_rank_list(
     """
     Get all taxon_ranks
     """
-    total, taxon_ranks = TaxonRankCrud.get_items(
+    taxon_ranks, content_range = TaxonRankCrud.get_items(
         db, range=range, sort=sort, list_filter=filter
     )
     # This is necessary for react-admin to work
-    response.headers["Content-Range"] = f"0-9/{total}"
+    response.headers["Content-Range"] = content_range
     return taxon_ranks
 
 

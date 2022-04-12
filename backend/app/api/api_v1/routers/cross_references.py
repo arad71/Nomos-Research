@@ -31,11 +31,11 @@ async def cross_reference_list(
     """
     Get all cross_references
     """
-    total, cross_references = CrossReferenceCrud.get_items(
+    cross_references, content_range = CrossReferenceCrud.get_items(
         db, range=range, sort=sort, list_filter=filter
     )
     # This is necessary for react-admin to work
-    response.headers["Content-Range"] = f"0-9/{total}"
+    response.headers["Content-Range"] = content_range
     return cross_references
 
 

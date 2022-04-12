@@ -28,9 +28,11 @@ async def users_list(
     """
     Get all users
     """
-    total, users = UserCrud.get_items(db, range=range, sort=sort, list_filter=filter)
+    users, content_range = UserCrud.get_items(
+        db, range=range, sort=sort, list_filter=filter
+    )
     # This is necessary for react-admin to work
-    response.headers["Content-Range"] = f"0-9/{total}"
+    response.headers["Content-Range"] = content_range
     return users
 
 

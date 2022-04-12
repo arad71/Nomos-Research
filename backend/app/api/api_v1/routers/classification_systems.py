@@ -32,11 +32,11 @@ async def classification_system_list(
     Get all classification_systems
     """
 
-    total, classification_systems = ClassificationSystemCrud.get_items(
+    classification_systems, content_range = ClassificationSystemCrud.get_items(
         db, range=range, sort=sort, list_filter=filter
     )
     # This is necessary for react-admin to work
-    response.headers["Content-Range"] = f"0-9/{total}"
+    response.headers["Content-Range"] = content_range
     return classification_systems
 
 
