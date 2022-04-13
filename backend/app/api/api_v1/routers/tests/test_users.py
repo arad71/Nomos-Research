@@ -1,15 +1,21 @@
+import pytest
+from conftest import reader_token_headers
+
+from app.db.role.constants import Role
 from app.db.user import model
 
 
 def test_get_users(client, test_superuser, superuser_token_headers):
     response = client.get("/api/v1/users", headers=superuser_token_headers)
     assert response.status_code == 200
-    assert response.json() == [
+    response_list = response.json()
+    # We don't need to compare the role here
+    response_list[0].pop("user_role")
+    assert response_list == [
         {
             "user_id": test_superuser.user_id,
             "email": test_superuser.email,
             "is_active": test_superuser.is_active,
-            "is_superuser": test_superuser.is_superuser,
         }
     ]
 
@@ -32,7 +38,6 @@ def test_edit_user(client, test_superuser, superuser_token_headers):
     new_user = {
         "email": "newemail@email.com",
         "is_active": False,
-        "is_superuser": True,
         "first_name": "Joe",
         "last_name": "Smith",
         "password": "new_password",
@@ -46,14 +51,15 @@ def test_edit_user(client, test_superuser, superuser_token_headers):
     assert response.status_code == 200
     new_user["user_id"] = test_superuser.user_id
     new_user.pop("password")
-    assert response.json() == new_user
+    response_json = response.json()
+    response_json.pop("user_role")
+    assert response_json == new_user
 
 
 def test_edit_user_not_found(client, test_db, superuser_token_headers):
     new_user = {
         "email": "newemail@email.com",
         "is_active": False,
-        "is_superuser": False,
         "password": "new_password",
     }
     response = client.put(
@@ -75,7 +81,7 @@ def test_get_user(
         "user_id": test_user.user_id,
         "email": test_user.email,
         "is_active": bool(test_user.is_active),
-        "is_superuser": test_user.is_superuser,
+        "user_role": [],
     }
 
 
@@ -103,7 +109,63 @@ def test_unauthenticated_routes(client):
 
 
 def test_unauthorized_routes(client, user_token_headers):
-    response = client.get("/api/v1/users", headers=user_token_headers)
+    new_user = {
+        "email": "newemail@email.com",
+        "is_active": False,
+        "first_name": "Joe",
+        "last_name": "Smith",
+        "password": "new_password",
+    }
+    response = client.post("/api/v1/users", json=new_user, headers=user_token_headers)
     assert response.status_code == 403
-    response = client.get("/api/v1/users/123", headers=user_token_headers)
+    response = client.put("/api/v1/users/1", json=new_user, headers=user_token_headers)
     assert response.status_code == 403
+    response = client.delete("/api/v1/users/123", headers=user_token_headers)
+    assert response.status_code == 403
+
+
+@pytest.mark.parametrize(
+    "method,endpoint,status",
+    [
+        ("get", "/api/v1/users", 200),
+        ("get", "/api/v1/users/me", 200),
+        ("put", "/api/v1/users/1", 403),
+        ("delete", "/api/v1/users/1", 403),
+        ("post", "/api/v1/users", 403),
+    ],
+)
+def test_reader_permissions(client, reader_token_headers, method, endpoint, status):
+    response = getattr(client, method)(endpoint, headers=reader_token_headers)
+    assert response.status_code == status
+
+
+@pytest.mark.parametrize(
+    "method,endpoint,status",
+    [
+        ("get", "/api/v1/users", 200),
+        ("get", "/api/v1/users/me", 200),
+        ("put", "/api/v1/users/1", 403),
+        ("delete", "/api/v1/users/1", 403),
+        ("post", "/api/v1/users", 403),
+    ],
+)
+def test_manager_permissions(client, manager_token_headers, method, endpoint, status):
+    response = getattr(client, method)(endpoint, headers=manager_token_headers)
+    assert response.status_code == status
+
+
+@pytest.mark.parametrize(
+    "method,endpoint,status",
+    [
+        ("get", "/api/v1/users", 200),
+        ("get", "/api/v1/users/me", 200),
+        ("put", "/api/v1/users/1", 422),
+        ("delete", "/api/v1/users/1", 404),
+        ("post", "/api/v1/users", 422),
+    ],
+)
+def test_app_support_permissions(
+    client, app_support_token_headers, method, endpoint, status
+):
+    response = getattr(client, method)(endpoint, headers=app_support_token_headers)
+    assert response.status_code == status

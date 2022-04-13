@@ -3,13 +3,14 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
+from app.db.role.constants import Role
 from app.db.user.constants import EMAIL, TABLE_DESCRIPTION
+from app.db.user_role.schema import UserRole
 
 
 class UserBase(BaseModel):
     email: str = Field(description=EMAIL)
     is_active: bool = True
-    is_superuser: bool = False
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     legacy_id_name: Optional[str] = None
@@ -36,6 +37,7 @@ class UserEdit(UserBase):
 
 class User(UserBase):
     user_id: int
+    user_role: Optional[list[UserRole]]
 
     class Config:
         orm_mode = True
@@ -48,4 +50,4 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     email: str = None
-    permissions: str = "user"
+    scopes: list[str] = [Role.READER]

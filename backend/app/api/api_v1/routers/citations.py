@@ -19,15 +19,19 @@ citations_router = r = APIRouter(prefix="/citations")
 async def citation_list(
     response: Response,
     range: Optional[str] = RangeQueryParameter,
+    sort: Optional[str] = None,
+    filter: Optional[str] = None,
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):
     """
     Get all citations
     """
-    citations = CitationCrud.get_items(db, range=range)
+    citations, content_range = CitationCrud.get_items(
+        db, range=range, sort=sort, list_filter=filter
+    )
     # This is necessary for react-admin to work
-    response.headers["Content-Range"] = f"0-9/{CitationCrud.get_items_count(db)}"
+    response.headers["Content-Range"] = content_range
     return citations
 
 

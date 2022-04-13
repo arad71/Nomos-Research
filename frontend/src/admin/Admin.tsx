@@ -8,6 +8,7 @@ import MyLayout from '../MyLayout';
 import Dashboard from '../Dashboard';
 import ArticleIcon from '@material-ui/icons/Article';
 import BookIcon from '@material-ui/icons/Book';
+import role from './role';
 
 import { UserList, UserShow, UserEdit, UserCreate } from './Users';
 import {
@@ -113,8 +114,8 @@ export const Admin: FC = () => {
       authProvider={authProvider}
       dataProvider={dataProvider}
     >
-      {(permissions: 'admin' | 'user') => [
-        permissions === 'admin' ? (
+      {(permissions: string) => [
+        permissions.includes(role.SUPER_ADMIN) ? (
           <Resource
             name="users"
             key="user_id"
@@ -124,7 +125,7 @@ export const Admin: FC = () => {
             create={UserCreate}
           />
         ) : null,
-        permissions === 'admin' ? (
+        permissions.includes(role.SUPER_ADMIN) ? (
           <Resource
             name="kingdoms"
             list={KingdomList}
@@ -133,7 +134,7 @@ export const Admin: FC = () => {
             create={KingdomCreate}
           />
         ) : null,
-        permissions === 'admin' ? (
+        permissions.includes(role.SUPER_ADMIN) ? (
           <Resource
             name="classification_systems"
             list={ClassificationSystemList}
@@ -142,7 +143,7 @@ export const Admin: FC = () => {
             create={ClassificationSystemCreate}
           />
         ) : null,
-        permissions === 'admin' ? (
+        permissions.includes(role.SUPER_ADMIN) ? (
           <Resource
             name="authors"
             list={AuthorList}
@@ -151,7 +152,7 @@ export const Admin: FC = () => {
             create={AuthorCreate}
           />
         ) : null,
-        permissions === 'admin' ? (
+        permissions.includes(role.SUPER_ADMIN) ? (
           <Resource
             name="taxon_ranks"
             list={TaxonRankList}
@@ -160,7 +161,7 @@ export const Admin: FC = () => {
             create={TaxonRankCreate}
           />
         ) : null,
-        permissions === 'admin' ? (
+        permissions.includes(role.SUPER_ADMIN) ? (
           <Resource
             name="publications"
             list={PublicationList}
@@ -169,7 +170,7 @@ export const Admin: FC = () => {
             create={PublicationCreate}
           />
         ) : null,
-        permissions === 'admin' ? (
+        permissions.includes(role.SUPER_ADMIN) ? (
           <Resource
             name="citations"
             list={CitationList}
@@ -178,7 +179,7 @@ export const Admin: FC = () => {
             create={CitationCreate}
           />
         ) : null,
-        permissions === 'admin' ? (
+        permissions.includes(role.SUPER_ADMIN) ? (
           <Resource
             name="taxon_names"
             list={TaxonNameList}
@@ -188,7 +189,7 @@ export const Admin: FC = () => {
             icon={BookIcon}
           />
         ) : null,
-        permissions === 'admin' ? (
+        permissions.includes(role.SUPER_ADMIN) ? (
           <Resource
             name="informal_groups"
             list={InformalGroupList}
@@ -197,7 +198,7 @@ export const Admin: FC = () => {
             create={InformalGroupCreate}
           />
         ) : null,
-        permissions === 'admin' ? (
+        permissions.includes(role.SUPER_ADMIN) ? (
           <Resource
             name="hierarchies"
             list={HierarchyList}
@@ -206,7 +207,7 @@ export const Admin: FC = () => {
             create={HierarchyCreate}
           />
         ) : null,
-        permissions === 'admin' ? (
+        permissions.includes(role.SUPER_ADMIN) ? (
           <Resource
             name="cross_references"
             list={CrossReferenceList}
@@ -215,7 +216,7 @@ export const Admin: FC = () => {
             create={CrossReferenceCreate}
           />
         ) : null,
-        permissions === 'admin' ? (
+        permissions.includes(role.SUPER_ADMIN) ? (
           <Resource
             name="vernaculars"
             list={VernacularList}

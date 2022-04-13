@@ -36,5 +36,7 @@ class User(Base):
     )
     hashed_password = Column(String, nullable=False)
     is_active = Column(Boolean, default=True, nullable=False)
-    is_superuser = Column(Boolean, default=False, nullable=False)
     legacy_id_name = Column(String())
+
+    def has_role(self, role: dict):
+        return any(user_role.role.name == role["name"] for user_role in self.user_role)

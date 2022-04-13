@@ -17,7 +17,6 @@ from app.db.taxon_name.constants import (
     FORM_DESC_DY,
     FORM_DESC_MN,
     FORM_DESC_YR,
-    INFORMAL,
     IS_CURRENT,
     IS_ERADICATED,
     KINGDOM_ID,
@@ -41,7 +40,6 @@ from app.db.taxon_rank.schema import TaxonRank
 class TaxonNameBase(BaseModel):
     kingdom_id: int = Field(description=KINGDOM_ID)
     rank_id: int = Field(description=RANK_ID)
-    rank_name: str = Field(description=RANK_NAME)
     uninomial: Optional[str]
     phylum: Optional[str]
     # class is a reserved word, will this workaround be enough?
@@ -59,7 +57,7 @@ class TaxonNameBase(BaseModel):
     publication_year: Optional[int] = Field(description=PUBLICATION_YEAR)
     is_current: bool = Field(description=IS_CURRENT)
     origin: Optional[str] = Field(description=ORIGIN)
-    informal: Optional[str] = Field(description=INFORMAL)
+    publication_status: Optional[enums.PublicationStatus]
     form_desc_yr: Optional[int] = Field(description=FORM_DESC_YR)
     form_desc_mn: Optional[int] = Field(description=FORM_DESC_MN)
     form_desc_dy: Optional[int] = Field(description=FORM_DESC_DY)
