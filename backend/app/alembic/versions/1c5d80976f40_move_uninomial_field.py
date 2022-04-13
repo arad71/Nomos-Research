@@ -19,7 +19,7 @@ depends_on = None
 def upgrade():
     op.drop_column("taxon_name", "uninomial")
     op.add_column("taxon_rank", sa.Column("uninomial", sa.Boolean(), nullable=True))
-    op.execute("    UPDATE taxon_rank SET uninomial = FALSE")
+    op.execute("UPDATE taxon_rank SET uninomial = FALSE")
     op.alter_column("taxon_rank", "uninomial", nullable=True)
 
 
