@@ -6,3 +6,9 @@ class NaturalisedStatus(str, Enum):
     n = "n"
     m = "m"
     u = "u"
+
+
+class PublicationStatus(str, Enum):
+    published = "Published"
+    manuscript_name = "Manuscript"
+    phrase_name = "Phrase Name"

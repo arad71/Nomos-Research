@@ -27,9 +27,11 @@ async def author_list(
     """
     Get all authors
     """
-    authors = AuthorCrud.get_items(db, range=range, sort=sort, list_filter=filter)
+    authors, content_range = AuthorCrud.get_items(
+        db, range=range, sort=sort, list_filter=filter
+    )
     # This is necessary for react-admin to work
-    response.headers["Content-Range"] = f"0-9/{AuthorCrud.get_items_count(db)}"
+    response.headers["Content-Range"] = content_range
     return authors
 
 

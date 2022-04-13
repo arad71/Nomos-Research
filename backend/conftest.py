@@ -47,9 +47,7 @@ def test_db():
     trans = connection.begin()
 
     # Run a parent transaction that can roll back all changes
-    test_session_maker = sessionmaker(
-        autocommit=False, autoflush=False, bind=engine
-    )
+    test_session_maker = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     test_session = test_session_maker()
     test_session.begin_nested()
 
@@ -169,17 +167,11 @@ def create_user_with_role(role, test_db):
     test_db.add(user)
     test_db.commit()
     test_db.refresh(user)
-    role = RoleModel(
-        name=role_name,
-        description=role["description"]
-    )
+    role = RoleModel(name=role_name, description=role["description"])
     test_db.add(role)
     test_db.commit()
     test_db.refresh(role)
-    user_role = UserRoleModel(
-        role_id=role.role_id,
-        user_id=user.user_id
-    )
+    user_role = UserRoleModel(role_id=role.role_id, user_id=user.user_id)
     test_db.add(user_role)
     test_db.commit()
     return user
@@ -200,7 +192,7 @@ def test_author(test_db, test_superuser) -> Author:
         updated_by=test_superuser.user_id,
         updated_on=now,
         created_by=test_superuser.user_id,
-        created_on=now
+        created_on=now,
     )
     test_db.add(author)
     test_db.commit()
@@ -222,7 +214,7 @@ def test_citation(test_db, test_taxon_name, test_author, test_superuser) -> Cita
         updated_by=test_superuser.user_id,
         updated_on=now,
         created_by=test_superuser.user_id,
-        created_on=now
+        created_on=now,
     )
     test_db.add(citation)
     test_db.commit()
@@ -243,7 +235,7 @@ def test_classification_system(test_db, test_superuser) -> ClassificationSystem:
         updated_by=test_superuser.user_id,
         updated_on=now,
         created_by=test_superuser.user_id,
-        created_on=now
+        created_on=now,
     )
     test_db.add(classification_system)
     test_db.commit()
@@ -260,11 +252,12 @@ def test_cross_reference(test_db, test_taxon_name, test_superuser) -> CrossRefer
     cross_reference = CrossReference(
         old_name_id=test_taxon_name.taxon_name_id,
         cross_reference_type="mis",
+        new_name_id=test_taxon_name.taxon_name_id,
         active=True,
         updated_by=test_superuser.user_id,
         updated_on=now,
         created_by=test_superuser.user_id,
-        created_on=now
+        created_on=now,
     )
     test_db.add(cross_reference)
     test_db.commit()
@@ -272,8 +265,13 @@ def test_cross_reference(test_db, test_taxon_name, test_superuser) -> CrossRefer
 
 
 @pytest.fixture
-def test_hierarchy(test_db, test_taxon_name, test_classification_system, test_taxon_name_2,
-                   test_superuser) -> Hierarchy:
+def test_hierarchy(
+    test_db,
+    test_taxon_name,
+    test_classification_system,
+    test_taxon_name_2,
+    test_superuser,
+) -> Hierarchy:
     """
     Hierarchy for testing
     """
@@ -286,7 +284,7 @@ def test_hierarchy(test_db, test_taxon_name, test_classification_system, test_ta
         updated_by=test_superuser.user_id,
         updated_on=now,
         created_by=test_superuser.user_id,
-        created_on=now
+        created_on=now,
     )
     test_db.add(hierarchy)
     test_db.commit()
@@ -294,7 +292,9 @@ def test_hierarchy(test_db, test_taxon_name, test_classification_system, test_ta
 
 
 @pytest.fixture
-def test_informal_group(test_db, test_taxon_name, test_classification_system, test_superuser) -> InformalGroup:
+def test_informal_group(
+    test_db, test_taxon_name, test_classification_system, test_superuser
+) -> InformalGroup:
     """
     Informal Group for testing
     """
@@ -306,7 +306,7 @@ def test_informal_group(test_db, test_taxon_name, test_classification_system, te
         updated_by=test_superuser.user_id,
         updated_on=now,
         created_by=test_superuser.user_id,
-        created_on=now
+        created_on=now,
     )
     test_db.add(informal_group)
     test_db.commit()
@@ -326,7 +326,7 @@ def test_kingdom(test_db, test_superuser) -> Kingdom:
         updated_by=test_superuser.user_id,
         updated_on=now,
         created_by=test_superuser.user_id,
-        created_on=now
+        created_on=now,
     )
     test_db.add(kingdom)
     test_db.commit()
@@ -347,7 +347,7 @@ def test_publication(test_db, test_superuser) -> Publication:
         updated_by=test_superuser.user_id,
         updated_on=now,
         created_by=test_superuser.user_id,
-        created_on=now
+        created_on=now,
     )
     test_db.add(publication)
     test_db.commit()
@@ -355,7 +355,9 @@ def test_publication(test_db, test_superuser) -> Publication:
 
 
 @pytest.fixture
-def test_taxon_name(test_db, test_kingdom, test_taxon_rank, test_publication, test_superuser) -> TaxonName:
+def test_taxon_name(
+    test_db, test_kingdom, test_taxon_rank, test_publication, test_superuser
+) -> TaxonName:
     """
     Taxon Name for testing
     """
@@ -364,13 +366,12 @@ def test_taxon_name(test_db, test_kingdom, test_taxon_rank, test_publication, te
     taxon_name = TaxonName(
         kingdom_id=test_kingdom.kingdom_id,
         rank_id=test_taxon_rank.taxon_rank_id,
-        rank_name="Rank Name",
         is_current=True,
         validated=True,
         updated_by=test_superuser.user_id,
         updated_on=now,
         created_by=test_superuser.user_id,
-        created_on=now
+        created_on=now,
     )
     test_db.add(taxon_name)
     test_db.commit()
@@ -378,7 +379,9 @@ def test_taxon_name(test_db, test_kingdom, test_taxon_rank, test_publication, te
 
 
 @pytest.fixture
-def test_taxon_name_2(test_db, test_kingdom, test_taxon_rank, test_publication, test_superuser) -> TaxonName:
+def test_taxon_name_2(
+    test_db, test_kingdom, test_taxon_rank, test_publication, test_superuser
+) -> TaxonName:
     """
     Taxon Name 2 for testing
     """
@@ -387,13 +390,12 @@ def test_taxon_name_2(test_db, test_kingdom, test_taxon_rank, test_publication, 
     taxon_name = TaxonName(
         kingdom_id=test_kingdom.kingdom_id,
         rank_id=test_taxon_rank.taxon_rank_id,
-        rank_name="Rank Name 2",
         is_current=True,
         validated=True,
         updated_by=test_superuser.user_id,
         updated_on=now,
         created_by=test_superuser.user_id,
-        created_on=now
+        created_on=now,
     )
     test_db.add(taxon_name)
     test_db.commit()
@@ -415,7 +417,7 @@ def test_taxon_rank(test_db, test_kingdom, test_superuser) -> TaxonRank:
         updated_by=test_superuser.user_id,
         updated_on=now,
         created_by=test_superuser.user_id,
-        created_on=now
+        created_on=now,
     )
     test_db.add(taxon_rank)
     test_db.commit()
@@ -437,7 +439,7 @@ def test_vernacular(test_db, test_taxon_name, test_superuser) -> Vernacular:
         updated_by=test_superuser.user_id,
         updated_on=now,
         created_by=test_superuser.user_id,
-        created_on=now
+        created_on=now,
     )
     test_db.add(vernacular)
     test_db.commit()

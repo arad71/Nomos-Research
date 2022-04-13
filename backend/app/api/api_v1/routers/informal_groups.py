@@ -31,11 +31,11 @@ async def informal_group_list(
     """
     Get all informal_groups
     """
-    informal_groups = InformalGroupCrud.get_items(
+    informal_groups, content_range = InformalGroupCrud.get_items(
         db, range=range, sort=sort, list_filter=filter
     )
     # This is necessary for react-admin to work
-    response.headers["Content-Range"] = f"0-9/{InformalGroupCrud.get_items_count(db)}"
+    response.headers["Content-Range"] = content_range
     return informal_groups
 
 

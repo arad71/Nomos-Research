@@ -1,10 +1,9 @@
 import datetime
 
-from app.db.dataimport import DataImportBase
+from app.db.dataimport import DataImportBase, DataImportError
 from app.db.kingdom.model import Kingdom
 from app.db.publication.model import Publication
 from app.db.taxon_name.model import TaxonName as TaxonNameModel
-from app.db.user.model import User as UserModel
 
 
 class ImportTaxonName(DataImportBase):
@@ -14,7 +13,6 @@ class ImportTaxonName(DataImportBase):
         self.upsert_constraint = f"uc_{TaxonNameModel.__tablename__}_legacy_id"
         self.update_cols = (
             "kingdom_id",
-            "rank_name",
             "genus",
             "subgenus",
             "specific_epithet",
@@ -24,7 +22,7 @@ class ImportTaxonName(DataImportBase):
             "publication_year",
             "is_current",
             "origin",
-            "informal",
+            "publication_status",
             "form_desc_yr",
             "form_desc_mn",
             "form_desc_dy",
@@ -63,7 +61,6 @@ class ImportTaxonName(DataImportBase):
                 row["RANK_ID"],
                 row["KINGDOM_ID"],
             ),
-            "rank_name": row["RANK_NAME"] or None,
             "genus": row["NAME1"] or None,
             "specific_epithet": row["NAME2"] or None,
             "infraspecific_epithet": row["NAME3"] or None,
@@ -76,7 +73,7 @@ class ImportTaxonName(DataImportBase):
             "publication_year": row["PUB_YEAR"] or None,
             "is_current": self.map_y_n_to_bool(row["IS_CURRENT"]),
             "origin": row["ORIGIN"] or None,
-            "informal": row["INFORMAL"] or None,
+            "publication_status": self.map_publication_status(row["INFORMAL"]),
             "form_desc_yr": row["FORM_DESC_YR"] or None,
             "form_desc_mn": row["FORM_DESC_MN"] or None,
             "form_desc_dy": row["FORM_DESC_DY"] or None,
@@ -109,6 +106,19 @@ class ImportTaxonName(DataImportBase):
 
     def import_row(self, row):
         self.values.append(self.row_mapping(row))
+
+    @classmethod
+    def map_publication_status(cls, val):
+        if not val:
+            return "published"
+
+        if val == "MS":
+            return "manuscript_name"
+
+        if val == "PN":
+            return "phrase_name"
+
+        raise DataImportError(f'Unable to map publication status: "{val}"')
 
 
 class ImportTaxonNameFamilyNid(ImportTaxonName):
