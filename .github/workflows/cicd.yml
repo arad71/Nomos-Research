@@ -56,9 +56,13 @@ jobs:
         run: cp frontend/.npmrc.docker ~/.npmrc
 
       - name: Install dependencies
+        env:
+          NPM_TOKEN: "${{ secrets.NPM_TOKEN }}"
         run: npm --prefix=frontend ci --ignore-scripts
 
       - name: Build app to run linting
+        env:
+          NPM_TOKEN: "${{ secrets.NPM_TOKEN }}"
         run: npm --prefix=frontend run build
 
   test:
@@ -106,7 +110,7 @@ jobs:
             git checkout staging
             git pull
             # ignore docker-compose.override.yml using env variable
-            COMPOSE_FILE=docker-compose.yml scripts/build.sh
+            NPM_TOKEN="${{ secrets.NPM_TOKEN }}" COMPOSE_FILE=docker-compose.yml scripts/build.sh
       - name: Check http status code of deployed site
         uses: jtalk/url-health-check-action@v2
         with:
