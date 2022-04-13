@@ -6,7 +6,6 @@ import authProvider from './authProvider';
 import MyLoginPage from '../views/NewLogin';
 import MyLayout from '../MyLayout';
 import Dashboard from '../Dashboard';
-import ArticleIcon from '@material-ui/icons/Article';
 import BookIcon from '@material-ui/icons/Book';
 import role from './role';
 
