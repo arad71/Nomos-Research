@@ -8,6 +8,7 @@ import {
   NumberField,
   ReferenceField,
   TextField,
+  BooleanField,
 } from 'react-admin';
 import FullNameField from '../shared/FullNameField';
 
@@ -34,6 +35,7 @@ export const TaxonRankList: FC = (props) => (
       >
         <TextField source="rank_name" />
       </ReferenceField>
+      <BooleanField source="uninomial" />
       <ReferenceField source="created_by" reference="users">
         <FullNameField source="last_name" />
       </ReferenceField>

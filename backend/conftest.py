@@ -413,6 +413,7 @@ def test_taxon_rank(test_db, test_kingdom, test_superuser) -> TaxonRank:
         kingdom_id=test_kingdom.kingdom_id,
         rank_name="Rank Name 1",
         rank_abbrev="subvar.",
+        uninomial=False,
         updated_by=test_superuser.user_id,
         updated_on=now,
         created_by=test_superuser.user_id,

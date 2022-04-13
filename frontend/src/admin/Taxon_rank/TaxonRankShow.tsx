@@ -6,6 +6,7 @@ import {
   Show,
   SimpleShowLayout,
   TextField,
+  BooleanField,
 } from 'react-admin';
 import Aside from '../shared/Aside';
 
@@ -36,6 +37,7 @@ export const TaxonRankShow: FC = (props) => {
         >
           <NumberField source="rank_name" />
         </ReferenceField>
+        <BooleanField source="uninomial" />
       </SimpleShowLayout>
     </Show>
   );
