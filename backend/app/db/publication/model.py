@@ -1,7 +1,6 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.schema import UniqueConstraint
-from sqlalchemy.types import Enum
 
 from app.db.models import TableMixin
 from app.db.publication.constants import (

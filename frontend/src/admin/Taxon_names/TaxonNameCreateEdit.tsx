@@ -12,6 +12,7 @@ import {
 
 import React, { FC } from 'react';
 import NaturalisedStatus from './NaturalisedStatus';
+import PublicationStatus from './PublicationStatus';
 
 export const TaxonNameCreateEdit: FC = (props) => (
   <SimpleForm {...props}>
@@ -30,8 +31,6 @@ export const TaxonNameCreateEdit: FC = (props) => (
       <SelectInput optionText="rank_name" />
     </ReferenceInput>
     <TextInput source="scientific_name" validate={[required()]} />
-    <TextInput source="rank_name" validate={[required()]} />
-    <TextInput source="uninomial" />
     <TextInput source="phylum" />
     <TextInput source="class" />
     <TextInput source="order" />
@@ -46,9 +45,14 @@ export const TaxonNameCreateEdit: FC = (props) => (
       <SelectInput optionText="publication_name" />
     </ReferenceInput>
     <TextInput source="volume_information" />
-    <BooleanInput label="Current" source="is_current" validate={required()} />
+    <BooleanInput
+      label="Current"
+      source="is_current"
+      validate={required()}
+      defaultValue={false}
+    />
     <TextInput source="origin" />
-    <TextInput source="informal" />
+    <SelectInput source="publication_status" choices={PublicationStatus} />
     <NumberInput source="form_desc_yr" />
     <NumberInput source="form_desc_mn" />
     <NumberInput source="form_desc_dy" />
@@ -58,7 +62,8 @@ export const TaxonNameCreateEdit: FC = (props) => (
     <BooleanInput
       label="Validated"
       source="validated"
-      validate={[required()]}
+      validate={required()}
+      defaultValue={false}
     />
     <TextInput source="source" />
     <TextInput source="external_id" />

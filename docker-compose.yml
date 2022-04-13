@@ -33,6 +33,12 @@ services:
       PYTHONPATH: .
       ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@taxman.com}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-password}
+      DB_HOST: ${DB_HOST:-postgres}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-password}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME:-postgres}
+      ENVIRONMENT: ${ENVIRONMENT:-"local"}
       DATABASE_URL: 'postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-password}@${DB_HOST:-postgres}:${DB_PORT:-5432}/${DB_NAME:-postgres}'
     depends_on:
       - "postgres"
@@ -41,6 +47,8 @@ services:
     build:
       context: frontend
       dockerfile: Dockerfile
+      args:
+        NPM_TOKEN: ${NPM_TOKEN}
     stdin_open: true
     volumes:
       - './frontend:/app:cached'

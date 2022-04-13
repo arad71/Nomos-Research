@@ -20,15 +20,18 @@ async def publication_list(
     response: Response,
     range: Optional[str] = RangeQueryParameter,
     sort: Optional[str] = None,
+    filter: Optional[str] = None,
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):
     """
     Get all publications
     """
-    publications = PublicationCrud.get_items(db, range=range, sort=sort)
+    publications, content_range = PublicationCrud.get_items(
+        db, range=range, sort=sort, list_filter=filter
+    )
     # This is necessary for react-admin to work
-    response.headers["Content-Range"] = f"0-9/{PublicationCrud.get_items_count(db)}"
+    response.headers["Content-Range"] = content_range
     return publications
 
 

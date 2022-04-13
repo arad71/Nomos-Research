@@ -22,7 +22,12 @@ export const CrossRefCreateEdit: FC = (props) => (
       choices={CrossRefType}
       validate={required()}
     />
-    <BooleanInput label="Active" source="active" validate={required()} />
+    <BooleanInput
+      label="Active"
+      source="active"
+      validate={required()}
+      defaultValue={false}
+    />
     <TextInput source="authorised_by" />
     <TextInput multiline source="comments" />
     <TextInput multiline source="notes" />

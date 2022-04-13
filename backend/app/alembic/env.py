@@ -66,9 +66,11 @@ def run_migrations_online():
     import app.db.informal_group.model
     import app.db.kingdom.model
     import app.db.publication.model
+    import app.db.role.model
     import app.db.taxon_name.model
     import app.db.taxon_rank.model
     import app.db.user.model
+    import app.db.user_role.model
     import app.db.vernacular.model
 
     configuration = config.get_section(config.config_ini_section)

@@ -31,7 +31,7 @@ export const PublicationCreateEdit: FC = (props) => (
     <RichTextInput source="citation_html" />
     <TextInput source="citation_author_year" />
     <TextInput source="notes" />
-    <BooleanInput label="Published" source="published" />
+    <BooleanInput label="Published" source="published" defaultValue={false} />
     <TextInput source="publisher" />
     <TextInput source="published_location" />
     <TextInput source="publication_date" />

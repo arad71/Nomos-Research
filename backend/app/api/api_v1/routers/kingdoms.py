@@ -20,15 +20,18 @@ async def kingdom_list(
     response: Response,
     range: Optional[str] = RangeQueryParameter,
     sort: Optional[str] = None,
+    filter: Optional[str] = None,
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):
     """
     Get all kingdoms
     """
-    kingdoms = KingdomCrud.get_items(db, range=range, sort=sort)
+    kingdoms, content_range = KingdomCrud.get_items(
+        db, range=range, sort=sort, list_filter=filter
+    )
     # This is necessary for react-admin to work
-    response.headers["Content-Range"] = f"0-9/{KingdomCrud.get_items_count(db)}"
+    response.headers["Content-Range"] = content_range
     return kingdoms
 
 

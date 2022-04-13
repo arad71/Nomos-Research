@@ -5,13 +5,13 @@ from fastapi import HTTPException, status
 from sqlalchemy import asc, desc
 from sqlalchemy.orm import Session
 
-from app.core.config import DEFAULT_PAGE_SIZE
+from app.core.config import settings
 from app.db.session import Base
 
 
 class Crud:
     @classmethod
-    def create_item(cls, db: Session, item: object, current_user: int):
+    def create_item(cls, db: Session, item: object, current_user: int = None):
         db_item = cls.model(**item.dict())
         setattr(db_item, "created_by", current_user)
         setattr(db_item, "updated_by", current_user)
@@ -29,26 +29,54 @@ class Crud:
         return item
 
     @classmethod
+    def get_by_property(cls, db: Session, property: str, value: any):
+        item = db.query(cls.model).filter(getattr(cls.model, property) == value).first()
+        return item
+
+    @classmethod
     def get_items(
-        cls, db: Session, range: str = f"[0,{DEFAULT_PAGE_SIZE}]", sort: str = None
-    ) -> t.List[Base]:
-        limit, skip = cls.get_skip_and_limit(range)
+        cls,
+        db: Session,
+        range: str = f"[0,{settings.DEFAULT_PAGE_SIZE}]",
+        sort: str = None,
+        list_filter: str = None,
+    ) -> (t.List[Base], str):
+        limit, skip, range_str = cls.get_skip_and_limit(range)
         query = db.query(cls.model)
+
         if sort:
             sort_by, sort_dir = cls.get_sort(sort)
             direction = desc if sort_dir == "DESC" else asc
             if hasattr(cls.model, sort_by):
                 query = query.order_by(direction(getattr(cls.model, sort_by)))
 
-        return query.offset(skip).limit(limit).all()
+        if list_filter:
+            # TODO: Implement additional filters as per
+            #  https://github.com/BIO-WA/BDRTaxMan/pull/162
+            filter_items = json.loads(list_filter)
+            for column in filter_items:
+                if hasattr(cls.model, column) and filter_items[column]:
+                    filter_value = filter_items[column]
+                    attr = getattr(cls.model, column)
+                    if isinstance(filter_value, list):
+                        query = query.filter(attr.in_(filter_value))
+                    else:
+                        query = query.filter(attr == filter_value)
+
+        # Number of filtered results without offset or limit
+        total = query.count()
+        content_range = f"{range_str}/{total}"
+        # Results with limit and offset
+        results = query.offset(skip).limit(limit).all()
+        return results, content_range
 
     @classmethod
     def get_skip_and_limit(cls, range):
         range = json.loads(range)
-        skip = range[0] or 0
-        limit = range[1] or DEFAULT_PAGE_SIZE
-        limit = limit - skip
-        return limit, skip
+        start = range[0] or 0
+        end = range[1] or settings.DEFAULT_PAGE_SIZE
+        limit = end - start + 1
+        return limit, start, f"{start}-{end}"
 
     @classmethod
     def get_sort(cls, sort):

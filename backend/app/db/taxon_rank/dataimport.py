@@ -15,6 +15,7 @@ class ImportTaxonRank(DataImportBase):
             "rank_abbrev",
             "direct_parent_rank_id",
             "required_parent_rank_id",
+            "uninomial",
             "legacy_id",
             "created_by",
             "updated_by",
@@ -35,6 +36,7 @@ class ImportTaxonRank(DataImportBase):
             "required_parent_rank_id": self.map_taxon_rank_parent_by_legacy_id(
                 row["REQ_PARENT_RID"], mapped_kingdom_id, row["RANK_ID"]
             ),
+            "uninomial": False,
             "legacy_id": row["RANK_ID"],
             "created_by": self.current_user,
             "updated_by": self.map_row_by_unique_key(
@@ -43,7 +45,8 @@ class ImportTaxonRank(DataImportBase):
             "updated_on": row["UPDATED_ON"],
         }
 
-        # We must insert these as we map them due to rows referencing other rows in this table.
+        # We must insert these as we map them due to rows referencing other rows in
+        # this table.
         self.insert(
             item, TaxonRankModel, f"uc_{TaxonRankModel.__tablename__}_legacy_id"
         )
