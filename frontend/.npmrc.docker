@@ -1,0 +1,3 @@
+//registry.marmelab.com/:_authToken=${NPM_TOKEN}
+￼
+@react-admin:registry=https://registry.marmelab.com

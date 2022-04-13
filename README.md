@@ -18,6 +18,23 @@
 
 The only dependencies for this project should be docker and docker-compose.
 
+
+### Setup
+
+This project uses private packages, before building you will need to obtain your NPM token and add it to your local `.env` file.
+
+The following commands will allow you to login to the marmelab registry which will store your token in `$HOME/.npmrc`
+```bash
+npm config set @react-admin:registry https://registry.marmelab.com
+npm login --registry=https://registry.marmelab.com
+```
+
+example .env
+```bash
+NPM_TOKEN="<Your token here>"
+```
+For more information see https://registry.marmelab.com
+
 ### Quick Start
 
 Starting the project
