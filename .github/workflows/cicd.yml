@@ -71,6 +71,8 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Build the docker-compose stack
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: scripts/build.sh
       - name: Run test suite
         run: scripts/test.sh
