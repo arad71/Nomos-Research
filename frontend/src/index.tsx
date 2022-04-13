@@ -4,7 +4,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import './index.css';
 import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import App from './App';
-import theme from './Theme'
+import theme from './Theme';
 
 ReactDOM.render(
   <Router>

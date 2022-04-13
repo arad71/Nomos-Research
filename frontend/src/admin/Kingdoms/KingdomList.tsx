@@ -3,7 +3,6 @@ import React, { FC } from 'react';
 import {
   Datagrid,
   DateField,
-  EditButton,
   List,
   NumberField,
   ReferenceField,
@@ -18,13 +17,13 @@ const useStyles = makeStyles({
     backgroundColor: 'White',
   },
   rowCell: {
-    border: '1px solid lightgrey'
+    border: '1px solid lightgrey',
   },
   headerCell: {
     backgroundColor: 'White',
     border: '1px solid lightgrey',
     borderBottom: '2px solid black',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
 });
 

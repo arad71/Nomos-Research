@@ -15,25 +15,27 @@ const useStyles = makeStyles({
     flex: 1,
   },
   appbar: {
-    color: "grey",
-    backgroundColor: "white"
+    color: 'grey',
+    backgroundColor: 'white',
   },
   boldtext: {
-    fontWeight: 600
-  }
+    fontWeight: 600,
+  },
 });
 
 const MyAppBar = (props: any) => {
   const classes = useStyles();
   return (
-    <AppBar className={classes.appbar}{...props}>
+    <AppBar className={classes.appbar} {...props}>
       <Typography
         variant="h5"
         color="inherit"
         className={classes.title}
         id="react-admin-title"
       />
-      <Typography variant="h5"><span className={classes.boldtext}>Nomos</span> Taxonomic Names Register</Typography>
+      <Typography variant="h5">
+        <span className={classes.boldtext}>Nomos</span> Taxonomic Names Register
+      </Typography>
       <span className={classes.spacer} />
     </AppBar>
   );
