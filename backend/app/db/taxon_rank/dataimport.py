@@ -62,5 +62,5 @@ class ImportTaxonRank(DataImportBase):
         return self.map_taxon_rank_by_legacy_id(legacy_id, kingdom_id)
 
     def map_taxon_rank_abbrev(self, val):
-        val = val.rstrip('.')
+        val = val.rstrip(".")
         return self.map_enum_base(val)
