@@ -29,7 +29,7 @@ class ImportTaxonRank(DataImportBase):
         item = {
             "kingdom_id": mapped_kingdom_id,
             "rank_name": row["RANK_NAME"],
-            "rank_abbrev": self.map_enum_base(row["RANK_ABBREV"]),
+            "rank_abbrev": self.map_taxon_rank_abbrev(row["RANK_ABBREV"]),
             "direct_parent_rank_id": self.map_taxon_rank_parent_by_legacy_id(
                 row["DIR_PARENT_RID"], mapped_kingdom_id, row["RANK_ID"]
             ),
@@ -60,3 +60,7 @@ class ImportTaxonRank(DataImportBase):
             return None
 
         return self.map_taxon_rank_by_legacy_id(legacy_id, kingdom_id)
+
+    def map_taxon_rank_abbrev(self, val):
+        val = val.rstrip('.')
+        return self.map_enum_base(val)
