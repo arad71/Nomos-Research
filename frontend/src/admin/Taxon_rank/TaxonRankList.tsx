@@ -7,10 +7,12 @@ import {
   List,
   NumberField,
   ReferenceField,
+  SelectField,
   TextField,
   BooleanField,
 } from 'react-admin';
 import FullNameField from '../shared/FullNameField';
+import RankAbbreviation from './RankAbbreviation';
 
 export const TaxonRankList: FC = (props) => (
   <List {...props} sort={{ field: 'rank_name', order: 'DESC' }}>
@@ -20,7 +22,7 @@ export const TaxonRankList: FC = (props) => (
         <TextField source="kingdom_name" />
       </ReferenceField>
       <TextField source="rank_name" />
-      <TextField source="rank_abbrev" />
+      <SelectField source="rank_abbrev" choices={RankAbbreviation} />
       <ReferenceField
         label="Direct Parent Rank"
         source="direct_parent_rank_id"
