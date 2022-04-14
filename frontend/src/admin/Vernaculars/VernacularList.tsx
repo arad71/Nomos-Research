@@ -7,10 +7,12 @@ import {
   List,
   NumberField,
   ReferenceField,
+  SelectField,
   TextField,
   useRecordContext,
   BooleanField,
 } from 'react-admin';
+import LanguageType from './LanguageType';
 
 const FullNameField = (props: any) => {
   const record = useRecordContext(props);
@@ -32,7 +34,7 @@ export const VernacularList: FC = (props) => (
       <ReferenceField source="taxon_name_id" reference="taxon_names">
         <TextField source="scientific_name" />
       </ReferenceField>
-      <TextField source="language" />
+      <SelectField source="language" choices={LanguageType} />
       <BooleanField source="lang_pref" />
       <BooleanField source="preferred" />
       <TextField source="source" />
