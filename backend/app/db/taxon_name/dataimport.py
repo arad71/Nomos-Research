@@ -72,7 +72,7 @@ class ImportTaxonName(DataImportBase):
             "is_current": self.map_y_n_to_bool(row["IS_CURRENT"]),
             "origin": row["ORIGIN"] or None,
             "publication_status": self.map_publication_status(row["INFORMAL"]),
-            "form_desc_yr": row["FORM_DESC_YR"] or row["PUB_YEAR"] or None,
+            "form_desc_yr": row["PUB_YEAR"] or row["FORM_DESC_YR"] or None,
             "form_desc_mn": row["FORM_DESC_MN"] or None,
             "form_desc_dy": row["FORM_DESC_DY"] or None,
             "comments": row["COMMENTS"] or None,
