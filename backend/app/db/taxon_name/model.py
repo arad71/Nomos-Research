@@ -24,7 +24,6 @@ from app.db.taxon_name.constants import (
     NATURALISED_COMMENTS,
     ORIGIN,
     PUBLICATION_ID,
-    PUBLICATION_YEAR,
     RANK_ID,
     SOURCE,
     TABLE_DESCRIPTION,
@@ -85,7 +84,6 @@ class TaxonName(Base, TableMixin):
         comment=VOLUME_INFORMATION,
         doc=VOLUME_INFORMATION,
     )
-    publication_year = Column(Integer, comment=PUBLICATION_YEAR, doc=PUBLICATION_YEAR)
     is_current = Column(
         Boolean,
         nullable=False,
