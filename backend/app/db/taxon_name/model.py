@@ -26,7 +26,6 @@ from app.db.taxon_name.constants import (
     PUBLICATION_ID,
     PUBLICATION_YEAR,
     RANK_ID,
-    RANK_NAME,
     SOURCE,
     TABLE_DESCRIPTION,
     TAXON_NAME_ID,
