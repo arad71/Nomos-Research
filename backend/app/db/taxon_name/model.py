@@ -1,4 +1,13 @@
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, Text, event
+from sqlalchemy import (
+    Boolean,
+    Column,
+    DateTime,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    event,
+)
 from sqlalchemy.orm import relationship
 from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy.types import Enum
@@ -164,9 +173,15 @@ class TaxonName(Base, TableMixin):
     authorised_on = Column(DateTime)
     legacy_id = Column(Integer)
 
-def map_canonical_name(mapper, connection, target):
-    vals = list(filter(None, [target.genus, target.specific_epithet, target.infraspecific_epithet]))
-    target.canonical_name = ' '.join(vals)
 
-event.listen(TaxonName, 'before_insert', map_canonical_name)
-event.listen(TaxonName, 'before_update', map_canonical_name)
+def map_canonical_name(mapper, connection, target):
+    vals = list(
+        filter(
+            None, [target.genus, target.specific_epithet, target.infraspecific_epithet]
+        )
+    )
+    target.canonical_name = " ".join(vals)
+
+
+event.listen(TaxonName, "before_insert", map_canonical_name)
+event.listen(TaxonName, "before_update", map_canonical_name)
