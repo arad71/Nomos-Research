@@ -154,11 +154,15 @@ def test_canonical_name_1(
         "is_current": test_taxon_name_canonical_name_1.is_current,
         "validated": test_taxon_name_canonical_name_1.validated,
         "genus": test_taxon_name_canonical_name_1.genus,
-        'canonical_name': test_taxon_name_canonical_name_1.canonical_name,
+        "canonical_name": test_taxon_name_canonical_name_1.canonical_name,
         "updated_by": test_taxon_name_canonical_name_1.updated_by,
-        "updated_on": test_taxon_name_canonical_name_1.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "updated_on": test_taxon_name_canonical_name_1.updated_on.strftime(
+            "%Y-%m-%dT%H:%M:%S.%f"
+        ),
         "created_by": test_taxon_name_canonical_name_1.created_by,
-        "created_on": test_taxon_name_canonical_name_1.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_taxon_name_canonical_name_1.created_on.strftime(
+            "%Y-%m-%dT%H:%M:%S.%f"
+        ),
     }
 
 
@@ -186,11 +190,15 @@ def test_canonical_name_2(
         "validated": test_taxon_name_canonical_name_2.validated,
         "genus": test_taxon_name_canonical_name_2.genus,
         "specific_epithet": test_taxon_name_canonical_name_2.specific_epithet,
-        'canonical_name': test_taxon_name_canonical_name_2.canonical_name,
+        "canonical_name": test_taxon_name_canonical_name_2.canonical_name,
         "updated_by": test_taxon_name_canonical_name_2.updated_by,
-        "updated_on": test_taxon_name_canonical_name_2.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "updated_on": test_taxon_name_canonical_name_2.updated_on.strftime(
+            "%Y-%m-%dT%H:%M:%S.%f"
+        ),
         "created_by": test_taxon_name_canonical_name_2.created_by,
-        "created_on": test_taxon_name_canonical_name_2.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_taxon_name_canonical_name_2.created_on.strftime(
+            "%Y-%m-%dT%H:%M:%S.%f"
+        ),
     }
 
 
@@ -219,11 +227,15 @@ def test_canonical_name_3(
         "genus": test_taxon_name_canonical_name_3.genus,
         "specific_epithet": test_taxon_name_canonical_name_3.specific_epithet,
         "infraspecific_epithet": test_taxon_name_canonical_name_3.infraspecific_epithet,
-        'canonical_name': test_taxon_name_canonical_name_3.canonical_name,
+        "canonical_name": test_taxon_name_canonical_name_3.canonical_name,
         "updated_by": test_taxon_name_canonical_name_3.updated_by,
-        "updated_on": test_taxon_name_canonical_name_3.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "updated_on": test_taxon_name_canonical_name_3.updated_on.strftime(
+            "%Y-%m-%dT%H:%M:%S.%f"
+        ),
         "created_by": test_taxon_name_canonical_name_3.created_by,
-        "created_on": test_taxon_name_canonical_name_3.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_taxon_name_canonical_name_3.created_on.strftime(
+            "%Y-%m-%dT%H:%M:%S.%f"
+        ),
     }
 
 
