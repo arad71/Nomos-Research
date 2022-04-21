@@ -1,5 +1,5 @@
 from sqlalchemy import Column, ForeignKey, Integer, String
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import backref, relationship
 from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy.types import Enum
 
@@ -34,7 +34,7 @@ class Citation(Base, TableMixin):
         comment=TAXON_NAME_ID,
         doc=TAXON_NAME_ID,
     )
-    taxon_name = relationship("TaxonName", backref=name_plural)
+    taxon_name = relationship("TaxonName", backref=backref(name_plural, lazy="dynamic"))
     author_id = Column(Integer, ForeignKey("author.author_id"))
     author = relationship("Author", backref=name_plural)
     author_type = Column(

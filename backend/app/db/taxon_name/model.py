@@ -6,6 +6,7 @@ from sqlalchemy import (
     Integer,
     String,
     Text,
+    desc,
     event,
 )
 from sqlalchemy.orm import relationship
@@ -171,14 +172,29 @@ class TaxonName(Base, TableMixin):
     legacy_id = Column(Integer)
 
 
-def map_canonical_name(mapper, connection, target):
-    vals = list(
+def calculate_fields(mapper, connection, target):
+    # canonical_name
+    canonical_name_vals = list(
         filter(
             None, [target.genus, target.specific_epithet, target.infraspecific_epithet]
         )
     )
-    target.canonical_name = " ".join(vals)
+    target.canonical_name = " ".join(canonical_name_vals)
+
+    # author
+    citations = target.citations.order_by(desc("author_type")).order_by(
+        desc("author_order")
+    )
+    author_vals = [x.author.author for x in citations]
+    last = author_vals.pop()
+    authors = " & ".join([", ".join(author_vals), last])
+
+    # TODO Replace hardcoded string with constant
+    if target.kingdom.kingdom_name == "Animalia":
+        authors = f"({authors} {target.form_desc_yr})"
+
+    target.author = authors
 
 
-event.listen(TaxonName, "before_insert", map_canonical_name)
-event.listen(TaxonName, "before_update", map_canonical_name)
+event.listen(TaxonName, "before_insert", calculate_fields)
+event.listen(TaxonName, "before_update", calculate_fields)
