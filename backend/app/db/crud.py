@@ -1,6 +1,6 @@
 import json
 import typing as t
-from typing import List, Any
+from typing import Any
 
 from fastapi import HTTPException, status
 from pydantic import BaseModel
