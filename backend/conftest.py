@@ -368,6 +368,7 @@ def test_taxon_name(
         rank_id=test_taxon_rank.taxon_rank_id,
         is_current=True,
         validated=True,
+        canonical_name="",
         updated_by=test_superuser.user_id,
         updated_on=now,
         created_by=test_superuser.user_id,
@@ -392,6 +393,103 @@ def test_taxon_name_2(
         rank_id=test_taxon_rank.taxon_rank_id,
         is_current=True,
         validated=True,
+        canonical_name="",
+        updated_by=test_superuser.user_id,
+        updated_on=now,
+        created_by=test_superuser.user_id,
+        created_on=now,
+    )
+    test_db.add(taxon_name)
+    test_db.commit()
+    return taxon_name
+
+
+@pytest.fixture
+def test_taxon_name_canonical_name_1(
+    test_db, test_kingdom, test_taxon_rank, test_publication, test_superuser
+) -> TaxonName:
+    """
+    Taxon Name for testing Canonical Name - Genus only
+    """
+
+    now = datetime.datetime.utcnow()
+    taxon_name = TaxonName(
+        kingdom_id=test_kingdom.kingdom_id,
+        rank_id=test_taxon_rank.taxon_rank_id,
+        is_current=True,
+        validated=True,
+        genus="Acanthiza",
+        specific_epithet=None,
+        infraspecific_epithet=None,
+        # publication_year=1911,
+        canonical_name="Acanthiza",
+        # author="Mathews",
+        # scientific_name="Acanthiza Mathews, 1911",
+        # formatted_scientific_name="<i>Acanthiza</i> Mathews, 1911",
+        updated_by=test_superuser.user_id,
+        updated_on=now,
+        created_by=test_superuser.user_id,
+        created_on=now,
+    )
+    test_db.add(taxon_name)
+    test_db.commit()
+    return taxon_name
+
+
+@pytest.fixture
+def test_taxon_name_canonical_name_2(
+    test_db, test_kingdom, test_taxon_rank, test_publication, test_superuser
+) -> TaxonName:
+    """
+    Taxon Name for testing Canonical Name - Genus and specific_epithet
+    """
+
+    now = datetime.datetime.utcnow()
+    taxon_name = TaxonName(
+        kingdom_id=test_kingdom.kingdom_id,
+        rank_id=test_taxon_rank.taxon_rank_id,
+        is_current=True,
+        validated=True,
+        genus="Acanthiza",
+        specific_epithet="iredalei",
+        infraspecific_epithet=None,
+        # publication_year=1911,
+        canonical_name="Acanthiza iredalei",
+        # author="Mathews",
+        # scientific_name="Acanthiza iredalei Mathews, 1911",
+        # formatted_scientific_name="<i>Acanthiza iredalei</i> Mathews, 1911",
+        updated_by=test_superuser.user_id,
+        updated_on=now,
+        created_by=test_superuser.user_id,
+        created_on=now,
+    )
+    test_db.add(taxon_name)
+    test_db.commit()
+    return taxon_name
+
+
+@pytest.fixture
+def test_taxon_name_canonical_name_3(
+    test_db, test_kingdom, test_taxon_rank, test_publication, test_superuser
+) -> TaxonName:
+    """
+    Taxon Name for testing Canonical Name - Genus, specific_epithet and infraspecific_epithet
+    """
+
+    now = datetime.datetime.utcnow()
+    taxon_name = TaxonName(
+        kingdom_id=test_kingdom.kingdom_id,
+        rank_id=test_taxon_rank.taxon_rank_id,
+        is_current=True,
+        validated=True,
+        genus="Acanthiza",
+        specific_epithet="iredalei",
+        infraspecific_epithet="iredalei",
+        # publication_year=1911,
+        canonical_name="Acanthiza iredalei iredalei",
+        # author="Mathews",
+        # scientific_name="Acanthiza iredalei iredalei Mathews, 1911",
+        # formatted_scientific_name="<i>Acanthiza iredalei iredalei</i> Mathews, 1911",
         updated_by=test_superuser.user_id,
         updated_on=now,
         created_by=test_superuser.user_id,
