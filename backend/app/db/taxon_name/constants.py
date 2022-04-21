@@ -36,12 +36,10 @@ ORIGIN = (
     "* = naturalised"
 )
 IS_CURRENT = "Current status, Y = current, N = not current"
-PUBLICATION_YEAR = "The year of publication"
 VOLUME_INFORMATION = (
     "The volume information of the publication this name was published in"
 )
 PUBLICATION_ID = "The publication ID of the publication this name was published in"
-RANK_NAME = "A duplicate of the rankname field in HBTRanks. To aid performance."
 RANK_ID = "The rank ID of this name"
 KINGDOM_ID = "Kingdom this name belongs to. A derived field"
 TAXON_NAME_ID = "Unique identifier for name"
