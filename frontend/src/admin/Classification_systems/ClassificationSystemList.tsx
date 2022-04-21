@@ -7,17 +7,19 @@ import {
   List,
   NumberField,
   ReferenceField,
+  SelectField,
   TextField,
   BooleanField,
 } from 'react-admin';
 import FullNameField from '../shared/FullNameField';
+import ClassificationType from './ClassificationType';
 
 export const ClassificationSystemList: FC = (props) => (
   <List {...props} sort={{ field: 'class_desc', order: 'DESC' }}>
     <Datagrid rowClick="show">
       <NumberField source="id" />
       <TextField source="class_desc" />
-      <TextField source="class_type" />
+      <SelectField source="class_type" choices={ClassificationType} />
       <BooleanField source="preferred" />
       <TextField source="sort_order" />
       <ReferenceField source="created_by" reference="users">

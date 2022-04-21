@@ -5,9 +5,12 @@ import {
   required,
   Show,
   SimpleShowLayout,
+  SelectField,
   TextField,
+  BooleanField,
 } from 'react-admin';
 import Aside from '../shared/Aside';
+import RankAbbreviation from './RankAbbreviation';
 
 export const TaxonRankShow: FC = (props) => {
   return (
@@ -21,7 +24,7 @@ export const TaxonRankShow: FC = (props) => {
           <TextField source="kingdom_name" />
         </ReferenceField>
         <TextField source="rank_name" validate={[required()]} />
-        <TextField source="rank_abbrev" />
+        <SelectField source="rank_abbrev" choices={RankAbbreviation} />
         <ReferenceField
           label="Direct Parent Rank"
           source="direct_parent_rank_id"
@@ -36,6 +39,7 @@ export const TaxonRankShow: FC = (props) => {
         >
           <NumberField source="rank_name" />
         </ReferenceField>
+        <BooleanField source="uninomial" />
       </SimpleShowLayout>
     </Show>
   );

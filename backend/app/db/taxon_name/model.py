@@ -24,9 +24,7 @@ from app.db.taxon_name.constants import (
     NATURALISED_COMMENTS,
     ORIGIN,
     PUBLICATION_ID,
-    PUBLICATION_YEAR,
     RANK_ID,
-    RANK_NAME,
     SOURCE,
     TABLE_DESCRIPTION,
     TAXON_NAME_ID,
@@ -61,7 +59,6 @@ class TaxonName(Base, TableMixin):
         doc=RANK_ID,
     )
     taxon_rank = relationship("TaxonRank", backref=name_plural)
-    uninomial = Column(String)
     # kingdom = Column(String)
     phylum = Column(String)
     taxon_class = Column(String, name="class", key="class")
@@ -87,7 +84,6 @@ class TaxonName(Base, TableMixin):
         comment=VOLUME_INFORMATION,
         doc=VOLUME_INFORMATION,
     )
-    publication_year = Column(Integer, comment=PUBLICATION_YEAR, doc=PUBLICATION_YEAR)
     is_current = Column(
         Boolean,
         nullable=False,

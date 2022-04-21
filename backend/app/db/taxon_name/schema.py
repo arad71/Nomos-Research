@@ -24,9 +24,7 @@ from app.db.taxon_name.constants import (
     NATURALISED_COMMENTS,
     ORIGIN,
     PUBLICATION_ID,
-    PUBLICATION_YEAR,
     RANK_ID,
-    RANK_NAME,
     SOURCE,
     TABLE_DESCRIPTION,
     TAXON_NAME_ID,
@@ -40,7 +38,6 @@ from app.db.taxon_rank.schema import TaxonRank
 class TaxonNameBase(BaseModel):
     kingdom_id: int = Field(description=KINGDOM_ID)
     rank_id: int = Field(description=RANK_ID)
-    uninomial: Optional[str]
     phylum: Optional[str]
     # class is a reserved word, will this workaround be enough?
     taxon_class: Optional[str]
@@ -54,7 +51,6 @@ class TaxonNameBase(BaseModel):
     infraspecific_epithet: Optional[str]
     publication_id: Optional[int] = Field(description=PUBLICATION_ID)
     volume_information: Optional[str] = Field(description=VOLUME_INFORMATION)
-    publication_year: Optional[int] = Field(description=PUBLICATION_YEAR)
     is_current: bool = Field(description=IS_CURRENT)
     origin: Optional[str] = Field(description=ORIGIN)
     publication_status: Optional[enums.PublicationStatus]

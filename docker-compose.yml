@@ -47,6 +47,8 @@ services:
     build:
       context: frontend
       dockerfile: Dockerfile
+      args:
+        NPM_TOKEN: ${NPM_TOKEN}
     stdin_open: true
     volumes:
       - './frontend:/app:cached'

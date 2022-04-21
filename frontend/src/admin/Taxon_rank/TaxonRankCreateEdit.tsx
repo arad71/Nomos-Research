@@ -4,6 +4,7 @@ import {
   SelectInput,
   SimpleForm,
   TextInput,
+  BooleanInput,
 } from 'react-admin';
 import React, { FC } from 'react';
 import RankAbbreviation from './RankAbbreviation';
@@ -29,5 +30,6 @@ export const TaxonRankCreateEdit: FC = (props) => (
     >
       <SelectInput optionText="rank_name" />
     </ReferenceInput>
+    <BooleanInput source="uninomial" defaultValue={false} />
   </SimpleForm>
 );

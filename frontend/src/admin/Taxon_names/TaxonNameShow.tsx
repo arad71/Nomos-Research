@@ -7,10 +7,13 @@ import {
   ReferenceField,
   Show,
   SimpleShowLayout,
+  SelectField,
   TextField,
   BooleanField,
 } from 'react-admin';
 import Aside from '../shared/Aside';
+import NaturalisedStatus from './NaturalisedStatus';
+import PublicationStatus from './PublicationStatus';
 
 export const TaxonNameShow: FC = (props) => (
   <Show aside={<Aside />} {...props}>
@@ -22,7 +25,6 @@ export const TaxonNameShow: FC = (props) => (
         <TextField source="rank_name" />
       </ReferenceField>
       <TextField source="scientific_name" />
-      <TextField source="uninomial" />
       <TextField source="phylum" />
       <TextField source="class" />
       <TextField source="order" />
@@ -39,7 +41,7 @@ export const TaxonNameShow: FC = (props) => (
       <TextField source="volume_information" />
       <BooleanField source="is_current" />
       <TextField source="origin" />
-      <TextField source="publication_status" />
+      <SelectField source="publication_status" choices={PublicationStatus} />
       <NumberField source="form_desc_yr" />
       <NumberField source="form_desc_mn" />
       <NumberField source="form_desc_dy" />
@@ -53,7 +55,7 @@ export const TaxonNameShow: FC = (props) => (
       <TextField source="author" />
       <TextField source="vernacular" />
       <TextField source="editor" />
-      <TextField source="naturalised_status" />
+      <SelectField source="naturalised_status" choices={NaturalisedStatus} />
       <BooleanField source="naturalised_certainty" />
       <TextField source="is_eradicated" />
       <TextField source="naturalised_comments" />
