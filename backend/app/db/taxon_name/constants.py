@@ -36,7 +36,6 @@ ORIGIN = (
     "* = naturalised"
 )
 IS_CURRENT = "Current status, Y = current, N = not current"
-PUBLICATION_YEAR = "The year of publication"
 VOLUME_INFORMATION = (
     "The volume information of the publication this name was published in"
 )

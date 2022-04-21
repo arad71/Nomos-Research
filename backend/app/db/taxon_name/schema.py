@@ -24,7 +24,6 @@ from app.db.taxon_name.constants import (
     NATURALISED_COMMENTS,
     ORIGIN,
     PUBLICATION_ID,
-    PUBLICATION_YEAR,
     RANK_ID,
     SOURCE,
     TABLE_DESCRIPTION,
@@ -52,7 +51,6 @@ class TaxonNameBase(BaseModel):
     infraspecific_epithet: Optional[str]
     publication_id: Optional[int] = Field(description=PUBLICATION_ID)
     volume_information: Optional[str] = Field(description=VOLUME_INFORMATION)
-    publication_year: Optional[int] = Field(description=PUBLICATION_YEAR)
     is_current: bool = Field(description=IS_CURRENT)
     origin: Optional[str] = Field(description=ORIGIN)
     publication_status: Optional[enums.PublicationStatus]
@@ -95,6 +93,7 @@ class TaxonName(TaxonNameBase, TableBase):
     taxon_name_id: int = Field(description=TAXON_NAME_ID)
     kingdom: Kingdom
     taxon_rank: TaxonRank
+    canonical_name: Optional[str]
 
     class Config:
         orm_mode = True
