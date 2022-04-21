@@ -1,7 +1,5 @@
 import pytest
-from conftest import reader_token_headers
 
-from app.db.role.constants import Role
 from app.db.user import model
 
 
@@ -18,6 +16,40 @@ def test_get_users(client, test_superuser, superuser_token_headers):
             "is_active": test_superuser.is_active,
         }
     ]
+
+
+def test_filter_users(
+    client, test_superuser, test_app_support, superuser_token_headers
+):
+    response = client.get(
+        '/api/v1/users?filter={"active":true}', headers=superuser_token_headers
+    )
+    assert response.status_code == 422
+    response = client.get(
+        '/api/v1/users?filter={"is_active":true}', headers=superuser_token_headers
+    )
+    assert response.status_code == 200
+    assert len(response.json()) == 2
+    response = client.get(
+        '/api/v1/users?filter={"is_active":false}', headers=superuser_token_headers
+    )
+    assert response.status_code == 200
+    assert len(response.json()) == 0
+
+    response = client.get(
+        '/api/v1/users?filter={"user_role___role___name":"SUPER_ADMIN"}',
+        headers=superuser_token_headers,
+    )
+    assert response.status_code == 200
+    assert len(response.json()) == 1
+    assert response.json()[0]["email"] == test_superuser.email
+    response = client.get(
+        '/api/v1/users?filter={"user_role___role___name":"APPLICATION_SUPPORT"}',
+        headers=superuser_token_headers,
+    )
+    assert response.status_code == 200
+    assert len(response.json()) == 1
+    assert response.json()[0]["email"] == test_app_support.email
 
 
 def test_delete_user(client, test_superuser, test_db, superuser_token_headers):
