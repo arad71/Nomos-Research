@@ -3,11 +3,10 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.schema import UniqueConstraint
 
 from app.db.informal_group.constants import CLASSIFICATION_SYSTEM_ID, TABLE_DESCRIPTION
-from app.db.models import TableMixin
-from app.db.session import Base
+from app.db.models import BaseModel, TableMixin
 
 
-class InformalGroup(Base, TableMixin):
+class InformalGroup(BaseModel, TableMixin):
     __tablename__ = "informal_group"
     __table_args__ = (
         UniqueConstraint(

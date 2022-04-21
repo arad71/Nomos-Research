@@ -14,12 +14,20 @@ import AuthorType from './AuthorType';
 import FullNameField from '../shared/FullNameField';
 
 export const CitationList: FC = (props) => (
-  <List {...props} sort={{ field: 'kingdom_name', order: 'DESC' }}>
+  <List {...props} sort={{ field: 'taxon_name___scientific_name' }}>
     <Datagrid rowClick="show">
-      <ReferenceField source="taxon_name_id" reference="taxon_names">
+      <ReferenceField
+        source="taxon_name_id"
+        reference="taxon_names"
+        sortBy="taxon_name___scientific_name"
+      >
         <TextField source="scientific_name" />
       </ReferenceField>
-      <ReferenceField source="author_id" reference="authors">
+      <ReferenceField
+        source="author_id"
+        reference="authors"
+        sortBy="author___author"
+      >
         <TextField source="author" />
       </ReferenceField>
       <SelectField source="author_type" choices={AuthorType} />

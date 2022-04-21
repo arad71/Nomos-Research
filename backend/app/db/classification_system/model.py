@@ -11,11 +11,10 @@ from app.db.classification_system.constants import (
     SORT_ORDER,
     TABLE_DESCRIPTION,
 )
-from app.db.models import TableMixin
-from app.db.session import Base
+from app.db.models import BaseModel, TableMixin
 
 
-class ClassificationSystem(Base, TableMixin):
+class ClassificationSystem(BaseModel, TableMixin):
     __tablename__ = "classification_system"
     __table_args__ = (
         UniqueConstraint("legacy_id_name", name=f"uc_{ __tablename__}_legacy_id"),
