@@ -6,15 +6,16 @@ from sqlalchemy import (
     Integer,
     String,
     Text,
-    desc,
     event,
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy.types import Enum
 
+from app.db.citation.enums import AuthorType
 from app.db.models import BaseModel, TableMixin
 from app.db.taxon_name import enums
+from app.db.taxon_name.calculated import calculate_fields
 from app.db.taxon_name.constants import (
     AUTHOR,
     COMMENTS,
@@ -169,30 +170,6 @@ class TaxonName(BaseModel, TableMixin):
     authorised_by = Column(String(16))
     authorised_on = Column(DateTime)
     legacy_id = Column(Integer)
-
-
-def calculate_fields(mapper, connection, target):
-    # canonical_name
-    canonical_name_vals = list(
-        filter(
-            None, [target.genus, target.specific_epithet, target.infraspecific_epithet]
-        )
-    )
-    target.canonical_name = " ".join(canonical_name_vals)
-
-    # author
-    citations = target.citations.order_by(desc("author_type")).order_by(
-        desc("author_order")
-    )
-    author_vals = [x.author.author for x in citations]
-    last = author_vals.pop()
-    authors = " & ".join([", ".join(author_vals), last])
-
-    # TODO Replace hardcoded string with constant
-    if target.kingdom.kingdom_name == "Animalia":
-        authors = f"({authors} {target.form_desc_yr})"
-
-    target.author = authors
 
 
 event.listen(TaxonName, "before_insert", calculate_fields)
