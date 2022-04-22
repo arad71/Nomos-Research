@@ -27,13 +27,21 @@ const FullNameField = (props: any) => {
 FullNameField.defaultProps = { label: 'Name' };
 
 export const CrossReferenceList: FC = (props) => (
-  <List {...props} sort={{ field: 'class_desc', order: 'DESC' }}>
+  <List {...props} sort={{ field: 'old_name___scientific_name' }}>
     <Datagrid rowClick="show">
       <NumberField source="id" />
-      <ReferenceField source="old_name_id" reference="taxon_names">
+      <ReferenceField
+        source="old_name_id"
+        reference="taxon_names"
+        sortBy="old_name___scientific_name"
+      >
         <TextField source="scientific_name" />
       </ReferenceField>
-      <ReferenceField source="new_name_id" reference="taxon_names">
+      <ReferenceField
+        source="new_name_id"
+        reference="taxon_names"
+        sortBy="new_name___scientific_name"
+      >
         <TextField source="scientific_name" />
       </ReferenceField>
       <SelectField source="cross_reference_type" choices={CrossRefType} />

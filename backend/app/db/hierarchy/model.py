@@ -8,12 +8,11 @@ from app.db.hierarchy.constants import (
     TABLE_DESCRIPTION,
     TAXON_NAME_ID,
 )
-from app.db.models import TableMixin
-from app.db.session import Base
+from app.db.models import BaseModel, TableMixin
 from app.db.taxon_name.model import TaxonName
 
 
-class Hierarchy(Base, TableMixin):
+class Hierarchy(BaseModel, TableMixin):
     __tablename__ = "hierarchy"
     __table_args__ = (
         UniqueConstraint(

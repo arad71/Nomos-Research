@@ -8,9 +8,10 @@ import {
   List,
   TextField,
 } from 'react-admin';
+import { FilterSidebar } from './FilterSidebar';
 
 export const UserList: FC = (props) => (
-  <List {...props}>
+  <List aside={<FilterSidebar />} {...props}>
     <Datagrid rowClick="show">
       <TextField source="id" />
       <EmailField source="email" />

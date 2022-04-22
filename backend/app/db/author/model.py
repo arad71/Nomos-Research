@@ -10,11 +10,10 @@ from app.db.author.constants import (
     SURNAME,
     TABLE_DESCRIPTION,
 )
-from app.db.models import TableMixin
-from app.db.session import Base
+from app.db.models import BaseModel, TableMixin
 
 
-class Author(Base, TableMixin):
+class Author(BaseModel, TableMixin):
     __tablename__ = "author"
     __table_args__ = (
         UniqueConstraint("legacy_id_name", name=f"uc_{ __tablename__}_legacy_id"),

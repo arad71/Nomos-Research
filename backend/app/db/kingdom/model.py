@@ -7,11 +7,10 @@ from app.db.kingdom.constants import (
     KINGDOM_NAME,
     TABLE_DESCRIPTION,
 )
-from app.db.models import TableMixin
-from app.db.session import Base
+from app.db.models import BaseModel, TableMixin
 
 
-class Kingdom(Base, TableMixin):
+class Kingdom(BaseModel, TableMixin):
     __tablename__ = "kingdom"
     __table_args__ = (
         UniqueConstraint("legacy_id", name=f"uc_{ __tablename__}_legacy_id"),
