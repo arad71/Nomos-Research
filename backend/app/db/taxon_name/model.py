@@ -13,8 +13,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy.types import Enum
 
-from app.db.models import TableMixin
-from app.db.session import Base
+from app.db.models import BaseModel, TableMixin
 from app.db.taxon_name import enums
 from app.db.taxon_name.constants import (
     AUTHOR,
@@ -44,7 +43,7 @@ from app.db.taxon_name.constants import (
 )
 
 
-class TaxonName(Base, TableMixin):
+class TaxonName(BaseModel, TableMixin):
     __tablename__ = "taxon_name"
     __table_args__ = (
         UniqueConstraint("legacy_id", name=f"uc_{ __tablename__}_legacy_id"),

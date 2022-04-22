@@ -3,8 +3,7 @@ from sqlalchemy.orm import backref, relationship
 from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy.types import Enum
 
-from app.db.models import TableMixin
-from app.db.session import Base
+from app.db.models import BaseModel, TableMixin
 from app.db.taxon_rank import enums
 from app.db.taxon_rank.constants import (
     DIRECT_PARENT,
@@ -16,7 +15,7 @@ from app.db.taxon_rank.constants import (
 )
 
 
-class TaxonRank(Base, TableMixin):
+class TaxonRank(BaseModel, TableMixin):
     __tablename__ = "taxon_rank"
     __table_args__ = (
         UniqueConstraint(

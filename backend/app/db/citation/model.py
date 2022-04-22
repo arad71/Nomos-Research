@@ -10,11 +10,10 @@ from app.db.citation.constants import (
     TABLE_DESCRIPTION,
     TAXON_NAME_ID,
 )
-from app.db.models import TableMixin
-from app.db.session import Base
+from app.db.models import BaseModel, TableMixin
 
 
-class Citation(Base, TableMixin):
+class Citation(BaseModel, TableMixin):
     __tablename__ = "citation"
     __table_args__ = (
         UniqueConstraint(

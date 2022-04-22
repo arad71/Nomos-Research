@@ -14,12 +14,11 @@ from app.db.cross_reference.constants import (
     OLD_NAME_ID,
     TABLE_DESCRIPTION,
 )
-from app.db.models import TableMixin
-from app.db.session import Base
+from app.db.models import BaseModel, TableMixin
 from app.db.taxon_name.model import TaxonName
 
 
-class CrossReference(Base, TableMixin):
+class CrossReference(BaseModel, TableMixin):
     __tablename__ = "cross_reference"
     __table_args__ = (
         UniqueConstraint("legacy_id", name=f"uc_{ __tablename__}_legacy_id"),

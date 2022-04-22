@@ -1,7 +1,15 @@
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, func
 from sqlalchemy.ext.declarative import declared_attr
+from sqlalchemy_mixins.repr import ReprMixin
+from sqlalchemy_mixins.smartquery import SmartQueryMixin
 
 from app.db.session import Base
+
+
+class BaseModel(Base, SmartQueryMixin, ReprMixin):
+    __abstract__ = True
+    __repr__ = ReprMixin.__repr__
+    pass
 
 
 # See https://docs.sqlalchemy.org/en/13/orm/extensions/declarative/mixins.html
@@ -40,7 +48,7 @@ class TableMixin(object):
         )
 
 
-class PublicationAuthor(Base):
+class PublicationAuthor(BaseModel):
     __tablename__ = "publication_author"
 
     publication_id = Column(ForeignKey("publication.publication_id"), primary_key=True)

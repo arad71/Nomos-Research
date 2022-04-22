@@ -1,17 +1,25 @@
 import json
 import typing as t
+from typing import Any
 
 from fastapi import HTTPException, status
-from sqlalchemy import asc, desc
+from pydantic import BaseModel
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
+from sqlalchemy_mixins.smartquery import smart_query
 
 from app.core.config import settings
 from app.db.session import Base
 
 
 class Crud:
+    search_fields: list[Any] = []
+    model: Base = None
+    name: str = None
+    id_key: str = None
+
     @classmethod
-    def create_item(cls, db: Session, item: object, current_user: int = None):
+    def create_item(cls, db: Session, item: BaseModel, current_user: int = None):
         db_item = cls.model(**item.dict())
         setattr(db_item, "created_by", current_user)
         setattr(db_item, "updated_by", current_user)
@@ -43,26 +51,42 @@ class Crud:
     ) -> (t.List[Base], str):
         limit, skip, range_str = cls.get_skip_and_limit(range)
         query = db.query(cls.model)
+        # See https://bit.ly/388m5sY for details on how sorting and filtering is
+        # implemented using the smart_query from sqlalchemy_mixins
 
+        sort_attrs = []
         if sort:
             sort_by, sort_dir = cls.get_sort(sort)
-            direction = desc if sort_dir == "DESC" else asc
-            if hasattr(cls.model, sort_by):
-                query = query.order_by(direction(getattr(cls.model, sort_by)))
+            direction = "-" if sort_dir == "DESC" else ""
+            sort_value = f"{direction}{sort_by}"
+            sort_attrs.append(sort_value)
 
+        filters = {}
         if list_filter:
             # TODO: Implement additional filters as per
             #  https://github.com/BIO-WA/BDRTaxMan/pull/162
             filter_items = json.loads(list_filter)
+            column: str
             for column in filter_items:
-                if hasattr(cls.model, column) and filter_items[column]:
-                    filter_value = filter_items[column]
-                    attr = getattr(cls.model, column)
-                    if isinstance(filter_value, list):
-                        query = query.filter(attr.in_(filter_value))
-                    else:
-                        query = query.filter(attr == filter_value)
+                filter_value = filter_items[column]
+                if column == "q":
+                    if cls.search_fields:
+                        conditions = []
+                        for search_field in cls.search_fields:
+                            conditions.append(search_field.ilike(f"%{filter_value}"))
+                        query = query.filter(or_(*conditions))
 
+                else:
+                    if isinstance(filter_value, list):
+                        column = f"{column}__in"
+                    filters[column] = filter_value
+
+        try:
+            query = smart_query(query, filters=filters, sort_attrs=sort_attrs or None)
+        except KeyError as err:
+            raise HTTPException(
+                status.HTTP_422_UNPROCESSABLE_ENTITY, detail=err.__repr__()
+            )
         # Number of filtered results without offset or limit
         total = query.count()
         content_range = f"{range_str}/{total}"

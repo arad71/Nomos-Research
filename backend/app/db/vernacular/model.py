@@ -2,8 +2,7 @@ from sqlalchemy import Boolean, Column, Enum, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 from sqlalchemy.schema import UniqueConstraint
 
-from app.db.models import TableMixin
-from app.db.session import Base
+from app.db.models import BaseModel, TableMixin
 from app.db.vernacular import enums
 from app.db.vernacular.constants import (
     LANG_PREF,
@@ -16,7 +15,7 @@ from app.db.vernacular.constants import (
 )
 
 
-class Vernacular(Base, TableMixin):
+class Vernacular(BaseModel, TableMixin):
     __tablename__ = "vernacular"
     __table_args__ = (
         UniqueConstraint(
