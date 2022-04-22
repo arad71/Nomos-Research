@@ -158,11 +158,12 @@ def test_app_support(test_db) -> User:
     return create_user_with_role(Role.APPLICATION_SUPPORT, test_db)
 
 
-def create_user_with_role(role, test_db):
+def create_user_with_role(role, test_db) -> User:
     role_name = role["name"]
     user = User(
         email=f"{role_name}@email.com",
         hashed_password=get_password_hash(),
+        is_active=True,
     )
     test_db.add(user)
     test_db.commit()
@@ -175,6 +176,14 @@ def create_user_with_role(role, test_db):
     test_db.add(user_role)
     test_db.commit()
     return user
+
+
+@pytest.fixture
+def test_role(test_db):
+    role = RoleModel(name="test role", description="test role description")
+    test_db.add(role)
+    test_db.commit()
+    return role
 
 
 @pytest.fixture
