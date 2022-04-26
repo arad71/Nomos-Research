@@ -8,7 +8,9 @@ from app.db.citation.enums import AuthorType
 
 def calculate_fields(mapper, connection, target):
     target.canonical_name = map_canonical_name(mapper, connection, target)
-    target.author = map_authors(mapper, connection, target)
+    # If we don't have an ID yet we cannot have relationships
+    if hasattr(target, "taxon_name_id") and target.taxon_name_id:
+        target.author = map_authors(mapper, connection, target)
 
 
 def map_canonical_name(mapper, connection, target):
@@ -45,9 +47,10 @@ def map_authors(mapper, connection, target):
         if AuthorType.current in author_types:
             current_authors = stringify_author_group(author_types[AuthorType.current])
             val = " ".join([val, current_authors])
-        return val
+        if val:
+            return val
 
-    return ""
+    return None
 
 
 def stringify_author_group(authors):
@@ -56,5 +59,7 @@ def stringify_author_group(authors):
 
     last = authors.pop()
     return " & ".join(
-        [", ".join([k.author.author for k in authors]), last.author.author]
+        filter(
+            None, [", ".join([k.author.author for k in authors]), last.author.author]
+        )
     )

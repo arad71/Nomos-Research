@@ -64,7 +64,6 @@ class TaxonNameBase(BaseModel):
     source: Optional[str] = Field(description=SOURCE)
     external_id: Optional[str] = Field(description=EXTERNAL_ID)
     family_code: Optional[str] = Field(description=FAMILY_CODE)
-    author: Optional[str] = Field(description=AUTHOR)
     vernacular: Optional[str] = Field(description=VERNACULAR)
     editor: Optional[str]
     naturalised_status: Optional[enums.NaturalisedStatus]
@@ -94,6 +93,7 @@ class TaxonName(TaxonNameBase, TableBase):
     kingdom: Kingdom
     taxon_rank: TaxonRank
     canonical_name: Optional[str]
+    author: Optional[str] = Field(description=AUTHOR)
 
     class Config:
         orm_mode = True

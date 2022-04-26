@@ -12,7 +12,6 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy.types import Enum
 
-from app.db.citation.enums import AuthorType
 from app.db.models import BaseModel, TableMixin
 from app.db.taxon_name import enums
 from app.db.taxon_name.calculated import calculate_fields

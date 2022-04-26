@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import os
 
+from sqlalchemy import orm
+
 from app.db.author.dataimport import ImportAuthor
 from app.db.citation.dataimport import ImportCitation
 from app.db.classification_system.dataimport import ImportClassificationSystem
@@ -11,6 +13,7 @@ from app.db.kingdom.dataimport import ImportKingdom
 from app.db.publication.dataimport import ImportPublication
 from app.db.session import SessionLocal
 from app.db.taxon_name.dataimport import ImportTaxonName, ImportTaxonNameFamilyNid
+from app.db.taxon_name.model import TaxonName
 from app.db.taxon_rank.dataimport import ImportTaxonRank
 from app.db.user.crud import UserCrud
 from app.db.user.dataimport import ImportUser, ImportUserDefaults
@@ -21,6 +24,21 @@ def get_admin_id():
     admin_email = os.getenv("ADMIN_EMAIL", "admin@taxman.com")
     admin = UserCrud.get_user_by_email(db=db, email=admin_email)
     return admin.user_id
+
+
+def trigger_calculated_fields(db):
+    # Calculate fields after related data imported
+    line_count = 0
+    for r in db.query(TaxonName).all():
+        orm.attributes.flag_dirty(r)
+        db.add(r)
+        line_count += 1
+        if line_count % 100 == 0:
+            print(".", flush=True, end="")
+            db.commit()
+            if line_count % 10000 == 0:
+                print("", flush=True)
+    db.commit()
 
 
 if __name__ == "__main__":
@@ -45,3 +63,4 @@ if __name__ == "__main__":
     ImportCrossReference(db, admin_id).ingest("HBTXREFS_DATA_TABLE.csv")
     ImportHierarchy(db, admin_id).ingest("HBTPARENTS_DATA_TABLE.csv")
     ImportInformalGroup(db, admin_id).ingest("HBTGROUPS_DATA_TABLE.csv")
+    trigger_calculated_fields(db)
