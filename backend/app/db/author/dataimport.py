@@ -9,7 +9,7 @@ class ImportAuthor(DataImportBase):
         self.data_model = AuthorModel
         self.upsert_constraint = f"uc_{AuthorModel.__tablename__}_legacy_id"
         self.update_cols = (
-            "author",
+            "abbreviation",
             "surname",
             "first_names",
             "initials",
@@ -22,7 +22,7 @@ class ImportAuthor(DataImportBase):
     def import_row(self, row):
         self.values.append(
             {
-                "author": row["AUTHOR"],
+                "abbreviation": row["AUTHOR"],
                 "surname": row["SURNAME"],
                 "first_names": row["FIRST_NAMES"],
                 "initials": row["INITIALS"],
