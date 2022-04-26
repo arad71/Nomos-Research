@@ -12,10 +12,10 @@ import {
 import FullNameField from '../shared/FullNameField';
 
 export const AuthorList: FC = (props) => (
-  <List {...props} sort={{ field: 'author' }}>
+  <List {...props} sort={{ field: 'abbreviation' }}>
     <Datagrid rowClick="show">
       <NumberField source="id" />
-      <TextField source="author" />
+      <TextField source="abbreviation" />
       <TextField source="surname" />
       <TextField source="first_names" />
       <TextField source="initials" />

@@ -185,7 +185,7 @@ def test_author(test_db, test_superuser) -> Author:
 
     now = datetime.datetime.utcnow()
     author = Author(
-        author="Test Author",
+        abbreviation="Test Author",
         surname="Author",
         first_names="Test",
         initials="TA",
