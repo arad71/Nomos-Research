@@ -187,6 +187,22 @@ def test_role(test_db):
 
 
 @pytest.fixture
+def test_role2(test_db):
+    role = RoleModel(name="test role 2", description="test role description2")
+    test_db.add(role)
+    test_db.commit()
+    return role
+
+
+@pytest.fixture
+def test_user_role(test_db, test_user, test_role):
+    user_role = UserRoleModel(user_id=test_user.user_id, role_id=test_role.role_id)
+    test_db.add(user_role)
+    test_db.commit()
+    return user_role
+
+
+@pytest.fixture
 def test_author(test_db, test_superuser) -> Author:
     """
     Author for testing
@@ -482,7 +498,8 @@ def test_taxon_name_canonical_name_3(
     test_db, test_kingdom, test_taxon_rank, test_publication, test_superuser
 ) -> TaxonName:
     """
-    Taxon Name for testing Canonical Name - Genus, specific_epithet and infraspecific_epithet
+    Taxon Name for testing Canonical Name - Genus, specific_epithet and
+     infraspecific_epithet
     """
 
     now = datetime.datetime.utcnow()

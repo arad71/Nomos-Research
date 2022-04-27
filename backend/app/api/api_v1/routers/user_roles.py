@@ -1,6 +1,6 @@
-from typing import Any, Optional
+from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Request, Response
+from fastapi import APIRouter, Depends, Response
 from sqlalchemy.orm import Session
 
 from app.api.dependencies.range_query import RangeQueryParameter
@@ -11,7 +11,7 @@ from app.db.user.model import User
 from app.db.user_role.crud import UserRoleCrud
 from app.db.user_role.schema import UserRole, UserRoleCreate, UserRoleEdit
 
-user_roles_router = APIRouter(prefix="/user-roles")
+user_roles_router = APIRouter(prefix="/user_roles")
 
 
 @user_roles_router.get(
@@ -63,7 +63,6 @@ async def user_role_details(
     ],
 )
 async def user_role_create(
-    request: Request,
     user_role: UserRoleCreate,
     db=Depends(get_db),
     current_user: User = Depends(get_current_active_user),
@@ -106,6 +105,7 @@ async def user_role_edit(
     dependencies=[
         authorize(
             scopes=[
+                Role.APPLICATION_SUPPORT["name"],
                 Role.SUPER_ADMIN["name"],
             ]
         )
@@ -146,38 +146,4 @@ def assign_user_role(
     )
     if user_role is None:
         user_role = UserRoleCrud.create_item(db, item=user_role_in)
-    return user_role
-
-
-@user_roles_router.put(
-    "/{user_id}",
-    response_model=UserRole,
-    dependencies=[
-        authorize(
-            scopes=[
-                Role.APPLICATION_SUPPORT["name"],
-                Role.SUPER_ADMIN["name"],
-            ]
-        )
-    ],
-)
-def update_user_role(
-    *,
-    db: Session = Depends(get_db),
-    user_id: int,
-    user_role_in: UserRoleEdit,
-    current_user: User = Depends(get_current_active_user),
-) -> Any:
-    """
-    Update a users role.
-    """
-    user_role = UserRoleCrud.get_by_user_id(db, user_id=user_id)
-    if not user_role:
-        raise HTTPException(
-            status_code=404,
-            detail="There is no role assigned to this user",
-        )
-    user_role = UserRoleCrud.edit_item(
-        db, id=user_id, values=user_role_in, current_user=current_user.user_id
-    )
     return user_role
