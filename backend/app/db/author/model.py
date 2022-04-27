@@ -21,11 +21,7 @@ class Author(BaseModel, TableMixin):
     )
 
     author_id = Column(Integer, primary_key=True)
-    author = Column(
-        String(30),
-        nullable=False,
-        comment=AUTHOR,
-    )
+    abbreviation = Column(String(30), nullable=False, comment=AUTHOR, unique=True)
     surname = Column(String(30), comment=SURNAME, doc=SURNAME)
     first_names = Column(String(60), comment=FIRST_NAMES, doc=FIRST_NAMES)
     initials = Column(String(30), comment=INITIALS, doc=INITIALS)

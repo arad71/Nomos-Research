@@ -6,7 +6,7 @@ export const AuthorShow: FC = (props) => {
   return (
     <Show aside={<Aside />} {...props}>
       <SimpleShowLayout>
-        <TextField source="author" />
+        <TextField source="abbreviation" />
         <TextField source="surname" />
         <TextField source="first_names" />
         <TextField source="initials" />

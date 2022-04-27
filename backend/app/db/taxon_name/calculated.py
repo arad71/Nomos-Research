@@ -60,6 +60,10 @@ def stringify_author_group(authors):
     last = authors.pop()
     return " & ".join(
         filter(
-            None, [", ".join([k.author.author for k in authors]), last.author.author]
+            None,
+            [
+                ", ".join([k.author.abbreviation for k in authors]),
+                last.author.abbreviation,
+            ],
         )
     )

@@ -7,7 +7,7 @@ def test_get_authors(client, test_author, superuser_token_headers):
     assert response.json() == [
         {
             "author_id": test_author.author_id,
-            "author": test_author.author,
+            "abbreviation": test_author.abbreviation,
             "surname": test_author.surname,
             "first_names": test_author.first_names,
             "initials": test_author.initials,
@@ -35,7 +35,7 @@ def test_delete_author_not_found(client, superuser_token_headers):
 
 def test_edit_author(client, test_author, test_superuser, superuser_token_headers):
     new_author = {
-        "author": "Test Author2",
+        "abbreviation": "Test Author2",
         "surname": "Author2",
         "first_names": "Test",
         "initials": "TA2",
@@ -60,7 +60,7 @@ def test_edit_author_not_found(
     client, test_db, test_author, test_superuser, superuser_token_headers
 ):
     new_author = {
-        "author": "Test Author2",
+        "abbreviation": "Test Author2",
         "surname": "Author2",
         "first_names": "Test",
         "initials": "TA2",
@@ -86,7 +86,7 @@ def test_get_author(
     assert response.status_code == 200
     assert response.json() == {
         "author_id": test_author.author_id,
-        "author": test_author.author,
+        "abbreviation": test_author.abbreviation,
         "surname": test_author.surname,
         "first_names": test_author.first_names,
         "initials": test_author.initials,
