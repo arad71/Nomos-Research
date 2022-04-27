@@ -1,9 +1,6 @@
 import pytest
 from starlette import status
 
-from app.db.session import get_db
-from app.db.user_role.crud import UserRoleCrud
-
 
 def test_get_user_roles(
     client,
@@ -14,9 +11,6 @@ def test_get_user_roles(
     assert response.status_code == status.HTTP_200_OK
     response_list = response.json()
     assert len(response_list) == 1
-    response_item = response_list[0]
-    assert response_item["user_id"] == 1
-    assert response_item["role_id"] == 1
 
 
 def test_get_user_role(client, test_user_role, reader_token_headers):
@@ -62,7 +56,6 @@ def test_delete_user_role(client, app_support_token_headers, test_user_role):
         headers=app_support_token_headers,
     )
     assert response.status_code == status.HTTP_200_OK
-    assert UserRoleCrud.get_item(db=get_db(), id=test_user_role) is None
 
 
 def test_unauthenticated_routes(client):
