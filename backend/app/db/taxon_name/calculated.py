@@ -46,7 +46,7 @@ def map_authors(mapper, connection, target):
             val = f"({basionym_authors})"
         if AuthorType.current in author_types:
             current_authors = stringify_author_group(author_types[AuthorType.current])
-            val = " ".join([val, current_authors])
+            val = " ".join(filter(None, [val, current_authors]))
         if val:
             return val
 
