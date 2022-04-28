@@ -35,10 +35,10 @@ def map_authors(mapper, connection, target):
     if target.kingdom.kingdom_name == "Animalia":
         if AuthorType.basionym in author_types:
             val = stringify_author_group(author_types[AuthorType.basionym])
-            return f"({val} {target.form_desc_yr})"
+            return f"({val}, {target.form_desc_yr})"
         elif AuthorType.current in author_types:
             val = stringify_author_group(author_types[AuthorType.current])
-            return f"{val} {target.form_desc_yr}"
+            return f"{val}, {target.form_desc_yr}"
     else:
         val = ""
         if AuthorType.basionym in author_types:
