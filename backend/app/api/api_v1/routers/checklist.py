@@ -2,10 +2,10 @@ from datetime import datetime
 from typing import Optional
 
 from fastapi import APIRouter, Depends, Response
+from fastapi_key_auth import AuthorizerDependency
 from sqlalchemy import func, or_, select
 from sqlalchemy.orm import aliased
 
-from app.core.auth import authorize
 from app.db.cross_reference.model import CrossReference
 from app.db.kingdom.model import Kingdom
 from app.db.session import get_db
@@ -13,12 +13,13 @@ from app.db.taxon_name.model import TaxonName
 from app.db.taxon_rank.model import TaxonRank
 
 checklist_router = r = APIRouter(prefix="/checklist")
+authorizer = AuthorizerDependency(key_pattern="API_KEY_")
 
 
 @r.get(
     "/curation",
     dependencies=[
-        authorize(),
+        Depends(authorizer),
     ],
 )
 async def curation_checklist(

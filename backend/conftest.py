@@ -632,3 +632,8 @@ def app_support_token_headers(
 ) -> t.Dict[str, str]:
     monkeypatch.setattr(security, "verify_password", verify_password_mock)
     return token_headers_for_user(client, test_password, test_app_support, monkeypatch)
+
+
+@pytest.fixture
+def api_key(monkeypatch):
+    monkeypatch.setenv("API_KEY_CHECKLIST", "test")
