@@ -93,6 +93,7 @@ class TaxonName(TaxonNameBase, TableBase):
     taxon_name_id: int = Field(description=TAXON_NAME_ID)
     kingdom: Kingdom
     taxon_rank: TaxonRank
+    canonical_name: Optional[str]
 
     class Config:
         orm_mode = True

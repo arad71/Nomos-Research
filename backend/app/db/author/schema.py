@@ -14,7 +14,7 @@ from app.db.schemas import TableBase
 
 
 class AuthorBase(BaseModel):
-    author: str = Field(description=AUTHOR)
+    abbreviation: str = Field(description=AUTHOR)
     surname: Optional[str] = Field(description=SURNAME)
     first_names: Optional[str] = Field(description=FIRST_NAMES)
     initials: Optional[str] = Field(description=INITIALS)

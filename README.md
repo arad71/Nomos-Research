@@ -35,6 +35,12 @@ NPM_TOKEN="<Your token here>"
 ```
 For more information see https://registry.marmelab.com
 
+If you're using a different user on your system other than the first user you'll have to add these to your local `.env` file.
+```bash
+USER_ID="<Your user id>"
+GROUP_ID="<your group id>"
+```
+
 ### Quick Start
 
 Starting the project

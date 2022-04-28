@@ -1,7 +1,7 @@
 from sqlalchemy import Boolean, Column, Integer, String
 from sqlalchemy.schema import UniqueConstraint
 
-from app.db.session import Base
+from app.db.models import BaseModel
 from app.db.user.constants import (
     DEFAULT_CLASS,
     DEFAULT_KINGDOM,
@@ -10,7 +10,7 @@ from app.db.user.constants import (
 )
 
 
-class User(Base):
+class User(BaseModel):
     __tablename__ = "user"
     __table_args__ = (
         UniqueConstraint("legacy_id_name", name=f"uc_{ __tablename__}_legacy_id"),

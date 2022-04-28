@@ -16,12 +16,20 @@ import NaturalisedStatus from './NaturalisedStatus';
 import PublicationStatus from './PublicationStatus';
 
 export const TaxonNameList: FC = (props) => (
-  <List {...props} sort={{ field: 'scientific_name', order: 'DESC' }}>
+  <List {...props} sort={{ field: 'scientific_name' }}>
     <Datagrid rowClick="show">
-      <ReferenceField source="kingdom_id" reference="kingdoms">
+      <ReferenceField
+        source="kingdom_id"
+        reference="kingdoms"
+        sortBy="kingdom___kingdom_name"
+      >
         <TextField source="kingdom_name" />
       </ReferenceField>
-      <ReferenceField source="rank_id" reference="taxon_ranks">
+      <ReferenceField
+        source="rank_id"
+        reference="taxon_ranks"
+        sortBy="taxon_rank___rank_name"
+      >
         <TextField source="rank_name" />
       </ReferenceField>
       <TextField source="scientific_name" />
@@ -35,7 +43,11 @@ export const TaxonNameList: FC = (props) => (
       <TextField source="sub_species" />
       <TextField source="specific_epithet" />
       <TextField source="infraspecific_epithet" />
-      <ReferenceField source="publication_id" reference="publications">
+      <ReferenceField
+        source="publication_id"
+        reference="publications"
+        sortBy="publications___publication"
+      >
         <TextField source="publication_name" />
       </ReferenceField>
       <TextField source="volume_information" />
@@ -64,6 +76,7 @@ export const TaxonNameList: FC = (props) => (
         label="Family"
         source="family_nid"
         reference="taxon_names"
+        sortBy="family"
       >
         <TextField source="scientific_name" />
       </ReferenceField>
