@@ -4,6 +4,7 @@ from operator import attrgetter
 from sqlalchemy import asc
 
 from app.db.citation.enums import AuthorType
+from app.db.taxon_name.constants import ANIMAL_KINGDOM_NAME
 
 
 def calculate_fields(mapper, connection, target):
@@ -31,8 +32,7 @@ def map_authors(mapper, connection, target):
         k: list(g) for k, g in groupby(citations, attrgetter("author_type"))
     }
 
-    # TODO Replace hardcoded string with constant
-    if target.kingdom.kingdom_name == "Animalia":
+    if target.kingdom.kingdom_name == ANIMAL_KINGDOM_NAME:
         if AuthorType.basionym in author_types:
             val = stringify_author_group(author_types[AuthorType.basionym])
             return f"({val}, {target.form_desc_yr})"
