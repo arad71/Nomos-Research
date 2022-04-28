@@ -58,7 +58,7 @@ class ImportCrossReference(DataImportBase):
             return "orthographic_variant"
 
         if val == "EXC":
-            return "orthographic_variant"
+            return "excluded_name"
 
         if val == "MIS":
             return "misapplied_name"

@@ -251,7 +251,7 @@ def test_cross_reference(test_db, test_taxon_name, test_superuser) -> CrossRefer
     now = datetime.datetime.utcnow()
     cross_reference = CrossReference(
         old_name_id=test_taxon_name.taxon_name_id,
-        cross_reference_type="mis",
+        cross_reference_type="misapplied_name",
         new_name_id=test_taxon_name.taxon_name_id,
         active=True,
         updated_by=test_superuser.user_id,

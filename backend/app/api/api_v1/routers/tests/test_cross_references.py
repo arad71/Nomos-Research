@@ -52,7 +52,7 @@ def test_edit_cross_reference(
 ):
     new_cross_reference = {
         "old_name_id": test_taxon_name.taxon_name_id,
-        "cross_reference_type": "mis",
+        "cross_reference_type": "misapplied_name",
         "active": True,
         "updated_by": test_superuser.user_id,
         "updated_on": test_cross_reference.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
@@ -84,7 +84,7 @@ def test_edit_cross_reference_not_found(
 ):
     new_cross_reference = {
         "old_name_id": test_taxon_name.taxon_name_id,
-        "cross_reference_type": "mis",
+        "cross_reference_type": "misapplied_name",
         "active": False,
         "updated_by": test_superuser.user_id,
         "updated_on": test_cross_reference.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
@@ -118,7 +118,7 @@ def test_get_cross_reference(
         "old_name_id": test_taxon_name.taxon_name_id,
         "new_name_id": test_taxon_name.taxon_name_id,
         "cross_reference_id": test_cross_reference.cross_reference_id,
-        "cross_reference_type": "mis",
+        "cross_reference_type": "misapplied_name",
         "active": test_cross_reference.active,
         "updated_by": test_cross_reference.updated_by,
         "updated_on": test_cross_reference.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
