@@ -1,8 +1,10 @@
+from starlette import status
+
 CURATION_ENDPOINT = "/api/v1/checklist/curation"
 
 
-def test_checklist(client, test_cross_reference, test_taxon_name, reader_token_headers):
-    response = client.get(CURATION_ENDPOINT, headers=reader_token_headers)
+def test_checklist(client, test_cross_reference, test_taxon_name, api_key):
+    response = client.get(CURATION_ENDPOINT, headers={"x-api-key": "test"})
     assert response.status_code == 200
     assert response.json() == [
         {
@@ -31,6 +33,8 @@ def test_checklist(client, test_cross_reference, test_taxon_name, reader_token_h
     ]
 
 
-def test_checklist_permission(client):
+def test_checklist_permission(client, api_key):
     response = client.get(CURATION_ENDPOINT)
-    assert response.status_code == 401
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    response = client.get(CURATION_ENDPOINT, headers={"x-api-key": "notapassword"})
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
