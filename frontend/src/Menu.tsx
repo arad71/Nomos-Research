@@ -74,7 +74,7 @@ const Menu = () => {
         />
         <MenuItem
           name="Classification Systems"
-          label="Classification"
+          label="Classification Types"
           icon={<FiberManualRecordOutlinedIcon />}
           to="/classification_systems"
         />
