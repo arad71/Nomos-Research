@@ -26,9 +26,9 @@ export const CitationList: FC = (props) => (
       <ReferenceField
         source="author_id"
         reference="authors"
-        sortBy="author___author"
+        sortBy="author___abbreviation"
       >
-        <TextField source="author" />
+        <TextField source="abbreviation" />
       </ReferenceField>
       <SelectField source="author_type" choices={AuthorType} />
       <NumberField source="author_order" />
