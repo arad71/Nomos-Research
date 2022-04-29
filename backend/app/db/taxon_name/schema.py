@@ -94,6 +94,7 @@ class TaxonName(TaxonNameBase, TableBase):
     canonical_name: Optional[str]
     author: Optional[str] = Field(description=AUTHOR)
     scientific_name: Optional[str]
+    formatted_scientific_name: Optional[str]
 
     class Config:
         orm_mode = True

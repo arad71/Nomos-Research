@@ -3,6 +3,7 @@ import {
   NumberInput,
   ReferenceInput,
   required,
+  RichTextField,
   SelectInput,
   SimpleForm,
   TextField,
@@ -32,6 +33,7 @@ export const TaxonNameCreateEdit: FC = (props) => (
       <SelectInput optionText="rank_name" />
     </ReferenceInput>
     <TextField source="scientific_name" />
+    <RichTextField source="formatted_scientific_name" />
     <TextInput source="phylum" />
     <TextInput source="class" />
     <TextInput source="order" />

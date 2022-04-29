@@ -17,6 +17,12 @@ def calculate_fields(mapper, connection, target):
     target.scientific_name = " ".join(
         filter(None, [target.canonical_name, target.author])
     )
+    target.formatted_scientific_name = " ".join(
+        filter(
+            None,
+            [f"<i class='canonical-name'>{target.canonical_name}</i>", target.author],
+        )
+    )
 
 
 def map_canonical_name(mapper, connection, target):

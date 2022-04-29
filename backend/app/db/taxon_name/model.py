@@ -77,6 +77,7 @@ class TaxonName(BaseModel, TableMixin):
     subgenus = Column(String)
     canonical_name = Column(String)
     scientific_name = Column(String)
+    formatted_scientific_name = Column(String)
     species = Column(String)
     subspecies = Column(String)
     # taxon_rank = Column(String(9))
