@@ -17,7 +17,7 @@ def test_checklist(client, test_cross_reference, test_taxon_name, api_key):
             "created": test_cross_reference.old_name.created_on.isoformat(),
             "updated": test_cross_reference.old_name.updated_on.isoformat(),
             "scientificNameId": test_cross_reference.old_name.taxon_name_id,
-            "crossReferenceType": "mis",
+            "crossReferenceType": "misapplied_name",
             "crossReferenceId": 1,
             "crossReferenceCreated": test_cross_reference.created_on.isoformat(),
             "crossReferenceUpdated": test_cross_reference.updated_on.isoformat(),
