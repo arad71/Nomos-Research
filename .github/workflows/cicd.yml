@@ -76,6 +76,8 @@ jobs:
         run: scripts/build.sh
       - name: Run test suite
         run: scripts/test.sh
+      - name: Run downgrade migrations
+        run: scripts/downgrade.sh
       - name: Print logs
         if: always()
         run: docker-compose logs

@@ -1782,14 +1782,6 @@ def downgrade():
     )
     op.alter_column(
         "cross_reference",
-        "authorised_date",
-        existing_type=postgresql.TIMESTAMP(),
-        comment=None,
-        existing_comment="The date of authorisation",
-        existing_nullable=True,
-    )
-    op.alter_column(
-        "cross_reference",
         "active",
         existing_type=postgresql.ENUM("y", "n", "subf", name="cross_reference__active"),
         comment=None,
