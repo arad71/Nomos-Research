@@ -5,11 +5,24 @@ Revises: 1f341cfdfd41
 Create Date: 2022-03-16 06:27:35.522070-07:00
 
 """
+from typing import Any, Generator
+
 import sqlalchemy as sa
 
-from alembic import op
-
 # revision identifiers, used by Alembic.
+from fastapi import Depends
+from loguru import logger
+from sqlalchemy import update
+from sqlalchemy.orm import Session
+
+from alembic import op
+from app.core.config import settings
+from app.db.role.constants import Role
+from app.db.session import SessionLocal, get_db
+from app.db.user.model import User
+from app.db.user_role.crud import UserRoleCrud
+from app.db.user_role.model import UserRole
+
 revision = "3c31cbd94af9"
 down_revision = "1f341cfdfd41"
 branch_labels = None
@@ -54,8 +67,21 @@ def downgrade():
     op.drop_constraint("unique_user_role", "user_role", type_="unique")
     op.add_column(
         "user",
-        sa.Column("is_superuser", sa.BOOLEAN(), autoincrement=False, nullable=False),
+        sa.Column("is_superuser", sa.BOOLEAN(), autoincrement=False, nullable=True),
     )
+    session = Session(bind=op.get_bind())
+    user_roles = (
+        session.query(UserRole)
+        .filter(UserRole.role.has(name=Role.SUPER_ADMIN["name"]))
+        .all()
+    )
+    for user_role in user_roles:
+        op.execute(
+            'UPDATE "user" SET is_superuser = TRUE WHERE user_id ='
+            f" {user_role.user_id}",
+        )
+    session.execute('UPDATE "user" SET is_superuser = FALSE WHERE is_superuser IS NULL')
+    op.alter_column("user", "is_superuser", nullable=False)
     op.drop_table("user_role")
     op.drop_index(op.f("ix_role_name"), table_name="role")
     op.drop_table("role")
