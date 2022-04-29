@@ -7,10 +7,12 @@ import {
   List,
   NumberField,
   ReferenceField,
+  SelectField,
   TextField,
   useRecordContext,
   BooleanField,
 } from 'react-admin';
+import LanguageType from './LanguageType';
 
 const FullNameField = (props: any) => {
   const record = useRecordContext(props);
@@ -25,14 +27,18 @@ const FullNameField = (props: any) => {
 FullNameField.defaultProps = { label: 'Name' };
 
 export const VernacularList: FC = (props) => (
-  <List {...props} sort={{ field: 'class_desc', order: 'DESC' }}>
+  <List {...props} sort={{ field: 'taxon_name___scientific_name' }}>
     <Datagrid rowClick="show">
       <NumberField source="id" />
-      <TextField source="vernacular" />
-      <ReferenceField source="taxon_name_id" reference="taxon_names">
+      <ReferenceField
+        source="taxon_name_id"
+        reference="taxon_names"
+        sortBy="taxon_name___scientific_name"
+      >
         <TextField source="scientific_name" />
       </ReferenceField>
-      <TextField source="language" />
+      <TextField source="vernacular" />
+      <SelectField source="language" choices={LanguageType} />
       <BooleanField source="lang_pref" />
       <BooleanField source="preferred" />
       <TextField source="source" />

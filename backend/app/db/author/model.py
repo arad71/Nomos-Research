@@ -10,11 +10,10 @@ from app.db.author.constants import (
     SURNAME,
     TABLE_DESCRIPTION,
 )
-from app.db.models import TableMixin
-from app.db.session import Base
+from app.db.models import BaseModel, TableMixin
 
 
-class Author(Base, TableMixin):
+class Author(BaseModel, TableMixin):
     __tablename__ = "author"
     __table_args__ = (
         UniqueConstraint("legacy_id_name", name=f"uc_{ __tablename__}_legacy_id"),
@@ -22,11 +21,7 @@ class Author(Base, TableMixin):
     )
 
     author_id = Column(Integer, primary_key=True)
-    author = Column(
-        String(30),
-        nullable=False,
-        comment=AUTHOR,
-    )
+    abbreviation = Column(String(30), nullable=False, comment=AUTHOR, unique=True)
     surname = Column(String(30), comment=SURNAME, doc=SURNAME)
     first_names = Column(String(60), comment=FIRST_NAMES, doc=FIRST_NAMES)
     initials = Column(String(30), comment=INITIALS, doc=INITIALS)

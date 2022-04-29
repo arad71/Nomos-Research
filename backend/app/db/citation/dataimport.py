@@ -28,7 +28,7 @@ class ImportCitation(DataImportBase):
                     TaxonName, "legacy_id", row["NAME_ID"], "taxon_name_id"
                 ),
                 "author_id": self.map_row_by_unique_key(
-                    Author, "author", row["AUTHOR"], "author_id"
+                    Author, "abbreviation", row["AUTHOR"], "author_id"
                 ),
                 "author_type": self.map_enum_base(row["AUTHOR_TYPE"]),
                 "author_order": row["AUTHOR_ORD"],

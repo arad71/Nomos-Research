@@ -2,6 +2,12 @@
 # https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
 
 version: 2
+registries:
+  npm-npmjs:
+    type: npm-registry
+    url: https://registry.marmelab.com
+    username: ${{secrets.REACT_ADMIN_USERNAME}} 
+    password: ${{secrets.REACT_ADMIN_PASSWORD}}  
 updates:
   - package-ecosystem: "pip"
     directory: "/backend/"
@@ -9,6 +15,8 @@ updates:
       interval: "weekly"
   - package-ecosystem: "npm" # See documentation for possible values
     directory: "/frontend/" # Location of package manifests
+    registries:
+      - npm-npmjs
     schedule:
       interval: "weekly"
 

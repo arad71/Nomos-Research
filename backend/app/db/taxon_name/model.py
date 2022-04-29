@@ -1,10 +1,18 @@
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import (
+    Boolean,
+    Column,
+    DateTime,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    event,
+)
 from sqlalchemy.orm import relationship
 from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy.types import Enum
 
-from app.db.models import TableMixin
-from app.db.session import Base
+from app.db.models import BaseModel, TableMixin
 from app.db.taxon_name import enums
 from app.db.taxon_name.constants import (
     AUTHOR,
@@ -24,9 +32,7 @@ from app.db.taxon_name.constants import (
     NATURALISED_COMMENTS,
     ORIGIN,
     PUBLICATION_ID,
-    PUBLICATION_YEAR,
     RANK_ID,
-    RANK_NAME,
     SOURCE,
     TABLE_DESCRIPTION,
     TAXON_NAME_ID,
@@ -36,7 +42,7 @@ from app.db.taxon_name.constants import (
 )
 
 
-class TaxonName(Base, TableMixin):
+class TaxonName(BaseModel, TableMixin):
     __tablename__ = "taxon_name"
     __table_args__ = (
         UniqueConstraint("legacy_id", name=f"uc_{ __tablename__}_legacy_id"),
@@ -68,6 +74,7 @@ class TaxonName(Base, TableMixin):
     family = Column(String)
     genus = Column(String)
     subgenus = Column(String)
+    canonical_name = Column(String)
     scientific_name = Column(String)
     species = Column(String)
     subspecies = Column(String)
@@ -86,7 +93,6 @@ class TaxonName(Base, TableMixin):
         comment=VOLUME_INFORMATION,
         doc=VOLUME_INFORMATION,
     )
-    publication_year = Column(Integer, comment=PUBLICATION_YEAR, doc=PUBLICATION_YEAR)
     is_current = Column(
         Boolean,
         nullable=False,
@@ -162,3 +168,16 @@ class TaxonName(Base, TableMixin):
     authorised_by = Column(String(16))
     authorised_on = Column(DateTime)
     legacy_id = Column(Integer)
+
+
+def map_canonical_name(mapper, connection, target):
+    vals = list(
+        filter(
+            None, [target.genus, target.specific_epithet, target.infraspecific_epithet]
+        )
+    )
+    target.canonical_name = " ".join(vals)
+
+
+event.listen(TaxonName, "before_insert", map_canonical_name)
+event.listen(TaxonName, "before_update", map_canonical_name)

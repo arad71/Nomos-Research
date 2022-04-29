@@ -1,10 +1,11 @@
 from sqlalchemy import Column, ForeignKey, Integer, UniqueConstraint
 from sqlalchemy.orm import backref, relationship
+from sqlalchemy_mixins.smartquery import SmartQueryMixin
 
 from app.db.session import Base
 
 
-class UserRole(Base):
+class UserRole(Base, SmartQueryMixin):
     __tablename__ = "user_role"
     user_role_id = Column(Integer, primary_key=True)
     user_id = Column(

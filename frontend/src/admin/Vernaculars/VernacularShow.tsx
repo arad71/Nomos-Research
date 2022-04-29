@@ -4,10 +4,12 @@ import {
   ReferenceField,
   Show,
   SimpleShowLayout,
+  SelectField,
   TextField,
   BooleanField,
 } from 'react-admin';
 import Aside from '../shared/Aside';
+import LanguageType from './LanguageType';
 
 export const VernacularShow: FC = (props) => {
   return (
@@ -17,7 +19,7 @@ export const VernacularShow: FC = (props) => {
         <ReferenceField source="taxon_name_id" reference="taxon_names">
           <TextField source="scientific_name" />
         </ReferenceField>
-        <TextField source="language" />
+        <SelectField source="language" choices={LanguageType} />
         <TextField source="lang_pref" />
         <BooleanField source="preferred" />
         <TextField source="source" />

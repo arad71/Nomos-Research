@@ -72,7 +72,7 @@ def test_edit_taxon_rank_not_found(
     new_taxon_rank = {
         "kingdom_id": test_kingdom.kingdom_id,
         "rank_name": "Rank Name 2",
-        "rank_abbrev": "subvar.",
+        "rank_abbrev": "subvar",
         "uninomial": False,
         "updated_by": test_superuser.user_id,
         "updated_on": test_taxon_rank.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),

@@ -7,24 +7,31 @@ import {
   List,
   NumberField,
   ReferenceField,
+  SelectField,
   TextField,
   BooleanField,
 } from 'react-admin';
 import FullNameField from '../shared/FullNameField';
+import RankAbbreviation from './RankAbbreviation';
 
 export const TaxonRankList: FC = (props) => (
-  <List {...props} sort={{ field: 'rank_name', order: 'DESC' }}>
+  <List {...props} sort={{ field: 'rank_name' }}>
     <Datagrid rowClick="show">
       <TextField source="id" />
-      <ReferenceField source="kingdom_id" reference="kingdoms">
+      <ReferenceField
+        source="kingdom_id"
+        reference="kingdoms"
+        sortBy="kingdom___kingdom_name"
+      >
         <TextField source="kingdom_name" />
       </ReferenceField>
       <TextField source="rank_name" />
-      <TextField source="rank_abbrev" />
+      <SelectField source="rank_abbrev" choices={RankAbbreviation} />
       <ReferenceField
         label="Direct Parent Rank"
         source="direct_parent_rank_id"
         reference="taxon_ranks"
+        sortBy="direct_parent_rank___rank_name"
       >
         <NumberField source="rank_name" />
       </ReferenceField>
@@ -32,6 +39,7 @@ export const TaxonRankList: FC = (props) => (
         label="Req Parent Rank"
         source="required_parent_rank_id"
         reference="taxon_ranks"
+        sortBy="required_parent_rank___rank_name"
       >
         <TextField source="rank_name" />
       </ReferenceField>

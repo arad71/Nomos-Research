@@ -158,11 +158,12 @@ def test_app_support(test_db) -> User:
     return create_user_with_role(Role.APPLICATION_SUPPORT, test_db)
 
 
-def create_user_with_role(role, test_db):
+def create_user_with_role(role, test_db) -> User:
     role_name = role["name"]
     user = User(
         email=f"{role_name}@email.com",
         hashed_password=get_password_hash(),
+        is_active=True,
     )
     test_db.add(user)
     test_db.commit()
@@ -178,6 +179,30 @@ def create_user_with_role(role, test_db):
 
 
 @pytest.fixture
+def test_role(test_db):
+    role = RoleModel(name="test role", description="test role description")
+    test_db.add(role)
+    test_db.commit()
+    return role
+
+
+@pytest.fixture
+def test_role2(test_db):
+    role = RoleModel(name="test role 2", description="test role description2")
+    test_db.add(role)
+    test_db.commit()
+    return role
+
+
+@pytest.fixture
+def test_user_role(test_db, test_user, test_role):
+    user_role = UserRoleModel(user_id=test_user.user_id, role_id=test_role.role_id)
+    test_db.add(user_role)
+    test_db.commit()
+    return user_role
+
+
+@pytest.fixture
 def test_author(test_db, test_superuser) -> Author:
     """
     Author for testing
@@ -185,7 +210,7 @@ def test_author(test_db, test_superuser) -> Author:
 
     now = datetime.datetime.utcnow()
     author = Author(
-        author="Test Author",
+        abbreviation="Test Author",
         surname="Author",
         first_names="Test",
         initials="TA",
@@ -251,7 +276,7 @@ def test_cross_reference(test_db, test_taxon_name, test_superuser) -> CrossRefer
     now = datetime.datetime.utcnow()
     cross_reference = CrossReference(
         old_name_id=test_taxon_name.taxon_name_id,
-        cross_reference_type="mis",
+        cross_reference_type="misapplied_name",
         new_name_id=test_taxon_name.taxon_name_id,
         active=True,
         updated_by=test_superuser.user_id,
@@ -368,6 +393,7 @@ def test_taxon_name(
         rank_id=test_taxon_rank.taxon_rank_id,
         is_current=True,
         validated=True,
+        canonical_name="",
         updated_by=test_superuser.user_id,
         updated_on=now,
         created_by=test_superuser.user_id,
@@ -392,6 +418,104 @@ def test_taxon_name_2(
         rank_id=test_taxon_rank.taxon_rank_id,
         is_current=True,
         validated=True,
+        canonical_name="",
+        updated_by=test_superuser.user_id,
+        updated_on=now,
+        created_by=test_superuser.user_id,
+        created_on=now,
+    )
+    test_db.add(taxon_name)
+    test_db.commit()
+    return taxon_name
+
+
+@pytest.fixture
+def test_taxon_name_canonical_name_1(
+    test_db, test_kingdom, test_taxon_rank, test_publication, test_superuser
+) -> TaxonName:
+    """
+    Taxon Name for testing Canonical Name - Genus only
+    """
+
+    now = datetime.datetime.utcnow()
+    taxon_name = TaxonName(
+        kingdom_id=test_kingdom.kingdom_id,
+        rank_id=test_taxon_rank.taxon_rank_id,
+        is_current=True,
+        validated=True,
+        genus="Acanthiza",
+        specific_epithet=None,
+        infraspecific_epithet=None,
+        # publication_year=1911,
+        canonical_name="Acanthiza",
+        # author="Mathews",
+        # scientific_name="Acanthiza Mathews, 1911",
+        # formatted_scientific_name="<i>Acanthiza</i> Mathews, 1911",
+        updated_by=test_superuser.user_id,
+        updated_on=now,
+        created_by=test_superuser.user_id,
+        created_on=now,
+    )
+    test_db.add(taxon_name)
+    test_db.commit()
+    return taxon_name
+
+
+@pytest.fixture
+def test_taxon_name_canonical_name_2(
+    test_db, test_kingdom, test_taxon_rank, test_publication, test_superuser
+) -> TaxonName:
+    """
+    Taxon Name for testing Canonical Name - Genus and specific_epithet
+    """
+
+    now = datetime.datetime.utcnow()
+    taxon_name = TaxonName(
+        kingdom_id=test_kingdom.kingdom_id,
+        rank_id=test_taxon_rank.taxon_rank_id,
+        is_current=True,
+        validated=True,
+        genus="Acanthiza",
+        specific_epithet="iredalei",
+        infraspecific_epithet=None,
+        # publication_year=1911,
+        canonical_name="Acanthiza iredalei",
+        # author="Mathews",
+        # scientific_name="Acanthiza iredalei Mathews, 1911",
+        # formatted_scientific_name="<i>Acanthiza iredalei</i> Mathews, 1911",
+        updated_by=test_superuser.user_id,
+        updated_on=now,
+        created_by=test_superuser.user_id,
+        created_on=now,
+    )
+    test_db.add(taxon_name)
+    test_db.commit()
+    return taxon_name
+
+
+@pytest.fixture
+def test_taxon_name_canonical_name_3(
+    test_db, test_kingdom, test_taxon_rank, test_publication, test_superuser
+) -> TaxonName:
+    """
+    Taxon Name for testing Canonical Name - Genus, specific_epithet and
+     infraspecific_epithet
+    """
+
+    now = datetime.datetime.utcnow()
+    taxon_name = TaxonName(
+        kingdom_id=test_kingdom.kingdom_id,
+        rank_id=test_taxon_rank.taxon_rank_id,
+        is_current=True,
+        validated=True,
+        genus="Acanthiza",
+        specific_epithet="iredalei",
+        infraspecific_epithet="iredalei",
+        # publication_year=1911,
+        canonical_name="Acanthiza iredalei iredalei",
+        # author="Mathews",
+        # scientific_name="Acanthiza iredalei iredalei Mathews, 1911",
+        # formatted_scientific_name="<i>Acanthiza iredalei iredalei</i> Mathews, 1911",
         updated_by=test_superuser.user_id,
         updated_on=now,
         created_by=test_superuser.user_id,
@@ -412,7 +536,7 @@ def test_taxon_rank(test_db, test_kingdom, test_superuser) -> TaxonRank:
     taxon_rank = TaxonRank(
         kingdom_id=test_kingdom.kingdom_id,
         rank_name="Rank Name 1",
-        rank_abbrev="subvar.",
+        rank_abbrev="subvar",
         uninomial=False,
         updated_by=test_superuser.user_id,
         updated_on=now,
@@ -508,3 +632,8 @@ def app_support_token_headers(
 ) -> t.Dict[str, str]:
     monkeypatch.setattr(security, "verify_password", verify_password_mock)
     return token_headers_for_user(client, test_password, test_app_support, monkeypatch)
+
+
+@pytest.fixture
+def api_key(monkeypatch):
+    monkeypatch.setenv("API_KEY_CHECKLIST", "test")

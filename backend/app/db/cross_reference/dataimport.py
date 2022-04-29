@@ -54,6 +54,31 @@ class ImportCrossReference(DataImportBase):
         )
 
     def map_cross_reference_type_enum(self, val):
+        if val == "OGV":
+            return "orthographic_variant"
+
+        if val == "EXC":
+            return "excluded_name"
+
+        if val == "MIS":
+            return "misapplied_name"
+
+        if val == "TSY":
+            return "subjective_synonym"
+
+        if val == "NSY":
+            return "objective_synonym"
+
+        if val == "CON":
+            return "concept_change"
+
         if val == "FOR":
-            return "forma"
+            return "formal_description"
+
+        if val == "ERR":
+            return "name_entered_in_error"
+
+        if val == "ISY":
+            return "isonym"
+
         return self.map_enum_base(val)

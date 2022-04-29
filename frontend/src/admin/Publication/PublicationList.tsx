@@ -14,7 +14,7 @@ import {
 import FullNameField from '../shared/FullNameField';
 
 export const PublicationList: FC = (props) => (
-  <List {...props} sort={{ field: 'publication', order: 'DESC' }}>
+  <List {...props} sort={{ field: 'publication' }}>
     <Datagrid rowClick="show">
       <TextField source="id" />
       <TextField source="publication" />

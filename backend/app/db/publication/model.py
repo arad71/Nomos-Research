@@ -2,16 +2,15 @@ from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.schema import UniqueConstraint
 
-from app.db.models import TableMixin
+from app.db.models import BaseModel, TableMixin
 from app.db.publication.constants import (
     BAD_PUBLICATION,
     PUBLICATION_ID,
     TABLE_DESCRIPTION,
 )
-from app.db.session import Base
 
 
-class Publication(Base, TableMixin):
+class Publication(BaseModel, TableMixin):
     __tablename__ = "publication"
     __table_args__ = (
         UniqueConstraint("legacy_id", name=f"uc_{ __tablename__}_legacy_id"),
