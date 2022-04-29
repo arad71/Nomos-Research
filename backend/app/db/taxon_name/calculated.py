@@ -14,15 +14,19 @@ def calculate_fields(mapper, connection, target):
     if hasattr(target, "taxon_name_id") and target.taxon_name_id:
         target.author = map_authors(mapper, connection, target)
 
-    target.scientific_name = " ".join(
-        filter(None, [target.canonical_name, target.author])
-    )
-    target.formatted_scientific_name = " ".join(
-        filter(
-            None,
-            [f"<i class='canonical-name'>{target.canonical_name}</i>", target.author],
+    if any([target.canonical_name, target.author]):
+        target.scientific_name = " ".join(
+            filter(None, [target.canonical_name, target.author])
         )
-    )
+        target.formatted_scientific_name = " ".join(
+            filter(
+                None,
+                [
+                    f"<i class='canonical-name'>{target.canonical_name}</i>",
+                    target.author,
+                ],
+            )
+        )
 
 
 def map_canonical_name(mapper, connection, target):
