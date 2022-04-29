@@ -81,7 +81,7 @@ export const TaxonNameList: FC = (props) => (
         reference="taxon_names"
         sortBy="family"
       >
-        <TextField source="scientific_name" />
+        <RichTextField source="formatted_scientific_name" />
       </ReferenceField>
       <TextField source="all_vernaculars" />
       <TextField source="notes" />

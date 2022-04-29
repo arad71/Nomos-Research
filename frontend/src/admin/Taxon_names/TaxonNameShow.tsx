@@ -68,7 +68,7 @@ export const TaxonNameShow: FC = (props) => (
         source="family_nid"
         reference="taxon_names"
       >
-        <TextField source="scientific_name" />
+        <RichTextField source="formatted_scientific_name" />
       </ReferenceField>
       <TextField source="all_vernaculars" />
       <TextField source="notes" />
