@@ -27,7 +27,7 @@ def calculate_fields(mapper, connection, target):
 
 def map_canonical_name(mapper, connection, target):
     vals = [target.genus, target.specific_epithet]
-    if target.kingdom.kingdom_name == PLANTAE_KINGDOM_NAME:
+    if target.kingdom and target.kingdom.kingdom_name == PLANTAE_KINGDOM_NAME:
         if target.taxon_rank.rank_abbrev:
             vals.append(RankAbbreviationVals[target.taxon_rank.rank_abbrev])
     vals.append(target.infraspecific_epithet)
