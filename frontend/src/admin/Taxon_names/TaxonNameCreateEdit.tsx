@@ -5,6 +5,7 @@ import {
   required,
   SelectInput,
   SimpleForm,
+  TextField,
   TextInput,
   BooleanInput,
   NullableBooleanInput,
@@ -30,7 +31,7 @@ export const TaxonNameCreateEdit: FC = (props) => (
     >
       <SelectInput optionText="rank_name" />
     </ReferenceInput>
-    <TextInput source="scientific_name" validate={[required()]} />
+    <TextField source="scientific_name" />
     <TextInput source="phylum" />
     <TextInput source="class" />
     <TextInput source="order" />
