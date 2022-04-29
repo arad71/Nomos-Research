@@ -19,7 +19,7 @@ class UserRoleCreate(UserRoleBase):
 
 
 # Properties to receive via API on update
-class UserRoleEdit(BaseModel):
+class UserRoleEdit(UserRoleBase):
     pass
 
 

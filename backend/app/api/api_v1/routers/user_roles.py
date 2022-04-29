@@ -1,29 +1,29 @@
-from typing import Any, Optional
+from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Request, Response, Security
+from fastapi import APIRouter, Depends, Response
 from sqlalchemy.orm import Session
 
 from app.api.dependencies.range_query import RangeQueryParameter
-from app.core.auth import get_current_active_superuser, get_current_active_user
+from app.core.auth import authorize, get_current_active_user
 from app.db.role.constants import Role
 from app.db.session import get_db
 from app.db.user.model import User
 from app.db.user_role.crud import UserRoleCrud
 from app.db.user_role.schema import UserRole, UserRoleCreate, UserRoleEdit
 
-user_roles_router = APIRouter(prefix="/user-roles")
+user_roles_router = APIRouter(prefix="/user_roles")
 
 
 @user_roles_router.get(
     "",
     response_model=list[UserRole],
     response_model_exclude_none=True,
+    dependencies=[authorize()],
 )
 async def user_role_list(
     response: Response,
     range: Optional[str] = RangeQueryParameter,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
 ):
     """
     Get all user_roles
@@ -40,10 +40,8 @@ async def user_role_list(
     response_model_exclude_none=True,
 )
 async def user_role_details(
-    request: Request,
     user_role_id: int,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
 ):
     """
     Get any user_role details
@@ -51,12 +49,23 @@ async def user_role_details(
     return UserRoleCrud.get_item(db, user_role_id)
 
 
-@user_roles_router.post("", response_model=UserRole, response_model_exclude_none=True)
+@user_roles_router.post(
+    "",
+    response_model=UserRole,
+    response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.APPLICATION_SUPPORT["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
 async def user_role_create(
-    request: Request,
     user_role: UserRoleCreate,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Create a new user_role
@@ -68,13 +77,20 @@ async def user_role_create(
     "/{user_role_id}",
     response_model=UserRole,
     response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.APPLICATION_SUPPORT["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
 )
 async def user_role_edit(
-    request: Request,
     user_role_id: int,
     user_role: UserRoleEdit,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Update existing user_role
@@ -86,12 +102,18 @@ async def user_role_edit(
     "/{user_role_id}",
     response_model=UserRole,
     response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.APPLICATION_SUPPORT["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
 )
 async def user_role_delete(
-    request: Request,
     user_role_id: int,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
 ):
     """
     Delete existing user_role
@@ -99,18 +121,22 @@ async def user_role_delete(
     return UserRoleCrud.delete_item(db, user_role_id)
 
 
-@user_roles_router.post("", response_model=UserRole)
+@user_roles_router.post(
+    "",
+    response_model=UserRole,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.APPLICATION_SUPPORT["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
 def assign_user_role(
     *,
     db: Session = Depends(get_db),
     user_role_in: UserRoleCreate,
-    current_user: User = Security(
-        get_current_active_user,
-        scopes=[
-            Role.APPLICATION_SUPPORT["name"],
-            Role.SUPER_ADMIN["name"],
-        ],
-    ),
 ) -> UserRole:
     """
     Assign a role to a user after creation of a user
@@ -120,33 +146,4 @@ def assign_user_role(
     )
     if user_role is None:
         user_role = UserRoleCrud.create_item(db, item=user_role_in)
-    return user_role
-
-
-@user_roles_router.put("/{user_id}", response_model=UserRole)
-def update_user_role(
-    *,
-    db: Session = Depends(get_db),
-    user_id: int,
-    user_role_in: UserRoleEdit,
-    current_user: User = Security(
-        get_current_active_user,
-        scopes=[
-            Role.APPLICATION_SUPPORT["name"],
-            Role.SUPER_ADMIN["name"],
-        ],
-    ),
-) -> Any:
-    """
-    Update a users role.
-    """
-    user_role = UserRoleCrud.get_by_user_id(db, user_id=user_id)
-    if not user_role:
-        raise HTTPException(
-            status_code=404,
-            detail="There is no role assigned to this user",
-        )
-    user_role = UserRoleCrud.edit_item(
-        db, id=user_id, values=user_role_in, current_user=current_user.user_id
-    )
     return user_role

@@ -22,5 +22,5 @@ def upgrade():
 
 
 def downgrade():
-    op.drop_constraint("uc_author_abbreviation")
+    op.drop_constraint("uc_author_abbreviation", "author")
     op.alter_column("author", "abbreviation", new_column_name="author")

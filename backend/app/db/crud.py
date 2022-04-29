@@ -21,8 +21,9 @@ class Crud:
     @classmethod
     def create_item(cls, db: Session, item: BaseModel, current_user: int = None):
         db_item = cls.model(**item.dict())
-        setattr(db_item, "created_by", current_user)
-        setattr(db_item, "updated_by", current_user)
+        if current_user:
+            setattr(db_item, "created_by", current_user)
+            setattr(db_item, "updated_by", current_user)
 
         db.add(db_item)
         db.commit()

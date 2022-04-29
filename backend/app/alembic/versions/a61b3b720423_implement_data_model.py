@@ -657,3 +657,11 @@ def downgrade():
     op.drop_index(op.f("ix_user_email"), table_name="user")
     op.drop_table("user")
     # ### end Alembic commands ###
+
+    op.execute("DROP TYPE IF EXISTS citation__author_type")
+    op.execute("DROP TYPE IF EXISTS classification_system__class_type")
+    op.execute("DROP TYPE IF EXISTS cross_reference__cross_reference_type")
+    op.execute("DROP TYPE IF EXISTS taxon_name__naturalised_status")
+    op.execute("DROP TYPE IF EXISTS taxon_name__publication_status")
+    op.execute("DROP TYPE IF EXISTS taxon_rank__rank_abbrev")
+    op.execute("DROP TYPE IF EXISTS vernacular__language")

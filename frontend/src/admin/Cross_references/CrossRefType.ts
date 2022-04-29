@@ -1,12 +1,12 @@
 const CrossRefType = [
-  { id: 'ogv', name: 'ogv' },
-  { id: 'exc', name: 'exc' },
-  { id: 'mis', name: 'mis' },
-  { id: 'tsy', name: 'tsy' },
-  { id: 'nsy', name: 'nsy' },
-  { id: 'con', name: 'con' },
-  { id: 'forma', name: 'forma' },
-  { id: 'err', name: 'err' },
-  { id: 'isy', name: 'isy' },
+  { id: 'orthographic_variant', name: 'Orthographic variant' },
+  { id: 'excluded_name', name: 'Excluded name' },
+  { id: 'misapplied_name', name: 'Misapplied name' },
+  { id: 'subjective_synonym', name: 'Subjective synonym' },
+  { id: 'objective_synonym', name: 'Objective synonym' },
+  { id: 'concept_change', name: 'Concept change' },
+  { id: 'formal_description', name: 'Formal description' },
+  { id: 'name_entered_in_error', name: 'Name entered in error' },
+  { id: 'isonym', name: 'Isonym' },
 ];
 export default CrossRefType;

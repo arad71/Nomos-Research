@@ -28,7 +28,7 @@ def downgrade():
             "rank_name",
             sa.VARCHAR(length=15),
             autoincrement=False,
-            nullable=False,
+            nullable=True,
             comment=(
                 "A duplicate of the rankname field in HBTRanks. To aid performance."
             ),

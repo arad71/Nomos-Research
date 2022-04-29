@@ -158,11 +158,12 @@ def test_app_support(test_db) -> User:
     return create_user_with_role(Role.APPLICATION_SUPPORT, test_db)
 
 
-def create_user_with_role(role, test_db):
+def create_user_with_role(role, test_db) -> User:
     role_name = role["name"]
     user = User(
         email=f"{role_name}@email.com",
         hashed_password=get_password_hash(),
+        is_active=True,
     )
     test_db.add(user)
     test_db.commit()
@@ -175,6 +176,30 @@ def create_user_with_role(role, test_db):
     test_db.add(user_role)
     test_db.commit()
     return user
+
+
+@pytest.fixture
+def test_role(test_db):
+    role = RoleModel(name="test role", description="test role description")
+    test_db.add(role)
+    test_db.commit()
+    return role
+
+
+@pytest.fixture
+def test_role2(test_db):
+    role = RoleModel(name="test role 2", description="test role description2")
+    test_db.add(role)
+    test_db.commit()
+    return role
+
+
+@pytest.fixture
+def test_user_role(test_db, test_user, test_role):
+    user_role = UserRoleModel(user_id=test_user.user_id, role_id=test_role.role_id)
+    test_db.add(user_role)
+    test_db.commit()
+    return user_role
 
 
 @pytest.fixture
@@ -251,7 +276,7 @@ def test_cross_reference(test_db, test_taxon_name, test_superuser) -> CrossRefer
     now = datetime.datetime.utcnow()
     cross_reference = CrossReference(
         old_name_id=test_taxon_name.taxon_name_id,
-        cross_reference_type="mis",
+        cross_reference_type="misapplied_name",
         new_name_id=test_taxon_name.taxon_name_id,
         active=True,
         updated_by=test_superuser.user_id,
@@ -473,7 +498,8 @@ def test_taxon_name_canonical_name_3(
     test_db, test_kingdom, test_taxon_rank, test_publication, test_superuser
 ) -> TaxonName:
     """
-    Taxon Name for testing Canonical Name - Genus, specific_epithet and infraspecific_epithet
+    Taxon Name for testing Canonical Name - Genus, specific_epithet and
+     infraspecific_epithet
     """
 
     now = datetime.datetime.utcnow()
@@ -606,3 +632,8 @@ def app_support_token_headers(
 ) -> t.Dict[str, str]:
     monkeypatch.setattr(security, "verify_password", verify_password_mock)
     return token_headers_for_user(client, test_password, test_app_support, monkeypatch)
+
+
+@pytest.fixture
+def api_key(monkeypatch):
+    monkeypatch.setenv("API_KEY_CHECKLIST", "test")
