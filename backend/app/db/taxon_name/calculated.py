@@ -4,7 +4,8 @@ from operator import attrgetter
 from sqlalchemy import asc
 
 from app.db.citation.enums import AuthorType
-from app.db.taxon_name.constants import ANIMAL_KINGDOM_NAME
+from app.db.taxon_name.constants import ANIMAL_KINGDOM_NAME, PLANTAE_KINGDOM_NAME
+from app.db.taxon_rank.enums import RankAbbreviationVals
 
 
 def calculate_fields(mapper, connection, target):
@@ -15,12 +16,12 @@ def calculate_fields(mapper, connection, target):
 
 
 def map_canonical_name(mapper, connection, target):
-    canonical_name_vals = list(
-        filter(
-            None, [target.genus, target.specific_epithet, target.infraspecific_epithet]
-        )
-    )
-    return " ".join(canonical_name_vals)
+    vals = [target.genus, target.specific_epithet]
+    if target.kingdom.kingdom_name == PLANTAE_KINGDOM_NAME:
+        if target.taxon_rank.rank_abbrev:
+            vals.append(RankAbbreviationVals[target.taxon_rank.rank_abbrev])
+    vals.append(target.infraspecific_epithet)
+    return " ".join(filter(None, vals))
 
 
 def map_authors(mapper, connection, target):
