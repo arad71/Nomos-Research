@@ -32,6 +32,7 @@ export const TaxonNameCreateEdit: FC = (props) => (
     >
       <SelectInput optionText="rank_name" />
     </ReferenceInput>
+    <TextField source="canonical_name" />
     <TextField source="scientific_name" />
     <RichTextField source="formatted_scientific_name" />
     <TextInput source="phylum" />
@@ -71,7 +72,7 @@ export const TaxonNameCreateEdit: FC = (props) => (
     <TextInput source="source" />
     <TextInput source="external_id" />
     <TextInput source="family_code" />
-    <TextInput source="author" />
+    <TextField source="author" />
     <TextInput source="vernacular" />
     <TextInput source="editor" />
     <SelectInput source="naturalised_status" choices={NaturalisedStatus} />

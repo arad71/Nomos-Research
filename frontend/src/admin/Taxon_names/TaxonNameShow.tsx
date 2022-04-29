@@ -10,6 +10,7 @@ import {
   SelectField,
   TextField,
   BooleanField,
+  RichTextField,
 } from 'react-admin';
 import Aside from '../shared/Aside';
 import NaturalisedStatus from './NaturalisedStatus';
@@ -24,7 +25,9 @@ export const TaxonNameShow: FC = (props) => (
       <ReferenceField source="rank_id" reference="taxon_ranks">
         <TextField source="rank_name" />
       </ReferenceField>
+      <TextField source="canonical_name" />
       <TextField source="scientific_name" />
+      <RichTextField source="formatted_scientific_name" />
       <TextField source="phylum" />
       <TextField source="class" />
       <TextField source="order" />
