@@ -3,8 +3,10 @@ import {
   NumberInput,
   ReferenceInput,
   required,
+  RichTextField,
   SelectInput,
   SimpleForm,
+  TextField,
   TextInput,
   BooleanInput,
   NullableBooleanInput,
@@ -30,7 +32,9 @@ export const TaxonNameCreateEdit: FC = (props) => (
     >
       <SelectInput optionText="rank_name" />
     </ReferenceInput>
-    <TextInput source="scientific_name" validate={[required()]} />
+    <TextField source="canonical_name" />
+    <TextField source="scientific_name" />
+    <RichTextField source="formatted_scientific_name" />
     <TextInput source="phylum" />
     <TextInput source="class" />
     <TextInput source="order" />
@@ -68,7 +72,7 @@ export const TaxonNameCreateEdit: FC = (props) => (
     <TextInput source="source" />
     <TextInput source="external_id" />
     <TextInput source="family_code" />
-    <TextInput source="author" />
+    <TextField source="author" />
     <TextInput source="vernacular" />
     <TextInput source="editor" />
     <SelectInput source="naturalised_status" choices={NaturalisedStatus} />

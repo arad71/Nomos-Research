@@ -1,5 +1,11 @@
 import React, { FC } from 'react';
-import { ReferenceField, Show, SimpleShowLayout, TextField } from 'react-admin';
+import {
+  ReferenceField,
+  RichTextField,
+  Show,
+  SimpleShowLayout,
+  TextField,
+} from 'react-admin';
 import Aside from '../shared/Aside';
 
 export const InformalGroupShow: FC = (props) => {
@@ -13,7 +19,7 @@ export const InformalGroupShow: FC = (props) => {
           <TextField source="class_desc" />
         </ReferenceField>
         <ReferenceField source="taxon_name_id" reference="taxon_names">
-          <TextField source="scientific_name" />
+          <RichTextField source="formatted_scientific_name" />
         </ReferenceField>
       </SimpleShowLayout>
     </Show>

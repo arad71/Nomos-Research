@@ -47,3 +47,4 @@ TABLE_DESCRIPTION = (
     "All current and non-current taxon names at all levels of the hierarchy"
 )
 ANIMAL_KINGDOM_NAME = "Animalia"
+PLANTAE_KINGDOM_NAME = "Plantae"

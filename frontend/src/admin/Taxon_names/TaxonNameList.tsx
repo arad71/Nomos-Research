@@ -7,6 +7,7 @@ import {
   List,
   NumberField,
   ReferenceField,
+  RichTextField,
   SelectField,
   TextField,
   BooleanField,
@@ -32,7 +33,9 @@ export const TaxonNameList: FC = (props) => (
       >
         <TextField source="rank_name" />
       </ReferenceField>
+      <RichTextField source="canonical_name" />
       <TextField source="scientific_name" />
+      <RichTextField source="formatted_scientific_name" />
       <TextField source="phylum" />
       <TextField source="class" />
       <TextField source="order" />
@@ -78,7 +81,7 @@ export const TaxonNameList: FC = (props) => (
         reference="taxon_names"
         sortBy="family"
       >
-        <TextField source="scientific_name" />
+        <RichTextField source="formatted_scientific_name" />
       </ReferenceField>
       <TextField source="all_vernaculars" />
       <TextField source="notes" />

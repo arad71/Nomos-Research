@@ -7,6 +7,7 @@ import {
   List,
   NumberField,
   ReferenceField,
+  RichTextField,
   SelectField,
   TextField,
   useRecordContext,
@@ -35,7 +36,7 @@ export const VernacularList: FC = (props) => (
         reference="taxon_names"
         sortBy="taxon_name___scientific_name"
       >
-        <TextField source="scientific_name" />
+        <RichTextField source="formatted_scientific_name" />
       </ReferenceField>
       <TextField source="vernacular" />
       <SelectField source="language" choices={LanguageType} />

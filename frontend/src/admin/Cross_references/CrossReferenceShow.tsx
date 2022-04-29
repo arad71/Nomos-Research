@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 import {
   ReferenceField,
+  RichTextField,
   SelectField,
   Show,
   SimpleShowLayout,
@@ -15,10 +16,10 @@ export const CrossReferenceShow: FC = (props) => {
     <Show {...props} aside={<Aside />}>
       <SimpleShowLayout>
         <ReferenceField source="old_name_id" reference="taxon_names">
-          <TextField source="scientific_name" />
+          <RichTextField source="formatted_scientific_name" />
         </ReferenceField>
         <ReferenceField source="new_name_id" reference="taxon_names">
-          <TextField source="scientific_name" />
+          <RichTextField source="formatted_scientific_name" />
         </ReferenceField>
         <SelectField source="cross_reference_type" choices={CrossRefType} />
         <BooleanField source="active" />

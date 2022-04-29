@@ -9,3 +9,14 @@ class RankAbbreviation(str, Enum):
     subvar = "subvar"
     forma = "forma"
     subf = "subf"
+
+
+RankAbbreviationVals = {
+    "subsp": "subsp.",
+    "nothovar": "nothovar.",
+    "cv": "cv.",
+    "var": "var.",
+    "subvar": "subvar.",
+    "forma": "forma",
+    "subf": "subf.",
+}
