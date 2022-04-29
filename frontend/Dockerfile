@@ -5,10 +5,13 @@ ARG NPM_TOKEN
 RUN test -n "$NPM_TOKEN" || (echo "\033[1;31mNPM_TOKEN not set\033[0m"; exit 1;)
 COPY .npmrc.docker .npmrc
 ADD package.json /package.json
+ADD package-lock.json /package-lock.json
 
 ENV NODE_PATH=/node_modules
 ENV PATH=$PATH:/node_modules/.bin
-RUN npm install
+RUN npm config set fetch-retry-mintimeout 20000
+RUN npm config set fetch-retry-maxtimeout 180000
+RUN npm ci --prefer-offline --no-audit
 RUN rm -f .npmrc.docker
 
 WORKDIR /app
