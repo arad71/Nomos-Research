@@ -1,3 +1,4 @@
+import pytest
 from starlette import status
 
 from app.db.taxon_name.model import TaxonName
@@ -268,7 +269,42 @@ def test_super_admin_permissions(
     test_taxon_name_2,
     test_manager,
 ):
-    pass
+    response = client.get("/api/v1/taxon_names", headers=superuser_token_headers)
+    assert response.status_code == status.HTTP_200_OK
+
+    response = client.get(
+        f"/api/v1/taxon_names/{test_taxon_name.taxon_name_id}",
+        headers=superuser_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+    taxon_json = {
+        "kingdom_id": test_kingdom.kingdom_id,
+        "rank_id": test_taxon_rank.taxon_rank_id,
+        "is_current": True,
+        "validated": True,
+        "canonical_name": test_taxon_name.canonical_name,
+        "created_by": test_manager.user_id,
+        "created_on": test_taxon_name.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+    }
+    response = client.post(
+        "/api/v1/taxon_names", headers=superuser_token_headers, json=taxon_json
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+    taxon_json.update(
+        {
+            "canonical_name": test_taxon_name_2.canonical_name,
+            "updated_by": test_manager.user_id,
+            "updated_on": test_taxon_name.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        }
+    )
+    response = client.put(
+        f"/api/v1/taxon_names/{test_taxon_name_2.taxon_name_id}",
+        headers=superuser_token_headers,
+        json=taxon_json,
+    )
+    assert response.status_code == status.HTTP_200_OK
 
 
 def test_manager_permissions(
@@ -333,16 +369,77 @@ def test_officer_permissions(
     test_taxon_name_2,
     test_manager,
 ):
-    pass
+    response = client.get("/api/v1/taxon_names", headers=officer_token_headers)
+    assert response.status_code == status.HTTP_200_OK
+
+    response = client.get(
+        f"/api/v1/taxon_names/{test_taxon_name.taxon_name_id}",
+        headers=officer_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+    response = client.delete(
+        f"/api/v1/taxon_names/{test_taxon_name.taxon_name_id}",
+        headers=officer_token_headers,
+    )
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    taxon_json = {
+        "kingdom_id": test_kingdom.kingdom_id,
+        "rank_id": test_taxon_rank.taxon_rank_id,
+        "is_current": True,
+        "validated": True,
+        "canonical_name": test_taxon_name.canonical_name,
+        "created_by": test_manager.user_id,
+        "created_on": test_taxon_name.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+    }
+    response = client.post(
+        "/api/v1/taxon_names", headers=officer_token_headers, json=taxon_json
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+    taxon_json.update(
+        {
+            "canonical_name": test_taxon_name_2.canonical_name,
+            "updated_by": test_manager.user_id,
+            "updated_on": test_taxon_name.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        }
+    )
+    response = client.put(
+        f"/api/v1/taxon_names/{test_taxon_name_2.taxon_name_id}",
+        headers=officer_token_headers,
+        json=taxon_json,
+    )
+    assert response.status_code == status.HTTP_200_OK
 
 
-def test_app_support_permissions(
-    client,
-    app_support_token_headers,
-    test_kingdom,
-    test_taxon_rank,
-    test_taxon_name,
-    test_taxon_name_2,
-    test_manager,
+parameter_names = "method,endpoint,status_code"
+
+parameter_values = [
+    ("get", "/api/v1/taxon_names", status.HTTP_200_OK),
+    ("put", "/api/v1/taxon_names/1", status.HTTP_403_FORBIDDEN),
+    ("delete", "/api/v1/taxon_names/1", status.HTTP_403_FORBIDDEN),
+    ("post", "/api/v1/taxon_names", status.HTTP_403_FORBIDDEN),
+]
+
+
+@pytest.mark.parametrize(
+    parameter_names,
+    parameter_values,
+)
+def test_reader_permissions(
+    client, reader_token_headers, method, endpoint, status_code
 ):
-    pass
+    response = getattr(client, method)(endpoint, headers=reader_token_headers)
+    assert response.status_code == status_code
+
+
+@pytest.mark.parametrize(
+    parameter_names,
+    parameter_values,
+)
+def test_app_support_permissions(
+    client, app_support_token_headers, method, endpoint, status_code
+):
+    response = getattr(client, method)(endpoint, headers=app_support_token_headers)
+    assert response.status_code == status_code
