@@ -14,6 +14,7 @@ from sqlalchemy.types import Enum
 
 from app.db.models import BaseModel, TableMixin
 from app.db.taxon_name import enums
+from app.db.taxon_name.calculated import calculate_fields
 from app.db.taxon_name.constants import (
     AUTHOR,
     COMMENTS,
@@ -76,6 +77,7 @@ class TaxonName(BaseModel, TableMixin):
     subgenus = Column(String)
     canonical_name = Column(String)
     scientific_name = Column(String)
+    formatted_scientific_name = Column(String)
     species = Column(String)
     subspecies = Column(String)
     # taxon_rank = Column(String(9))
@@ -170,14 +172,5 @@ class TaxonName(BaseModel, TableMixin):
     legacy_id = Column(Integer)
 
 
-def map_canonical_name(mapper, connection, target):
-    vals = list(
-        filter(
-            None, [target.genus, target.specific_epithet, target.infraspecific_epithet]
-        )
-    )
-    target.canonical_name = " ".join(vals)
-
-
-event.listen(TaxonName, "before_insert", map_canonical_name)
-event.listen(TaxonName, "before_update", map_canonical_name)
+event.listen(TaxonName, "before_insert", calculate_fields)
+event.listen(TaxonName, "before_update", calculate_fields)

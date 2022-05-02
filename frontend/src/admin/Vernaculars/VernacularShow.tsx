@@ -2,6 +2,7 @@ import React, { FC } from 'react';
 import {
   NumberField,
   ReferenceField,
+  RichTextField,
   Show,
   SimpleShowLayout,
   SelectField,
@@ -17,7 +18,7 @@ export const VernacularShow: FC = (props) => {
       <SimpleShowLayout>
         <TextField source="vernacular" />
         <ReferenceField source="taxon_name_id" reference="taxon_names">
-          <TextField source="scientific_name" />
+          <RichTextField source="formatted_scientific_name" />
         </ReferenceField>
         <SelectField source="language" choices={LanguageType} />
         <TextField source="lang_pref" />

@@ -7,6 +7,7 @@ import {
   List,
   NumberField,
   ReferenceField,
+  RichTextField,
   SelectField,
   TextField,
 } from 'react-admin';
@@ -21,14 +22,14 @@ export const CitationList: FC = (props) => (
         reference="taxon_names"
         sortBy="taxon_name___scientific_name"
       >
-        <TextField source="scientific_name" />
+        <RichTextField source="formatted_scientific_name" />
       </ReferenceField>
       <ReferenceField
         source="author_id"
         reference="authors"
-        sortBy="author___author"
+        sortBy="author___abbreviation"
       >
-        <TextField source="author" />
+        <TextField source="abbreviation" />
       </ReferenceField>
       <SelectField source="author_type" choices={AuthorType} />
       <NumberField source="author_order" />

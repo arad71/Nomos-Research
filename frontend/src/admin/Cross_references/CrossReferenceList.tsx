@@ -7,6 +7,7 @@ import {
   List,
   NumberField,
   ReferenceField,
+  RichTextField,
   SelectField,
   TextField,
   useRecordContext,
@@ -35,14 +36,14 @@ export const CrossReferenceList: FC = (props) => (
         reference="taxon_names"
         sortBy="old_name___scientific_name"
       >
-        <TextField source="scientific_name" />
+        <RichTextField source="formatted_scientific_name" />
       </ReferenceField>
       <ReferenceField
         source="new_name_id"
         reference="taxon_names"
         sortBy="new_name___scientific_name"
       >
-        <TextField source="scientific_name" />
+        <RichTextField source="formatted_scientific_name" />
       </ReferenceField>
       <SelectField source="cross_reference_type" choices={CrossRefType} />
       <BooleanField source="active" />

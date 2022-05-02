@@ -44,7 +44,6 @@ class TaxonNameBase(BaseModel):
     order: Optional[str]
     genus: Optional[str]
     subgenus: Optional[str]
-    scientific_name: Optional[str]
     species: Optional[str]
     subspecies: Optional[str]
     specific_epithet: Optional[str]
@@ -64,7 +63,6 @@ class TaxonNameBase(BaseModel):
     source: Optional[str] = Field(description=SOURCE)
     external_id: Optional[str] = Field(description=EXTERNAL_ID)
     family_code: Optional[str] = Field(description=FAMILY_CODE)
-    author: Optional[str] = Field(description=AUTHOR)
     vernacular: Optional[str] = Field(description=VERNACULAR)
     editor: Optional[str]
     naturalised_status: Optional[enums.NaturalisedStatus]
@@ -94,6 +92,9 @@ class TaxonName(TaxonNameBase, TableBase):
     kingdom: Kingdom
     taxon_rank: TaxonRank
     canonical_name: Optional[str]
+    author: Optional[str] = Field(description=AUTHOR)
+    scientific_name: Optional[str]
+    formatted_scientific_name: Optional[str]
 
     class Config:
         orm_mode = True

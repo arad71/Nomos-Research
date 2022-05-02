@@ -22,7 +22,7 @@ export const CitationCreateEdit: FC = (props) => (
       reference="authors"
       validate={required()}
     >
-      <SelectInput optionText="author" />
+      <SelectInput optionText="abbreviation" />
     </ReferenceInput>
     <SelectInput source="author_type" choices={AuthorType} />
     <NumberInput source="author_order" validate={required()} initialValue={0} />
