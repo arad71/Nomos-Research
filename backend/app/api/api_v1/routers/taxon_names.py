@@ -8,6 +8,7 @@ from app.db.role.constants import Role
 from app.db.session import get_db
 from app.db.taxon_name.crud import TaxonNameCrud
 from app.db.taxon_name.schema import TaxonName, TaxonNameCreate, TaxonNameEdit
+from app.db.user.model import User
 
 taxon_names_router = r = APIRouter(prefix="/taxon_names")
 
@@ -62,7 +63,8 @@ async def taxon_name_details(
     dependencies=[
         authorize(
             scopes=[
-                Role.APPLICATION_SUPPORT["name"],
+                Role.MANAGER["name"],
+                Role.OFFICER["name"],
                 Role.SUPER_ADMIN["name"],
             ]
         )
@@ -71,11 +73,12 @@ async def taxon_name_details(
 async def taxon_name_create(
     taxon_name: TaxonNameCreate,
     db=Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Create a new taxon_name
     """
-    return TaxonNameCrud.create_item(db, taxon_name)
+    return TaxonNameCrud.create_item(db, taxon_name, current_user.user_id)
 
 
 @r.put(
@@ -85,7 +88,8 @@ async def taxon_name_create(
     dependencies=[
         authorize(
             scopes=[
-                Role.APPLICATION_SUPPORT["name"],
+                Role.MANAGER["name"],
+                Role.OFFICER["name"],
                 Role.SUPER_ADMIN["name"],
             ]
         )
@@ -107,6 +111,14 @@ async def taxon_name_edit(
     "/{taxon_name_id}",
     response_model=TaxonName,
     response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.SUPER_ADMIN["name"],
+                Role.MANAGER["name"],
+            ]
+        )
+    ],
 )
 async def taxon_name_delete(
     taxon_name_id: int,
