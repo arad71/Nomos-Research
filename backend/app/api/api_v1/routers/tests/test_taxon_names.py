@@ -1,3 +1,6 @@
+import pytest
+from starlette import status
+
 from app.db.taxon_name.model import TaxonName
 
 
@@ -5,7 +8,7 @@ def test_get_taxon_names(
     client, test_taxon_name, test_kingdom, test_taxon_rank, superuser_token_headers
 ):
     response = client.get("/api/v1/taxon_names", headers=superuser_token_headers)
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
     response_json = response.json()[0]
     assert response.json() == [
         {
@@ -30,7 +33,7 @@ def test_delete_taxon_name(client, test_taxon_name, test_db, superuser_token_hea
         f"/api/v1/taxon_names/{test_taxon_name.taxon_name_id}",
         headers=superuser_token_headers,
     )
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
     assert test_db.query(TaxonName).all() == []
 
 
@@ -38,7 +41,7 @@ def test_delete_taxon_name_not_found(client, superuser_token_headers):
     response = client.delete(
         "/api/v1/taxon_names/4321", headers=superuser_token_headers
     )
-    assert response.status_code == 404
+    assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 def test_edit_taxon_name(
@@ -66,7 +69,7 @@ def test_edit_taxon_name(
         json=new_taxon_name,
         headers=superuser_token_headers,
     )
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
     new_taxon_name["taxon_name_id"] = test_taxon_name.taxon_name_id
     new_taxon_name["updated_on"] = response.json()["updated_on"]
     new_taxon_name["kingdom"] = response.json()["kingdom"]
@@ -98,7 +101,7 @@ def test_edit_taxon_name_not_found(
     response = client.put(
         "/api/v1/taxon_names/1234", json=new_taxon_name, headers=superuser_token_headers
     )
-    assert response.status_code == 404
+    assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 def test_get_taxon_name(
@@ -112,7 +115,7 @@ def test_get_taxon_name(
         f"/api/v1/taxon_names/{test_taxon_name.taxon_name_id}",
         headers=superuser_token_headers,
     )
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
 
     response_json = response.json()
     assert response.json() == {
@@ -142,7 +145,7 @@ def test_canonical_name_1(
         f"/api/v1/taxon_names/{test_taxon_name_canonical_name_1.taxon_name_id}",
         headers=superuser_token_headers,
     )
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
 
     response_json = response.json()
     assert response.json() == {
@@ -179,7 +182,7 @@ def test_canonical_name_2(
         f"/api/v1/taxon_names/{test_taxon_name_canonical_name_2.taxon_name_id}",
         headers=superuser_token_headers,
     )
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
 
     response_json = response.json()
     assert response.json() == {
@@ -217,7 +220,7 @@ def test_canonical_name_3(
         f"/api/v1/taxon_names/{test_taxon_name_canonical_name_3.taxon_name_id}",
         headers=superuser_token_headers,
     )
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
 
     response_json = response.json()
     assert response.json() == {
@@ -247,4 +250,202 @@ def test_canonical_name_3(
 
 def test_taxon_name_not_found(client, superuser_token_headers):
     response = client.get("/api/v1/taxon_names/123", headers=superuser_token_headers)
-    assert response.status_code == 404
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+def test_unauthenticated_routes(client):
+    response = client.get("/api/v1/taxon_names/me")
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    response = client.get("/api/v1/taxon_names")
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    response = client.get("/api/v1/taxon_names/123")
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    response = client.put("/api/v1/taxon_names/123")
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    response = client.delete("/api/v1/taxon_names/123")
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_super_admin_permissions(
+    client,
+    superuser_token_headers,
+    test_kingdom,
+    test_taxon_rank,
+    test_taxon_name,
+    test_taxon_name_2,
+    test_manager,
+):
+    response = client.get("/api/v1/taxon_names", headers=superuser_token_headers)
+    assert response.status_code == status.HTTP_200_OK
+
+    response = client.get(
+        f"/api/v1/taxon_names/{test_taxon_name.taxon_name_id}",
+        headers=superuser_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+    taxon_json = {
+        "kingdom_id": test_kingdom.kingdom_id,
+        "rank_id": test_taxon_rank.taxon_rank_id,
+        "is_current": True,
+        "validated": True,
+        "canonical_name": test_taxon_name.canonical_name,
+        "created_by": test_manager.user_id,
+        "created_on": test_taxon_name.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+    }
+    response = client.post(
+        "/api/v1/taxon_names", headers=superuser_token_headers, json=taxon_json
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+    taxon_json.update(
+        {
+            "canonical_name": test_taxon_name_2.canonical_name,
+            "updated_by": test_manager.user_id,
+            "updated_on": test_taxon_name.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        }
+    )
+    response = client.put(
+        f"/api/v1/taxon_names/{test_taxon_name_2.taxon_name_id}",
+        headers=superuser_token_headers,
+        json=taxon_json,
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+
+def test_manager_permissions(
+    client,
+    manager_token_headers,
+    test_kingdom,
+    test_taxon_rank,
+    test_taxon_name,
+    test_taxon_name_2,
+    test_manager,
+):
+    response = client.get("/api/v1/taxon_names", headers=manager_token_headers)
+    assert response.status_code == status.HTTP_200_OK
+
+    response = client.get(
+        f"/api/v1/taxon_names/{test_taxon_name.taxon_name_id}",
+        headers=manager_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+    response = client.delete(
+        f"/api/v1/taxon_names/{test_taxon_name.taxon_name_id}",
+        headers=manager_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+    taxon_json = {
+        "kingdom_id": test_kingdom.kingdom_id,
+        "rank_id": test_taxon_rank.taxon_rank_id,
+        "is_current": True,
+        "validated": True,
+        "canonical_name": test_taxon_name.canonical_name,
+        "created_by": test_manager.user_id,
+        "created_on": test_taxon_name.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+    }
+    response = client.post(
+        "/api/v1/taxon_names", headers=manager_token_headers, json=taxon_json
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+    taxon_json.update(
+        {
+            "canonical_name": test_taxon_name_2.canonical_name,
+            "updated_by": test_manager.user_id,
+            "updated_on": test_taxon_name.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        }
+    )
+    response = client.put(
+        f"/api/v1/taxon_names/{test_taxon_name_2.taxon_name_id}",
+        headers=manager_token_headers,
+        json=taxon_json,
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+
+def test_officer_permissions(
+    client,
+    officer_token_headers,
+    test_kingdom,
+    test_taxon_rank,
+    test_taxon_name,
+    test_taxon_name_2,
+    test_manager,
+):
+    response = client.get("/api/v1/taxon_names", headers=officer_token_headers)
+    assert response.status_code == status.HTTP_200_OK
+
+    response = client.get(
+        f"/api/v1/taxon_names/{test_taxon_name.taxon_name_id}",
+        headers=officer_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+    response = client.delete(
+        f"/api/v1/taxon_names/{test_taxon_name.taxon_name_id}",
+        headers=officer_token_headers,
+    )
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    taxon_json = {
+        "kingdom_id": test_kingdom.kingdom_id,
+        "rank_id": test_taxon_rank.taxon_rank_id,
+        "is_current": True,
+        "validated": True,
+        "canonical_name": test_taxon_name.canonical_name,
+        "created_by": test_manager.user_id,
+        "created_on": test_taxon_name.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+    }
+    response = client.post(
+        "/api/v1/taxon_names", headers=officer_token_headers, json=taxon_json
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+    taxon_json.update(
+        {
+            "canonical_name": test_taxon_name_2.canonical_name,
+            "updated_by": test_manager.user_id,
+            "updated_on": test_taxon_name.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        }
+    )
+    response = client.put(
+        f"/api/v1/taxon_names/{test_taxon_name_2.taxon_name_id}",
+        headers=officer_token_headers,
+        json=taxon_json,
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+
+parameter_names = "method,endpoint,status_code"
+
+parameter_values = [
+    ("get", "/api/v1/taxon_names", status.HTTP_200_OK),
+    ("put", "/api/v1/taxon_names/1", status.HTTP_403_FORBIDDEN),
+    ("delete", "/api/v1/taxon_names/1", status.HTTP_403_FORBIDDEN),
+    ("post", "/api/v1/taxon_names", status.HTTP_403_FORBIDDEN),
+]
+
+
+@pytest.mark.parametrize(
+    parameter_names,
+    parameter_values,
+)
+def test_reader_permissions(
+    client, reader_token_headers, method, endpoint, status_code
+):
+    response = getattr(client, method)(endpoint, headers=reader_token_headers)
+    assert response.status_code == status_code
+
+
+@pytest.mark.parametrize(
+    parameter_names,
+    parameter_values,
+)
+def test_app_support_permissions(
+    client, app_support_token_headers, method, endpoint, status_code
+):
+    response = getattr(client, method)(endpoint, headers=app_support_token_headers)
+    assert response.status_code == status_code

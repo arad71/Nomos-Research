@@ -1,12 +1,14 @@
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, Depends, Response
 
 from app.api.dependencies.range_query import RangeQueryParameter
-from app.core.auth import get_current_active_superuser
+from app.core.auth import authorize, get_current_active_user
+from app.db.role.constants import Role
 from app.db.session import get_db
 from app.db.taxon_name.crud import TaxonNameCrud
 from app.db.taxon_name.schema import TaxonName, TaxonNameCreate, TaxonNameEdit
+from app.db.user.model import User
 
 taxon_names_router = r = APIRouter(prefix="/taxon_names")
 
@@ -15,6 +17,7 @@ taxon_names_router = r = APIRouter(prefix="/taxon_names")
     "",
     response_model=List[TaxonName],
     response_model_exclude_none=True,
+    dependencies=[authorize()],
 )
 async def taxon_name_list(
     response: Response,
@@ -22,7 +25,6 @@ async def taxon_name_list(
     sort: Optional[str] = None,
     filter: Optional[str] = None,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
 ):
     """
     Get all taxon_names
@@ -39,12 +41,13 @@ async def taxon_name_list(
     "/{taxon_name_id}",
     response_model=TaxonName,
     response_model_exclude_none=True,
+    dependencies=[
+        authorize(),
+    ],
 )
 async def taxon_name_details(
-    request: Request,
     taxon_name_id: int,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
 ):
     """
     Get any taxon_name details
@@ -53,12 +56,24 @@ async def taxon_name_details(
     return taxon_name
 
 
-@r.post("", response_model=TaxonName, response_model_exclude_none=True)
+@r.post(
+    "",
+    response_model=TaxonName,
+    response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.MANAGER["name"],
+                Role.OFFICER["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
 async def taxon_name_create(
-    request: Request,
     taxon_name: TaxonNameCreate,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Create a new taxon_name
@@ -70,13 +85,21 @@ async def taxon_name_create(
     "/{taxon_name_id}",
     response_model=TaxonName,
     response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.MANAGER["name"],
+                Role.OFFICER["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
 )
 async def taxon_name_edit(
-    request: Request,
     taxon_name_id: int,
     taxon_name: TaxonNameEdit,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Update existing taxon_name
@@ -88,12 +111,18 @@ async def taxon_name_edit(
     "/{taxon_name_id}",
     response_model=TaxonName,
     response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.SUPER_ADMIN["name"],
+                Role.MANAGER["name"],
+            ]
+        )
+    ],
 )
 async def taxon_name_delete(
-    request: Request,
     taxon_name_id: int,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
 ):
     """
     Delete existing taxon_name
