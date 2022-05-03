@@ -1,3 +1,5 @@
+import subprocess
+
 import uvicorn
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -21,6 +23,7 @@ from app.api.api_v1.routers.users import users_router
 from app.api.api_v1.routers.vernaculars import vernaculars_router
 from app.core import config
 from app.core.auth import get_current_active_user
+from app.db.init_db import init_db
 from app.db.session import SessionLocal
 
 API_V1_URL = config.settings.API_V1_STR
@@ -28,6 +31,13 @@ API_V1_URL = config.settings.API_V1_STR
 app = FastAPI(
     title=config.settings.PROJECT_NAME, docs_url="/api/docs", openapi_url="/api"
 )
+
+
+@app.on_event("startup")
+async def run_migrations():
+    subprocess.run(["alembic", "upgrade", "head"])
+    init_db(SessionLocal())
+
 
 origins = [
     "http://localhost",
