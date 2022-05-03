@@ -118,8 +118,8 @@ def create_taxon_rank(test_db, row, kingdom_id, user_id):
         rank_name=row["rank_name"],
         rank_abbrev=row["rank_abbrev"] or None,
         uninomial=False,
-        updated_by=user_id,
-        updated_on=NOW,
+        updated_by=None,
+        updated_on=None,
         created_by=user_id,
         created_on=NOW,
     )
@@ -135,18 +135,11 @@ def update_taxon_name(test_db, taxon_name, user_id):
     test_db.commit()
 
 
-def test_canonical_name(capsys, test_db, test_superuser):
+def test_canonical_name(test_db, test_superuser):
     path = os.getcwd() + f"/app/tests/taxon_name_test_data.csv"
     with open(path, mode="r", encoding="iso-8859-1") as csv_file:
         csv_reader = csv.DictReader(csv_file)
-        i = 0
         for row in csv_reader:
-            i += 1
-            with capsys.disabled():
-                print(i)
-                print(row["canonical_name"])
-                print(row["scientific_name"])
-                print(row["author"])
             user_id = test_superuser.user_id
             kingdom = get_kingdom(test_db, row["kingdom_name"], user_id)
             taxon_rank = create_taxon_rank(test_db, row, kingdom.kingdom_id, user_id)
