@@ -34,11 +34,17 @@ def get_or_create_author(test_db, user_id, abbreviation):
 def get_authors(test_db, row, user_id) -> [(Author, str)]:
     author_map = map(
         functools.partial(get_or_create_author, test_db, user_id),
-        filter(None, [row["author1"], row["author2"], row["author3"]]),
+        filter(None, [row["author1"], row["author2"], row["author3"], row["author4"]]),
     )
     authors = [author for author in author_map]
     author_types = filter(
-        None, [row["author_type1"], row["author_type2"], row["author_type3"]]
+        None,
+        [
+            row["author_1_type"],
+            row["author_2_type"],
+            row["author_3_type"],
+            row["author_4_type"],
+        ],
     )
     return [author_tuple for author_tuple in zip(authors, author_types)]
 
@@ -65,8 +71,11 @@ def create_taxon_name(test_db, row, kingdom, taxon_rank, user_id):
         rank_id=taxon_rank.taxon_rank_id,
         is_current=True,
         validated=True,
+        genus=row["genus"],
         specific_epithet=row["specific_epithet"],
-        infraspecific_epithet=row["infraspecific_epithet"],
+        infraspecific_epithet="subsp. " + row["infraspecific_epithet"]
+        if row["infraspecific_epithet"]
+        else None,
         updated_by=None,
         updated_on=None,
         created_by=user_id,
@@ -106,8 +115,8 @@ def create_taxon_rank(test_db, row, kingdom_id, user_id):
     taxon_rank = TaxonRank(
         kingdom_id=kingdom_id,
         rank_name=row["rank_name"],
-        rank_abbrev=row["rank_abbrev"] if row["rank_abbrev"] else None,
-        uninomial=False if row["rank_uninomial"] == "false" else True,
+        rank_abbrev=row["rank_abbrev"] or None,
+        uninomial=False,
         updated_by=user_id,
         updated_on=NOW,
         created_by=user_id,
@@ -118,8 +127,14 @@ def create_taxon_rank(test_db, row, kingdom_id, user_id):
     return taxon_rank
 
 
+def update_taxon_name(test_db, taxon_name, user_id):
+    taxon_name.updated_on = NOW
+    test_db.add(taxon_name)
+    test_db.commit()
+
+
 def test_canonical_name(capsys, test_db, test_superuser):
-    path = os.getcwd() + f"/app/tests/taxon_test_data.csv"
+    path = os.getcwd() + f"/app/tests/taxon_name_test_data.csv"
     with open(path, mode="r", encoding="iso-8859-1") as csv_file:
         csv_reader = csv.DictReader(csv_file)
         for row in csv_reader:
@@ -131,9 +146,11 @@ def test_canonical_name(capsys, test_db, test_superuser):
             taxon_name = create_taxon_name(test_db, row, kingdom, taxon_rank, user_id)
             authors = get_authors(test_db, row, user_id)
             create_citations(test_db, authors, taxon_name, user_id)
+            update_taxon_name(test_db, taxon_name, user_id)
             assert row["canonical_name"] == taxon_name.canonical_name
             assert row["scientific_name"] == taxon_name.scientific_name
-            assert row["author"] == taxon_name.author
             assert (
                 row["formatted_scientific_name"] == taxon_name.formatted_scientific_name
             )
+            author = row["author"] or None
+            assert author == taxon_name.author
