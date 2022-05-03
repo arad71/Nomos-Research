@@ -53,7 +53,7 @@ def get_kingdom(test_db, kingdom_name, user_id):
     kingdom = KingdomCrud.get_by_property(test_db, "kingdom_name", kingdom_name)
     if not kingdom:
         kingdom = Kingdom(
-            kingdom_name="Kingdom1",
+            kingdom_name=kingdom_name,
             kingdom_desc="Kingdom Description",
             updated_by=None,
             updated_on=None,
@@ -73,9 +73,10 @@ def create_taxon_name(test_db, row, kingdom, taxon_rank, user_id):
         validated=True,
         genus=row["genus"],
         specific_epithet=row["specific_epithet"],
-        infraspecific_epithet="subsp. " + row["infraspecific_epithet"]
+        infraspecific_epithet=row["infraspecific_epithet"]
         if row["infraspecific_epithet"]
         else None,
+        form_desc_yr=row["form_desc_yr"] or None,
         updated_by=None,
         updated_on=None,
         created_by=user_id,
@@ -128,6 +129,7 @@ def create_taxon_rank(test_db, row, kingdom_id, user_id):
 
 
 def update_taxon_name(test_db, taxon_name, user_id):
+    taxon_name.updated_by = user_id
     taxon_name.updated_on = NOW
     test_db.add(taxon_name)
     test_db.commit()
@@ -137,9 +139,14 @@ def test_canonical_name(capsys, test_db, test_superuser):
     path = os.getcwd() + f"/app/tests/taxon_name_test_data.csv"
     with open(path, mode="r", encoding="iso-8859-1") as csv_file:
         csv_reader = csv.DictReader(csv_file)
+        i = 0
         for row in csv_reader:
+            i += 1
             with capsys.disabled():
+                print(i)
+                print(row["canonical_name"])
                 print(row["scientific_name"])
+                print(row["author"])
             user_id = test_superuser.user_id
             kingdom = get_kingdom(test_db, row["kingdom_name"], user_id)
             taxon_rank = create_taxon_rank(test_db, row, kingdom.kingdom_id, user_id)
@@ -147,10 +154,10 @@ def test_canonical_name(capsys, test_db, test_superuser):
             authors = get_authors(test_db, row, user_id)
             create_citations(test_db, authors, taxon_name, user_id)
             update_taxon_name(test_db, taxon_name, user_id)
-            assert row["canonical_name"] == taxon_name.canonical_name
-            assert row["scientific_name"] == taxon_name.scientific_name
-            assert (
-                row["formatted_scientific_name"] == taxon_name.formatted_scientific_name
-            )
             author = row["author"] or None
-            assert author == taxon_name.author
+            assert taxon_name.author == author
+            assert taxon_name.canonical_name == row["canonical_name"]
+            assert taxon_name.scientific_name == row["scientific_name"]
+            assert (
+                taxon_name.formatted_scientific_name == row["formatted_scientific_name"]
+            )
