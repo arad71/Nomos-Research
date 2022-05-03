@@ -3,7 +3,7 @@ Authlib==1.0.1
 fastapi==0.75.2
 fastapi-key-auth==0.7.3
 httpx==0.22.0
-ipython==8.2.0
+ipython==8.3.0
 itsdangerous==2.1.2
 Jinja2==3.1.1
 loguru==0.6.0
