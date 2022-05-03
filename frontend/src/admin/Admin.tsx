@@ -99,6 +99,8 @@ const dataProvider = restDataProvider(
     hierarchies: 'hierarchy_id',
     cross_references: 'cross_reference_id',
     vernaculars: 'vernacular_id',
+    user_roles: 'user_role_id',
+    roles: 'role_id',
   },
   {},
   httpClient
@@ -223,6 +225,12 @@ export const Admin: FC = () => {
             edit={VernacularEdit}
             create={VernacularCreate}
           />
+        ) : null,
+        permissions.includes(role.SUPER_ADMIN) ? (
+          <Resource name="user_roles" />
+        ) : null,
+        permissions.includes(role.SUPER_ADMIN) ? (
+          <Resource name="roles" />
         ) : null,
       ]}
     </ReactAdmin>
