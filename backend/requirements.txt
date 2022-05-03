@@ -5,7 +5,7 @@ fastapi-key-auth==0.7.3
 httpx==0.22.0
 ipython==8.3.0
 itsdangerous==2.1.2
-Jinja2==3.1.1
+Jinja2==3.1.2
 loguru==0.6.0
 psycopg2==2.9.3
 pytest==7.1.2
