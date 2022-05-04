@@ -137,7 +137,7 @@ def update_taxon_name(test_db, taxon_name, user_id):
 
 def test_calculated_fields(test_db, test_superuser):
     path = os.getcwd() + f"/app/tests/taxon_name_test_data.csv"
-    with open(path, mode="r", encoding="iso-8859-1") as csv_file:
+    with open(path, mode="r", encoding="utf-8") as csv_file:
         csv_reader = csv.DictReader(csv_file)
         for row in csv_reader:
             user_id = test_superuser.user_id
