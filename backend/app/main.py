@@ -3,6 +3,7 @@ import subprocess
 import uvicorn
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from loguru import logger
 from starlette.requests import Request
 
 from app.api.api_v1.routers.auth import auth_router
@@ -12,6 +13,7 @@ from app.api.api_v1.routers.citations import citations_router
 from app.api.api_v1.routers.classification_systems import classification_systems_router
 from app.api.api_v1.routers.cross_references import cross_references_router
 from app.api.api_v1.routers.hierarchies import hierarchies_router
+from app.api.api_v1.routers.dataimport import data_import_router
 from app.api.api_v1.routers.informal_groups import informal_groups_router
 from app.api.api_v1.routers.kingdoms import kingdoms_router
 from app.api.api_v1.routers.publications import publications_router
@@ -35,7 +37,10 @@ app = FastAPI(
 
 @app.on_event("startup")
 async def run_migrations():
-    subprocess.run(["alembic", "upgrade", "head"])
+    process = subprocess.run(["alembic", "upgrade", "head"])
+    logger.debug(process.returncode)
+    logger.debug(process.stderr)
+    logger.debug(process.stdout)
     init_db(SessionLocal())
 
 
@@ -168,6 +173,13 @@ app.include_router(
     checklist_router,
     prefix=API_V1_URL,
     tags=["checklist"],
+    dependencies=[],
+)
+
+app.include_router(
+    data_import_router,
+    prefix=API_V1_URL,
+    tags=["import"],
     dependencies=[],
 )
 

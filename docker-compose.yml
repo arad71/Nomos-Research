@@ -10,6 +10,9 @@ services:
       - backend
       - frontend
 
+  redis:
+    image: redis
+
   postgres:
     image: postgres:12
     restart: always
@@ -18,6 +21,27 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
     volumes:
       - db-data:/var/lib/postgresql/data:cached
+
+  worker:
+    image: "backend:${VERSION:-latest}"
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    command: celery --app app.tasks worker --loglevel=DEBUG -Q main-queue -c 1
+    environment:
+      PYTHONPATH: .
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@taxman.com}
+      DB_HOST: ${DB_HOST:-postgres}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-password}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME:-postgres}
+      ENVIRONMENT: ${ENVIRONMENT:-local}
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+    depends_on:
+      - redis
+      - postgres
 
   backend:
     image: "backend:${VERSION:-latest}"
@@ -42,8 +66,10 @@ services:
       DB_PORT: ${DB_PORT:-5432}
       DB_NAME: ${DB_NAME:-postgres}
       ENVIRONMENT: ${ENVIRONMENT:-local}
-      DATABASE_URL: 'postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-password}@${DB_HOST:-postgres}:${DB_PORT:-5432}/${DB_NAME:-postgres}'
       API_KEY_CHECKLIST: ${API_KEY_CHECKLIST:-password}
+      IMPORT_API_KEY_WACENSUS:  ${IMPORT_API_KEY_WACENSUS:-password}
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
     depends_on:
       - "postgres"
 

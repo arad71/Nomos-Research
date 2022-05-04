@@ -4,6 +4,7 @@ import functools
 import os
 import traceback
 
+from loguru import logger
 from pydantic import ValidationError
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 
@@ -24,40 +25,41 @@ class DataImportBase:
         path = os.getcwd() + f"/legacy_data/{import_file}"
         with open(path, mode="r", encoding="iso-8859-1") as csv_file:
             csv_reader = csv.DictReader(csv_file)
+            data = list(csv_reader)
+            total_rows = len(data)
+
             line_count = 0
             success_count = 0
-            print()
-            print(f"----- Processing {type(self).__name__} -----")
-            for row in csv_reader:
+            import_name = type(self).__name__
+            logger.info(f"----- Processing {import_name} -----")
+            for row in data:
                 if line_count == 0:
                     pass
                 try:
                     self.import_row(row)
                 except ValidationError as e:
-                    print("Validation Error: ", str(e))
-                    print(row)
+                    logger.error("Validation Error: ", str(e))
+                    logger.error(row)
                 except DataImportError as e:
-                    print("Data Import Error: ", str(e))
-                    print(row)
+                    logger.error("Data Import Error: ", str(e))
+                    logger.error(row)
                 except Exception as e:
-                    print("Exception: ", str(e))
-                    print(row)
+                    logger.critical("Exception: ", str(e))
+                    logger.error(row)
                     traceback.print_exc()
                     break
                 else:
                     success_count += 1
                 line_count += 1
-                if line_count % 100 == 0:
-                    print(".", flush=True, end="")
-                    if line_count % 10000 == 0:
-                        print("", flush=True)
-
+                if line_count % 10000 == 0:
+                    logger.debug(
+                        f"{import_name}: {success_count}/{line_count}/{total_rows}."
+                    )
             if self.values:
                 self.bulk_insert()
-            print()
-            print(f"{success_count}/{line_count}.")
-            print()
-            print("--------------------------")
+            logger.info(
+                f"Completed {import_name}: {success_count}/{line_count}/{total_rows}."
+            )
         return True
 
     def import_row(self, row):
