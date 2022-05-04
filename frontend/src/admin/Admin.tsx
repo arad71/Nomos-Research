@@ -230,7 +230,7 @@ export const Admin: FC = () => {
           <Resource name="user_roles" />
         ) : null,
         permissions.includes(role.SUPER_ADMIN) ? (
-          <Resource name="roles" />
+          <Resource name="roles" key="role_id" />
         ) : null,
       ]}
     </ReactAdmin>
