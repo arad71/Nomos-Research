@@ -28,6 +28,9 @@ def calculate_fields(mapper, connection, target):
             )
         )
 
+    if hasattr(target, "taxon_name_id") and target.taxon_name_id:
+        target.editor = map_editors(mapper, connection, target)
+
 
 def map_canonical_name(mapper, connection, target):
     vals = [target.genus, target.specific_epithet]
@@ -79,6 +82,27 @@ def stringify_author_group(authors):
             [
                 ", ".join([k.author.abbreviation for k in authors]),
                 last.author.abbreviation,
+            ],
+        )
+    )
+
+
+def map_editors(mapper, connection, target):
+    citations = target.citations.filter_by(author_type="editor").order_by(
+        asc("author_order")
+    )
+
+    if not citations.count():
+        return None
+
+    abbreviations = [citation.author.abbreviation for citation in citations]
+    last = abbreviations.pop()
+    return " & ".join(
+        filter(
+            None,
+            [
+                ", ".join([abbreviation for abbreviation in abbreviations]),
+                last,
             ],
         )
     )
