@@ -40,9 +40,9 @@ export const TaxonNameCreateEdit: FC = (props) => (
     <TextInput source="order" />
     <TextInput source="family" />
     <TextInput source="genus" />
-    <TextInput source="sub_genus" />
+    <TextInput source="subgenus" />
     <TextInput source="species" />
-    <TextInput source="sub_species" />
+    <TextInput source="subspecies" />
     <TextInput source="specific_epithet" />
     <TextInput source="infraspecific_epithet" />
     <ReferenceInput source="publication_id" reference="publications">

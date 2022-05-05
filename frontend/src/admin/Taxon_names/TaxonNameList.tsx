@@ -41,9 +41,9 @@ export const TaxonNameList: FC = (props) => (
       <TextField source="order" />
       <TextField source="family" />
       <TextField source="genus" />
-      <TextField source="sub_genus" />
+      <TextField source="subgenus" />
       <TextField source="species" />
-      <TextField source="sub_species" />
+      <TextField source="subspecies" />
       <TextField source="specific_epithet" />
       <TextField source="infraspecific_epithet" />
       <ReferenceField
