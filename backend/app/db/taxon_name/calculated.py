@@ -52,18 +52,22 @@ def map_authors(mapper, connection, target):
 
     if target.kingdom.kingdom_name == ANIMAL_KINGDOM_NAME:
         if AuthorType.basionym in author_types:
-            val = stringify_author_group(author_types[AuthorType.basionym])
+            val = stringify_citation_authors(author_types[AuthorType.basionym])
             return f"({val}, {target.form_desc_yr})"
         elif AuthorType.current in author_types:
-            val = stringify_author_group(author_types[AuthorType.current])
+            val = stringify_citation_authors(author_types[AuthorType.current])
             return f"{val}, {target.form_desc_yr}"
     else:
         val = ""
         if AuthorType.basionym in author_types:
-            basionym_authors = stringify_author_group(author_types[AuthorType.basionym])
+            basionym_authors = stringify_citation_authors(
+                author_types[AuthorType.basionym]
+            )
             val = f"({basionym_authors})"
         if AuthorType.current in author_types:
-            current_authors = stringify_author_group(author_types[AuthorType.current])
+            current_authors = stringify_citation_authors(
+                author_types[AuthorType.current]
+            )
             val = " ".join(filter(None, [val, current_authors]))
         if val:
             return val
@@ -71,7 +75,7 @@ def map_authors(mapper, connection, target):
     return None
 
 
-def stringify_author_group(authors):
+def stringify_citation_authors(authors):
     if not authors:
         return ""
 
@@ -93,6 +97,6 @@ def map_editors(mapper, connection, target):
     )
 
     if citations.count():
-        return stringify_author_group(list(citations))
+        return stringify_citation_authors(list(citations))
 
     return None
