@@ -92,17 +92,7 @@ def map_editors(mapper, connection, target):
         asc("author_order")
     )
 
-    if not citations.count():
-        return None
+    if citations.count():
+        return stringify_author_group(list(citations))
 
-    abbreviations = [citation.author.abbreviation for citation in citations]
-    last = abbreviations.pop()
-    return " & ".join(
-        filter(
-            None,
-            [
-                ", ".join([abbreviation for abbreviation in abbreviations]),
-                last,
-            ],
-        )
-    )
+    return None
