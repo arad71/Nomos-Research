@@ -34,7 +34,16 @@ def get_or_create_author(test_db, user_id, abbreviation):
 def get_authors(test_db, row, user_id) -> [(Author, str)]:
     author_map = map(
         functools.partial(get_or_create_author, test_db, user_id),
-        filter(None, [row["author1"], row["author2"], row["author3"], row["author4"]]),
+        filter(
+            None,
+            [
+                row["author1"],
+                row["author2"],
+                row["author3"],
+                row["author4"],
+                row["author5"],
+            ],
+        ),
     )
     authors = [author for author in author_map]
     author_types = filter(
@@ -44,6 +53,7 @@ def get_authors(test_db, row, user_id) -> [(Author, str)]:
             row["author_2_type"],
             row["author_3_type"],
             row["author_4_type"],
+            row["author_5_type"],
         ],
     )
     return [author_tuple for author_tuple in zip(authors, author_types)]
@@ -149,6 +159,8 @@ def test_calculated_fields(test_db, test_superuser):
             update_taxon_name(test_db, taxon_name, user_id)
             author = row["author"] or None
             assert taxon_name.author == author
+            editor = row["editor"] or None
+            assert taxon_name.editor == editor
             assert taxon_name.canonical_name == row["canonical_name"]
             assert taxon_name.scientific_name == row["scientific_name"]
             assert (

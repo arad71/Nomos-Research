@@ -74,7 +74,7 @@ export const TaxonNameCreateEdit: FC = (props) => (
     <TextInput source="family_code" />
     <TextField source="author" />
     <TextInput source="vernacular" />
-    <TextInput source="editor" />
+    <TextField source="editor" />
     <SelectInput source="naturalised_status" choices={NaturalisedStatus} />
     <NullableBooleanInput
       label="Naturalised Certainty"
