@@ -9,10 +9,12 @@ data_import_router = r = APIRouter(prefix="/dataimport")
 authorizer = AuthorizerDependency(key_pattern="IMPORT_API_KEY_")
 
 
-@r.get("",
-       dependencies=[
-           Depends(authorizer),
-       ],)
+@r.get(
+    "",
+    dependencies=[
+        Depends(authorizer),
+    ],
+)
 async def get_tasks():
 
     # Inspect all nodes.
@@ -35,11 +37,12 @@ async def import_wacensus_data():
     return {"task_id": task.id}
 
 
-@r.get("/{task_id}",
-       dependencies=[
-           Depends(authorizer),
-       ],
-       )
+@r.get(
+    "/{task_id}",
+    dependencies=[
+        Depends(authorizer),
+    ],
+)
 def get_status(task_id):
     task_result = AsyncResult(task_id)
     result = {

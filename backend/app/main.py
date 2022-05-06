@@ -12,8 +12,8 @@ from app.api.api_v1.routers.checklist import checklist_router
 from app.api.api_v1.routers.citations import citations_router
 from app.api.api_v1.routers.classification_systems import classification_systems_router
 from app.api.api_v1.routers.cross_references import cross_references_router
-from app.api.api_v1.routers.hierarchies import hierarchies_router
 from app.api.api_v1.routers.dataimport import data_import_router
+from app.api.api_v1.routers.hierarchies import hierarchies_router
 from app.api.api_v1.routers.informal_groups import informal_groups_router
 from app.api.api_v1.routers.kingdoms import kingdoms_router
 from app.api.api_v1.routers.publications import publications_router
