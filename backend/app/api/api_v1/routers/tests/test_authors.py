@@ -1,5 +1,6 @@
 import pytest
 from starlette import status
+
 from app.db.author.model import Author
 
 
@@ -145,11 +146,11 @@ def test_super_admin_permissions(
     assert response.status_code == status.HTTP_200_OK
 
     author_json = {
-            "first_names": "Yet Another",
-            "abbreviation": "Yet Another Author",
-            "initials": "YAA",
-            "updated_by": test_superuser.user_id,
-            "updated_on": test_author.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "first_names": "Yet Another",
+        "abbreviation": "Yet Another Author",
+        "initials": "YAA",
+        "updated_by": test_superuser.user_id,
+        "updated_on": test_author.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
     }
 
     response = client.put(
