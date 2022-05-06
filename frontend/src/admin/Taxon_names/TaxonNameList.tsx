@@ -37,7 +37,7 @@ export const TaxonNameList: FC = (props) => (
       <TextField source="scientific_name" />
       <RichTextField source="formatted_scientific_name" />
       <TextField source="phylum" />
-      <TextField source="taxon_class" />
+      <TextField source="taxon_class" label="Class" />
       <TextField source="order" />
       <TextField source="family" />
       <TextField source="genus" />
