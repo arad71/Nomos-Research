@@ -1,28 +1,33 @@
-// in src/users.js
-import React, { FC } from 'react';
+import React from 'react';
 import {
+  BooleanField,
+  CreateButton,
   Datagrid,
   DateField,
   EditButton,
+  ExportButton,
+  FilterButton,
   List,
   NumberField,
+  Pagination,
   ReferenceField,
   RichTextField,
   SelectField,
   TextField,
-  BooleanField,
+  TopToolbar,
 } from 'react-admin';
 import FullNameField from '../shared/FullNameField';
 import NaturalisedStatus from './NaturalisedStatus';
 import PublicationStatus from './PublicationStatus';
-import { FilterSidebar } from './FilterSidebar';
-import { TopToolbar } from 'react-admin';
 import {
   ListProps,
   SelectColumnsButton,
   useSelectedColumns,
 } from '@react-admin/ra-preferences';
+import { TaxonNameFilters } from './TaxonNameFilters';
+
 const postListColumns = {
+  id: <TextField source="id" />,
   rank_id: (
     <ReferenceField
       source="rank_id"
@@ -51,7 +56,7 @@ const postListColumns = {
   canonical_name: <RichTextField source="canonical_name" />,
   scientific_name: <TextField source="scientific_name" />,
   phylum: <TextField source="phylum" />,
-  class: <TextField source="class" />,
+  taxon_class: <TextField source="taxon_class" />,
   order: <TextField source="order" />,
   family: <TextField source="family" />,
   genus: <TextField source="genus" />,
@@ -60,18 +65,17 @@ const postListColumns = {
   sub_species: <TextField source="sub_species" />,
   specific_epithet: <TextField source="specific_epithet" />,
   infraspecific_epithet: <TextField source="infraspecific_epithet" />,
-
   publication_id: (
     <ReferenceField
       source="publication_id"
       reference="publications"
-      sortBy="publications___publication"
+      sortBy="publication___publication_name"
     >
       <TextField source="publication_name" />
     </ReferenceField>
   ),
   volume_information: <TextField source="volume_information" />,
-  is_current: <BooleanField source="is_current" />,
+  is_current: <BooleanField source="is_current" label="Is current?" />,
   origin: <TextField source="origin" />,
   publication_status: (
     <SelectField source="publication_status" choices={PublicationStatus} />
@@ -81,7 +85,7 @@ const postListColumns = {
   comments: <TextField source="comments" />,
   contributed_by: <TextField source="contributed_by" />,
   contributed_on: <DateField source="contributed_on" showTime />,
-  validated: <BooleanField source="validated" />,
+  validated: <BooleanField source="validated" label="Is validated?" />,
   source: <TextField source="source" />,
   external_id: <TextField source="external_id" />,
   family_code: <TextField source="family_code" />,
@@ -120,23 +124,50 @@ const postListColumns = {
   ),
   updated_on: <DateField source="updated_on" showTime />,
 };
-// add the <SelectColumnsButton> to the toolbar
-const PostActions = () => (
+
+const includeColumns = new Set([
+  'rank_id',
+  'formatted_scientific_name',
+  'author',
+  'form_desc_yr',
+  'is_current',
+  'publication_status',
+  'all_vernaculars',
+  'updated_on',
+  'created_on',
+]);
+const excludeColumns = Object.keys(postListColumns).filter((name: string) => {
+  return !includeColumns.has(name);
+});
+const TAXON_NAMES_PREFERENCE = 'taxon_names.list.columns';
+
+const Actions = () => (
   <TopToolbar>
+    <FilterButton />
+    <CreateButton />
+    <ExportButton maxResults={100000} />
     <SelectColumnsButton
-      preference="taxon_names.list.columns"
+      preference={TAXON_NAMES_PREFERENCE}
       columns={postListColumns}
     />
   </TopToolbar>
 );
+
 export const TaxonNameList = (props: ListProps) => {
   const columns = useSelectedColumns({
-    preferences: 'taxon_name.list.columns',
+    preferences: TAXON_NAMES_PREFERENCE,
     columns: postListColumns,
-    omit: ['rank_id'],
+    omit: excludeColumns,
   });
   return (
-    <List actions={<PostActions />} aside={<FilterSidebar />} {...props}>
+    <List
+      sort={{ field: 'updated_on', order: 'DESC' }}
+      actions={<Actions />}
+      perPage={100}
+      filters={TaxonNameFilters}
+      pagination={<Pagination rowsPerPageOptions={[50, 100, 200, 500, 1000]} />}
+      {...props}
+    >
       <Datagrid rowClick="show">
         {columns}
         <EditButton />

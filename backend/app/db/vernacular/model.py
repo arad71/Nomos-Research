@@ -28,7 +28,9 @@ class Vernacular(BaseModel, TableMixin):
     )
 
     vernacular_id = Column(Integer, primary_key=True)
-    vernacular = Column(String(120), nullable=False, comment=VERNACULAR, doc=VERNACULAR)
+    vernacular = Column(
+        String(120), nullable=False, comment=VERNACULAR, doc=VERNACULAR, index=True
+    )
     taxon_name_id = Column(
         Integer,
         ForeignKey("taxon_name.taxon_name_id"),
