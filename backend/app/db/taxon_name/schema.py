@@ -42,6 +42,7 @@ class TaxonNameBase(BaseModel):
     # class is a reserved word, will this workaround be enough?
     taxon_class: Optional[str]
     order: Optional[str]
+    family: Optional[str]
     genus: Optional[str]
     subgenus: Optional[str]
     species: Optional[str]

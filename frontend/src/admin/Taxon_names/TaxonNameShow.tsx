@@ -29,13 +29,13 @@ export const TaxonNameShow: FC = (props) => (
       <TextField source="scientific_name" />
       <RichTextField source="formatted_scientific_name" />
       <TextField source="phylum" />
-      <TextField source="class" />
+      <TextField source="taxon_class" label="Class" />
       <TextField source="order" />
       <TextField source="family" />
       <TextField source="genus" />
-      <TextField source="sub_genus" />
+      <TextField source="subgenus" />
       <TextField source="species" />
-      <TextField source="sub_species" />
+      <TextField source="subspecies" />
       <TextField source="specific_epithet" />
       <TextField source="infraspecific_epithet" />
       <ReferenceField source="publication_id" reference="publications">

@@ -60,9 +60,9 @@ const postListColumns = {
   order: <TextField source="order" />,
   family: <TextField source="family" />,
   genus: <TextField source="genus" />,
-  sub_genus: <TextField source="sub_genus" />,
+  subgenus: <TextField source="subgenus" />,
   species: <TextField source="species" />,
-  sub_species: <TextField source="sub_species" />,
+  subspecies: <TextField source="subspecies" />,
   specific_epithet: <TextField source="specific_epithet" />,
   infraspecific_epithet: <TextField source="infraspecific_epithet" />,
   publication_id: (
