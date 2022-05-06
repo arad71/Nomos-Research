@@ -2,8 +2,9 @@ import app.db.taxon_rank.enums
 from app.db.taxon_rank.model import TaxonRank
 
 
-def test_get_taxon_ranks(client, test_taxon_rank, test_kingdom,
-                         superuser_token_headers):
+def test_get_taxon_ranks(
+    client, test_taxon_rank, test_kingdom, superuser_token_headers
+):
     response = client.get("/api/v1/taxon_ranks", headers=superuser_token_headers)
     assert response.status_code == 200
     assert response.json() == [
