@@ -10,6 +10,7 @@ import {
 } from 'react-admin';
 import TaxonRank from './TaxonRank';
 import PublicationStatus from './PublicationStatus';
+import { AutocompleteArrayInput } from 'react-admin';
 
 export const TaxonNameFilters = [
   <SearchInput source="q" alwaysOn />,
@@ -23,7 +24,10 @@ export const TaxonNameFilters = [
     label="Publication name"
   />,
   <TextInput source="volume_information__contains" />,
-  <TextInput source="vernaculars___vernacular__contains" label="Vernacular" />,
+  <TextInput
+    source="vernaculars___vernacular__contains"
+    label="Vernacular contains"
+  />,
   <TextInput source="phylum__contains" />,
   <TextInput source="taxon_class__contains" />,
   <TextInput source="order__contains" />,
@@ -36,37 +40,50 @@ export const TaxonNameFilters = [
   <TextInput source="infraspecific_epithet__contains" />,
   <TextInput
     source="cross_referenced_old_name___new_name___scientific_name__contains"
-    label="Related new name"
+    label="Accepted name contains"
   />,
-  <ReferenceArrayInput source="kingdom_id" reference="kingdoms">
-    <SelectArrayInput
-      options={{ autoWidth: false }}
-      optionText="kingdom_name"
-    />
+  <ReferenceArrayInput
+    source="kingdom_id"
+    reference="kingdoms"
+    sort={{ field: 'kingdom_name', order: 'ASC' }}
+  >
+    <SelectArrayInput optionText="kingdom_name" />
   </ReferenceArrayInput>,
   <SelectArrayInput
-    options={{ autoWidth: false }}
     source="taxon_rank___rank_name"
     label="Taxon rank"
     choices={TaxonRank}
     helpText="Choose a taxon rank"
   />,
-  <NullableBooleanInput label="Is current?" source="is_current" />,
-  <NullableBooleanInput label="Is validated?" source="validated" />,
-  <SelectArrayInput
-    options={{ autoWidth: false }}
-    source="publication_status"
-    choices={PublicationStatus}
-  />,
-
-  <DateInput source="created_on" />,
-  <DateInput source="updated_on" />,
   <ReferenceArrayInput
     label="Informal group"
     source="informal_groups___classification_system___classification_system_id"
     reference="classification_systems"
     filter={{ class_type: 'informal' }}
+    sort={{ field: 'class_desc', order: 'ASC' }}
   >
-    <SelectArrayInput options={{ autoWidth: false }} optionText="class_desc" />
+    <SelectArrayInput optionText="class_desc" />
+  </ReferenceArrayInput>,
+  <NullableBooleanInput label="Is current?" source="is_current" />,
+  <NullableBooleanInput label="Is validated?" source="validated" />,
+  <SelectArrayInput source="publication_status" choices={PublicationStatus} />,
+
+  <DateInput source="created_on" />,
+
+  <ReferenceArrayInput
+    source="created_by"
+    reference="users"
+    sort={{ field: 'full_name', order: 'ASC' }}
+  >
+    <AutocompleteArrayInput optionText="full_name" />
+  </ReferenceArrayInput>,
+  <DateInput source="updated_on" />,
+
+  <ReferenceArrayInput
+    source="updated_by"
+    reference="users"
+    sort={{ field: 'full_name', order: 'ASC' }}
+  >
+    <AutocompleteArrayInput optionText="full_name" />
   </ReferenceArrayInput>,
 ];
