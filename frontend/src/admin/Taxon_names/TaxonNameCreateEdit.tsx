@@ -36,7 +36,7 @@ export const TaxonNameCreateEdit: FC = (props) => (
     <TextField source="scientific_name" />
     <RichTextField source="formatted_scientific_name" />
     <TextInput source="phylum" />
-    <TextInput source="class" />
+    <TextInput source="taxon_class" />
     <TextInput source="order" />
     <TextInput source="family" />
     <TextInput source="genus" />
