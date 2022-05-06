@@ -16,7 +16,6 @@ import {
   TextField,
   TopToolbar,
 } from 'react-admin';
-import FullNameField from '../shared/FullNameField';
 import NaturalisedStatus from './NaturalisedStatus';
 import PublicationStatus from './PublicationStatus';
 import {
@@ -113,13 +112,13 @@ const postListColumns = {
   authorised_on: <DateField source="authorised_on" showTime />,
   created_by: (
     <ReferenceField source="created_by" reference="users">
-      <FullNameField source="last_name" />
+      <TextField source="full_name" />
     </ReferenceField>
   ),
   created_on: <DateField source="created_on" showTime />,
   updated_by: (
     <ReferenceField source="updated_by" reference="users">
-      <FullNameField source="last_name" />
+      <TextField source="full_name" />
     </ReferenceField>
   ),
   updated_on: <DateField source="updated_on" showTime />,

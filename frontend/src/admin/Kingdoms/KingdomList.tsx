@@ -8,7 +8,6 @@ import {
   ReferenceField,
   TextField,
 } from 'react-admin';
-import FullNameField from '../shared/FullNameField';
 import MyEditButton from '../styles/EditButton';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -36,11 +35,11 @@ export const KingdomList: FC = (props) => {
         <TextField source="kingdom_name" />
         <TextField source="kingdom_desc" />
         <ReferenceField source="created_by" reference="users">
-          <FullNameField source="last_name" />
+          <TextField source="full_name" />
         </ReferenceField>
         <DateField source="created_on" showTime />
         <ReferenceField source="updated_by" reference="users">
-          <FullNameField source="last_name" />
+          <TextField source="full_name" />
         </ReferenceField>
         <DateField source="updated_on" showTime />
         <MyEditButton />

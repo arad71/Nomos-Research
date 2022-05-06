@@ -11,7 +11,6 @@ import {
   TextField,
   BooleanField,
 } from 'react-admin';
-import FullNameField from '../shared/FullNameField';
 import ClassificationType from './ClassificationType';
 
 export const ClassificationSystemList: FC = (props) => (
@@ -23,11 +22,11 @@ export const ClassificationSystemList: FC = (props) => (
       <BooleanField source="preferred" />
       <TextField source="sort_order" />
       <ReferenceField source="created_by" reference="users">
-        <FullNameField source="last_name" />
+        <TextField source="full_name" />
       </ReferenceField>
       <DateField source="created_on" showTime />
       <ReferenceField source="updated_by" reference="users">
-        <FullNameField source="last_name" />
+        <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" showTime />
       <EditButton />
