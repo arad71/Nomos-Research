@@ -14,7 +14,7 @@ def test_get_users(client, test_superuser, superuser_token_headers):
             "user_id": test_superuser.user_id,
             "email": test_superuser.email,
             "is_active": test_superuser.is_active,
-            "full_name": test_superuser.email
+            "full_name": test_superuser.email,
         }
     ]
 
