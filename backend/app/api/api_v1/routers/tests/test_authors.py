@@ -196,7 +196,7 @@ def test_manager_permissions(
     assert response.status_code == status.HTTP_200_OK
 
     author_json = {
-        "abbreviation": "Tet Another Author",
+        "abbreviation": "Yet Another Author",
         "first_names": "Yet Another",
         "initials": "YAA",
         "updated_by": test_manager.user_id,
