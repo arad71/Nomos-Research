@@ -38,6 +38,7 @@ class UserEdit(UserBase):
 class User(UserBase):
     user_id: int
     user_role: Optional[list[UserRole]]
+    full_name: Optional[str]
 
     class Config:
         orm_mode = True

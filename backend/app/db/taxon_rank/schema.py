@@ -34,6 +34,7 @@ class TaxonRankEdit(TaxonRankBase):
 
 class TaxonRank(TaxonRankBase, TableBase):
     taxon_rank_id: int
+    kingdom_name: Optional[str]
 
     class Config:
         orm_mode = True
