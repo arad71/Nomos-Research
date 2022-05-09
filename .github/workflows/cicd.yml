@@ -73,6 +73,7 @@ jobs:
       - name: Build the docker-compose stack
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          WACENSUS_DATA_FILE_URL: ${{ secrets.WACENSUS_DATA_FILE_URL }}
         run: scripts/build.sh
       - name: Run test suite
         run: scripts/test.sh
@@ -114,7 +115,7 @@ jobs:
             git checkout staging
             git pull
             # ignore docker-compose.override.yml using env variable
-            NPM_TOKEN="${{ secrets.NPM_TOKEN }}" COMPOSE_FILE=docker-compose.yml scripts/build.sh
+            WACENSUS_DATA_FILE_URL="${{ secrets.WACENSUS_DATA_FILE_URL }}" NPM_TOKEN="${{ secrets.NPM_TOKEN }}" COMPOSE_FILE=docker-compose.yml scripts/build.sh
       - name: Check http status code of deployed site
         uses: jtalk/url-health-check-action@v2
         with:
