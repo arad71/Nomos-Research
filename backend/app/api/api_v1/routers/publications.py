@@ -3,9 +3,10 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, Request, Response
 
 from app.api.dependencies.range_query import RangeQueryParameter
-from app.core.auth import get_current_active_superuser
+from app.core.auth import authorize, get_current_active_user
 from app.db.publication.crud import PublicationCrud
 from app.db.publication.schema import Publication, PublicationCreate, PublicationEdit
+from app.db.role.constants import Role
 from app.db.session import get_db
 
 publications_router = r = APIRouter(prefix="/publications")
@@ -15,6 +16,7 @@ publications_router = r = APIRouter(prefix="/publications")
     "",
     response_model=List[Publication],
     response_model_exclude_none=True,
+    dependencies=[authorize()],
 )
 async def publication_list(
     response: Response,
@@ -22,7 +24,6 @@ async def publication_list(
     sort: Optional[str] = None,
     filter: Optional[str] = None,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
 ):
     """
     Get all publications
@@ -39,12 +40,11 @@ async def publication_list(
     "/{publication_id}",
     response_model=Publication,
     response_model_exclude_none=True,
+    dependencies=[authorize()],
 )
 async def publication_details(
-    request: Request,
     publication_id: int,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
 ):
     """
     Get any publication details
@@ -57,12 +57,20 @@ async def publication_details(
     "",
     response_model=Publication,
     response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.MANAGER["name"],
+                Role.OFFICER["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
 )
 async def publication_create(
-    request: Request,
     publication: PublicationCreate,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Create a new publication
@@ -74,13 +82,21 @@ async def publication_create(
     "/{publication_id}",
     response_model=Publication,
     response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.MANAGER["name"],
+                Role.OFFICER["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
 )
 async def publication_edit(
-    request: Request,
     publication_id: int,
     publication: PublicationEdit,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Update existing publication
@@ -94,12 +110,18 @@ async def publication_edit(
     "/{publication_id}",
     response_model=Publication,
     response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.SUPER_ADMIN["name"],
+                Role.MANAGER["name"],
+            ]
+        )
+    ],
 )
 async def publication_delete(
-    request: Request,
     publication_id: int,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
 ):
     """
     Delete existing publication
