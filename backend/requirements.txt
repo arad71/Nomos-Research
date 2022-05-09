@@ -1,6 +1,6 @@
 alembic==1.7.7
 Authlib==1.0.1
-fastapi==0.75.2
+fastapi==0.76.0
 fastapi-key-auth==0.7.3
 httpx==0.22.0
 ipython==8.3.0
