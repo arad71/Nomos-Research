@@ -4,16 +4,17 @@ import {
   FormWithRedirect,
   TextInput,
   required,
-  // SingleFieldList,
-  // ChipField,
   Toolbar,
 } from 'react-admin';
-//import { ReferenceManyToManyField } from '@react-admin/ra-relationships';
 import { Typography, Box, Grid } from '@material-ui/core';
 
 import React, { FC } from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core';
+//import { ResourceContextProvider } from 'react-admin';
+import { SingleFieldList } from 'react-admin';
+import { ReferenceManyToManyField } from '@react-admin/ra-relationships';
+import { ChipField } from 'react-admin';
 
 const useStyles = makeStyles(() => ({
   form: {
@@ -27,7 +28,15 @@ const useStyles = makeStyles(() => ({
   nameInputs: {
     display: 'flex',
   },
+  bool: {
+    color: '#FFFFFF',
+  },
 }));
+
+// const buttonStyles = makeStyles(
+//   { inputMarginDense: { paddingTop: '100px' } },
+//   { name: 'MuiFilledInput' }
+// );
 
 export const UserCreateEdit: FC = (props) => {
   const classes = useStyles();
@@ -60,17 +69,21 @@ export const UserCreateEdit: FC = (props) => {
               <TextInput source="email" fullWidth validate={required()} />
               <PasswordInput source="password" />
               <Typography variant="h4">Access</Typography>
-              {/*<ReferenceManyToManyField*/}
-              {/*  reference="roles"*/}
-              {/*  through="user_roles"*/}
-              {/*  using="user_id,role_id"*/}
-              {/*  source="role_id"*/}
-              {/*>*/}
-              {/*  <SingleFieldList>*/}
-              {/*    <ChipField source="name" />*/}
-              {/*  </SingleFieldList>*/}
-              {/*</ReferenceManyToManyField>*/}
-              <BooleanInput source="is_active" defaultValue={false} />
+              <ReferenceManyToManyField
+                reference="roles"
+                through="user_roles"
+                using="user_id,role_id"
+              >
+                <SingleFieldList>
+                  <ChipField source="name" />
+                </SingleFieldList>
+              </ReferenceManyToManyField>
+              {/*<SelectArrayInput source="user_roles" fullWidth />*/}
+              <BooleanInput
+                className={classes.bool}
+                source="is_active"
+                defaultValue={false}
+              />
             </Grid>
           </Grid>
           <Toolbar
