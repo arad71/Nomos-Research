@@ -16,13 +16,8 @@ authorizer = AuthorizerDependency(key_pattern="IMPORT_API_KEY_")
     ],
 )
 async def get_tasks():
-
-    # Inspect all nodes.
-
     i: inspect = celery_app.control.inspect()
-
-    # Show the items that have an ETA or are scheduled for later processing
-    return i.registered(), i.active_queues()
+    return {"active": i.active(), "scheduled": i.scheduled()}
 
 
 @r.post(
