@@ -36,12 +36,17 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-password}
       DB_PORT: ${DB_PORT:-5432}
       DB_NAME: ${DB_NAME:-postgres}
+      DATABASE_URL: 'postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-password}@${DB_HOST:-postgres}:${DB_PORT:-5432}/${DB_NAME:-postgres}'
       ENVIRONMENT: ${ENVIRONMENT:-local}
       CELERY_BROKER_URL: redis://redis:6379/0
       CELERY_RESULT_BACKEND: redis://redis:6379/0
+      WACENSUS_DATA_FILE_URL: ${WACENSUS_DATA_FILE_URL}
     depends_on:
       - redis
       - postgres
+      - backend
+    volumes:
+      - legacy-data:/legacy_data
 
   backend:
     image: "backend:${VERSION:-latest}"
@@ -51,7 +56,13 @@ services:
       args:
         USER_ID: ${USER_ID:-1000}
         GROUP_ID: ${GROUP_ID:-1000}
-    command: python app/main.py
+    command:
+      - /bin/bash
+      - -c
+      - |
+        set -e
+        alembic upgrade head
+        python app/main.py
     tty: true
     volumes:
       - ./backend:/app/:cached
@@ -66,10 +77,12 @@ services:
       DB_PORT: ${DB_PORT:-5432}
       DB_NAME: ${DB_NAME:-postgres}
       ENVIRONMENT: ${ENVIRONMENT:-local}
+      DATABASE_URL: 'postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-password}@${DB_HOST:-postgres}:${DB_PORT:-5432}/${DB_NAME:-postgres}'
       API_KEY_CHECKLIST: ${API_KEY_CHECKLIST:-password}
       IMPORT_API_KEY_WACENSUS:  ${IMPORT_API_KEY_WACENSUS:-password}
       CELERY_BROKER_URL: redis://redis:6379/0
       CELERY_RESULT_BACKEND: redis://redis:6379/0
+      WACENSUS_DATA_FILE_URL: ${WACENSUS_DATA_FILE_URL}
     depends_on:
       - "postgres"
 
@@ -90,3 +103,4 @@ services:
 
 volumes:
   db-data:
+  legacy-data:

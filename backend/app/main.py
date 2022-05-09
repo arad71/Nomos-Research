@@ -35,15 +35,6 @@ app = FastAPI(
 )
 
 
-@app.on_event("startup")
-async def run_migrations():
-    process = subprocess.run(["alembic", "upgrade", "head"])
-    logger.debug(process.returncode)
-    logger.debug(process.stderr)
-    logger.debug(process.stdout)
-    init_db(SessionLocal())
-
-
 origins = [
     "http://localhost",
     "http://localhost:8000",
@@ -184,6 +175,12 @@ app.include_router(
 )
 
 app.include_router(auth_router, prefix="/api", tags=["auth"])
+
+
+@app.on_event("startup")
+async def initialise_database():
+    init_db(SessionLocal())
+
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", reload=True, port=8888)

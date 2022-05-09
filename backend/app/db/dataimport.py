@@ -11,6 +11,8 @@ from sqlalchemy.dialects.postgresql import insert as pg_insert
 from app.db.taxon_rank.model import TaxonRank
 from app.db.user.model import User as UserModel
 
+LEGACY_DATA_DIRECTORY = "/legacy_data"
+
 
 class DataImportBase:
     def __init__(self, db, current_user):
@@ -22,7 +24,7 @@ class DataImportBase:
         self.update_cols = []
 
     def ingest(self, import_file: str):
-        path = os.getcwd() + f"/legacy_data/{import_file}"
+        path = os.path.join(LEGACY_DATA_DIRECTORY, import_file)
         with open(path, mode="r", encoding="iso-8859-1") as csv_file:
             csv_reader = csv.DictReader(csv_file)
             data = list(csv_reader)

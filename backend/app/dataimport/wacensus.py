@@ -1,12 +1,18 @@
 import os
+import shutil
+from zipfile import ZipFile
 
+import requests
 from loguru import logger
+from pydantic import AnyUrl
 from sqlalchemy import orm
 
+from app.core.config import settings
 from app.db.author.dataimport import ImportAuthor
 from app.db.citation.dataimport import ImportCitation
 from app.db.classification_system.dataimport import ImportClassificationSystem
 from app.db.cross_reference.dataimport import ImportCrossReference
+from app.db.dataimport import LEGACY_DATA_DIRECTORY
 from app.db.hierarchy.dataimport import ImportHierarchy
 from app.db.informal_group.dataimport import ImportInformalGroup
 from app.db.kingdom.dataimport import ImportKingdom
@@ -41,7 +47,11 @@ def trigger_calculated_fields(db):
     db.commit()
 
 
-def import_data():
+def import_data(url: AnyUrl = settings.WACENSUS_DATA_FILE_URL):
+    outfile = f"{LEGACY_DATA_DIRECTORY}/wacensus.zip"
+    download_data_file(url, outfile)
+    extract_data_file(LEGACY_DATA_DIRECTORY, outfile)
+
     db = SessionLocal()
     admin_id = get_admin_id(db)
     logger.info("Data Import Started")
@@ -62,3 +72,21 @@ def import_data():
     ImportHierarchy(db, admin_id).ingest("HBTPARENTS_DATA_TABLE.csv")
     ImportInformalGroup(db, admin_id).ingest("HBTGROUPS_DATA_TABLE.csv")
     trigger_calculated_fields(db)
+
+
+def download_data_file(url, outfile):
+    logger.info(f"Downloading data file from {url} to {outfile}")
+    response = requests.get(url)
+    open(outfile, "wb").write(response.content)
+
+
+def extract_data_file(outdir, outfile):
+    with ZipFile(outfile, "r") as zip:
+        for file in zip.namelist():
+            if file.endswith("DATA_TABLE.csv"):
+                filename = os.path.basename(file)
+                source = zip.open(file)
+                target = open(os.path.join(outdir, filename), "wb")
+                with source, target:
+                    logger.debug(f"Extracting {filename} to {outdir}")
+                    shutil.copyfileobj(source, target)

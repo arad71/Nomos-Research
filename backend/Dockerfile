@@ -1,4 +1,4 @@
-  
+
 FROM python:3.9
 # If you're using a different user on your system other than the first user you'll have to change these
 ARG USER_ID=1000
