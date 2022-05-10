@@ -11,8 +11,7 @@ import sqlalchemy as sa
 from sqlalchemy.orm import Session
 
 from alembic import op
-
-dataimport = importlib.import_module("app.import")
+from app.dataimport.wacensus import trigger_calculated_fields
 
 # revision identifiers, used by Alembic.
 revision = "062ebd1f35ba"
@@ -26,7 +25,7 @@ def upgrade():
     op.add_column(
         "taxon_name", sa.Column("formatted_scientific_name", sa.String(), nullable=True)
     )
-    dataimport.trigger_calculated_fields(session)
+    trigger_calculated_fields(session)
 
 
 def downgrade():

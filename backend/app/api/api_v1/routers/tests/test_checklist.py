@@ -3,8 +3,8 @@ from starlette import status
 CURATION_ENDPOINT = "/api/v1/checklist/curation"
 
 
-def test_checklist(client, test_cross_reference, test_taxon_name, api_key):
-    response = client.get(CURATION_ENDPOINT, headers={"x-api-key": "test"})
+def test_checklist(client, test_cross_reference, test_taxon_name, checklist_api_key):
+    response = client.get(CURATION_ENDPOINT, headers={"x-api-key": checklist_api_key})
     assert response.status_code == 200
     assert response.json() == [
         {
@@ -33,7 +33,7 @@ def test_checklist(client, test_cross_reference, test_taxon_name, api_key):
     ]
 
 
-def test_checklist_permission(client, api_key):
+def test_checklist_permission(client):
     response = client.get(CURATION_ENDPOINT)
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     response = client.get(CURATION_ENDPOINT, headers={"x-api-key": "notapassword"})

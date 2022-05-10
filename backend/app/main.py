@@ -1,6 +1,9 @@
+import subprocess
+
 import uvicorn
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from loguru import logger
 from starlette.requests import Request
 
 from app.api.api_v1.routers.auth import auth_router
@@ -9,6 +12,7 @@ from app.api.api_v1.routers.checklist import checklist_router
 from app.api.api_v1.routers.citations import citations_router
 from app.api.api_v1.routers.classification_systems import classification_systems_router
 from app.api.api_v1.routers.cross_references import cross_references_router
+from app.api.api_v1.routers.dataimport import data_import_router
 from app.api.api_v1.routers.hierarchies import hierarchies_router
 from app.api.api_v1.routers.informal_groups import informal_groups_router
 from app.api.api_v1.routers.kingdoms import kingdoms_router
@@ -21,6 +25,7 @@ from app.api.api_v1.routers.users import users_router
 from app.api.api_v1.routers.vernaculars import vernaculars_router
 from app.core import config
 from app.core.auth import get_current_active_user
+from app.db.init_db import init_db
 from app.db.session import SessionLocal
 
 API_V1_URL = config.settings.API_V1_STR
@@ -28,6 +33,7 @@ API_V1_URL = config.settings.API_V1_STR
 app = FastAPI(
     title=config.settings.PROJECT_NAME, docs_url="/api/docs", openapi_url="/api"
 )
+
 
 origins = [
     "http://localhost",
@@ -161,7 +167,20 @@ app.include_router(
     dependencies=[],
 )
 
+app.include_router(
+    data_import_router,
+    prefix=API_V1_URL,
+    tags=["import"],
+    dependencies=[],
+)
+
 app.include_router(auth_router, prefix="/api", tags=["auth"])
+
+
+@app.on_event("startup")
+async def initialise_database():
+    init_db(SessionLocal())
+
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", reload=True, port=8888)
