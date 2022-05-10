@@ -10,6 +10,7 @@ def test_get_users(client, test_superuser, superuser_token_headers):
     # We don't need to compare the role here
     response_list[0].pop("user_role")
     response_list[0].pop("role_names")
+    response_list[0].pop("role_ids")
     assert response_list == [
         {
             "user_id": test_superuser.user_id,
@@ -89,6 +90,7 @@ def test_edit_user(client, test_superuser, superuser_token_headers):
     response_json = response.json()
     response_json.pop("user_role")
     response_json.pop("role_names")
+    response_json.pop("role_ids")
     assert response_json == new_user
 
 
@@ -119,6 +121,7 @@ def test_get_user(
         "is_active": bool(test_user.is_active),
         "full_name": test_user.email,
         "user_role": [],
+        "role_ids": [],
         "role_names": [],
     }
 

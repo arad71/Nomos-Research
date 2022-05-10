@@ -51,3 +51,7 @@ class User(BaseModel):
     @hybrid_property
     def role_names(self):
         return [user_role.role.name for user_role in self.user_role]
+
+    @hybrid_property
+    def role_ids(self):
+        return [user_role.role.role_id for user_role in self.user_role]
