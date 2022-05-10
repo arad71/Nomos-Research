@@ -82,7 +82,7 @@ services:
       IMPORT_API_KEY_WACENSUS:  ${IMPORT_API_KEY_WACENSUS:-password}
       CELERY_BROKER_URL: redis://redis:6379/0
       CELERY_RESULT_BACKEND: redis://redis:6379/0
-      WACENSUS_DATA_FILE_URL: ${WACENSUS_DATA_FILE_URL}
+      WACENSUS_DATA_FILE_URL: ${WACENSUS_DATA_FILE_URL:-https://example.org/datafile.zip}
     depends_on:
       - "postgres"
 
