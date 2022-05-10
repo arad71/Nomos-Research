@@ -15,6 +15,7 @@ class UserBase(BaseModel):
     last_name: Optional[str] = None
     legacy_id_name: Optional[str] = None
     role_names: Optional[list[str]]
+    role_ids: Optional[list[int]]
 
 
 class UserOut(UserBase):
