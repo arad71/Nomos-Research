@@ -24,7 +24,6 @@ const theme = createTheme({
         fontFamily: 'sans-serif',
       },
     },
-    MuiCollapse: {},
   },
   palette: {
     primary: {
