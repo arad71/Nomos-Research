@@ -47,3 +47,7 @@ class User(BaseModel):
 
     def has_role(self, role: dict):
         return any(user_role.role.name == role["name"] for user_role in self.user_role)
+
+    @hybrid_property
+    def role_names(self):
+        return [user_role.role.name for user_role in self.user_role]
