@@ -1,4 +1,5 @@
 from sqlalchemy import Boolean, Column, Integer, String
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.schema import UniqueConstraint
 
 from app.db.models import BaseModel
@@ -13,7 +14,7 @@ from app.db.user.constants import (
 class User(BaseModel):
     __tablename__ = "user"
     __table_args__ = (
-        UniqueConstraint("legacy_id_name", name=f"uc_{ __tablename__}_legacy_id"),
+        UniqueConstraint("legacy_id_name", name=f"uc_{__tablename__}_legacy_id"),
         {"comment": TABLE_DESCRIPTION},
     )
 
@@ -38,5 +39,15 @@ class User(BaseModel):
     is_active = Column(Boolean, default=True, nullable=False)
     legacy_id_name = Column(String())
 
+    @hybrid_property
+    def full_name(self):
+        if self.first_name and self.last_name:
+            return self.first_name + " " + self.last_name
+        return self.email or None
+
     def has_role(self, role: dict):
         return any(user_role.role.name == role["name"] for user_role in self.user_role)
+
+    @hybrid_property
+    def role_names(self):
+        return [user_role.role.name for user_role in self.user_role]

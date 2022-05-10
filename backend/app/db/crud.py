@@ -1,6 +1,5 @@
 import json
 import typing as t
-from typing import Any
 
 from fastapi import HTTPException, status
 from pydantic import BaseModel
@@ -13,7 +12,7 @@ from app.db.session import Base
 
 
 class Crud:
-    search_fields: list[Any] = []
+    search_fields: list[str] = []
     model: Base = None
     name: str = None
     id_key: str = None
@@ -72,11 +71,10 @@ class Crud:
                 filter_value = filter_items[column]
                 if column == "q":
                     if cls.search_fields:
-                        conditions = []
+                        conditions = {}
                         for search_field in cls.search_fields:
-                            conditions.append(search_field.ilike(f"%{filter_value}"))
-                        query = query.filter(or_(*conditions))
-
+                            conditions[f"{search_field}__contains"] = filter_value
+                        filters[or_] = conditions
                 else:
                     if isinstance(filter_value, list):
                         column = f"{column}__in"

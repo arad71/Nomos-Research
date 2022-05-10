@@ -2,7 +2,9 @@ import app.db.taxon_rank.enums
 from app.db.taxon_rank.model import TaxonRank
 
 
-def test_get_taxon_ranks(client, test_taxon_rank, superuser_token_headers):
+def test_get_taxon_ranks(
+    client, test_taxon_rank, test_kingdom, superuser_token_headers
+):
     response = client.get("/api/v1/taxon_ranks", headers=superuser_token_headers)
     assert response.status_code == 200
     assert response.json() == [
@@ -15,6 +17,7 @@ def test_get_taxon_ranks(client, test_taxon_rank, superuser_token_headers):
             "updated_by": test_taxon_rank.updated_by,
             "updated_on": test_taxon_rank.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
             "created_by": test_taxon_rank.created_by,
+            "kingdom_name": test_kingdom.kingdom_name,
             "created_on": test_taxon_rank.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
         }
     ]
@@ -41,6 +44,7 @@ def test_edit_taxon_rank(
 ):
     new_taxon_rank = {
         "kingdom_id": test_kingdom.kingdom_id,
+        "kingdom_name": test_kingdom.kingdom_name,
         "rank_name": "Rank Name 2",
         "rank_abbrev": app.db.taxon_rank.enums.RankAbbreviation.subvar,
         "uninomial": False,
@@ -88,6 +92,7 @@ def test_edit_taxon_rank_not_found(
 def test_get_taxon_rank(
     client,
     test_taxon_rank,
+    test_kingdom,
     superuser_token_headers,
 ):
     response = client.get(
@@ -98,6 +103,7 @@ def test_get_taxon_rank(
     assert response.json() == {
         "taxon_rank_id": test_taxon_rank.taxon_rank_id,
         "kingdom_id": test_taxon_rank.kingdom_id,
+        "kingdom_name": test_kingdom.kingdom_name,
         "rank_name": test_taxon_rank.rank_name,
         "rank_abbrev": test_taxon_rank.rank_abbrev.value,
         "uninomial": test_taxon_rank.uninomial,

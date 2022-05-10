@@ -14,6 +14,7 @@ class UserBase(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     legacy_id_name: Optional[str] = None
+    role_names: Optional[list[str]]
 
 
 class UserOut(UserBase):
@@ -38,6 +39,7 @@ class UserEdit(UserBase):
 class User(UserBase):
     user_id: int
     user_role: Optional[list[UserRole]]
+    full_name: Optional[str]
 
     class Config:
         orm_mode = True
