@@ -1,11 +1,12 @@
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, Depends, Response
 
 from app.api.dependencies.range_query import RangeQueryParameter
-from app.core.auth import get_current_active_superuser
+from app.core.auth import authorize, get_current_active_user
 from app.db.citation.crud import CitationCrud
 from app.db.citation.schema import Citation, CitationCreate, CitationEdit
+from app.db.role.constants import Role
 from app.db.session import get_db
 
 citations_router = r = APIRouter(prefix="/citations")
@@ -15,6 +16,7 @@ citations_router = r = APIRouter(prefix="/citations")
     "",
     response_model=List[Citation],
     response_model_exclude_none=True,
+    dependencies=[authorize()],
 )
 async def citation_list(
     response: Response,
@@ -22,7 +24,6 @@ async def citation_list(
     sort: Optional[str] = None,
     filter: Optional[str] = None,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
 ):
     """
     Get all citations
@@ -39,12 +40,11 @@ async def citation_list(
     "/{citation_id}",
     response_model=Citation,
     response_model_exclude_none=True,
+    dependencies=[authorize()],
 )
 async def citation_details(
-    request: Request,
     citation_id: int,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
 ):
     """
     Get any citation details
@@ -57,12 +57,20 @@ async def citation_details(
     "",
     response_model=Citation,
     response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.MANAGER["name"],
+                Role.OFFICER["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
 )
 async def citation_create(
-    request: Request,
     citation: CitationCreate,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Create a new citation
@@ -74,13 +82,21 @@ async def citation_create(
     "/{citation_id}",
     response_model=Citation,
     response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.MANAGER["name"],
+                Role.OFFICER["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
 )
 async def citation_edit(
-    request: Request,
     citation_id: int,
     citation: CitationEdit,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Update existing citation
@@ -92,12 +108,18 @@ async def citation_edit(
     "/{citation_id}",
     response_model=Citation,
     response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.SUPER_ADMIN["name"],
+                Role.MANAGER["name"],
+            ]
+        )
+    ],
 )
 async def citation_delete(
-    request: Request,
     citation_id: int,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
 ):
     """
     Delete existing citation
