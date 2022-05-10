@@ -8,6 +8,7 @@ from sqlalchemy import (
     Text,
     event,
 )
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy.types import Enum
@@ -164,6 +165,15 @@ class TaxonName(BaseModel, TableMixin):
     authorised_by = Column(String(16))
     authorised_on = Column(DateTime)
     legacy_id = Column(Integer)
+
+    @hybrid_property
+    def canonical_name_without_rank(self):
+        " ".join(
+            filter(
+                None,
+                [self.genus, self.specific_epithet, self.infraspecific_epithet],
+            )
+        )
 
 
 event.listen(TaxonName, "before_insert", calculate_fields)

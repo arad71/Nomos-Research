@@ -62,9 +62,9 @@ You will be able to log into http://localhost:8000/admin using: username "admin@
 ### Initial data load
 Once you have set up the initial database you can import the data from WA Census data supply:
 
-* Download the WAcensus zip file from Raw  data section of https://dev.azure.com/BIO-WA/WA-BDR/_wiki/wikis/BDR-WA.wiki/19/WA-Herbarium-WACensus-DF
-* Extract the contents ensuring that the CSV files exist in the following directory:
-  * backend/legacy_data
+* Copy the **Raw data file URL** from https://dev.azure.com/BIO-WA/WA-BDR/_wiki/wikis/BDR-WA.wiki/19/WA-Herbarium-WACensus-DF
+* Add it as `WACENSUS_DATA_FILE_URL` in your local .env file
+* Run scripts/build.sh to ensure this setting is set
 * Import data using:
 ```
 docker-compose run --rm backend python app/import.py

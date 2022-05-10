@@ -1,9 +1,12 @@
+import pytest
+from starlette import status
+
 from app.db.publication.model import Publication
 
 
 def test_get_publications(client, test_publication, superuser_token_headers):
     response = client.get("/api/v1/publications", headers=superuser_token_headers)
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
     assert response.json() == [
         {
             "publication_id": test_publication.publication_id,
@@ -24,7 +27,7 @@ def test_delete_publication(client, test_publication, test_db, superuser_token_h
         f"/api/v1/publications/{test_publication.publication_id}",
         headers=superuser_token_headers,
     )
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
     assert test_db.query(Publication).all() == []
 
 
@@ -32,7 +35,7 @@ def test_delete_publication_not_found(client, superuser_token_headers):
     response = client.delete(
         "/api/v1/publications/4321", headers=superuser_token_headers
     )
-    assert response.status_code == 404
+    assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 def test_edit_publication(
@@ -53,7 +56,7 @@ def test_edit_publication(
         json=new_publication,
         headers=superuser_token_headers,
     )
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
     new_publication["publication_id"] = test_publication.publication_id
     new_publication["updated_on"] = response.json()["updated_on"]
     new_publication["author"] = []
@@ -77,7 +80,7 @@ def test_edit_publication_not_found(
         json=new_publication,
         headers=superuser_token_headers,
     )
-    assert response.status_code == 404
+    assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 def test_get_publication(
@@ -89,7 +92,7 @@ def test_get_publication(
         f"/api/v1/publications/{test_publication.publication_id}",
         headers=superuser_token_headers,
     )
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
     assert response.json() == {
         "publication_id": test_publication.publication_id,
         "bad_publication": test_publication.bad_publication,
@@ -105,4 +108,194 @@ def test_get_publication(
 
 def test_publication_not_found(client, superuser_token_headers):
     response = client.get("/api/v1/publications/123", headers=superuser_token_headers)
-    assert response.status_code == 404
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+def test_unauthenticated_routes(client):
+    response = client.get("/api/v1/publications")
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    response = client.get("/api/v1/publications/123")
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    response = client.put("/api/v1/publications/123")
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    response = client.delete("/api/v1/publications/123")
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+NEW_PUBLICATION = {
+    "bad_publication": False,
+    "publication": "PUBLICATION",
+    "publication_name": "PUBLICATION_NAME_NEW",
+    "updated_by": None,
+    "updated_on": None,
+}
+UPDATE_PUBLICATION = {
+    "publication": "ANOTHER_PUBLICATION",
+    "publication_name": "PUBLICATION_NAME_CHANGED",
+}
+
+
+def test_super_admin_permissions(
+    client,
+    superuser_token_headers,
+    test_publication,
+    test_superuser,
+):
+    response = client.get("/api/v1/publications", headers=superuser_token_headers)
+    assert response.status_code == status.HTTP_200_OK
+
+    response = client.get(
+        f"/api/v1/publications/{test_publication.publication_id}",
+        headers=superuser_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+    publication_json = {
+        **NEW_PUBLICATION,
+        "created_by": test_superuser.user_id,
+        "created_on": test_publication.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+    }
+    response = client.post(
+        "/api/v1/publications", headers=superuser_token_headers, json=publication_json
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+    publication_json = {
+        **UPDATE_PUBLICATION,
+        "updated_by": test_superuser.user_id,
+        "updated_on": test_publication.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+    }
+    response = client.put(
+        f"/api/v1/publications/{test_publication.publication_id}",
+        headers=superuser_token_headers,
+        json=publication_json,
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+    response = client.delete(
+        f"/api/v1/publications/{test_publication.publication_id}",
+        headers=superuser_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+
+def test_manager_permissions(
+    client,
+    manager_token_headers,
+    test_publication,
+    test_manager,
+):
+    response = client.get("/api/v1/publications", headers=manager_token_headers)
+    assert response.status_code == status.HTTP_200_OK
+
+    response = client.get(
+        f"/api/v1/publications/{test_publication.publication_id}",
+        headers=manager_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+    publication_json = {
+        **NEW_PUBLICATION,
+        "created_by": test_manager.user_id,
+        "created_on": test_publication.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+    }
+    response = client.post(
+        "/api/v1/publications", headers=manager_token_headers, json=publication_json
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+    publication_json = {
+        **UPDATE_PUBLICATION,
+        "updated_by": test_manager.user_id,
+        "updated_on": test_publication.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+    }
+    response = client.put(
+        f"/api/v1/publications/{test_publication.publication_id}",
+        headers=manager_token_headers,
+        json=publication_json,
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+    response = client.delete(
+        f"/api/v1/publications/{test_publication.publication_id}",
+        headers=manager_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+
+def test_officer_permissions(
+    client,
+    officer_token_headers,
+    test_publication,
+    test_officer,
+):
+    response = client.get("/api/v1/publications", headers=officer_token_headers)
+    assert response.status_code == status.HTTP_200_OK
+
+    response = client.get(
+        f"/api/v1/publications/{test_publication.publication_id}",
+        headers=officer_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+    response = client.delete(
+        f"/api/v1/publications/{test_publication.publication_id}",
+        headers=officer_token_headers,
+    )
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    publication_json = {
+        **NEW_PUBLICATION,
+        "created_by": test_officer.user_id,
+        "created_on": test_publication.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+    }
+    response = client.post(
+        "/api/v1/publications", headers=officer_token_headers, json=publication_json
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+    publication_json.update(
+        {
+            **UPDATE_PUBLICATION,
+            "updated_by": test_officer.user_id,
+            "updated_on": test_publication.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        }
+    )
+    response = client.put(
+        f"/api/v1/publications/{test_publication.publication_id}",
+        headers=officer_token_headers,
+        json=publication_json,
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+
+parameter_names = "method,endpoint,status_code"
+
+parameter_values = [
+    ("get", "/api/v1/publications", status.HTTP_200_OK),
+    ("post", "/api/v1/publications", status.HTTP_403_FORBIDDEN),
+    ("put", "/api/v1/publications/1", status.HTTP_403_FORBIDDEN),
+    ("delete", "/api/v1/publications/1", status.HTTP_403_FORBIDDEN),
+]
+
+
+@pytest.mark.parametrize(
+    parameter_names,
+    parameter_values,
+)
+def test_reader_permissions(
+    client, reader_token_headers, method, endpoint, status_code
+):
+    response = getattr(client, method)(endpoint, headers=reader_token_headers)
+    assert response.status_code == status_code
+
+
+@pytest.mark.parametrize(
+    parameter_names,
+    parameter_values,
+)
+def test_app_support_permissions(
+    client, app_support_token_headers, method, endpoint, status_code
+):
+    response = getattr(client, method)(endpoint, headers=app_support_token_headers)
+    assert response.status_code == status_code
