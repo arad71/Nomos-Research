@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, Integer, String, asc
+from sqlalchemy import Boolean, Column, Integer, String
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.schema import UniqueConstraint
 
