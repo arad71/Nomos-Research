@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, Integer, String
+from sqlalchemy import Boolean, Column, Integer, String, asc
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.schema import UniqueConstraint
 
@@ -51,3 +51,7 @@ class User(BaseModel):
     @hybrid_property
     def role_names(self):
         return [user_role.role.name for user_role in self.user_role]
+
+    @hybrid_property
+    def role_ids(self):
+        return [user_role.role.role_id for user_role in self.user_role]
