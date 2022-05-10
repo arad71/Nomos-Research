@@ -49,6 +49,7 @@ def trigger_calculated_fields(db):
 
 def import_data(url: AnyUrl = settings.WACENSUS_DATA_FILE_URL):
     outfile = f"{LEGACY_DATA_DIRECTORY}/wacensus.zip"
+    log = logger.add(f"{LEGACY_DATA_DIRECTORY}/import.log", retention="1 day")
     download_data_file(url, outfile)
     extract_data_file(LEGACY_DATA_DIRECTORY, outfile)
 
@@ -72,6 +73,8 @@ def import_data(url: AnyUrl = settings.WACENSUS_DATA_FILE_URL):
     ImportHierarchy(db, admin_id).ingest("HBTPARENTS_DATA_TABLE.csv")
     ImportInformalGroup(db, admin_id).ingest("HBTGROUPS_DATA_TABLE.csv")
     trigger_calculated_fields(db)
+    logger.info("Import completed")
+    logger.remove(log)
 
 
 def download_data_file(url, outfile):

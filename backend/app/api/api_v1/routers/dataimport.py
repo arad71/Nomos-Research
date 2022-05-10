@@ -1,9 +1,10 @@
-from celery.bin.control import inspect
-from celery.result import AsyncResult
 from fastapi import APIRouter, Depends
+from fastapi.responses import FileResponse
 from fastapi_key_auth import AuthorizerDependency
+from starlette.background import BackgroundTasks
 
-from app.core.celery_app import celery_app
+from app.dataimport.wacensus import import_data
+from app.db.dataimport import LEGACY_DATA_DIRECTORY
 
 data_import_router = r = APIRouter(prefix="/dataimport")
 authorizer = AuthorizerDependency(key_pattern="IMPORT_API_KEY_")
@@ -15,34 +16,17 @@ authorizer = AuthorizerDependency(key_pattern="IMPORT_API_KEY_")
         Depends(authorizer),
     ],
 )
-async def get_tasks():
-    i: inspect = celery_app.control.inspect()
-    return {"active": i.active(), "scheduled": i.scheduled()}
+def get_import_log():
+    return FileResponse(f"{LEGACY_DATA_DIRECTORY}/import.log")
 
 
 @r.post(
-    "/wacensus",
+    "",
     status_code=201,
     dependencies=[
         Depends(authorizer),
     ],
 )
-async def import_wacensus_data():
-    task = celery_app.send_task("app.tasks.import_wacensus_data")
-    return {"task_id": task.id}
-
-
-@r.get(
-    "/{task_id}",
-    dependencies=[
-        Depends(authorizer),
-    ],
-)
-def get_status(task_id):
-    task_result = AsyncResult(task_id)
-    result = {
-        "task_id": task_id,
-        "task_status": task_result.status,
-        "task_result": task_result.result,
-    }
-    return result
+def import_wacensus_data(background_tasks: BackgroundTasks):
+    background_tasks.add_task(import_data)
+    return background_tasks.tasks

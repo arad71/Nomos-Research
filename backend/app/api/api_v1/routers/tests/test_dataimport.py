@@ -1,11 +1,23 @@
 from starlette import status
 
+from app.db.dataimport import LEGACY_DATA_DIRECTORY
+
+ENDPOINT = "/api/v1/dataimport"
+
 
 def test_import_wacensus_data_access(client, checklist_api_key):
-    endpoint = "/api/v1/dataimport/wacensus"
-    response = client.get(endpoint)
+    response = client.get(ENDPOINT)
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-    response = client.post(endpoint)
+    response = client.post(ENDPOINT)
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-    response = client.post(endpoint, headers={"x-api-key": checklist_api_key})
+    response = client.post(ENDPOINT, headers={"x-api-key": checklist_api_key})
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_data_import_log_file(client, import_api_key):
+    log_file_contents = "Create a new text file!"
+    with open(f"{LEGACY_DATA_DIRECTORY}/import.log", "w") as f:
+        f.write(log_file_contents)
+    response = client.get(ENDPOINT, headers={"x-api-key": import_api_key})
+    assert response.text == log_file_contents
+    # We do not test the post endpoint as this actually imports the data

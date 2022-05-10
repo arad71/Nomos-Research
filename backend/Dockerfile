@@ -4,16 +4,16 @@ FROM python:3.9
 ARG USER_ID=1000
 ARG GROUP_ID=1000
 
-RUN mkdir /app
+RUN mkdir /app /legacy_data
 WORKDIR /app
-
 COPY requirements.txt ./
 RUN \
   addgroup --gid $GROUP_ID app && \
   adduser --disabled-password --gecos '' --uid $USER_ID --gid $GROUP_ID app && \
   apt update && \
-  apt install -y postgresql-client && \
+  apt install -y postgresql-client wait-for-it && \
   chown -R app:app ./ && \
+  chown -R app:app /legacy_data && \
   pip install --no-cache-dir --upgrade pip && \
   pip install --no-cache-dir --upgrade -r requirements.txt
 
