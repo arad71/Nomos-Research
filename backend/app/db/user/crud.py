@@ -11,7 +11,7 @@ class UserCrud(crud.Crud):
     model = User
     id_key = "user_id"
     name = "User"
-    search_fields = [User.email, User.first_name, User.last_name]
+    search_fields = ["email", "first_name", "last_name"]
 
     @classmethod
     def get_user_by_email(cls, db: Session, email: str) -> User:

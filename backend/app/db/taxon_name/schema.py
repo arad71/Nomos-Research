@@ -42,6 +42,7 @@ class TaxonNameBase(BaseModel):
     # class is a reserved word, will this workaround be enough?
     taxon_class: Optional[str]
     order: Optional[str]
+    family: Optional[str]
     genus: Optional[str]
     subgenus: Optional[str]
     species: Optional[str]
@@ -95,6 +96,7 @@ class TaxonName(TaxonNameBase, TableBase):
     author: Optional[str] = Field(description=AUTHOR)
     scientific_name: Optional[str]
     formatted_scientific_name: Optional[str]
+    canonical_name_without_rank: Optional[str]
 
     class Config:
         orm_mode = True

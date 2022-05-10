@@ -8,6 +8,7 @@ from sqlalchemy import (
     Text,
     event,
 )
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy.types import Enum
@@ -72,17 +73,17 @@ class TaxonName(BaseModel, TableMixin):
     phylum = Column(String)
     taxon_class = Column(String, name="class", key="class")
     order = Column(String)
-    family = Column(String)
-    genus = Column(String)
-    subgenus = Column(String)
-    canonical_name = Column(String)
-    scientific_name = Column(String)
+    family = Column(String, index=True)
+    genus = Column(String, index=True)
+    subgenus = Column(String, index=True)
+    canonical_name = Column(String, index=True)
+    scientific_name = Column(String, index=True)
     formatted_scientific_name = Column(String)
-    species = Column(String)
-    subspecies = Column(String)
+    species = Column(String, index=True)
+    subspecies = Column(String, index=True)
     # taxon_rank = Column(String(9))
-    specific_epithet = Column(String(70))
-    infraspecific_epithet = Column(String(70))
+    specific_epithet = Column(String(70), index=True)
+    infraspecific_epithet = Column(String(70), index=True)
     publication_id = Column(
         Integer,
         ForeignKey("publication.publication_id"),
@@ -91,9 +92,7 @@ class TaxonName(BaseModel, TableMixin):
     )
     publication = relationship("Publication", backref=name_plural)
     volume_information = Column(
-        String(100),
-        comment=VOLUME_INFORMATION,
-        doc=VOLUME_INFORMATION,
+        String(100), comment=VOLUME_INFORMATION, doc=VOLUME_INFORMATION, index=True
     )
     is_current = Column(
         Boolean,
@@ -109,7 +108,7 @@ class TaxonName(BaseModel, TableMixin):
     publication_status = Column(
         Enum(enums.PublicationStatus, name=__tablename__ + "__publication_status")
     )
-    form_desc_yr = Column(Integer, comment=FORM_DESC_YR)
+    form_desc_yr = Column(Integer, comment=FORM_DESC_YR, index=True)
     form_desc_mn = Column(Integer, comment=FORM_DESC_MN)
     form_desc_dy = Column(Integer, comment=FORM_DESC_DY)
     comments = Column(String(1000), comment=COMMENTS)
@@ -137,11 +136,7 @@ class TaxonName(BaseModel, TableMixin):
     )
     family_code = Column(String(5), comment=FAMILY_CODE, doc=FAMILY_CODE)
     author = Column(String(180), comment=AUTHOR, doc=AUTHOR)
-    vernacular = Column(
-        String(100),
-        comment=VERNACULAR,
-        doc=VERNACULAR,
-    )
+    vernacular = Column(String(100), comment=VERNACULAR, doc=VERNACULAR, index=True)
     editor = Column(String(60))
     naturalised_status = Column(
         Enum(enums.NaturalisedStatus, name=__tablename__ + "__naturalised_status")
@@ -164,12 +159,21 @@ class TaxonName(BaseModel, TableMixin):
         comment=FAMILY_NID,
         doc=FAMILY_NID,
     )
-    all_vernaculars = Column(String(200))
+    all_vernaculars = Column(String(200), index=True)
     notes = Column(String(3000))
     reference = Column(Text)
     authorised_by = Column(String(16))
     authorised_on = Column(DateTime)
     legacy_id = Column(Integer)
+
+    @hybrid_property
+    def canonical_name_without_rank(self):
+        " ".join(
+            filter(
+                None,
+                [self.genus, self.specific_epithet, self.infraspecific_epithet],
+            )
+        )
 
 
 event.listen(TaxonName, "before_insert", calculate_fields)

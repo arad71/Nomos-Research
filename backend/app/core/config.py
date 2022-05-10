@@ -1,7 +1,7 @@
 from functools import lru_cache
 from typing import Any, Dict, Optional
 
-from pydantic import BaseSettings, PostgresDsn, validator
+from pydantic import AnyUrl, BaseSettings, PostgresDsn, validator
 
 
 class Settings(BaseSettings):
@@ -23,6 +23,8 @@ class Settings(BaseSettings):
     DB_PASSWORD: str
     DB_NAME: str
     DB_PORT: str = "5432"
+
+    WACENSUS_DATA_FILE_URL: Optional[AnyUrl] = None
 
     SQLALCHEMY_DATABASE_URI: Optional[PostgresDsn] = None
     # Set this to True to enable printing db queries to the log

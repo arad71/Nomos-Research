@@ -3,9 +3,10 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, Request, Response
 
 from app.api.dependencies.range_query import RangeQueryParameter
-from app.core.auth import get_current_active_superuser
+from app.core.auth import authorize, get_current_active_user
 from app.db.author.crud import AuthorCrud
 from app.db.author.schema import Author, AuthorCreate, AuthorEdit
+from app.db.role.constants import Role
 from app.db.session import get_db
 
 authors_router = r = APIRouter(prefix="/authors")
@@ -15,6 +16,7 @@ authors_router = r = APIRouter(prefix="/authors")
     "",
     response_model=List[Author],
     response_model_exclude_none=True,
+    dependencies=[authorize()],
 )
 async def author_list(
     response: Response,
@@ -22,7 +24,6 @@ async def author_list(
     sort: Optional[str] = None,
     filter: Optional[str] = None,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
 ):
     """
     Get all authors
@@ -39,12 +40,11 @@ async def author_list(
     "/{author_id}",
     response_model=Author,
     response_model_exclude_none=True,
+    dependencies=[authorize()],
 )
 async def author_details(
-    request: Request,
     author_id: int,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
 ):
     """
     Get any author details
@@ -53,12 +53,24 @@ async def author_details(
     return author
 
 
-@r.post("", response_model=Author, response_model_exclude_none=True)
+@r.post(
+    "",
+    response_model=Author,
+    response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.MANAGER["name"],
+                Role.OFFICER["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
 async def author_create(
-    request: Request,
     author: AuthorCreate,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Create a new author
@@ -70,13 +82,21 @@ async def author_create(
     "/{author_id}",
     response_model=Author,
     response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.MANAGER["name"],
+                Role.OFFICER["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
 )
 async def author_edit(
-    request: Request,
     author_id: int,
     author: AuthorEdit,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Update existing author
@@ -88,12 +108,18 @@ async def author_edit(
     "/{author_id}",
     response_model=Author,
     response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.SUPER_ADMIN["name"],
+                Role.MANAGER["name"],
+            ]
+        )
+    ],
 )
 async def author_delete(
-    request: Request,
     author_id: int,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
 ):
     """
     Delete existing author

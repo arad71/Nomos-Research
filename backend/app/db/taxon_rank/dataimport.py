@@ -1,3 +1,5 @@
+from loguru import logger
+
 from app.db.dataimport import DataImportBase
 from app.db.kingdom.model import Kingdom
 from app.db.taxon_rank.model import TaxonRank as TaxonRankModel
@@ -56,7 +58,7 @@ class ImportTaxonRank(DataImportBase):
             return None
 
         if self_id and self_id == legacy_id:
-            print("\nWarning: Ignoring self reference.")
+            logger.warning("Ignoring self reference.")
             return None
 
         return self.map_taxon_rank_by_legacy_id(legacy_id, kingdom_id)
