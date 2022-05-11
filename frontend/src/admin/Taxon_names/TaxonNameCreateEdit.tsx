@@ -36,9 +36,9 @@ const useStyles = makeStyles({
 
 export const TaxonNameCreateEdit: FC = (props: Props) => {
   const classes = useStyles();
-    return (
-      <TabbedForm {...props}>
-        <FormTab label="Name" className={classes.tablabel}>
+  return (
+    <TabbedForm {...props}>
+      <FormTab label="Name" className={classes.tablabel}>
         <ReferenceInput
           source="kingdom_id"
           reference="kingdoms"
