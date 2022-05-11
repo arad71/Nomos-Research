@@ -1,11 +1,12 @@
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, Depends, Response
 
 from app.api.dependencies.range_query import RangeQueryParameter
-from app.core.auth import get_current_active_superuser
+from app.core.auth import authorize, get_current_active_user
 from app.db.hierarchy.crud import HierarchyCrud
 from app.db.hierarchy.schema import Hierarchy, HierarchyCreate, HierarchyEdit
+from app.db.role.constants import Role
 from app.db.session import get_db
 
 hierarchies_router = r = APIRouter(prefix="/hierarchies")
@@ -15,6 +16,7 @@ hierarchies_router = r = APIRouter(prefix="/hierarchies")
     "",
     response_model=List[Hierarchy],
     response_model_exclude_none=True,
+    dependencies=[authorize()],
 )
 async def hierarchy_list(
     response: Response,
@@ -22,7 +24,6 @@ async def hierarchy_list(
     sort: Optional[str] = None,
     filter: Optional[str] = None,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
 ):
     """
     Get all hierarchies
@@ -39,12 +40,11 @@ async def hierarchy_list(
     "/{hierarchy_id}",
     response_model=Hierarchy,
     response_model_exclude_none=True,
+    dependencies=[authorize()],
 )
 async def hierarchy_details(
-    request: Request,
     hierarchy_id: int,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
 ):
     """
     Get any hierarchy details
@@ -53,12 +53,23 @@ async def hierarchy_details(
     return hierarchy
 
 
-@r.post("", response_model=Hierarchy, response_model_exclude_none=True)
+@r.post(
+    "",
+    response_model=Hierarchy,
+    response_model_exclude_none=True,
+    dependencies=[
+       authorize(
+           scopes=[
+               Role.MANAGER["name"],
+               Role.SUPER_ADMIN["name"],
+           ]
+       )
+    ],
+)
 async def hierarchy_create(
-    request: Request,
     hierarchy: HierarchyCreate,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Create a new hierarchy
@@ -70,13 +81,20 @@ async def hierarchy_create(
     "/{hierarchy_id}",
     response_model=Hierarchy,
     response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.MANAGER["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
 )
 async def hierarchy_edit(
-    request: Request,
     hierarchy_id: int,
     hierarchy: HierarchyEdit,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Update existing hierarchy
@@ -88,12 +106,18 @@ async def hierarchy_edit(
     "/{hierarchy_id}",
     response_model=Hierarchy,
     response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.SUPER_ADMIN["name"],
+                Role.MANAGER["name"],
+            ]
+        )
+    ],
 )
 async def hierarchy_delete(
-    request: Request,
     hierarchy_id: int,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
 ):
     """
     Delete existing hierarchy
