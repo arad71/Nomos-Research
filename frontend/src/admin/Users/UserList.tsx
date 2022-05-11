@@ -17,7 +17,7 @@ import { UserListActions } from './UserListActions';
 import { UserPagination } from './UserPagination';
 
 const useStyles = makeStyles({
-  main: {
+  content: {
     fontFamily: 'Helvetica Neue',
   },
   textFonts: {
@@ -38,11 +38,11 @@ export const UserList: FC = (props) => {
       actions={<UserListActions />}
       pagination={<UserPagination />}
       perPage={100}
-      classes={{ main: classes.main }}
+      classes={{ content: classes.content }}
       {...props}
     >
       <Datagrid rowClick="show">
-        <TextField className={classes.textFonts} source="id" />
+        <TextField source="id" />
         <EmailField source="email" className={classes.textFonts} />
         <TextField className={classes.textFonts} source="first_name" />
         <TextField className={classes.textFonts} source="last_name" />
