@@ -1,15 +1,16 @@
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, Depends, Response
 
 from app.api.dependencies.range_query import RangeQueryParameter
-from app.core.auth import get_current_active_superuser
+from app.core.auth import authorize, get_current_active_user
 from app.db.cross_reference.crud import CrossReferenceCrud
 from app.db.cross_reference.schema import (
     CrossReference,
     CrossReferenceCreate,
     CrossReferenceEdit,
 )
+from app.db.role.constants import Role
 from app.db.session import get_db
 
 cross_references_router = r = APIRouter(prefix="/cross_references")
@@ -19,6 +20,7 @@ cross_references_router = r = APIRouter(prefix="/cross_references")
     "",
     response_model=List[CrossReference],
     response_model_exclude_none=True,
+    dependencies=[authorize()],
 )
 async def cross_reference_list(
     response: Response,
@@ -26,7 +28,6 @@ async def cross_reference_list(
     sort: Optional[str] = None,
     filter: Optional[str] = None,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
 ):
     """
     Get all cross_references
@@ -43,12 +44,11 @@ async def cross_reference_list(
     "/{cross_reference_id}",
     response_model=CrossReference,
     response_model_exclude_none=True,
+    dependencies=[authorize()],
 )
 async def cross_reference_details(
-    request: Request,
     cross_reference_id: int,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
 ):
     """
     Get any cross_reference details
@@ -61,12 +61,20 @@ async def cross_reference_details(
     "",
     response_model=CrossReference,
     response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.MANAGER["name"],
+                Role.OFFICER["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
 )
 async def cross_reference_create(
-    request: Request,
     cross_reference: CrossReferenceCreate,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Create a new cross_reference
@@ -78,13 +86,21 @@ async def cross_reference_create(
     "/{cross_reference_id}",
     response_model=CrossReference,
     response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.MANAGER["name"],
+                Role.OFFICER["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
 )
 async def cross_reference_edit(
-    request: Request,
     cross_reference_id: int,
     cross_reference: CrossReferenceEdit,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Update existing cross_reference
@@ -98,12 +114,18 @@ async def cross_reference_edit(
     "/{cross_reference_id}",
     response_model=CrossReference,
     response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.SUPER_ADMIN["name"],
+                Role.MANAGER["name"],
+            ]
+        )
+    ],
 )
 async def cross_reference_delete(
-    request: Request,
     cross_reference_id: int,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
 ):
     """
     Delete existing cross_reference
