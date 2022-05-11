@@ -16,15 +16,6 @@ import Aside from '../shared/Aside';
 import NaturalisedStatus from './NaturalisedStatus';
 import PublicationStatus from './PublicationStatus';
 import { makeStyles } from '@material-ui/core/styles';
-import { ReactNode, ReactElement } from 'react';
-
-interface Props {
-  icon: ReactElement;
-  to: string;
-  title?: string;
-  subtitle?: string | number;
-  children?: ReactNode;
-}
 
 const useStyles = makeStyles({
   tablabel: {
@@ -32,7 +23,7 @@ const useStyles = makeStyles({
   },
 });
 
-export const TaxonNameShow: FC = (props: Props) => {
+export const TaxonNameShow: FC = (props) => {
   const classes = useStyles();
   return (
     <Show aside={<Aside />} {...props}>

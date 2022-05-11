@@ -7,7 +7,6 @@ import {
   required,
   RichTextField,
   SelectInput,
-  SimpleForm,
   TextField,
   TextInput,
   BooleanInput,
@@ -18,15 +17,6 @@ import React, { FC } from 'react';
 import NaturalisedStatus from './NaturalisedStatus';
 import PublicationStatus from './PublicationStatus';
 import { makeStyles } from '@material-ui/core/styles';
-import { ReactNode, ReactElement } from 'react';
-
-interface Props {
-  icon: ReactElement;
-  to: string;
-  title?: string;
-  subtitle?: string | number;
-  children?: ReactNode;
-}
 
 const useStyles = makeStyles({
   tablabel: {
@@ -34,7 +24,7 @@ const useStyles = makeStyles({
   },
 });
 
-export const TaxonNameCreateEdit: FC = (props: Props) => {
+export const TaxonNameCreateEdit: FC = (props) => {
   const classes = useStyles();
   return (
     <TabbedForm {...props}>
