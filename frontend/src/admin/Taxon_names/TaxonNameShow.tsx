@@ -2,7 +2,6 @@
 import React, { FC } from 'react';
 import {
   DateField,
-  EditButton,
   NumberField,
   ReferenceField,
   Show,
@@ -40,12 +39,12 @@ export const TaxonNameShow: FC = (props: Props) => {
       <TabbedShowLayout>
         <Tab label="Name" className={classes.tablabel}>
           <ReferenceField source="kingdom_id" reference="kingdoms">
-            <TextField source="kingdom_name"/>
+            <TextField source="kingdom_name" />
           </ReferenceField>
           <ReferenceField source="rank_id" reference="taxon_ranks">
-            <TextField source="rank_name"/>
+            <TextField source="rank_name" />
           </ReferenceField>
-          <TextField source="canonical_name"/>
+          <TextField source="canonical_name" />
           <TextField source="scientific_name"/>
           <RichTextField source="formatted_scientific_name"/>
           <TextField source="phylum"/>
@@ -69,7 +68,7 @@ export const TaxonNameShow: FC = (props: Props) => {
           <NumberField source="form_desc_mn"/>
           <NumberField source="form_desc_dy"/>
           <TextField source="comments"/>
-          <TextField source="contributed_by"/>
+          <TextField source="contributed_by"/>git
           <DateField source="contributed_on" showTime/>
           <BooleanField source="validated"/>
           <TextField source="source"/>
