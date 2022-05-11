@@ -13,18 +13,6 @@ const theme = createTheme({
       'Helvetica Neue',
     ].join(','),
   },
-  overrides: {
-    MuiButton: {
-      containedPrimary: {
-        backgroundColor: '#2C5331',
-      },
-    },
-    MuiTypography: {
-      body1: {
-        fontFamily: 'sans-serif',
-      },
-    },
-  },
   palette: {
     primary: {
       main: '#f00',

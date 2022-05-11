@@ -11,55 +11,52 @@ import {
   TextField,
   ReferenceArrayField,
 } from 'react-admin';
+import { makeStyles } from '@material-ui/core';
 import { FilterSidebar } from './FilterSidebar';
 import { UserListActions } from './UserListActions';
+import { UserPagination } from './UserPagination';
+
+const useStyles = makeStyles({
+  main: {
+    fontFamily: 'Helvetica Neue',
+  },
+  textFonts: {
+    fontFamily: 'Helvetica Neue',
+    color: '#2C2C2C',
+  },
+  roleFonts: {
+    fontFamily: 'Helvetica Neue',
+    color: '#000000',
+  },
+});
 
 export const UserList: FC = (props) => {
+  const classes = useStyles(props);
   return (
-    <List aside={<FilterSidebar />} actions={<UserListActions />} {...props}>
+    <List
+      aside={<FilterSidebar />}
+      actions={<UserListActions />}
+      pagination={<UserPagination />}
+      perPage={100}
+      classes={{ main: classes.main }}
+      {...props}
+    >
       <Datagrid rowClick="show">
-        <TextField source="id" />
-        <EmailField source="email" />
-        <TextField source="first_name" />
-        <TextField source="last_name" />
+        <TextField className={classes.textFonts} source="id" />
+        <EmailField source="email" className={classes.textFonts} />
+        <TextField className={classes.textFonts} source="first_name" />
+        <TextField className={classes.textFonts} source="last_name" />
         <ReferenceArrayField
           label="User Roles"
           reference="roles"
           source="role_ids"
         >
           <SingleFieldList>
-            <ChipField source="name" />
+            <ChipField className={classes.roleFonts} source="name" />
           </SingleFieldList>
         </ReferenceArrayField>
-        {/*<ArrayField source="user_role">*/}
-        {/*<ArrayField source="role">*/}
-        {/*<ReferenceArrayField*/}
-        {/*  label="User Roles"*/}
-        {/*  source="user_role"*/}
-        {/*  reference="users"*/}
-        {/*>*/}
-        {/*  <SingleFieldList>*/}
-        {/*    <ChipField source="role_id" />*/}
-        {/*  </SingleFieldList>*/}
-        {/*</ReferenceArrayField>*/}
-        {/*</ArrayField>*/}
-        {/*</ArrayField>*/}
-        {/*<ReferenceManyField*/}
-        {/*  label="User Roles"*/}
-        {/*  target="user_id"*/}
-        {/*  reference="user_roles"*/}
-        {/*>*/}
-        {/*  <ReferenceManyField label="" target="role_id" reference="roles">*/}
-        {/* eslint-disable-next-line max-len */}
-        {/*    <ReferenceManyField label="" target="user_role" reference="users">*/}
-        {/*      <SingleFieldList>*/}
-        {/*        <ChipField source="role_id" />*/}
-        {/*      </SingleFieldList>*/}
-        {/*    </ReferenceManyField>*/}
-        {/*  </ReferenceManyField>*/}
-        {/*</ReferenceManyField>*/}
         <BooleanField source="is_active" />
-        <EditButton />
+        <EditButton className={classes.textFonts} />
       </Datagrid>
     </List>
   );
