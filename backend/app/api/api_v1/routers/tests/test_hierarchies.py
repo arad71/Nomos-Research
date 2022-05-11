@@ -139,6 +139,7 @@ def test_super_admin_permissions(
     test_taxon_name,
     test_classification_system,
     test_taxon_name_2,
+    test_taxon_name_canonical_name_1,
     test_superuser,
 ):
     response = client.get("/api/v1/hierarchies", headers=superuser_token_headers)
@@ -152,7 +153,7 @@ def test_super_admin_permissions(
 
     hierarchy_json = {
         **NEW_HIERARCHY,
-        "taxon_name_id": test_taxon_name.taxon_name_id,
+        "taxon_name_id": test_taxon_name_canonical_name_1.taxon_name_id,
         "classification_system_id": test_classification_system.classification_system_id,
         "parent_nid": test_taxon_name_2.taxon_name_id,
         "created_by": test_superuser.user_id,
@@ -167,6 +168,7 @@ def test_super_admin_permissions(
 
     hierarchy_json.update(
         {
+            "taxon_name_id": test_taxon_name_2.taxon_name_id,
             "updated_by": test_superuser.user_id,
             "updated_on": test_hierarchy.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
         }
@@ -192,6 +194,7 @@ def test_manager_permissions(
     test_taxon_name,
     test_classification_system,
     test_taxon_name_2,
+    test_taxon_name_canonical_name_1,
     test_manager,
 ):
     response = client.get("/api/v1/hierarchies", headers=manager_token_headers)
@@ -205,7 +208,7 @@ def test_manager_permissions(
 
     hierarchy_json = {
         **NEW_HIERARCHY,
-        "taxon_name_id": test_taxon_name.taxon_name_id,
+        "taxon_name_id": test_taxon_name_canonical_name_1.taxon_name_id,
         "classification_system_id": test_classification_system.classification_system_id,
         "parent_nid": test_taxon_name_2.taxon_name_id,
         "created_by": test_manager.user_id,
@@ -220,6 +223,7 @@ def test_manager_permissions(
 
     hierarchy_json.update(
         {
+            "taxon_name_id": test_taxon_name_2.taxon_name_id,
             "updated_by": test_manager.user_id,
             "updated_on": test_hierarchy.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
         }

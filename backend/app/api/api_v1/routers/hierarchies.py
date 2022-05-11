@@ -58,12 +58,12 @@ async def hierarchy_details(
     response_model=Hierarchy,
     response_model_exclude_none=True,
     dependencies=[
-       authorize(
-           scopes=[
-               Role.MANAGER["name"],
-               Role.SUPER_ADMIN["name"],
-           ]
-       )
+        authorize(
+            scopes=[
+                Role.MANAGER["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
     ],
 )
 async def hierarchy_create(
