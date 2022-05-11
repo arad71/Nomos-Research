@@ -9,7 +9,6 @@ import {
   ReferenceField,
   TextField,
 } from 'react-admin';
-import FullNameField from '../shared/FullNameField';
 
 export const AuthorList: FC = (props) => (
   <List {...props} sort={{ field: 'abbreviation' }}>
@@ -21,11 +20,11 @@ export const AuthorList: FC = (props) => (
       <TextField source="initials" />
       <TextField source="orc_id" />
       <ReferenceField source="created_by" reference="users">
-        <FullNameField source="last_name" />
+        <TextField source="full_name" />
       </ReferenceField>
       <DateField source="created_on" showTime />
       <ReferenceField source="updated_by" reference="users">
-        <FullNameField source="last_name" />
+        <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" showTime />
       <EditButton />
