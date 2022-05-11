@@ -11,11 +11,13 @@ import {
   TextField,
   BooleanField,
   RichTextField,
+  Labeled,
 } from 'react-admin';
 import Aside from '../shared/Aside';
 import NaturalisedStatus from './NaturalisedStatus';
 import PublicationStatus from './PublicationStatus';
 import { makeStyles } from '@material-ui/core/styles';
+import { Box, Typography } from '@material-ui/core';
 
 const useStyles = makeStyles({
   tablabel: {
@@ -91,10 +93,101 @@ export const TaxonNameShow: FC = (props) => {
           <TextField source="notes" />
           <DateField source="authorised_on" showTime />
         </Tab>
-        <Tab label="Details" className={classes.tablabel}></Tab>
+        <Tab label="Details" className={classes.tablabel}>
+          <Box
+            display={{ xs: 'block', sm: 'flex' }}
+            my="1.2em"
+            justifyContent="flex-start"
+          >
+            <Box mr={{ xs: 0, sm: '1em' }}>
+              <Labeled label="Family code">
+                <TextField source="family_code" />
+              </Labeled>
+            </Box>
+            <Box mr={{ xs: 0, sm: '1em' }}>
+              <Labeled label="Origin">
+                <TextField source="origin" />
+              </Labeled>
+            </Box>
+          </Box>
+          <Box
+            display={{ xs: 'block', sm: 'flex' }}
+            mb="1.2em"
+            justifyContent="flex-start"
+          >
+            <Box mr={{ xs: 0, sm: '1em' }}>
+              <Labeled label="Naturalised status">
+                <SelectField
+                  source="naturalised_status"
+                  choices={NaturalisedStatus}
+                />
+              </Labeled>
+            </Box>
+            <Box mr={{ xs: 0, sm: '1em' }}>
+              <Labeled label="Naturalised certainty">
+                <BooleanField source="naturalised_certainty" />
+              </Labeled>
+            </Box>
+          </Box>
+          <Box
+            display={{ xs: 'block', sm: 'flex' }}
+            mb="1em"
+            justifyContent="flex-start"
+          >
+            <Box mr={{ xs: 0, sm: '1em' }}>
+              <Labeled label="Naturalised comments">
+                <TextField source="naturalised_comments" />
+              </Labeled>
+            </Box>
+          </Box>
+          <Box mt="2.2em">
+            <Typography variant="h6" gutterBottom>
+              Type Specimen (placeholder section)
+            </Typography>
+          </Box>
+          <Box
+            display={{ xs: 'block', sm: 'flex' }}
+            my="1.2em"
+            justifyContent="flex-start"
+          >
+            <Box mr={{ xs: 0, sm: '1em' }}>
+              <Labeled label="Type specimen Status">
+                <Typography variant="body2" gutterBottom>
+                  See notes
+                </Typography>
+              </Labeled>
+            </Box>
+            <Box mr={{ xs: 0, sm: '1em' }}>
+              <Labeled label="Type specimen ID">
+                <Typography variant="body2" gutterBottom>
+                  WAM001
+                </Typography>
+              </Labeled>
+            </Box>
+          </Box>
+          <Box
+            display={{ xs: 'block', sm: 'flex' }}
+            mb="1.2em"
+            justifyContent="flex-start"
+          >
+            <Box mr={{ xs: 0, sm: '1em' }}>
+              <Labeled label="Type specimen location">
+                <Typography variant="body2" gutterBottom>
+                  WA Museum Welshpool
+                </Typography>
+              </Labeled>
+            </Box>
+          </Box>
+        </Tab>
         <Tab label="Heirarchy" className={classes.tablabel}></Tab>
         <Tab label="Cross References" className={classes.tablabel}></Tab>
-        <Tab label="Notes" className={classes.tablabel}></Tab>
+        <Tab label="Notes" className={classes.tablabel}>
+          <Box my="1.2em">
+            <Labeled label="Notes">
+              <TextField source="notes" />
+            </Labeled>
+          </Box>
+        </Tab>
       </TabbedShowLayout>
     </Show>
   );
