@@ -74,11 +74,11 @@ def create_test_db():
     test_db_url = get_test_db_url()
 
     # Create the test database
-    assert not database_exists(
-        test_db_url
-    ), "Test database already exists. Aborting tests."
+    if database_exists(test_db_url):
+        drop_database(test_db_url)
     create_database(test_db_url)
     test_engine = create_engine(test_db_url)
+    test_engine.execute("CREATE EXTENSION IF NOT EXISTS ltree")
     Base.metadata.create_all(test_engine)
 
     # Run the tests
@@ -405,6 +405,99 @@ def test_taxon_name(
 
 
 @pytest.fixture
+def test_animalia(
+    test_db, test_kingdom, test_publication, test_superuser, test_rank_kingdom
+) -> TaxonName:
+    """
+    Taxon Name for testing
+    """
+    now = datetime.datetime.utcnow()
+    return create_taxon_name(
+        "Animalia", now, test_db, test_kingdom, test_superuser, test_rank_kingdom
+    )
+
+
+@pytest.fixture
+def test_chordata(
+    test_db, test_kingdom, test_publication, test_superuser, test_rank_phylum
+) -> TaxonName:
+    """
+    Taxon Name for testing
+    """
+    now = datetime.datetime.utcnow()
+    return create_taxon_name(
+        "Chordata", now, test_db, test_kingdom, test_superuser, test_rank_phylum
+    )
+
+
+@pytest.fixture
+def test_mammalia(
+    test_db, test_kingdom, test_publication, test_superuser, test_rank_class
+) -> TaxonName:
+    """
+    Taxon Name for testing
+    """
+    now = datetime.datetime.utcnow()
+    return create_taxon_name(
+        "Mammalia", now, test_db, test_kingdom, test_superuser, test_rank_class
+    )
+
+
+@pytest.fixture
+def test_carnivora(
+    test_db, test_kingdom, test_publication, test_superuser, test_rank_class
+) -> TaxonName:
+    """
+    Taxon Name for testing
+    """
+    now = datetime.datetime.utcnow()
+    return create_taxon_name(
+        "Carnivora", now, test_db, test_kingdom, test_superuser, test_rank_class
+    )
+
+
+def create_taxon_name(name, now, test_db, test_kingdom, test_superuser, rank):
+    taxon_name = TaxonName(
+        kingdom_id=test_kingdom.kingdom_id,
+        rank_id=rank.taxon_rank_id,
+        is_current=True,
+        validated=True,
+        genus=name,
+        updated_by=test_superuser.user_id,
+        updated_on=now,
+        created_by=test_superuser.user_id,
+        created_on=now,
+    )
+    test_db.add(taxon_name)
+    test_db.commit()
+    return taxon_name
+
+
+@pytest.fixture
+def test_animal(
+    test_db, test_kingdom, test_taxon_rank, test_publication, test_superuser
+) -> TaxonName:
+    """
+    Taxon Name for testing
+    """
+
+    now = datetime.datetime.utcnow()
+    taxon_name = TaxonName(
+        kingdom_id=test_kingdom.kingdom_id,
+        rank_id=test_taxon_rank.taxon_rank_id,
+        is_current=True,
+        validated=True,
+        updated_by=test_superuser.user_id,
+        updated_on=now,
+        created_by=test_superuser.user_id,
+        created_on=now,
+    )
+    test_db.add(taxon_name)
+    test_db.commit()
+    return taxon_name
+
+
+@pytest.fixture
 def test_taxon_name_2(
     test_db, test_kingdom, test_taxon_rank, test_publication, test_superuser
 ) -> TaxonName:
@@ -540,6 +633,67 @@ def test_taxon_rank(test_db, test_kingdom, test_superuser) -> TaxonRank:
         uninomial=False,
         updated_by=test_superuser.user_id,
         updated_on=now,
+        created_by=test_superuser.user_id,
+        created_on=now,
+    )
+    test_db.add(taxon_rank)
+    test_db.commit()
+    return taxon_rank
+
+
+@pytest.fixture
+def test_rank_kingdom(test_db, test_kingdom, test_superuser) -> TaxonRank:
+    """
+    Taxon Rank for testing
+    """
+
+    return create_rank(None, "Kingdom", test_db, test_kingdom, test_superuser)
+
+
+@pytest.fixture
+def test_rank_phylum(
+    test_db, test_kingdom, test_superuser, test_rank_kingdom
+) -> TaxonRank:
+    """
+    Taxon Rank for testing
+    """
+
+    return create_rank(
+        test_rank_kingdom, "Phylum", test_db, test_kingdom, test_superuser
+    )
+
+
+@pytest.fixture
+def test_rank_class(
+    test_db, test_kingdom, test_superuser, test_rank_phylum
+) -> TaxonRank:
+    """
+    Taxon Rank for testing
+    """
+
+    return create_rank(test_rank_phylum, "Class", test_db, test_kingdom, test_superuser)
+
+
+@pytest.fixture
+def test_rank_order(
+    test_db, test_kingdom, test_superuser, test_rank_class
+) -> TaxonRank:
+    """
+    Taxon Rank for testing
+    """
+
+    return create_rank(test_rank_class, "Order", test_db, test_kingdom, test_superuser)
+
+
+def create_rank(parent, rank_name, test_db, test_kingdom, test_superuser):
+    now = datetime.datetime.utcnow()
+    taxon_rank = TaxonRank(
+        kingdom_id=test_kingdom.kingdom_id,
+        rank_name=rank_name,
+        uninomial=False,
+        updated_by=test_superuser.user_id,
+        updated_on=now,
+        direct_parent_rank=parent,
         created_by=test_superuser.user_id,
         created_on=now,
     )
