@@ -6,6 +6,7 @@ import {
   SimpleShowLayout,
   TextField,
 } from 'react-admin';
+import TaxonHierarchy from '../Taxon_names/TaxonHierarchy';
 
 const Aside = () => (
   <Box m="0 0 1em 1em">
@@ -22,6 +23,7 @@ const Aside = () => (
         <DateField source="updated_on" showTime />
       </SimpleShowLayout>
     </Card>
+    <TaxonHierarchy />
   </Box>
 );
 
