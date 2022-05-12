@@ -6,12 +6,12 @@ import {
   SimpleShowLayout,
   TextField,
 } from 'react-admin';
+import Aside from '../shared/Aside';
 
 export const UserShow: FC = (props) => {
   return (
-    <Show {...props}>
+    <Show aside={<Aside />} {...props}>
       <SimpleShowLayout>
-        <NumberField source="id" />
         <TextField source="email" />
         <TextField source="first_name" />
         <TextField source="last_name" />

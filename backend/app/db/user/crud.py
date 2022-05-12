@@ -31,6 +31,8 @@ class UserCrud(crud.Crud):
             email=user.email,
             is_active=user.is_active,
             hashed_password=hashed_password,
+            created_by=user.created_by,
+            updated_by=user.updated_by,
         )
         db.add(db_user)
         db.commit()
