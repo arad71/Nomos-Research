@@ -9,7 +9,6 @@ import {
   TextField,
   EditButton,
 } from 'react-admin';
-import FullNameField from '../shared/FullNameField';
 
 export const KingdomList: FC = (props) => {
   return (
@@ -19,11 +18,11 @@ export const KingdomList: FC = (props) => {
         <TextField source="kingdom_name" />
         <TextField source="kingdom_desc" />
         <ReferenceField source="created_by" reference="users">
-          <FullNameField source="last_name" />
+          <TextField source="full_name" />
         </ReferenceField>
         <DateField source="created_on" showTime />
         <ReferenceField source="updated_by" reference="users">
-          <FullNameField source="last_name" />
+          <TextField source="full_name" />
         </ReferenceField>
         <DateField source="updated_on" showTime />
         <EditButton />
