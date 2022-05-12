@@ -162,6 +162,10 @@ def test_calculated_fields(test_db, test_superuser):
             editor = row["editor"] or None
             assert taxon_name.editor == editor
             assert taxon_name.canonical_name == row["canonical_name"]
+            assert (
+                taxon_name.canonical_name_without_rank
+                == row["canonical_name_without_rank"]
+            )
             assert taxon_name.scientific_name == row["scientific_name"]
             assert (
                 taxon_name.formatted_scientific_name == row["formatted_scientific_name"]
