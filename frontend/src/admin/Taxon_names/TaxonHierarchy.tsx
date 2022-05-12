@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Card, TextField, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import RadioButtonUncheckedOutlinedIcon from '@material-ui/icons/RadioButtonUncheckedOutlined';
+import Circle from '@material-ui/icons/RadioButtonUncheckedOutlined';
 import { Labeled } from 'react-admin';
 
 const useStyles = makeStyles({
@@ -20,71 +20,76 @@ const TaxonHierarchy = () => {
         </Typography>
       </Box>
       <Box display={{ xs: 'block', sm: 'flex' }} justifyContent="flex-start">
-        <RadioButtonUncheckedOutlinedIcon />
-        <Box borderLeft="2px solid #777" marginLeft="-0.8em" paddingLeft="1em">
+        <Circle fontSize="small" />
+        <Box
+          borderLeft="2px solid #777"
+          marginLeft="-0.65em"
+          marginTop="0.2em"
+          paddingLeft="1em"
+        >
           <Labeled label="Kingdom">
             <Typography variant="body2" gutterBottom>
-              WA Museum Welshpool
+              Animalia
             </Typography>
           </Labeled>
         </Box>
       </Box>
       <Box display={{ xs: 'block', sm: 'flex' }} justifyContent="flex-start">
-        <RadioButtonUncheckedOutlinedIcon />
-        <Box borderLeft="2px solid #777" marginLeft="-0.8em" paddingLeft="1em">
-          <Labeled label="Type specimen location">
+        <Circle fontSize="small" />
+        <Box borderLeft="2px solid #777" marginLeft="-0.65em" paddingLeft="1em">
+          <Labeled label="Phylum">
             <Typography variant="body2" gutterBottom>
-              WA Museum Welshpool
+              Chordata
             </Typography>
           </Labeled>
         </Box>
       </Box>
       <Box display={{ xs: 'block', sm: 'flex' }} justifyContent="flex-start">
-        <RadioButtonUncheckedOutlinedIcon />
-        <Box borderLeft="2px solid #777" marginLeft="-0.8em" paddingLeft="1em">
-          <Labeled label="Type specimen location">
+        <Circle fontSize="small" />
+        <Box borderLeft="2px solid #777" marginLeft="-0.65em" paddingLeft="1em">
+          <Labeled label="Class">
             <Typography variant="body2" gutterBottom>
-              WA Museum Welshpool
+              Aves
             </Typography>
           </Labeled>
         </Box>
       </Box>
       <Box display={{ xs: 'block', sm: 'flex' }} justifyContent="flex-start">
-        <RadioButtonUncheckedOutlinedIcon />
-        <Box borderLeft="2px solid #777" marginLeft="-0.8em" paddingLeft="1em">
-          <Labeled label="Type specimen location">
+        <Circle fontSize="small" />
+        <Box borderLeft="2px solid #777" marginLeft="-0.65em" paddingLeft="1em">
+          <Labeled label="Order">
             <Typography variant="body2" gutterBottom>
-              WA Museum Welshpool
+              Psittaciformes
             </Typography>
           </Labeled>
         </Box>
       </Box>
       <Box display={{ xs: 'block', sm: 'flex' }} justifyContent="flex-start">
-        <RadioButtonUncheckedOutlinedIcon />
-        <Box borderLeft="2px solid #777" marginLeft="-0.8em" paddingLeft="1em">
-          <Labeled label="Type specimen location">
+        <Circle fontSize="small" />
+        <Box borderLeft="2px solid #777" marginLeft="-0.65em" paddingLeft="1em">
+          <Labeled label="Family">
             <Typography variant="body2" gutterBottom>
-              WA Museum Welshpool
+              Cacatuidae
             </Typography>
           </Labeled>
         </Box>
       </Box>
       <Box display={{ xs: 'block', sm: 'flex' }} justifyContent="flex-start">
-        <RadioButtonUncheckedOutlinedIcon />
-        <Box borderLeft="2px solid #777" marginLeft="-0.8em" paddingLeft="1em">
-          <Labeled label="Type specimen location">
+        <Circle fontSize="small" />
+        <Box borderLeft="2px solid #777" marginLeft="-0.65em" paddingLeft="1em">
+          <Labeled label="Genus">
             <Typography variant="body2" gutterBottom>
-              WA Museum Welshpool
+              Calyptorhynchus
             </Typography>
           </Labeled>
         </Box>
       </Box>
       <Box display={{ xs: 'block', sm: 'flex' }} justifyContent="flex-start">
-        <RadioButtonUncheckedOutlinedIcon />
-        <Box marginLeft="-0.8em" paddingLeft="1em">
-          <Labeled label="Type specimen location">
+        <Circle fontSize="small" />
+        <Box marginLeft="-0.65em" paddingLeft="1em">
+          <Labeled label="Species">
             <Typography variant="body2" gutterBottom>
-              WA Museum Welshpool
+              banksii
             </Typography>
           </Labeled>
         </Box>
