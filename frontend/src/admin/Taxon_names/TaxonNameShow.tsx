@@ -1,7 +1,6 @@
 // in src/users.js
 import React, { FC } from 'react';
 import {
-  DateField,
   NumberField,
   ReferenceField,
   Show,
@@ -10,7 +9,6 @@ import {
   SelectField,
   TextField,
   BooleanField,
-  RichTextField,
   Labeled,
 } from 'react-admin';
 import Aside from '../shared/Aside';
@@ -18,7 +16,6 @@ import NaturalisedStatus from './NaturalisedStatus';
 import PublicationStatus from './PublicationStatus';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, Typography } from '@material-ui/core';
-import TaxonHierarchy from './TaxonHierarchy';
 
 const useStyles = makeStyles({
   bold: {
