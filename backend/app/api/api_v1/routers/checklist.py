@@ -41,6 +41,8 @@ async def curation_checklist(
             kingdom.kingdom_name.label("nomenclaturalCode"),
             original_name.scientific_name.label("scientificName"),
             original_name.author.label("scientificNameAuthorship"),
+            original_name.canonical_name.label("canonicalName"),
+            original_name.canonical_name_without_rank.label("canonicalNameWithoutRank"),
             original_name.is_current.label("isCurrent"),
             TaxonRank.rank_name.label("taxonRank"),
             original_name.validated,
