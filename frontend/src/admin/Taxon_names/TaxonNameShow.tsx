@@ -77,7 +77,7 @@ export const TaxonNameShow: FC = (props) => {
             </Box>
             <Box mr={{ xs: 0, sm: '1em' }}>
               <Labeled label="Year">
-                <NumberField source="form_desc_yr" />
+                <TextField source="form_desc_yr" />
               </Labeled>
             </Box>
           </Box>
