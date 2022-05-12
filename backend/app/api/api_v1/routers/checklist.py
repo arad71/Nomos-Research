@@ -42,12 +42,7 @@ async def curation_checklist(
             original_name.scientific_name.label("scientificName"),
             original_name.author.label("scientificNameAuthorship"),
             original_name.canonical_name.label("canonicalName"),
-            func.CONCAT_WS(
-                " ",
-                original_name.genus,
-                original_name.specific_epithet,
-                original_name.infraspecific_epithet,
-            ).label("canonicalNameWithoutRank"),
+            original_name.canonical_name_without_rank.label("canonicalNameWithoutRank"),
             original_name.is_current.label("isCurrent"),
             TaxonRank.rank_name.label("taxonRank"),
             original_name.validated,
