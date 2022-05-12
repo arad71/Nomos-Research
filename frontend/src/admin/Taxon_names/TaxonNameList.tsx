@@ -24,6 +24,7 @@ import {
   useSelectedColumns,
 } from '@react-admin/ra-preferences';
 import { TaxonNameFilters } from './TaxonNameFilters';
+import ResetPreferenceButton from '../shared/ResetPreferenceButton';
 
 const postListColumns = {
   id: <TextField source="id" />,
@@ -148,6 +149,11 @@ const Actions = () => (
     <SelectColumnsButton
       preference={TAXON_NAMES_PREFERENCE}
       columns={postListColumns}
+    />
+    <ResetPreferenceButton
+      label="Reset"
+      preferenceName={TAXON_NAMES_PREFERENCE}
+      defaultValue={Array.from(includeColumns)}
     />
   </TopToolbar>
 );
