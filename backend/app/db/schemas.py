@@ -12,3 +12,13 @@ class TableBase(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class TableBaseUser(BaseModel):
+    updated_by: Optional[int]
+    updated_on: Optional[datetime]
+    created_by: Optional[int]
+    created_on: Optional[datetime]
+
+    class Config:
+        orm_mode = True

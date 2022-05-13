@@ -54,8 +54,8 @@ def ensure_user_has_role(db, role_name, user):
         user_role_in = UserRoleCreate(
             user_id=user.user_id,
             role_id=role.role_id,
-            created_by=1,
-            updated_by=1,
+            created_by=settings.FIRST_SUPER_ADMIN_USER_ID,
+            updated_by=settings.FIRST_SUPER_ADMIN_USER_ID,
         )
         UserRoleCrud.create_item(db, item=user_role_in)
 
@@ -72,8 +72,8 @@ def ensure_user(db, email, first_name, last_name, password):
             password=password,
             first_name=first_name,
             last_name=last_name,
-            created_by=1,
-            updated_by=1,
+            created_by=settings.FIRST_SUPER_ADMIN_USER_ID,
+            updated_by=settings.FIRST_SUPER_ADMIN_USER_ID,
         )
         user = user_crud.create_item(db=db, user=user_in)
     return user

@@ -124,6 +124,8 @@ def test_user(test_db) -> User:
         email="fake@email.com",
         hashed_password=get_password_hash(),
         is_active=True,
+        created_by=None,
+        updated_by=None,
     )
     test_db.add(user)
     test_db.commit()
@@ -131,39 +133,41 @@ def test_user(test_db) -> User:
 
 
 @pytest.fixture
-def test_superuser(test_db) -> User:
+def test_superuser(test_db, test_user) -> User:
     """
     Superuser for testing
     """
-    return create_user_with_role(Role.SUPER_ADMIN, test_db)
+    return create_user_with_role(Role.SUPER_ADMIN, test_db, test_user)
 
 
 @pytest.fixture
-def test_reader(test_db) -> User:
-    return create_user_with_role(Role.READER, test_db)
+def test_reader(test_db, test_user) -> User:
+    return create_user_with_role(Role.READER, test_db, test_user)
 
 
 @pytest.fixture
-def test_officer(test_db) -> User:
-    return create_user_with_role(Role.OFFICER, test_db)
+def test_officer(test_db, test_user) -> User:
+    return create_user_with_role(Role.OFFICER, test_db, test_user)
 
 
 @pytest.fixture
-def test_manager(test_db) -> User:
-    return create_user_with_role(Role.MANAGER, test_db)
+def test_manager(test_db, test_user) -> User:
+    return create_user_with_role(Role.MANAGER, test_db, test_user)
 
 
 @pytest.fixture
-def test_app_support(test_db) -> User:
-    return create_user_with_role(Role.APPLICATION_SUPPORT, test_db)
+def test_app_support(test_db, test_user) -> User:
+    return create_user_with_role(Role.APPLICATION_SUPPORT, test_db, test_user)
 
 
-def create_user_with_role(role, test_db) -> User:
+def create_user_with_role(role, test_db, test_user) -> User:
     role_name = role["name"]
     user = User(
         email=f"{role_name}@email.com",
         hashed_password=get_password_hash(),
         is_active=True,
+        created_by=test_user.user_id,
+        updated_by=test_user.user_id
     )
     test_db.add(user)
     test_db.commit()
@@ -172,7 +176,12 @@ def create_user_with_role(role, test_db) -> User:
     test_db.add(role)
     test_db.commit()
     test_db.refresh(role)
-    user_role = UserRoleModel(role_id=role.role_id, user_id=user.user_id)
+    user_role = UserRoleModel(
+        role_id=role.role_id,
+        user_id=user.user_id,
+        created_by=test_user.user_id,
+        updated_by=test_user.user_id,
+    )
     test_db.add(user_role)
     test_db.commit()
     return user
@@ -195,8 +204,13 @@ def test_role2(test_db):
 
 
 @pytest.fixture
-def test_user_role(test_db, test_user, test_role):
-    user_role = UserRoleModel(user_id=test_user.user_id, role_id=test_role.role_id)
+def test_user_role(test_db, test_user, test_role, test_superuser):
+    user_role = UserRoleModel(
+        user_id=test_user.user_id,
+        role_id=test_role.role_id,
+        created_by=test_superuser.user_id,
+        updated_by=test_superuser.user_id,
+    )
     test_db.add(user_role)
     test_db.commit()
     return user_role

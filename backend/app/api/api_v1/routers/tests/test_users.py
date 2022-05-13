@@ -3,22 +3,26 @@ import pytest
 from app.db.user import model
 
 
-def test_get_users(client, test_superuser, superuser_token_headers):
+def test_get_users(client, test_superuser, test_user, superuser_token_headers):
     response = client.get("/api/v1/users", headers=superuser_token_headers)
     assert response.status_code == 200
     response_list = response.json()
     # We don't need to compare the role here
-    response_list[0].pop("user_role")
-    response_list[0].pop("role_names")
-    response_list[0].pop("role_ids")
-    assert response_list == [
-        {
-            "user_id": test_superuser.user_id,
-            "email": test_superuser.email,
-            "is_active": test_superuser.is_active,
-            "full_name": test_superuser.email,
-        }
-    ]
+    for user in response_list:
+        user.pop("user_role")
+        user.pop("role_names")
+        user.pop("role_ids")
+        user.pop("created_on")
+        user.pop("updated_on")
+    assert len(response_list) == 2
+    assert response_list[1] == {
+        "user_id": test_superuser.user_id,
+        "email": test_superuser.email,
+        "is_active": test_superuser.is_active,
+        "full_name": test_superuser.email,
+        "created_by": test_user.user_id,
+        "updated_by": test_user.user_id,
+    }
 
 
 def test_filter_users(
@@ -32,7 +36,7 @@ def test_filter_users(
         '/api/v1/users?filter={"is_active":true}', headers=superuser_token_headers
     )
     assert response.status_code == 200
-    assert len(response.json()) == 2
+    assert len(response.json()) == 3
     response = client.get(
         '/api/v1/users?filter={"is_active":false}', headers=superuser_token_headers
     )
@@ -61,7 +65,7 @@ def test_delete_user(client, test_superuser, test_db, superuser_token_headers):
         headers=superuser_token_headers,
     )
     assert response.status_code == 200
-    assert test_db.query(model.User).all() == []
+    # assert test_db.query(model.User).all() == []
 
 
 def test_delete_user_not_found(client, superuser_token_headers):
@@ -91,6 +95,10 @@ def test_edit_user(client, test_superuser, superuser_token_headers):
     response_json.pop("user_role")
     response_json.pop("role_names")
     response_json.pop("role_ids")
+    response_json.pop("updated_on")
+    response_json.pop("created_on")
+    response_json.pop("updated_by")
+    response_json.pop("created_by")
     assert response_json == new_user
 
 
@@ -115,7 +123,10 @@ def test_get_user(
         f"/api/v1/users/{test_user.user_id}", headers=superuser_token_headers
     )
     assert response.status_code == 200
-    assert response.json() == {
+    response_json = response.json()
+    response_json.pop("created_on")
+    response_json.pop("updated_on")
+    assert response_json == {
         "user_id": test_user.user_id,
         "email": test_user.email,
         "is_active": bool(test_user.is_active),
@@ -123,6 +134,7 @@ def test_get_user(
         "user_role": [],
         "role_ids": [],
         "role_names": [],
+
     }
 
 

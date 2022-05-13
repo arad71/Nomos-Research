@@ -25,7 +25,12 @@ def test_get_user_role(client, test_user_role, reader_token_headers):
 
 
 def test_create_user_role(client, app_support_token_headers, test_user, test_role):
-    data = {"user_id": test_user.user_id, "role_id": test_role.role_id}
+    data = {
+        "user_id": test_user.user_id,
+        "role_id": test_role.role_id,
+        "created_by": test_user.user_id,
+        "updated_by": test_user.user_id,
+    }
     response = client.post(
         f"/api/v1/user_roles", headers=app_support_token_headers, json=data
     )
@@ -145,7 +150,12 @@ def test_app_support_permissions(
     )
     assert response.status_code == status.HTTP_200_OK
 
-    json = {"user_id": test_user.user_id, "role_id": test_role.role_id}
+    json = {
+        "user_id": test_user.user_id,
+        "role_id": test_role.role_id,
+        "created_by": test_user.user_id,
+        "updated_by": test_user.user_id,
+    }
     response = client.post(
         "/api/v1/user_roles", headers=app_support_token_headers, json=json
     )
@@ -177,7 +187,12 @@ def test_super_admin_permissions(
     )
     assert response.status_code == status.HTTP_200_OK
 
-    json = {"user_id": test_user.user_id, "role_id": test_role.role_id}
+    json = {
+        "user_id": test_user.user_id,
+        "role_id": test_role.role_id,
+        "created_by": test_user.user_id,
+        "updated_by": test_user.user_id,
+    }
     response = client.post(
         "/api/v1/user_roles", headers=superuser_token_headers, json=json
     )

@@ -67,10 +67,6 @@ class ImportUser(DataImportBase):
             "last_name": self.map_last_name(row["FULL_NAME"]),
             "hashed_password": self.generate_password(),
             "legacy_id_name": row["USERNAME"],
-            "created_by": self.current_user,
-            "updated_by": self.map_row_by_unique_key(
-                UserModel, "legacy_id_name", row["UPDATED_BY"], "user_id"
-            ),
             "updated_on": row["UPDATED_ON"],
         }
 
