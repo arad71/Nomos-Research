@@ -25,8 +25,6 @@ class UserOut(UserBase):
 
 class UserCreate(UserBase):
     password: str
-    created_by: int
-    updated_by: int
 
     class Config:
         orm_mode = True

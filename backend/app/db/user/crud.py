@@ -31,8 +31,6 @@ class UserCrud(crud.Crud):
             email=user.email,
             is_active=user.is_active,
             hashed_password=hashed_password,
-            created_by=user.created_by,
-            updated_by=user.updated_by,
         )
         db.add(db_user)
         db.commit()
@@ -47,6 +45,8 @@ class UserCrud(crud.Crud):
         if not db_user:
             raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")
         update_data = user.dict(exclude_unset=True)
+        update_data.pop("role_names", None)
+        update_data.pop("role_ids", None)
 
         if "password" in update_data:
             update_data["hashed_password"] = get_password_hash(user.password)
