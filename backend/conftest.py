@@ -635,5 +635,14 @@ def app_support_token_headers(
 
 
 @pytest.fixture
-def api_key(monkeypatch):
-    monkeypatch.setenv("API_KEY_CHECKLIST", "test")
+def checklist_api_key(monkeypatch):
+    key = "checklist_api_key"
+    monkeypatch.setenv("API_KEY_CHECKLIST", key)
+    return key
+
+
+@pytest.fixture
+def import_api_key(monkeypatch):
+    key = "import_api_key"
+    monkeypatch.setenv("IMPORT_API_KEY_TEST", key)
+    return key

@@ -14,19 +14,17 @@ interface Props {
 }
 
 const useStyles = makeStyles(() => ({
-  card: {
-    border: '1px solid #D3D3D3',
-    borderRadius: '20px',
-    height: '90px',
-    backgroundImage:
-      'linear-gradient(to right, #E9EDEA 20%, rgba(0,0,0,0) 20%)',
-  },
   link: {
     textDecoration: 'none',
     color: 'inherit',
   },
   icon: {
-    paddingLeft: '8px',
+    background: '#E9EDEA',
+    display: 'flex',
+    alignItems: 'center',
+  },
+  text: {
+    padding: '1rem',
   },
 }));
 
@@ -34,19 +32,18 @@ const CardWithIcon = (props: Props) => {
   const classes = useStyles();
   const { icon, title, subtitle, to, children } = props;
   return (
-    <Card className={classes.card}>
+    <Card>
       <Link className={classes.link} to={to}>
         <Box
           sx={{
             overflow: 'inherit',
-            padding: '16px',
             display: 'flex',
             justifyContent: 'space-between',
-            alignItems: 'center',
+            alignItems: 'stretch',
           }}
         >
           <div className={classes.icon}>{icon}</div>
-          <Box textAlign="right">
+          <Box className={classes.text} textAlign="right">
             <Typography variant="h5" component="h2">
               {title}
             </Typography>

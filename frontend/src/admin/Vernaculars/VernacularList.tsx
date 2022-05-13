@@ -10,22 +10,9 @@ import {
   RichTextField,
   SelectField,
   TextField,
-  useRecordContext,
   BooleanField,
 } from 'react-admin';
 import LanguageType from './LanguageType';
-
-const FullNameField = (props: any) => {
-  const record = useRecordContext(props);
-
-  return (
-    <span>
-      {record.first_name} {record.last_name}
-    </span>
-  );
-};
-
-FullNameField.defaultProps = { label: 'Name' };
 
 export const VernacularList: FC = (props) => (
   <List {...props} sort={{ field: 'taxon_name___scientific_name' }}>
@@ -46,11 +33,11 @@ export const VernacularList: FC = (props) => (
       <BooleanField source="enabled" />
       <NumberField source="sort_order" />
       <ReferenceField source="created_by" reference="users">
-        <FullNameField source="last_name" />
+        <TextField source="full_name" />
       </ReferenceField>
       <DateField source="created_on" showTime />
       <ReferenceField source="updated_by" reference="users">
-        <FullNameField source="last_name" />
+        <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" showTime />
       <EditButton />
