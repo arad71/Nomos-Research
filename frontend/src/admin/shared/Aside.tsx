@@ -6,24 +6,31 @@ import {
   SimpleShowLayout,
   TextField,
 } from 'react-admin';
-import FullNameField from './FullNameField';
+import TaxonHierarchy from '../Taxon_names/TaxonHierarchy';
+import { useLocation } from 'react-router-dom';
 
-const Aside = () => (
-  <Box m="0 0 1em 1em">
-    <Card>
-      <SimpleShowLayout>
-        <TextField source="id" />
-        <ReferenceField source="created_by" reference="users" label="Created">
-          <FullNameField source="last_name" />
-        </ReferenceField>
-        <DateField source="created_on" showTime />
-        <ReferenceField source="updated_by" reference="users">
-          <FullNameField source="last_name" />
-        </ReferenceField>
-        <DateField source="updated_on" showTime />
-      </SimpleShowLayout>
-    </Card>
-  </Box>
-);
+const Aside = () => {
+  const location = useLocation();
+  const currPath = location.pathname.split('/')[1];
+  const isTaxonNames = currPath == 'taxon_names';
+  return (
+    <Box m="0 0 1em 1em">
+      <Card>
+        <SimpleShowLayout>
+          <TextField source="id" />
+          <ReferenceField source="created_by" reference="users" label="Created">
+            <TextField source="full_name" />
+          </ReferenceField>
+          <DateField source="created_on" showTime />
+          <ReferenceField source="updated_by" reference="users">
+            <TextField source="full_name" />
+          </ReferenceField>
+          <DateField source="updated_on" showTime />
+        </SimpleShowLayout>
+      </Card>
+      {isTaxonNames && <TaxonHierarchy />}
+    </Box>
+  );
+};
 
 export default Aside;

@@ -11,7 +11,6 @@ import {
   TextField,
   BooleanField,
 } from 'react-admin';
-import FullNameField from '../shared/FullNameField';
 
 export const PublicationList: FC = (props) => (
   <List {...props} sort={{ field: 'publication' }}>
@@ -62,7 +61,7 @@ export const PublicationList: FC = (props) => (
       </ReferenceField>
       <DateField source="created_on" showTime />
       <ReferenceField source="updated_by" reference="users">
-        <FullNameField source="last_name" />
+        <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" showTime />
       <EditButton />
