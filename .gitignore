@@ -12,3 +12,5 @@ __pycache__/
 
 # too much personalisations to share
 .idea/
+/backend/nomos_sample_data.xlsx
+.~lock*
