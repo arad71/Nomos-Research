@@ -10,7 +10,6 @@ import {
   RichTextField,
   TextField,
 } from 'react-admin';
-import FullNameField from '../shared/FullNameField';
 
 export const HierarchyList: FC = (props) => (
   <List {...props} sort={{ field: 'parent___scientific_name' }}>
@@ -38,11 +37,11 @@ export const HierarchyList: FC = (props) => (
         <RichTextField source="formatted_scientific_name" />
       </ReferenceField>
       <ReferenceField source="created_by" reference="users">
-        <FullNameField source="last_name" />
+        <TextField source="full_name" />
       </ReferenceField>
       <DateField source="created_on" showTime />
       <ReferenceField source="updated_by" reference="users">
-        <FullNameField source="last_name" />
+        <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" showTime />
       <EditButton />
