@@ -167,7 +167,7 @@ def create_user_with_role(role, test_db, test_user) -> User:
         hashed_password=get_password_hash(),
         is_active=True,
         created_by=test_user.user_id,
-        updated_by=test_user.user_id
+        updated_by=test_user.user_id,
     )
     test_db.add(user)
     test_db.commit()

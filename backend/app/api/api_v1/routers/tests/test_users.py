@@ -134,7 +134,6 @@ def test_get_user(
         "user_role": [],
         "role_ids": [],
         "role_names": [],
-
     }
 
 
