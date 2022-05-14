@@ -92,8 +92,12 @@ def upgrade():
             comment="The date this record was created on",
         ),
     )
-    op.create_foreign_key("created_fk", "user_role", "user", ["created_by"], ["user_id"])
-    op.create_foreign_key("updated_fk", "user_role", "user", ["updated_by"], ["user_id"])
+    op.create_foreign_key(
+        "created_fk", "user_role", "user", ["created_by"], ["user_id"]
+    )
+    op.create_foreign_key(
+        "updated_fk", "user_role", "user", ["updated_by"], ["user_id"]
+    )
     # ### end Alembic commands ###
 
 
