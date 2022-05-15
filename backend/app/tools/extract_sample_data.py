@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # script to extract sample data from the database
-import io
 
 import pandas as pd
 from pandas import ExcelWriter
@@ -34,7 +33,7 @@ for table_name in tables:
     # Extract limit rows or all rows if there are fewer than limit, unless this is
     # taxon_name table
     table_df.info(verbose=True, show_counts=True)
-    n = 500 if table_name is "taxon_name" else limit
+    n = 500 if table_name == "taxon_name" else limit
     n = min(n, len(table_df.index))
     sample = table_df.sample(n=n, random_state=1)
     sample.to_excel(writer, sheet_name=table_name)
