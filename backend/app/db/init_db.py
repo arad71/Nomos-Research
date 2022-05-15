@@ -72,8 +72,8 @@ def ensure_user(db, email, first_name, last_name, password):
             password=password,
             first_name=first_name,
             last_name=last_name,
-            created_by=settings.FIRST_SUPER_ADMIN_USER_ID,
-            updated_by=settings.FIRST_SUPER_ADMIN_USER_ID,
         )
-        user = user_crud.create_item(db=db, user=user_in)
+        user = user_crud.create_item(
+            db=db, user=user_in, current_user=settings.FIRST_SUPER_ADMIN_USER_ID
+        )
     return user

@@ -52,8 +52,8 @@ class ImportUser(DataImportBase):
                     "last_name": None,
                     "hashed_password": self.generate_password(),
                     "legacy_id_name": s,
-                    "created_by": 1,
-                    "updated_by": 1,
+                    "created_by": self.current_user,
+                    "updated_by": self.current_user,
                 },
                 UserModel,
                 f"uc_{UserModel.__tablename__}_legacy_id",
@@ -67,6 +67,8 @@ class ImportUser(DataImportBase):
             "last_name": self.map_last_name(row["FULL_NAME"]),
             "hashed_password": self.generate_password(),
             "legacy_id_name": row["USERNAME"],
+            "created_by": self.current_user,
+            "updated_by": self.current_user,
         }
 
     def import_row(self, row):

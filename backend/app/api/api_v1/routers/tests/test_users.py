@@ -73,7 +73,7 @@ def test_delete_user_not_found(client, superuser_token_headers):
     assert response.status_code == 404
 
 
-def test_edit_user(client, test_superuser, superuser_token_headers):
+def test_edit_user(client, test_user, test_superuser, superuser_token_headers):
     new_user = {
         "email": "newemail@email.com",
         "is_active": False,
@@ -90,6 +90,8 @@ def test_edit_user(client, test_superuser, superuser_token_headers):
     assert response.status_code == 200
     new_user["user_id"] = test_superuser.user_id
     new_user["full_name"] = "Joe Smith"
+    new_user["created_by"] = test_user.user_id
+    new_user["updated_by"] = test_superuser.user_id
     new_user.pop("password")
     response_json = response.json()
     response_json.pop("user_role")
@@ -97,8 +99,6 @@ def test_edit_user(client, test_superuser, superuser_token_headers):
     response_json.pop("role_ids")
     response_json.pop("updated_on")
     response_json.pop("created_on")
-    response_json.pop("updated_by")
-    response_json.pop("created_by")
     assert response_json == new_user
 
 
