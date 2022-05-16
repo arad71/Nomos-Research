@@ -29,7 +29,7 @@ from app.db.vernacular.dataimport import ImportVernacular
 def get_admin_id(db: SessionLocal):
     admin_email = os.getenv("ADMIN_EMAIL", "admin@taxman.com")
     admin = UserCrud.get_user_by_email(db=db, email=admin_email)
-    return admin.user_id
+    return admin.user_id if admin else None
 
 
 def trigger_calculated_fields(db):
