@@ -10,6 +10,8 @@ import {
   SingleFieldList,
   TextField,
   ReferenceArrayField,
+  ReferenceField,
+  DateField,
 } from 'react-admin';
 import { makeStyles } from '@material-ui/core';
 import { FilterSidebar } from './FilterSidebar';
@@ -56,6 +58,10 @@ export const UserList: FC = (props) => {
           </SingleFieldList>
         </ReferenceArrayField>
         <BooleanField source="is_active" />
+        <ReferenceField source="updated_by" reference="users">
+          <TextField source="full_name" />
+        </ReferenceField>
+        <DateField source="updated_on" showTime />
         <EditButton className={classes.textFonts} />
       </Datagrid>
     </List>
