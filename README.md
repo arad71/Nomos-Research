@@ -70,6 +70,19 @@ Once you have set up the initial database you can import the data from WA Census
 docker-compose run --rm backend python app/import.py
 ```
 
+### Example data
+
+Extracting example data can be performed using:
+
+```bash
+docker-compose exec backend app/tools/extract_sample_data.py
+```
+
+The example data file [backend/nomos_sample_data.xlsx](backend/nomos_sample_data.xlsx) can then be uploaded to
+[google drive](https://drive.google.com/drive/u/1/folders/1i5ID5i6yodmXkK5FjFZsXQJT_gfToIfL).
+
+
+
 ### Rebuilding containers:
 
 ```

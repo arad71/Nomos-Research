@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, Depends, Response
 
 from app.api.dependencies.range_query import RangeQueryParameter
 from app.core.auth import authorize, get_current_active_user
