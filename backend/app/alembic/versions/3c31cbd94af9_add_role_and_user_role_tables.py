@@ -69,18 +69,18 @@ def downgrade():
         "user",
         sa.Column("is_superuser", sa.BOOLEAN(), autoincrement=False, nullable=True),
     )
-    session = Session(bind=op.get_bind())
-    user_roles = (
-        session.query(UserRole)
-        .filter(UserRole.role.has(name=Role.SUPER_ADMIN["name"]))
-        .all()
+    op.execute(
+        """
+UPDATE "user"
+SET is_superuser = TRUE
+WHERE user_id IN (SELECT DISTINCT user_id
+                  FROM user_role
+                           JOIN role r on user_role.role_id = r.role_id
+                  WHERE r.name = 'SUPER_ADMIN'
+                  )
+    """
     )
-    for user_role in user_roles:
-        op.execute(
-            'UPDATE "user" SET is_superuser = TRUE WHERE user_id ='
-            f" {user_role.user_id}",
-        )
-    session.execute('UPDATE "user" SET is_superuser = FALSE WHERE is_superuser IS NULL')
+    op.execute('UPDATE "user" SET is_superuser = FALSE WHERE is_superuser IS NULL')
     op.alter_column("user", "is_superuser", nullable=False)
     op.drop_table("user_role")
     op.drop_index(op.f("ix_role_name"), table_name="role")

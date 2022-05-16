@@ -79,11 +79,12 @@ async def user_details(
 async def user_create(
     user: UserCreate,
     db=Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Create a new user
     """
-    return UserCrud.create_item(db, user)
+    return UserCrud.create_item(db, user, current_user=current_user.user_id)
 
 
 @r.put(
@@ -103,6 +104,7 @@ async def user_edit(
     user_id: int,
     user: UserEdit,
     db=Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Update existing user
@@ -111,6 +113,7 @@ async def user_edit(
         db,
         user_id,
         user,
+        current_user=current_user.user_id,
     )
 
 

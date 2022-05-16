@@ -23,6 +23,7 @@ class UserCrud(crud.Crud):
         db: Session,
         user: schema.UserCreate,
         raise_exception: bool = True,
+        current_user: int = None,
     ):
         hashed_password = get_password_hash(user.password)
         db_user = User(
@@ -31,6 +32,8 @@ class UserCrud(crud.Crud):
             email=user.email,
             is_active=user.is_active,
             hashed_password=hashed_password,
+            created_by=current_user,
+            updated_by=current_user,
         )
         db.add(db_user)
         db.commit()
@@ -39,12 +42,21 @@ class UserCrud(crud.Crud):
 
     @classmethod
     def edit_item(
-        cls, db: Session, user_id: int, user: schema.UserEdit, **kwargs
+        cls,
+        db: Session,
+        user_id: int,
+        user: schema.UserEdit,
+        current_user: int = None,
+        **kwargs
     ) -> User:
         db_user = UserCrud.get_item(db, user_id)
         if not db_user:
             raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")
         update_data = user.dict(exclude_unset=True)
+        update_data.pop("role_names", None)
+        update_data.pop("role_ids", None)
+
+        update_data["updated_by"] = current_user
 
         if "password" in update_data:
             update_data["hashed_password"] = get_password_hash(user.password)

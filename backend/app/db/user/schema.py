@@ -1,4 +1,5 @@
 import typing as t
+from datetime import datetime
 from typing import Optional
 
 from pydantic import BaseModel, Field
@@ -41,6 +42,10 @@ class User(UserBase):
     user_id: int
     user_role: Optional[list[UserRole]]
     full_name: Optional[str]
+    updated_by: Optional[int]
+    updated_on: Optional[datetime]
+    created_by: Optional[int]
+    created_on: Optional[datetime]
 
     class Config:
         orm_mode = True
