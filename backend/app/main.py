@@ -1,9 +1,6 @@
-import subprocess
-
 import uvicorn
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from loguru import logger
 from starlette.requests import Request
 
 from app.api.api_v1.routers.auth import auth_router
