@@ -153,8 +153,6 @@ def test_app_support_permissions(
     json = {
         "user_id": test_user.user_id,
         "role_id": test_role.role_id,
-        "created_by": test_user.user_id,
-        "updated_by": test_user.user_id,
     }
     response = client.post(
         "/api/v1/user_roles", headers=app_support_token_headers, json=json
@@ -190,8 +188,6 @@ def test_super_admin_permissions(
     json = {
         "user_id": test_user.user_id,
         "role_id": test_role.role_id,
-        "created_by": test_user.user_id,
-        "updated_by": test_user.user_id,
     }
     response = client.post(
         "/api/v1/user_roles", headers=superuser_token_headers, json=json

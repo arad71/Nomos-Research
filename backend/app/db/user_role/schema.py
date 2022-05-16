@@ -16,8 +16,7 @@ class UserRoleBase(BaseModel):
 
 # Properties to receive via API on creation
 class UserRoleCreate(UserRoleBase):
-    created_by: int
-    updated_by: int
+    pass
 
 
 # Properties to receive via API on update
