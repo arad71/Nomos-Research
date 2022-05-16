@@ -59,9 +59,7 @@ def ensure_user_has_role(db, role_name, user):
             created_by=admin_id,
             updated_by=admin_id,
         )
-        UserRoleCrud.create_item(
-            db, item=user_role_in, current_user=admin_id
-        )
+        UserRoleCrud.create_item(db, item=user_role_in, current_user=admin_id)
 
 
 def ensure_user(db, email, first_name, last_name, password):
@@ -77,7 +75,5 @@ def ensure_user(db, email, first_name, last_name, password):
             first_name=first_name,
             last_name=last_name,
         )
-        user = user_crud.create_item(
-            db=db, user=user_in, current_user=get_admin_id(db)
-        )
+        user = user_crud.create_item(db=db, user=user_in, current_user=get_admin_id(db))
     return user
