@@ -1,10 +1,14 @@
 import {
+  EditProps,
   TabbedForm,
   FormTab,
   DateTimeInput,
   NumberInput,
+  NumberField,
+  DateField,
   ReferenceInput,
   required,
+  ReferenceManyField,
   RichTextField,
   SelectInput,
   TextField,
@@ -12,11 +16,16 @@ import {
   BooleanInput,
   NullableBooleanInput,
 } from 'react-admin';
-
+import {
+  EditableDatagrid,
+  RowForm,
+  RowFormProps,
+} from '@react-admin/ra-editable-datagrid';
 import React, { FC } from 'react';
 import NaturalisedStatus from './NaturalisedStatus';
 import PublicationStatus from './PublicationStatus';
 import { makeStyles } from '@material-ui/core/styles';
+import AuthorType from '../Citations/AuthorType';
 
 const useStyles = makeStyles({
   tablabel: {
@@ -24,7 +33,28 @@ const useStyles = makeStyles({
   },
 });
 
-export const TaxonNameCreateEdit: FC = (props) => {
+const CitationForm = (props: RowFormProps) => (
+  <RowForm {...props}>
+    <TextField source="id" disabled />
+    <ReferenceInput
+      source="taxon_name_id"
+      reference="taxon_names"
+      validate={required()}
+    >
+      <SelectInput optionText="scientific_name" />
+    </ReferenceInput>
+    <ReferenceInput
+      source="author_id"
+      reference="authors"
+      validate={required()}
+    >
+      <SelectInput optionText="abbreviation" />
+    </ReferenceInput>
+    <SelectInput source="author_type" choices={AuthorType} />
+    <NumberInput source="author_order" validate={required()} initialValue={0} />
+  </RowForm>
+);
+export const TaxonNameCreateEdit: FC = ({ id, ...props }: EditProps) => {
   const classes = useStyles();
   return (
     <TabbedForm {...props}>
@@ -84,6 +114,25 @@ export const TaxonNameCreateEdit: FC = (props) => {
         <TextInput source="external_id" />
         <TextInput source="family_code" />
         <TextField source="author" />
+        <ReferenceManyField
+          fullWidth
+          label="Authors"
+          reference="citations"
+          target="taxon_name_id"
+        >
+          <EditableDatagrid
+            undoable
+            createForm={<CitationForm initialValues={{ taxon_name_id: id }} />}
+            editForm={<CitationForm />}
+            rowClick="edit"
+            hasCreate
+          >
+            <TextField source="id" />
+            <TextField source="name" />
+            <NumberField source="price" label="Default Price" />
+            <DateField source="available_since" />
+          </EditableDatagrid>
+        </ReferenceManyField>
         <TextInput source="vernacular" />
         <TextField source="editor" />
         <SelectInput source="naturalised_status" choices={NaturalisedStatus} />
