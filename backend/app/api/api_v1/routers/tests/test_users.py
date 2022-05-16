@@ -14,14 +14,11 @@ def test_get_users(client, test_superuser, test_user, superuser_token_headers):
         user.pop("role_ids")
         user.pop("created_on")
         user.pop("updated_on")
-    assert len(response_list) == 2
-    assert response_list[1] == {
+    assert response_list[0] == {
         "user_id": test_superuser.user_id,
         "email": test_superuser.email,
         "is_active": test_superuser.is_active,
         "full_name": test_superuser.email,
-        "created_by": test_user.user_id,
-        "updated_by": test_user.user_id,
     }
 
 
@@ -36,7 +33,7 @@ def test_filter_users(
         '/api/v1/users?filter={"is_active":true}', headers=superuser_token_headers
     )
     assert response.status_code == 200
-    assert len(response.json()) == 3
+    assert len(response.json()) == 2
     response = client.get(
         '/api/v1/users?filter={"is_active":false}', headers=superuser_token_headers
     )
@@ -65,7 +62,7 @@ def test_delete_user(client, test_superuser, test_db, superuser_token_headers):
         headers=superuser_token_headers,
     )
     assert response.status_code == 200
-    # assert test_db.query(model.User).all() == []
+    assert test_db.query(model.User).all() == []
 
 
 def test_delete_user_not_found(client, superuser_token_headers):
@@ -90,8 +87,6 @@ def test_edit_user(client, test_user, test_superuser, superuser_token_headers):
     assert response.status_code == 200
     new_user["user_id"] = test_superuser.user_id
     new_user["full_name"] = "Joe Smith"
-    new_user["created_by"] = test_user.user_id
-    new_user["updated_by"] = test_superuser.user_id
     new_user.pop("password")
     response_json = response.json()
     response_json.pop("user_role")
@@ -99,6 +94,8 @@ def test_edit_user(client, test_user, test_superuser, superuser_token_headers):
     response_json.pop("role_ids")
     response_json.pop("updated_on")
     response_json.pop("created_on")
+    response_json.pop("updated_by")
+    # response_json.pop("created_by")
     assert response_json == new_user
 
 

@@ -124,8 +124,6 @@ def test_user(test_db) -> User:
         email="fake@email.com",
         hashed_password=get_password_hash(),
         is_active=True,
-        created_by=None,
-        updated_by=None,
     )
     test_db.add(user)
     test_db.commit()
@@ -133,41 +131,41 @@ def test_user(test_db) -> User:
 
 
 @pytest.fixture
-def test_superuser(test_db, test_user) -> User:
+def test_superuser(test_db) -> User:
     """
     Superuser for testing
     """
-    return create_user_with_role(Role.SUPER_ADMIN, test_db, test_user)
+    return create_user_with_role(Role.SUPER_ADMIN, test_db)
 
 
 @pytest.fixture
-def test_reader(test_db, test_user) -> User:
-    return create_user_with_role(Role.READER, test_db, test_user)
+def test_reader(test_db) -> User:
+    return create_user_with_role(Role.READER, test_db)
 
 
 @pytest.fixture
-def test_officer(test_db, test_user) -> User:
-    return create_user_with_role(Role.OFFICER, test_db, test_user)
+def test_officer(test_db) -> User:
+    return create_user_with_role(Role.OFFICER, test_db)
 
 
 @pytest.fixture
-def test_manager(test_db, test_user) -> User:
-    return create_user_with_role(Role.MANAGER, test_db, test_user)
+def test_manager(test_db) -> User:
+    return create_user_with_role(Role.MANAGER, test_db)
 
 
 @pytest.fixture
-def test_app_support(test_db, test_user) -> User:
-    return create_user_with_role(Role.APPLICATION_SUPPORT, test_db, test_user)
+def test_app_support(test_db) -> User:
+    return create_user_with_role(Role.APPLICATION_SUPPORT, test_db)
 
 
-def create_user_with_role(role, test_db, test_user) -> User:
+def create_user_with_role(role, test_db,) -> User:
     role_name = role["name"]
     user = User(
         email=f"{role_name}@email.com",
         hashed_password=get_password_hash(),
         is_active=True,
-        created_by=test_user.user_id,
-        updated_by=test_user.user_id,
+        created_by=None,
+        updated_by=None,
     )
     test_db.add(user)
     test_db.commit()
@@ -179,8 +177,8 @@ def create_user_with_role(role, test_db, test_user) -> User:
     user_role = UserRoleModel(
         role_id=role.role_id,
         user_id=user.user_id,
-        created_by=test_user.user_id,
-        updated_by=test_user.user_id,
+        created_by=user.user_id,
+        updated_by=user.user_id,
     )
     test_db.add(user_role)
     test_db.commit()
