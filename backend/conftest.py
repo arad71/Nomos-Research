@@ -158,7 +158,7 @@ def test_app_support(test_db) -> User:
     return create_user_with_role(Role.APPLICATION_SUPPORT, test_db)
 
 
-def create_user_with_role(role, test_db,) -> User:
+def create_user_with_role(role, test_db) -> User:
     role_name = role["name"]
     user = User(
         email=f"{role_name}@email.com",
