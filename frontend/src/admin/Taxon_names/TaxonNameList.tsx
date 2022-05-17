@@ -18,6 +18,8 @@ import {
 } from 'react-admin';
 import NaturalisedStatus from './NaturalisedStatus';
 import PublicationStatus from './PublicationStatus';
+import { WithPermissions } from '@react-admin/ra-rbac';
+
 import {
   ListProps,
   SelectColumnsButton,
@@ -175,7 +177,10 @@ export const TaxonNameList = (props: ListProps) => {
     >
       <Datagrid rowClick="show">
         {columns}
-        <EditButton />
+
+        <WithPermissions resource="taxon_names" action="edit">
+          <EditButton />
+        </WithPermissions>
       </Datagrid>
     </List>
   );

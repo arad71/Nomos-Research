@@ -1,4 +1,3 @@
-// in src/users.js
 import React, { FC } from 'react';
 import {
   Datagrid,
@@ -12,6 +11,7 @@ import {
   BooleanField,
 } from 'react-admin';
 import ClassificationType from './ClassificationType';
+import { WithPermissions } from '@react-admin/ra-rbac';
 
 export const ClassificationSystemList: FC = (props) => (
   <List {...props} sort={{ field: 'class_desc', order: 'DESC' }}>
@@ -29,7 +29,9 @@ export const ClassificationSystemList: FC = (props) => (
         <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" showTime />
-      <EditButton />
+      <WithPermissions action="edit" resource="classification_systems">
+        <EditButton />
+      </WithPermissions>
     </Datagrid>
   </List>
 );

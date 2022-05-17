@@ -13,6 +13,7 @@ import {
   ReferenceField,
   DateField,
 } from 'react-admin';
+import { WithPermissions } from '@react-admin/ra-rbac';
 import { makeStyles } from '@material-ui/core';
 import { FilterSidebar } from './FilterSidebar';
 import { UserListActions } from './UserListActions';
@@ -62,7 +63,9 @@ export const UserList: FC = (props) => {
           <TextField source="full_name" />
         </ReferenceField>
         <DateField source="updated_on" showTime />
-        <EditButton className={classes.textFonts} />
+        <WithPermissions action="edit" resource="users">
+          <EditButton className={classes.textFonts} />
+        </WithPermissions>
       </Datagrid>
     </List>
   );

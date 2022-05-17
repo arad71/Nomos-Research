@@ -1,10 +1,32 @@
 import decodeJwt from 'jwt-decode';
 import { BASE_URL } from '../config';
+import Role from './role';
 
 type loginFormType = {
   username: string;
   password: string;
 };
+type Action =
+  | 'read' // for a field in the resource
+  | 'list'
+  | 'show'
+  | 'export'
+  | 'create'
+  | 'edit'
+  | 'clone'
+  | 'write' // for a field in the resource
+  | 'delete'
+  | '*';
+type Actions = Action[] | Action;
+
+interface Permission {
+  action: Actions;
+  resource: string;
+  type?: 'deny' | 'allow';
+}
+interface Permissions {
+  [key: string]: Permission[];
+}
 
 const authProvider = {
   login: ({ username, password }: loginFormType) => {
@@ -48,9 +70,72 @@ const authProvider = {
   },
   checkAuth: () =>
     localStorage.getItem('token') ? Promise.resolve() : Promise.reject(),
-  getPermissions: () => {
-    const role = localStorage.getItem('scopes');
-    return role ? Promise.resolve(role) : Promise.reject();
+  getPermissions: () =>
+    // See https://marmelab.com/ra-enterprise/modules/ra-rbac#resource
+    Promise.resolve({
+      roles: localStorage.scopes,
+    }),
+  getRoles: () => {
+    // see https://marmelab.com/ra-enterprise/modules/ra-rbac#resource
+
+    const permissions: Permissions = {};
+    permissions[Role.READER] = [
+      { action: ['show', 'list', 'export'], resource: '*' },
+    ];
+
+    permissions[Role.OFFICER] = [
+      { action: ['show', 'list', 'export'], resource: '*' },
+      { action: 'delete', resource: '*', type: 'deny' },
+      { action: ['create', 'edit', 'clone'], resource: 'authors' },
+      { action: ['create', 'edit', 'clone'], resource: 'citations' },
+      { action: ['create', 'edit', 'clone'], resource: 'hierarchies' },
+      { action: ['create', 'edit', 'clone'], resource: 'informal_groups' },
+      { action: ['create', 'edit', 'clone'], resource: 'publications' },
+      { action: ['create', 'edit', 'clone'], resource: 'publication_authors' },
+      { action: ['create', 'edit', 'clone'], resource: 'taxon_names' },
+      { action: ['create', 'edit', 'clone'], resource: 'vernaculars' },
+    ];
+    permissions[Role.MANAGER] = [
+      { action: ['show', 'list', 'export'], resource: '*' },
+      { action: ['create', 'edit', 'clone', 'delete'], resource: 'authors' },
+      { action: ['create', 'edit', 'clone', 'delete'], resource: 'citations' },
+      {
+        action: ['create', 'edit', 'clone', 'delete'],
+        resource: 'hierarchies',
+      },
+      {
+        action: ['create', 'edit', 'clone', 'delete'],
+        resource: 'informal_groups',
+      },
+      {
+        action: ['create', 'edit', 'clone', 'delete'],
+        resource: 'publications',
+      },
+      {
+        action: ['create', 'edit', 'clone', 'delete'],
+        resource: 'publication_authors',
+      },
+      {
+        action: ['create', 'edit', 'clone', 'delete'],
+        resource: 'taxon_names',
+      },
+      {
+        action: ['create', 'edit', 'clone', 'delete'],
+        resource: 'vernaculars',
+      },
+    ];
+
+    permissions[Role.APPLICATION_SUPPORT] = [
+      { action: 'list', resource: '*' },
+      { action: 'show', resource: '*' },
+      { action: '*', resource: 'users' },
+      { action: '*', resource: 'user_roles' },
+      { action: '*', resource: 'kingdoms' },
+      { action: '*', resource: 'taxon_ranks' },
+      { action: '*', resource: 'classification_systems' },
+    ];
+    permissions[Role.SUPER_ADMIN] = [{ action: '*', resource: '*' }];
+    return Promise.resolve(permissions);
   },
 };
 
