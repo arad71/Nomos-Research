@@ -48,7 +48,7 @@ class UserCrud(crud.Crud):
         user_id: int,
         user: schema.UserEdit,
         current_user: int = None,
-        **kwargs
+        **kwargs,
     ) -> User:
         db_user = UserCrud.get_item(db, user_id)
         if not db_user:
@@ -58,10 +58,18 @@ class UserCrud(crud.Crud):
 
         if "role_ids" in update_data:
             role_ids = update_data["role_ids"]
-            db.query(UserRole).filter(UserRole.user_id == user_id).filter(
-                ~UserRole.role_id.in_(role_ids)
+            db.query(UserRole).filter(
+                UserRole.user_id == user_id,
+                ~UserRole.role_id.in_(role_ids),
             ).delete()
-            for role_id in role_ids:
+            current_role_ids = [
+                role_id[0]
+                for role_id in db.query(UserRole.role_id)
+                .filter(UserRole.user_id == user_id)
+                .all()
+            ]
+            new_role_ids = set(role_ids) ^ set(current_role_ids)
+            for role_id in new_role_ids:
                 user_role = UserRole(
                     user_id=user_id,
                     role_id=role_id,
