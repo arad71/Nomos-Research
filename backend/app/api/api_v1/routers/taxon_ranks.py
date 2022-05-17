@@ -1,9 +1,10 @@
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, Depends, Response
 
 from app.api.dependencies.range_query import RangeQueryParameter
-from app.core.auth import get_current_active_superuser
+from app.core.auth import authorize, get_current_active_user
+from app.db.role.constants import Role
 from app.db.session import get_db
 from app.db.taxon_rank.crud import TaxonRankCrud
 from app.db.taxon_rank.schema import TaxonRank, TaxonRankCreate, TaxonRankEdit
@@ -15,6 +16,7 @@ taxon_ranks_router = r = APIRouter(prefix="/taxon_ranks")
     "",
     response_model=List[TaxonRank],
     response_model_exclude_none=True,
+    dependencies=[authorize()],
 )
 async def taxon_rank_list(
     response: Response,
@@ -22,7 +24,6 @@ async def taxon_rank_list(
     sort: Optional[str] = None,
     filter: Optional[str] = None,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
 ):
     """
     Get all taxon_ranks
@@ -39,12 +40,11 @@ async def taxon_rank_list(
     "/{taxon_rank_id}",
     response_model=TaxonRank,
     response_model_exclude_none=True,
+    dependencies=[authorize()],
 )
 async def taxon_rank_details(
-    request: Request,
     taxon_rank_id: int,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
 ):
     """
     Get any taxon_rank details
@@ -53,12 +53,23 @@ async def taxon_rank_details(
     return taxon_rank
 
 
-@r.post("", response_model=TaxonRank, response_model_exclude_none=True)
+@r.post(
+    "",
+    response_model=TaxonRank,
+    response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.APPLICATION_SUPPORT["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
 async def taxon_rank_create(
-    request: Request,
     taxon_rank: TaxonRankCreate,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Create a new taxon_rank
@@ -70,13 +81,20 @@ async def taxon_rank_create(
     "/{taxon_rank_id}",
     response_model=TaxonRank,
     response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.APPLICATION_SUPPORT["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
 )
 async def taxon_rank_edit(
-    request: Request,
     taxon_rank_id: int,
     taxon_rank: TaxonRankEdit,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Update existing taxon_rank
@@ -88,12 +106,18 @@ async def taxon_rank_edit(
     "/{taxon_rank_id}",
     response_model=TaxonRank,
     response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.APPLICATION_SUPPORT["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
 )
 async def taxon_rank_delete(
-    request: Request,
     taxon_rank_id: int,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
 ):
     """
     Delete existing taxon_rank
