@@ -22,16 +22,16 @@ def upgrade():
     admin_email = settings.FIRST_SUPER_ADMIN_EMAIL
     user_select = f"SELECT user_id FROM \"user\" WHERE email = '{admin_email}'"
     op.execute(
-        f'UPDATE "user" SET created_by = ({user_select})WHERE created_by IS NULL'
+        f'UPDATE "user" SET created_by = ({user_select}) WHERE created_by IS NULL'
     )
     op.execute(
-        f'UPDATE "user" SET updated_by = ({user_select})WHERE updated_by IS NULL'
+        f'UPDATE "user" SET updated_by = ({user_select}) WHERE updated_by IS NULL'
     )
     op.execute(
-        f'UPDATE "user_role" SET created_by = ({user_select})WHERE created_by IS NULL'
+        f'UPDATE "user_role" SET created_by = ({user_select}) WHERE created_by IS NULL'
     )
     op.execute(
-        f'UPDATE "user_role" SET updated_by = ({user_select})WHERE updated_by IS NULL'
+        f'UPDATE "user_role" SET updated_by = ({user_select}) WHERE updated_by IS NULL'
     )
 
 
