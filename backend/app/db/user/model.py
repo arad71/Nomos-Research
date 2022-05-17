@@ -2,7 +2,7 @@ from sqlalchemy import Boolean, Column, Integer, String
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.schema import UniqueConstraint
 
-from app.db.models import BaseModel
+from app.db.models import BaseModel, TableMixin
 from app.db.user.constants import (
     DEFAULT_CLASS,
     DEFAULT_KINGDOM,
@@ -11,7 +11,7 @@ from app.db.user.constants import (
 )
 
 
-class User(BaseModel):
+class User(BaseModel, TableMixin):
     __tablename__ = "user"
     __table_args__ = (
         UniqueConstraint("legacy_id_name", name=f"uc_{__tablename__}_legacy_id"),

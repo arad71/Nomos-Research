@@ -1,15 +1,16 @@
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, Depends, Response
 
 from app.api.dependencies.range_query import RangeQueryParameter
-from app.core.auth import get_current_active_superuser
+from app.core.auth import authorize, get_current_active_user
 from app.db.informal_group.crud import InformalGroupCrud
 from app.db.informal_group.schema import (
     InformalGroup,
     InformalGroupCreate,
     InformalGroupEdit,
 )
+from app.db.role.constants import Role
 from app.db.session import get_db
 
 informal_groups_router = r = APIRouter(prefix="/informal_groups")
@@ -19,6 +20,7 @@ informal_groups_router = r = APIRouter(prefix="/informal_groups")
     "",
     response_model=List[InformalGroup],
     response_model_exclude_none=True,
+    dependencies=[authorize()],
 )
 async def informal_group_list(
     response: Response,
@@ -26,7 +28,6 @@ async def informal_group_list(
     sort: Optional[str] = None,
     filter: Optional[str] = None,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
 ):
     """
     Get all informal_groups
@@ -43,12 +44,11 @@ async def informal_group_list(
     "/{informal_group_id}",
     response_model=InformalGroup,
     response_model_exclude_none=True,
+    dependencies=[authorize()],
 )
 async def informal_group_details(
-    request: Request,
     informal_group_id: int,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
 ):
     """
     Get any informal_group details
@@ -61,12 +61,19 @@ async def informal_group_details(
     "",
     response_model=InformalGroup,
     response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.MANAGER["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
 )
 async def informal_group_create(
-    request: Request,
     informal_group: InformalGroupCreate,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Create a new informal_group
@@ -78,13 +85,20 @@ async def informal_group_create(
     "/{informal_group_id}",
     response_model=InformalGroup,
     response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.MANAGER["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
 )
 async def informal_group_edit(
-    request: Request,
     informal_group_id: int,
     informal_group: InformalGroupEdit,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Update existing informal_group
@@ -98,12 +112,18 @@ async def informal_group_edit(
     "/{informal_group_id}",
     response_model=InformalGroup,
     response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.SUPER_ADMIN["name"],
+                Role.MANAGER["name"],
+            ]
+        )
+    ],
 )
 async def informal_group_delete(
-    request: Request,
     informal_group_id: int,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
 ):
     """
     Delete existing informal_group

@@ -21,6 +21,10 @@ class ImportUser(DataImportBase):
             "last_name",
             "hashed_password",
             "legacy_id_name",
+            "created_by",
+            "created_on",
+            "updated_by",
+            "updated_on",
         )
 
     def insert_stub_records(self):
@@ -48,6 +52,8 @@ class ImportUser(DataImportBase):
                     "last_name": None,
                     "hashed_password": self.generate_password(),
                     "legacy_id_name": s,
+                    "created_by": self.current_user,
+                    "updated_by": self.current_user,
                 },
                 UserModel,
                 f"uc_{UserModel.__tablename__}_legacy_id",
@@ -61,6 +67,8 @@ class ImportUser(DataImportBase):
             "last_name": self.map_last_name(row["FULL_NAME"]),
             "hashed_password": self.generate_password(),
             "legacy_id_name": row["USERNAME"],
+            "created_by": self.current_user,
+            "updated_by": self.current_user,
         }
 
     def import_row(self, row):

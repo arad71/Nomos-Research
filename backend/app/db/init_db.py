@@ -2,6 +2,7 @@ from loguru import logger
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
+from app.dataimport.wacensus import get_admin_id
 from app.db.role.constants import Role
 from app.db.role.crud import RoleCrud
 from app.db.role.schema import RoleCreate
@@ -51,8 +52,14 @@ def ensure_user_has_role(db, role_name, user):
     user_role = UserRoleCrud.get_by_property(db, property="user_id", value=user.user_id)
     if not user_role:
         role = RoleCrud.get_by_name(db, name=role_name)
-        user_role_in = UserRoleCreate(user_id=user.user_id, role_id=role.role_id)
-        UserRoleCrud.create_item(db, item=user_role_in)
+        admin_id = get_admin_id(db)
+        user_role_in = UserRoleCreate(
+            user_id=user.user_id,
+            role_id=role.role_id,
+            created_by=admin_id,
+            updated_by=admin_id,
+        )
+        UserRoleCrud.create_item(db, item=user_role_in, current_user=admin_id)
 
 
 def ensure_user(db, email, first_name, last_name, password):
@@ -68,5 +75,5 @@ def ensure_user(db, email, first_name, last_name, password):
             first_name=first_name,
             last_name=last_name,
         )
-        user = user_crud.create_item(db=db, user=user_in)
+        user = user_crud.create_item(db=db, user=user_in, current_user=get_admin_id(db))
     return user

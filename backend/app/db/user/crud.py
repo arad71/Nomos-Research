@@ -5,6 +5,7 @@ import app.db.crud as crud
 import app.db.user.schema as schema
 from app.core.security import get_password_hash
 from app.db.user.model import User
+from app.db.user_role.model import UserRole
 
 
 class UserCrud(crud.Crud):
@@ -23,6 +24,7 @@ class UserCrud(crud.Crud):
         db: Session,
         user: schema.UserCreate,
         raise_exception: bool = True,
+        current_user: int = None,
     ):
         hashed_password = get_password_hash(user.password)
         db_user = User(
@@ -31,6 +33,8 @@ class UserCrud(crud.Crud):
             email=user.email,
             is_active=user.is_active,
             hashed_password=hashed_password,
+            created_by=current_user,
+            updated_by=current_user,
         )
         db.add(db_user)
         db.commit()
@@ -39,12 +43,43 @@ class UserCrud(crud.Crud):
 
     @classmethod
     def edit_item(
-        cls, db: Session, user_id: int, user: schema.UserEdit, **kwargs
+        cls,
+        db: Session,
+        user_id: int,
+        user: schema.UserEdit,
+        current_user: int = None,
+        **kwargs,
     ) -> User:
         db_user = UserCrud.get_item(db, user_id)
         if not db_user:
             raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")
         update_data = user.dict(exclude_unset=True)
+        update_data.pop("role_names", None)
+
+        if "role_ids" in update_data:
+            role_ids = update_data["role_ids"]
+            db.query(UserRole).filter(
+                UserRole.user_id == user_id,
+                ~UserRole.role_id.in_(role_ids),
+            ).delete()
+            current_role_ids = [
+                role_id[0]
+                for role_id in db.query(UserRole.role_id)
+                .filter(UserRole.user_id == user_id)
+                .all()
+            ]
+            new_role_ids = set(role_ids) ^ set(current_role_ids)
+            for role_id in new_role_ids:
+                user_role = UserRole(
+                    user_id=user_id,
+                    role_id=role_id,
+                    created_by=current_user,
+                    updated_by=current_user,
+                )
+                db.add(user_role)
+
+        update_data.pop("role_ids", None)
+        update_data["updated_by"] = current_user
 
         if "password" in update_data:
             update_data["hashed_password"] = get_password_hash(user.password)
