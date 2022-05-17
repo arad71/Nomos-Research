@@ -10,12 +10,16 @@ import {
   TextField,
   BooleanField,
   Labeled,
+  RichTextField,
+  FunctionField,
+  useRecordContext,
 } from 'react-admin';
 import Aside from '../shared/Aside';
 import NaturalisedStatus from './NaturalisedStatus';
 import PublicationStatus from './PublicationStatus';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, Typography } from '@material-ui/core';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 
 const useStyles = makeStyles({
   bold: {
@@ -23,17 +27,25 @@ const useStyles = makeStyles({
   },
   title: {
     fontWeight: 'bold',
-    fontSize: '1.7em',
+    fontSize: '1.5em',
     marginRight: '0.2em',
+  },
+  subtitle: {
+    fontSize: '1em',
   },
   linedRow: {
     borderBottom: '1px solid #eee',
   },
   titlePos: {
     position: 'absolute',
-    top: '80px',
+    top: '65px',
   },
 });
+
+const TaxonNameStatus = () => {
+  const record = useRecordContext();
+  return record && record.is_current ? <CheckCircleIcon /> : null;
+};
 
 export const TaxonNameShow: FC = (props) => {
   const classes = useStyles();
@@ -41,16 +53,20 @@ export const TaxonNameShow: FC = (props) => {
     <Show aside={<Aside />} {...props}>
       <>
         <Box className={classes.titlePos}>
-          <TextField className={classes.title} source="genus" />
-          <TextField className={classes.title} source="specific_epithet" />
-          <TextField className={classes.title} source="infraspecific_epithet" />
-          <Box component="div" sx={{ display: 'inline' }}>
-            (Schodde, Schodde & Schodde,&nbsp;
+          <Box>
+            <RichTextField
+              className={classes.title}
+              source="formatted_scientific_name"
+            />
+            <TaxonNameStatus />
           </Box>
-          <TextField source="form_desc_yr" />
-          <Box component="div" sx={{ display: 'inline' }}>
-            )
-          </Box>
+          <ReferenceField
+            source="rank_id"
+            reference="taxon_ranks"
+            linkType={false}
+          >
+            <TextField source="rank_name" className={classes.subtitle} />
+          </ReferenceField>
         </Box>
         <TabbedShowLayout>
           <Tab label="Name" className={classes.bold}>
