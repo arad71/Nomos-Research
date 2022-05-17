@@ -5,6 +5,7 @@ import app.db.crud as crud
 import app.db.user.schema as schema
 from app.core.security import get_password_hash
 from app.db.user.model import User
+from app.db.user_role.model import UserRole
 
 
 class UserCrud(crud.Crud):
@@ -54,8 +55,22 @@ class UserCrud(crud.Crud):
             raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")
         update_data = user.dict(exclude_unset=True)
         update_data.pop("role_names", None)
-        update_data.pop("role_ids", None)
 
+        if "role_ids" in update_data:
+            role_ids = update_data["role_ids"]
+            db.query(UserRole).filter(UserRole.user_id == user_id).filter(
+                ~UserRole.role_id.in_(role_ids)
+            ).delete()
+            for role_id in role_ids:
+                user_role = UserRole(
+                    user_id=user_id,
+                    role_id=role_id,
+                    created_by=current_user,
+                    updated_by=current_user,
+                )
+                db.add(user_role)
+
+        update_data.pop("role_ids", None)
         update_data["updated_by"] = current_user
 
         if "password" in update_data:
