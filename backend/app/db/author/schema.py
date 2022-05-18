@@ -19,6 +19,7 @@ class AuthorBase(BaseModel):
     first_names: Optional[str] = Field(description=FIRST_NAMES)
     initials: Optional[str] = Field(description=INITIALS)
     orc_id: Optional[str] = Field(description=ORC_ID)
+    full_name: Optional[str]
 
 
 class AuthorCreate(AuthorBase):
