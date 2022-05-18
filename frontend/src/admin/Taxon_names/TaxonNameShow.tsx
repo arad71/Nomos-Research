@@ -20,6 +20,7 @@ import PublicationStatus from './PublicationStatus';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, Typography } from '@material-ui/core';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import green from '@material-ui/core/colors/green';
 
 const useStyles = makeStyles({
   bold: {
@@ -44,7 +45,9 @@ const useStyles = makeStyles({
 
 const TaxonNameStatus = () => {
   const record = useRecordContext();
-  return record && record.is_current ? <CheckCircleIcon /> : null;
+  return record && record.is_current ? (
+    <CheckCircleIcon style={{ color: green[500] }} />
+  ) : null;
 };
 
 export const TaxonNameShow: FC = (props) => {
