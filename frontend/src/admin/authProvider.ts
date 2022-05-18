@@ -129,8 +129,7 @@ const authProvider = {
     ];
 
     permissions[Role.APPLICATION_SUPPORT] = [
-      { action: 'list', resource: '*' },
-      { action: 'show', resource: '*' },
+      { action: ['show', 'list', 'export'], resource: '*' },
       { action: '*', resource: 'users' },
       { action: '*', resource: 'user_roles' },
       { action: '*', resource: 'kingdoms' },
