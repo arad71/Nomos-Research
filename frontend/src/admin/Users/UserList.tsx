@@ -52,6 +52,7 @@ export const UserList: FC = (props) => {
           label="User Roles"
           reference="roles"
           source="role_ids"
+          sortBy="user_role___role___name"
         >
           <SingleFieldList>
             <ChipField className={classes.roleFonts} source="name" />
