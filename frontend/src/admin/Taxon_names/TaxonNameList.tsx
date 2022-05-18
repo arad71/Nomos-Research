@@ -146,7 +146,9 @@ const TAXON_NAMES_PREFERENCE = 'taxon_names.list.columns';
 const Actions = () => (
   <TopToolbar>
     <FilterButton />
-    <CreateButton />
+    <WithPermissions resource="taxon_names" action="create">
+      <CreateButton />
+    </WithPermissions>
     <ExportButton maxResults={100000} />
     <SelectColumnsButton
       preference={TAXON_NAMES_PREFERENCE}
