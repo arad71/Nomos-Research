@@ -1,5 +1,5 @@
-from sqlalchemy import Column, Integer, String
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String, func
+from sqlalchemy.orm import column_property, relationship
 from sqlalchemy.schema import UniqueConstraint
 
 from app.db.author.constants import (
@@ -30,3 +30,4 @@ class Author(BaseModel, TableMixin):
         "Publication", secondary="publication_author", back_populates="author"
     )
     legacy_id_name = Column(String())
+    full_name = column_property(func.CONCAT_WS(" ", initials, surname))
