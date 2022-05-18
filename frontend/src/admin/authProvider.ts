@@ -28,6 +28,12 @@ interface Permissions {
   [key: string]: Permission[];
 }
 
+function clearLocalStorage() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('scopes');
+  localStorage.removeItem('username');
+}
+
 const authProvider = {
   login: ({ username, password }: loginFormType) => {
     const formData = new FormData();
@@ -51,13 +57,8 @@ const authProvider = {
         localStorage.setItem('scopes', decodedToken.scopes);
       });
   },
-  clearLocalStorage: () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('scopes');
-    localStorage.removeItem('username');
-  },
   logout: () => {
-    this.clearLocalStorage();
+    clearLocalStorage();
     return Promise.resolve();
   },
   getIdentity: () => {
@@ -66,7 +67,7 @@ const authProvider = {
   checkError: (error: { status: number }) => {
     const status = error.status;
     if (status === 401 || status === 403) {
-      this.clearLocalStorage();
+      clearLocalStorage();
       return Promise.reject();
     }
     return Promise.resolve();
