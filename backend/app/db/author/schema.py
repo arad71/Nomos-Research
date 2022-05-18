@@ -31,6 +31,7 @@ class AuthorEdit(AuthorBase):
 
 class Author(AuthorBase, TableBase):
     author_id: int
+    full_name: str
 
     class Config:
         orm_mode = True
