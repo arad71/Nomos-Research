@@ -51,10 +51,13 @@ const authProvider = {
         localStorage.setItem('scopes', decodedToken.scopes);
       });
   },
-  logout: () => {
+  clearLocalStorage: () => {
     localStorage.removeItem('token');
     localStorage.removeItem('scopes');
     localStorage.removeItem('username');
+  },
+  logout: () => {
+    this.clearLocalStorage();
     return Promise.resolve();
   },
   getIdentity: () => {
@@ -63,7 +66,7 @@ const authProvider = {
   checkError: (error: { status: number }) => {
     const status = error.status;
     if (status === 401 || status === 403) {
-      localStorage.removeItem('token');
+      this.clearLocalStorage();
       return Promise.reject();
     }
     return Promise.resolve();
