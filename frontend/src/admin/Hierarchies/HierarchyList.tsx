@@ -1,4 +1,3 @@
-// in src/users.js
 import React, { FC } from 'react';
 import {
   Datagrid,
@@ -10,6 +9,7 @@ import {
   RichTextField,
   TextField,
 } from 'react-admin';
+import { WithPermissions } from '@react-admin/ra-rbac';
 
 export const HierarchyList: FC = (props) => (
   <List {...props} sort={{ field: 'parent___scientific_name' }}>
@@ -44,7 +44,9 @@ export const HierarchyList: FC = (props) => (
         <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" showTime />
-      <EditButton />
+      <WithPermissions resource="hierarchies" action="edit">
+        <EditButton />
+      </WithPermissions>
     </Datagrid>
   </List>
 );

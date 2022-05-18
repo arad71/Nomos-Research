@@ -1,4 +1,3 @@
-// in src/users.js
 import React, { FC } from 'react';
 import {
   Datagrid,
@@ -12,6 +11,7 @@ import {
   TextField,
 } from 'react-admin';
 import AuthorType from './AuthorType';
+import { WithPermissions } from '@react-admin/ra-rbac';
 
 export const CitationList: FC = (props) => (
   <List {...props} sort={{ field: 'taxon_name___scientific_name' }}>
@@ -40,7 +40,9 @@ export const CitationList: FC = (props) => (
         <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" showTime />
-      <EditButton />
+      <WithPermissions resource="citations" action="edit">
+        <EditButton />
+      </WithPermissions>
     </Datagrid>
   </List>
 );

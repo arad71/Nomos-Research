@@ -1,4 +1,3 @@
-// in src/users.js
 import React, { FC } from 'react';
 import {
   Datagrid,
@@ -12,6 +11,7 @@ import {
   BooleanField,
 } from 'react-admin';
 import RankAbbreviation from './RankAbbreviation';
+import { WithPermissions } from '@react-admin/ra-rbac';
 
 export const TaxonRankList: FC = (props) => (
   <List {...props} sort={{ field: 'rank_name' }}>
@@ -51,7 +51,10 @@ export const TaxonRankList: FC = (props) => (
         <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" showTime />
-      <EditButton />
+
+      <WithPermissions resource="taxon_ranks" action="edit">
+        <EditButton />
+      </WithPermissions>
     </Datagrid>
   </List>
 );

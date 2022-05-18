@@ -1,4 +1,3 @@
-// in src/users.js
 import React, { FC } from 'react';
 import {
   Datagrid,
@@ -10,6 +9,7 @@ import {
   RichTextField,
   TextField,
 } from 'react-admin';
+import { WithPermissions } from '@react-admin/ra-rbac';
 
 export const InformalGroupList: FC = (props) => (
   <List {...props} sort={{ field: 'informal_group_id' }}>
@@ -37,7 +37,9 @@ export const InformalGroupList: FC = (props) => (
         <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" showTime />
-      <EditButton />
+      <WithPermissions resource="informal_groups" action="edit">
+        <EditButton />
+      </WithPermissions>
     </Datagrid>
   </List>
 );
