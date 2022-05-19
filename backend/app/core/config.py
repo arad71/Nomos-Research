@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     DB_PORT: str = "5432"
 
     WACENSUS_DATA_FILE_URL: Optional[AnyUrl] = None
+    WACENSUS_SUFFIX: str = "_DATA_TABLE.csv"
 
     SQLALCHEMY_DATABASE_URI: Optional[PostgresDsn] = None
     # Set this to True to enable printing db queries to the log
