@@ -18,6 +18,8 @@ import {
 } from 'react-admin';
 import NaturalisedStatus from './NaturalisedStatus';
 import PublicationStatus from './PublicationStatus';
+import { WithPermissions } from '@react-admin/ra-rbac';
+
 import {
   ListProps,
   SelectColumnsButton,
@@ -144,7 +146,9 @@ const TAXON_NAMES_PREFERENCE = 'taxon_names.list.columns';
 const Actions = () => (
   <TopToolbar>
     <FilterButton />
-    <CreateButton />
+    <WithPermissions resource="taxon_names" action="create">
+      <CreateButton />
+    </WithPermissions>
     <ExportButton maxResults={100000} />
     <SelectColumnsButton
       preference={TAXON_NAMES_PREFERENCE}
@@ -175,7 +179,10 @@ export const TaxonNameList = (props: ListProps) => {
     >
       <Datagrid rowClick="show">
         {columns}
-        <EditButton />
+
+        <WithPermissions resource="taxon_names" action="edit">
+          <EditButton />
+        </WithPermissions>
       </Datagrid>
     </List>
   );

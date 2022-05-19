@@ -1,4 +1,3 @@
-// in src/users.js
 import React, { FC } from 'react';
 import {
   Datagrid,
@@ -9,6 +8,7 @@ import {
   TextField,
   EditButton,
 } from 'react-admin';
+import { WithPermissions } from '@react-admin/ra-rbac';
 
 export const KingdomList: FC = (props) => {
   return (
@@ -25,7 +25,9 @@ export const KingdomList: FC = (props) => {
           <TextField source="full_name" />
         </ReferenceField>
         <DateField source="updated_on" showTime />
-        <EditButton />
+        <WithPermissions resource="kingdoms" action="edit">
+          <EditButton />
+        </WithPermissions>
       </Datagrid>
     </List>
   );
