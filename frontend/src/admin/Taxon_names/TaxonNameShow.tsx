@@ -34,6 +34,7 @@ const useStyles = makeStyles((theme) => ({
   },
   linedRow: {
     borderBottom: '1px solid #eee',
+    marginTop: '1.2em',
   },
   titlePos: {
     position: 'absolute',
@@ -145,7 +146,7 @@ export const TaxonNameShow: FC = (props) => {
                 Authors (placeholder section)
               </Typography>
             </Box>
-            <Box mt="1.2em" className={classes.linedRow}>
+            <Box className={classes.linedRow}>
               <Box className={globalClasses.formRow}>
                 <Box className={globalClasses.fieldMargin}>
                   <Typography variant="body2" gutterBottom>
@@ -173,7 +174,7 @@ export const TaxonNameShow: FC = (props) => {
                 </Box>
               </Box>
             </Box>
-            <Box mt="1.2em" className={classes.linedRow}>
+            <Box className={classes.linedRow}>
               <Box className={globalClasses.formRow}>
                 <Box className={globalClasses.fieldMargin}>
                   <Typography variant="body2" gutterBottom>
@@ -201,7 +202,7 @@ export const TaxonNameShow: FC = (props) => {
                 </Box>
               </Box>
             </Box>
-            <Box mt="1.2em" className={classes.linedRow}>
+            <Box className={classes.linedRow}>
               <Box className={globalClasses.formRow}>
                 <Box className={globalClasses.fieldMargin}>
                   <Typography variant="body2" gutterBottom>
@@ -256,7 +257,7 @@ export const TaxonNameShow: FC = (props) => {
                 Vernacular names (placeholder section)
               </Typography>
             </Box>
-            <Box mt="1.2em" className={classes.linedRow}>
+            <Box className={classes.linedRow}>
               <Box className={globalClasses.formRow}>
                 <Box className={globalClasses.fieldMargin}>
                   <Typography variant="body2" gutterBottom>
@@ -293,7 +294,7 @@ export const TaxonNameShow: FC = (props) => {
                 </Box>
               </Box>
             </Box>
-            <Box mt="1.2em" className={classes.linedRow}>
+            <Box className={classes.linedRow}>
               <Box className={globalClasses.formRow}>
                 <Box className={globalClasses.fieldMargin}>
                   <Typography variant="body2" gutterBottom>
