@@ -21,11 +21,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Box, Typography } from '@material-ui/core';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import green from '@material-ui/core/colors/green';
+import { GlobalTheme } from '../../GlobalTheme';
 
-const useStyles = makeStyles({
-  bold: {
-    fontWeight: 'bold',
-  },
+const useStyles = makeStyles((theme) => ({
   title: {
     fontWeight: 'bold',
     fontSize: '1.5em',
@@ -36,12 +34,13 @@ const useStyles = makeStyles({
   },
   linedRow: {
     borderBottom: '1px solid #eee',
+    marginTop: '1.2em',
   },
   titlePos: {
     position: 'absolute',
     top: '65px',
   },
-});
+}));
 
 const TaxonNameStatus = () => {
   const record = useRecordContext();
@@ -52,6 +51,7 @@ const TaxonNameStatus = () => {
 
 export const TaxonNameShow: FC = (props) => {
   const classes = useStyles();
+  const globalClasses = GlobalTheme();
   return (
     <Show aside={<Aside />} {...props}>
       <>
@@ -72,66 +72,52 @@ export const TaxonNameShow: FC = (props) => {
           </ReferenceField>
         </Box>
         <TabbedShowLayout>
-          <Tab label="Name" className={classes.bold}>
-            <Box my="1.2em">
-              <ReferenceField
-                source="rank_id"
-                reference="taxon_ranks"
-                my="1.2em"
-              >
-                <Labeled label="Rank">
-                  <TextField source="rank_name" />
-                </Labeled>
-              </ReferenceField>
+          <Tab label="Name" className={globalClasses.bold}>
+            <Box className={globalClasses.sectionMargin}>
+              <Box className={globalClasses.fieldMargin}>
+                <ReferenceField source="rank_id" reference="taxon_ranks">
+                  <Labeled label="Rank">
+                    <TextField source="rank_name" />
+                  </Labeled>
+                </ReferenceField>
+              </Box>
             </Box>
-            <Box
-              display={{ xs: 'block', sm: 'flex' }}
-              mb="1.2em"
-              justifyContent="flex-start"
-            >
-              <Box mr={{ xs: 0, sm: '1em' }}>
+            <Box className={globalClasses.formRow}>
+              <Box className={globalClasses.fieldMargin}>
                 <Labeled label="Genus">
                   <TextField source="genus" label="Genus" />
                 </Labeled>
               </Box>
-              <Box mr={{ xs: 0, sm: '1em' }}>
+              <Box className={globalClasses.fieldMargin}>
                 <Labeled label="Specific Epithet">
                   <TextField source="specific_epithet" />
                 </Labeled>
               </Box>
-              <Box mr={{ xs: 0, sm: '1em' }}>
+              <Box className={globalClasses.fieldMargin}>
                 <Labeled label="Infraspecific Epithet">
                   <TextField source="infraspecific_epithet" />
                 </Labeled>
               </Box>
             </Box>
-            <Box
-              display={{ xs: 'block', sm: 'flex' }}
-              mb="1.2em"
-              justifyContent="flex-start"
-            >
-              <Box mr={{ xs: 0, sm: '1em' }}>
+            <Box className={globalClasses.formRow}>
+              <Box className={globalClasses.fieldMargin}>
                 <Labeled label="Day">
                   <NumberField source="form_desc_dy" />
                 </Labeled>
               </Box>
-              <Box mr={{ xs: 0, sm: '1em' }}>
+              <Box className={globalClasses.fieldMargin}>
                 <Labeled label="Month">
                   <NumberField source="form_desc_mn" />
                 </Labeled>
               </Box>
-              <Box mr={{ xs: 0, sm: '1em' }}>
+              <Box className={globalClasses.fieldMargin}>
                 <Labeled label="Year">
                   <TextField source="form_desc_yr" />
                 </Labeled>
               </Box>
             </Box>
-            <Box
-              display={{ xs: 'block', sm: 'flex' }}
-              mb="1em"
-              justifyContent="flex-start"
-            >
-              <Box mr={{ xs: 0, sm: '1em' }}>
+            <Box className={globalClasses.formRow}>
+              <Box className={globalClasses.fieldMargin}>
                 <Labeled label="Publication status">
                   <SelectField
                     source="publication_status"
@@ -139,113 +125,105 @@ export const TaxonNameShow: FC = (props) => {
                   />
                 </Labeled>
               </Box>
-              <Box mr={{ xs: 0, sm: '1em' }}>
+              <Box className={globalClasses.fieldMargin}>
                 <Labeled label="Is current">
                   <BooleanField source="is_current" />
                 </Labeled>
               </Box>
-              <Box mr={{ xs: 0, sm: '1em' }}>
+              <Box className={globalClasses.fieldMargin}>
                 <Labeled label="Validated">
                   <BooleanField source="validated" />
                 </Labeled>
               </Box>
             </Box>
             {/* Authors Section */}
-            <Box mt="2.2em">
-              <Typography variant="h5" className={classes.bold} gutterBottom>
+            <Box className={globalClasses.sectionMargin}>
+              <Typography
+                variant="h5"
+                className={globalClasses.bold}
+                gutterBottom
+              >
                 Authors (placeholder section)
               </Typography>
             </Box>
-            <Box mt="1.2em" className={classes.linedRow}>
-              <Box
-                display={{ xs: 'block', sm: 'flex' }}
-                mb="0.5em"
-                justifyContent="flex-start"
-              >
-                <Box mr={{ xs: 0, sm: '1em' }}>
+            <Box className={classes.linedRow}>
+              <Box className={globalClasses.formRow}>
+                <Box className={globalClasses.fieldMargin}>
                   <Typography variant="body2" gutterBottom>
                     1
                   </Typography>
                 </Box>
-                <Box mr={{ xs: 0, sm: '1em' }}>
+                <Box className={globalClasses.fieldMargin}>
                   <Labeled label="Author">
                     <Typography variant="body2" gutterBottom>
                       Schodde
                     </Typography>
                   </Labeled>
                 </Box>
-                <Box mr={{ xs: 0, sm: '1em' }}>
+                <Box className={globalClasses.fieldMargin}>
                   <Labeled label="Author type">
                     <Typography variant="body2" gutterBottom>
                       Basionym
                     </Typography>
                   </Labeled>
                 </Box>
-                <Box mr={{ xs: 0, sm: '1em' }}>
+                <Box className={globalClasses.fieldMargin}>
                   <Labeled label="Is active">
                     <BooleanField source="validated" />
                   </Labeled>
                 </Box>
               </Box>
             </Box>
-            <Box mt="1.2em" className={classes.linedRow}>
-              <Box
-                display={{ xs: 'block', sm: 'flex' }}
-                mb="0.5em"
-                justifyContent="flex-start"
-              >
-                <Box mr={{ xs: 0, sm: '1em' }}>
+            <Box className={classes.linedRow}>
+              <Box className={globalClasses.formRow}>
+                <Box className={globalClasses.fieldMargin}>
                   <Typography variant="body2" gutterBottom>
                     2
                   </Typography>
                 </Box>
-                <Box mr={{ xs: 0, sm: '1em' }}>
+                <Box className={globalClasses.fieldMargin}>
                   <Labeled label="Author">
                     <Typography variant="body2" gutterBottom>
                       Schodde
                     </Typography>
                   </Labeled>
                 </Box>
-                <Box mr={{ xs: 0, sm: '1em' }}>
+                <Box className={globalClasses.fieldMargin}>
                   <Labeled label="Author type">
                     <Typography variant="body2" gutterBottom>
                       Basionym
                     </Typography>
                   </Labeled>
                 </Box>
-                <Box mr={{ xs: 0, sm: '1em' }}>
+                <Box className={globalClasses.fieldMargin}>
                   <Labeled label="Is active">
                     <BooleanField source="validated" />
                   </Labeled>
                 </Box>
               </Box>
             </Box>
-            <Box mt="1.2em" className={classes.linedRow}>
-              <Box
-                display={{ xs: 'block', sm: 'flex' }}
-                mb="0.5em"
-                justifyContent="flex-start"
-              >
-                <Box mr={{ xs: 0, sm: '1em' }}>
+            <Box className={classes.linedRow}>
+              <Box className={globalClasses.formRow}>
+                <Box className={globalClasses.fieldMargin}>
                   <Typography variant="body2" gutterBottom>
                     3
                   </Typography>
                 </Box>
-                <Box mr={{ xs: 0, sm: '1em' }}>
+                <Box className={globalClasses.fieldMargin}>
                   <Labeled label="Author">
                     <Typography variant="body2" gutterBottom>
                       Schodde
                     </Typography>
                   </Labeled>
                 </Box>
-                <Box mr={{ xs: 0, sm: '1em' }}>
+                <Box className={globalClasses.fieldMargin}>
                   <Labeled label="Author type">
                     <Typography variant="body2" gutterBottom>
                       Basionym
                     </Typography>
                   </Labeled>
                 </Box>
-                <Box mr={{ xs: 0, sm: '1em' }}>
+                <Box className={globalClasses.fieldMargin}>
                   <Labeled label="Is active">
                     <BooleanField source="validated" />
                   </Labeled>
@@ -253,61 +231,61 @@ export const TaxonNameShow: FC = (props) => {
               </Box>
             </Box>
             {/* Publication Section */}
-            <Box mt="2.2em">
-              <Typography variant="h5" className={classes.bold} gutterBottom>
+            <Box className={globalClasses.sectionMargin}>
+              <Typography
+                variant="h5"
+                className={globalClasses.bold}
+                gutterBottom
+              >
                 Publication
               </Typography>
             </Box>
             <Box my="1.2em">
-              <ReferenceField
-                source="publication_id"
-                reference="publications"
-                my="1.2em"
-              >
+              <ReferenceField source="publication_id" reference="publications">
                 <Labeled label="Publication">
                   <TextField source="publication" />
                 </Labeled>
               </ReferenceField>
             </Box>
             {/* Vernacular Section */}
-            <Box mt="2.2em">
-              <Typography variant="h5" className={classes.bold} gutterBottom>
+            <Box className={globalClasses.sectionMargin}>
+              <Typography
+                variant="h5"
+                className={globalClasses.bold}
+                gutterBottom
+              >
                 Vernacular names (placeholder section)
               </Typography>
             </Box>
-            <Box mt="1.2em" className={classes.linedRow}>
-              <Box
-                display={{ xs: 'block', sm: 'flex' }}
-                mb="0.5em"
-                justifyContent="flex-start"
-              >
-                <Box mr={{ xs: 0, sm: '1em' }}>
+            <Box className={classes.linedRow}>
+              <Box className={globalClasses.formRow}>
+                <Box className={globalClasses.fieldMargin}>
                   <Typography variant="body2" gutterBottom>
                     1
                   </Typography>
                 </Box>
-                <Box mr={{ xs: 0, sm: '1em' }}>
+                <Box className={globalClasses.fieldMargin}>
                   <Labeled label="Name">
                     <Typography variant="body2" gutterBottom>
                       Red-tailed black cockatoo
                     </Typography>
                   </Labeled>
                 </Box>
-                <Box mr={{ xs: 0, sm: '1em' }}>
+                <Box className={globalClasses.fieldMargin}>
                   <Labeled label="Name type">
                     <Typography variant="body2" gutterBottom>
                       Common
                     </Typography>
                   </Labeled>
                 </Box>
-                <Box mr={{ xs: 0, sm: '1em' }}>
+                <Box className={globalClasses.fieldMargin}>
                   <Labeled label="Language">
                     <Typography variant="body2" gutterBottom>
                       English
                     </Typography>
                   </Labeled>
                 </Box>
-                <Box mr={{ xs: 0, sm: '1em' }}>
+                <Box className={globalClasses.fieldMargin}>
                   <Labeled label="Preferred">
                     <Typography variant="body2" gutterBottom>
                       Enabled
@@ -316,39 +294,35 @@ export const TaxonNameShow: FC = (props) => {
                 </Box>
               </Box>
             </Box>
-            <Box mt="1.2em" className={classes.linedRow}>
-              <Box
-                display={{ xs: 'block', sm: 'flex' }}
-                mb="0.5em"
-                justifyContent="flex-start"
-              >
-                <Box mr={{ xs: 0, sm: '1em' }}>
+            <Box className={classes.linedRow}>
+              <Box className={globalClasses.formRow}>
+                <Box className={globalClasses.fieldMargin}>
                   <Typography variant="body2" gutterBottom>
                     2
                   </Typography>
                 </Box>
-                <Box mr={{ xs: 0, sm: '1em' }}>
+                <Box className={globalClasses.fieldMargin}>
                   <Labeled label="Name">
                     <Typography variant="body2" gutterBottom>
                       Red-tailed black cockatoo
                     </Typography>
                   </Labeled>
                 </Box>
-                <Box mr={{ xs: 0, sm: '1em' }}>
+                <Box className={globalClasses.fieldMargin}>
                   <Labeled label="Name type">
                     <Typography variant="body2" gutterBottom>
                       Common
                     </Typography>
                   </Labeled>
                 </Box>
-                <Box mr={{ xs: 0, sm: '1em' }}>
+                <Box className={globalClasses.fieldMargin}>
                   <Labeled label="Language">
                     <Typography variant="body2" gutterBottom>
                       English
                     </Typography>
                   </Labeled>
                 </Box>
-                <Box mr={{ xs: 0, sm: '1em' }}>
+                <Box className={globalClasses.fieldMargin}>
                   <Labeled label="Preferred">
                     <Typography variant="body2" gutterBottom>
                       Enabled
@@ -358,29 +332,23 @@ export const TaxonNameShow: FC = (props) => {
               </Box>
             </Box>
           </Tab>
-          <Tab label="Details" className={classes.bold}>
-            <Box
-              display={{ xs: 'block', sm: 'flex' }}
-              my="1.2em"
-              justifyContent="flex-start"
-            >
-              <Box mr={{ xs: 0, sm: '1em' }}>
-                <Labeled label="Family code">
-                  <TextField source="family_code" />
-                </Labeled>
-              </Box>
-              <Box mr={{ xs: 0, sm: '1em' }}>
-                <Labeled label="Origin">
-                  <TextField source="origin" />
-                </Labeled>
+          <Tab label="Details" className={globalClasses.bold}>
+            <Box className={globalClasses.sectionMargin}>
+              <Box className={globalClasses.formRow}>
+                <Box className={globalClasses.fieldMargin}>
+                  <Labeled label="Family code">
+                    <TextField source="family_code" />
+                  </Labeled>
+                </Box>
+                <Box className={globalClasses.fieldMargin}>
+                  <Labeled label="Origin">
+                    <TextField source="origin" />
+                  </Labeled>
+                </Box>
               </Box>
             </Box>
-            <Box
-              display={{ xs: 'block', sm: 'flex' }}
-              mb="1.2em"
-              justifyContent="flex-start"
-            >
-              <Box mr={{ xs: 0, sm: '1em' }}>
+            <Box className={globalClasses.formRow}>
+              <Box className={globalClasses.fieldMargin}>
                 <Labeled label="Naturalised status">
                   <SelectField
                     source="naturalised_status"
@@ -388,28 +356,24 @@ export const TaxonNameShow: FC = (props) => {
                   />
                 </Labeled>
               </Box>
-              <Box mr={{ xs: 0, sm: '1em' }}>
+              <Box className={globalClasses.fieldMargin}>
                 <Labeled label="Naturalised certainty">
                   <BooleanField source="naturalised_certainty" />
                 </Labeled>
               </Box>
             </Box>
-            <Box
-              display={{ xs: 'block', sm: 'flex' }}
-              mb="1em"
-              justifyContent="flex-start"
-            >
-              <Box mr={{ xs: 0, sm: '1em' }}>
+            <Box className={globalClasses.formRow}>
+              <Box className={globalClasses.fieldMargin}>
                 <Labeled label="Naturalised comments">
                   <TextField source="naturalised_comments" />
                 </Labeled>
               </Box>
             </Box>
           </Tab>
-          <Tab label="Heirarchy" className={classes.bold}></Tab>
-          <Tab label="Cross References" className={classes.bold}></Tab>
-          <Tab label="Notes" className={classes.bold}>
-            <Box my="1.2em">
+          <Tab label="Heirarchy" className={globalClasses.bold}></Tab>
+          <Tab label="Cross References" className={globalClasses.bold}></Tab>
+          <Tab label="Notes" className={globalClasses.bold}>
+            <Box className={globalClasses.sectionMargin}>
               <Labeled label="Notes">
                 <TextField source="notes" />
               </Labeled>
