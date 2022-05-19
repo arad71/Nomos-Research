@@ -1,4 +1,3 @@
-// in src/users.js
 import React, { FC } from 'react';
 import {
   Datagrid,
@@ -9,6 +8,7 @@ import {
   ReferenceField,
   TextField,
 } from 'react-admin';
+import { WithPermissions } from '@react-admin/ra-rbac';
 
 export const AuthorList: FC = (props) => (
   <List {...props} sort={{ field: 'abbreviation' }}>
@@ -27,7 +27,9 @@ export const AuthorList: FC = (props) => (
         <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" showTime />
-      <EditButton />
+      <WithPermissions action="edit" resource="authors">
+        <EditButton />
+      </WithPermissions>
     </Datagrid>
   </List>
 );
