@@ -166,7 +166,8 @@ class TaxonName(BaseModel, TableMixin):
     authorised_on = Column(DateTime)
     legacy_id = Column(Integer)
     canonical_name_without_rank = column_property(
-        func.CONCAT_WS(" ", genus, specific_epithet, infraspecific_epithet)
+        func.CONCAT_WS(" ", genus, specific_epithet, infraspecific_epithet),
+        deferred=True,
     )
 
 
