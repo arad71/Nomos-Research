@@ -18,10 +18,10 @@ def test_get_taxon_ranks(
             "rank_abbrev": test_taxon_rank.rank_abbrev.value,
             "uninomial": test_taxon_rank.uninomial,
             "updated_by": test_taxon_rank.updated_by,
-            "updated_on": test_taxon_rank.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+            "updated_on": test_taxon_rank.updated_on.isoformat(),
             "created_by": test_taxon_rank.created_by,
             "kingdom_name": test_kingdom.kingdom_name,
-            "created_on": test_taxon_rank.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+            "created_on": test_taxon_rank.created_on.isoformat(),
         }
     ]
 
@@ -52,9 +52,9 @@ def test_edit_taxon_rank(
         "rank_abbrev": app.db.taxon_rank.enums.RankAbbreviation.subvar,
         "uninomial": False,
         "updated_by": test_superuser.user_id,
-        "updated_on": test_taxon_rank.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "updated_on": test_taxon_rank.updated_on.isoformat(),
         "created_by": test_superuser.user_id,
-        "created_on": test_taxon_rank.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_taxon_rank.created_on.isoformat(),
     }
 
     response = client.put(
@@ -82,9 +82,9 @@ def test_edit_taxon_rank_not_found(
         "rank_abbrev": "subvar",
         "uninomial": False,
         "updated_by": test_superuser.user_id,
-        "updated_on": test_taxon_rank.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "updated_on": test_taxon_rank.updated_on.isoformat(),
         "created_by": test_superuser.user_id,
-        "created_on": test_taxon_rank.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_taxon_rank.created_on.isoformat(),
     }
     response = client.put(
         "/api/v1/taxon_ranks/1234", json=new_taxon_rank, headers=superuser_token_headers
@@ -111,9 +111,9 @@ def test_get_taxon_rank(
         "rank_abbrev": test_taxon_rank.rank_abbrev.value,
         "uninomial": test_taxon_rank.uninomial,
         "updated_by": test_taxon_rank.updated_by,
-        "updated_on": test_taxon_rank.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "updated_on": test_taxon_rank.updated_on.isoformat(),
         "created_by": test_taxon_rank.created_by,
-        "created_on": test_taxon_rank.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_taxon_rank.created_on.isoformat(),
     }
 
 
@@ -155,7 +155,7 @@ def test_app_support_permissions(
         "rank_abbrev": "subvar",
         "uninomial": False,
         "created_by": test_app_support.user_id,
-        "created_on": test_taxon_rank.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_taxon_rank.created_on.isoformat(),
     }
     response = client.post(
         "/api/v1/taxon_ranks", headers=app_support_token_headers, json=json
@@ -200,7 +200,7 @@ def test_super_admin_permissions(
         "rank_abbrev": "subvar",
         "uninomial": False,
         "created_by": test_superuser.user_id,
-        "created_on": test_taxon_rank.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_taxon_rank.created_on.isoformat(),
     }
 
     response = client.post(
