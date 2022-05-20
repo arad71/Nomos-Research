@@ -1,4 +1,3 @@
-// in src/users.js
 import React, { FC } from 'react';
 import {
   Datagrid,
@@ -13,6 +12,7 @@ import {
   BooleanField,
 } from 'react-admin';
 import LanguageType from './LanguageType';
+import { WithPermissions } from '@react-admin/ra-rbac';
 
 export const VernacularList: FC = (props) => (
   <List {...props} sort={{ field: 'taxon_name___scientific_name' }}>
@@ -40,7 +40,9 @@ export const VernacularList: FC = (props) => (
         <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" showTime />
-      <EditButton />
+      <WithPermissions resource="vernaculars" action="edit">
+        <EditButton />
+      </WithPermissions>
     </Datagrid>
   </List>
 );

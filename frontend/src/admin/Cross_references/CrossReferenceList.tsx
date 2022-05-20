@@ -1,4 +1,3 @@
-// in src/users.js
 import React, { FC } from 'react';
 import {
   Datagrid,
@@ -13,6 +12,7 @@ import {
   BooleanField,
 } from 'react-admin';
 import CrossRefType from './CrossRefType';
+import { WithPermissions } from '@react-admin/ra-rbac';
 
 export const CrossReferenceList: FC = (props) => (
   <List {...props} sort={{ field: 'old_name___scientific_name' }}>
@@ -45,7 +45,9 @@ export const CrossReferenceList: FC = (props) => (
         <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" showTime />
-      <EditButton />
+      <WithPermissions resource="cross_references" action="edit">
+        <EditButton />
+      </WithPermissions>
     </Datagrid>
   </List>
 );

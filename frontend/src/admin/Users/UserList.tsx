@@ -13,6 +13,7 @@ import {
   ReferenceField,
   DateField,
 } from 'react-admin';
+import { WithPermissions } from '@react-admin/ra-rbac';
 import { makeStyles } from '@material-ui/core';
 import { FilterSidebar } from './FilterSidebar';
 import { UserListActions } from './UserListActions';
@@ -52,6 +53,7 @@ export const UserList: FC = (props) => {
           label="User Roles"
           reference="roles"
           source="role_ids"
+          sortBy="user_role___role___name"
         >
           <SingleFieldList>
             <ChipField className={classes.roleFonts} source="name" />
@@ -62,7 +64,9 @@ export const UserList: FC = (props) => {
           <TextField source="full_name" />
         </ReferenceField>
         <DateField source="updated_on" showTime />
-        <EditButton className={classes.textFonts} />
+        <WithPermissions action="edit" resource="users">
+          <EditButton className={classes.textFonts} />
+        </WithPermissions>
       </Datagrid>
     </List>
   );

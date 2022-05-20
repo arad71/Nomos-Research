@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { WithPermissions } from '@react-admin/ra-rbac';
 
 import { TopToolbar, CreateButton } from 'react-admin';
 import { makeStyles } from '@material-ui/core/styles';
@@ -24,11 +25,12 @@ export const UserListActions = (props: any) => {
   const classes = useStyles();
   return (
     <TopToolbar className={classes.text}>
-      <CreateButton
-        label="Add a new user"
-        icon=""
-        className={classes.create + ' ' + classes.buttons}
-      />
+      <WithPermissions action="create" resource="users">
+        <CreateButton
+          label="Add a new user"
+          className={classes.create + ' ' + classes.buttons}
+        />
+      </WithPermissions>
     </TopToolbar>
   );
 };
