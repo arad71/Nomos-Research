@@ -8,6 +8,7 @@ from loguru import logger
 from pydantic import ValidationError
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 
+from app.core.config import settings
 from app.db.taxon_rank.model import TaxonRank
 from app.db.user.model import User as UserModel
 
@@ -24,6 +25,8 @@ class DataImportBase:
         self.update_cols = []
 
     def ingest(self, import_file: str):
+        if settings.WACENSUS_SUFFIX:
+            import_file = import_file + settings.WACENSUS_SUFFIX
         path = os.path.join(LEGACY_DATA_DIRECTORY, import_file)
         with open(path, mode="r", encoding="iso-8859-1") as csv_file:
             csv_reader = csv.DictReader(csv_file)
@@ -40,13 +43,13 @@ class DataImportBase:
                 try:
                     self.import_row(row)
                 except ValidationError as e:
-                    logger.error("Validation Error: ", str(e))
+                    logger.error("Validation Error: {}", str(e))
                     logger.error(row)
                 except DataImportError as e:
-                    logger.error("Data Import Error: ", str(e))
+                    logger.error("Data Import Error: {}", str(e))
                     logger.error(row)
                 except Exception as e:
-                    logger.critical("Exception: ", str(e))
+                    logger.critical("Exception: {}", str(e))
                     logger.error(row)
                     traceback.print_exc()
                     break
