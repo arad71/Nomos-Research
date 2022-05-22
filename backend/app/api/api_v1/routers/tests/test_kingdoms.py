@@ -10,9 +10,9 @@ def test_get_kingdoms(client, test_kingdom, superuser_token_headers):
             "kingdom_name": test_kingdom.kingdom_name,
             "kingdom_desc": test_kingdom.kingdom_desc,
             "updated_by": test_kingdom.updated_by,
-            "updated_on": test_kingdom.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+            "updated_on": test_kingdom.updated_on.isoformat(),
             "created_by": test_kingdom.created_by,
-            "created_on": test_kingdom.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+            "created_on": test_kingdom.created_on.isoformat(),
         }
     ]
 
@@ -36,9 +36,9 @@ def test_edit_kingdom(client, test_kingdom, test_superuser, superuser_token_head
         "kingdom_name": "Test Kingdom2",
         "kingdom_desc": "Kingdom2",
         "updated_by": test_superuser.user_id,
-        "updated_on": test_kingdom.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "updated_on": test_kingdom.updated_on.isoformat(),
         "created_by": test_superuser.user_id,
-        "created_on": test_kingdom.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_kingdom.created_on.isoformat(),
     }
 
     response = client.put(
@@ -59,9 +59,9 @@ def test_edit_kingdom_not_found(
         "kingdom_name": "Test Kingdom2",
         "kingdom_desc": "Kingdom2",
         "updated_by": test_superuser.user_id,
-        "updated_on": test_kingdom.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "updated_on": test_kingdom.updated_on.isoformat(),
         "created_by": test_superuser.user_id,
-        "created_on": test_kingdom.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_kingdom.created_on.isoformat(),
     }
     response = client.put(
         "/api/v1/kingdoms/1234", json=new_kingdom, headers=superuser_token_headers
@@ -83,9 +83,9 @@ def test_get_kingdom(
         "kingdom_name": test_kingdom.kingdom_name,
         "kingdom_desc": test_kingdom.kingdom_desc,
         "updated_by": test_kingdom.updated_by,
-        "updated_on": test_kingdom.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "updated_on": test_kingdom.updated_on.isoformat(),
         "created_by": test_kingdom.created_by,
-        "created_on": test_kingdom.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_kingdom.created_on.isoformat(),
     }
 
 

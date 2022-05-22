@@ -22,9 +22,9 @@ def test_get_taxon_names(
             "canonical_name": test_taxon_name.canonical_name,
             "canonical_name_without_rank": test_taxon_name.canonical_name_without_rank,
             "updated_by": test_taxon_name.updated_by,
-            "updated_on": test_taxon_name.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+            "updated_on": test_taxon_name.updated_on.isoformat(),
             "created_by": test_taxon_name.created_by,
-            "created_on": test_taxon_name.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+            "created_on": test_taxon_name.created_on.isoformat(),
         }
     ]
 
@@ -61,9 +61,9 @@ def test_edit_taxon_name(
         "canonical_name": test_taxon_name.canonical_name,
         "canonical_name_without_rank": test_taxon_name.canonical_name_without_rank,
         "updated_by": test_superuser.user_id,
-        "updated_on": test_taxon_name.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "updated_on": test_taxon_name.updated_on.isoformat(),
         "created_by": test_superuser.user_id,
-        "created_on": test_taxon_name.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_taxon_name.created_on.isoformat(),
     }
 
     response = client.put(
@@ -96,9 +96,9 @@ def test_edit_taxon_name_not_found(
         "validated": True,
         "canonical_name": test_taxon_name.canonical_name,
         "updated_by": test_superuser.user_id,
-        "updated_on": test_taxon_name.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "updated_on": test_taxon_name.updated_on.isoformat(),
         "created_by": test_superuser.user_id,
-        "created_on": test_taxon_name.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_taxon_name.created_on.isoformat(),
     }
     response = client.put(
         "/api/v1/taxon_names/1234", json=new_taxon_name, headers=superuser_token_headers
@@ -131,9 +131,9 @@ def test_get_taxon_name(
         "canonical_name": test_taxon_name.canonical_name,
         "canonical_name_without_rank": test_taxon_name.canonical_name_without_rank,
         "updated_by": test_taxon_name.updated_by,
-        "updated_on": test_taxon_name.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "updated_on": test_taxon_name.updated_on.isoformat(),
         "created_by": test_taxon_name.created_by,
-        "created_on": test_taxon_name.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_taxon_name.created_on.isoformat(),
     }
 
 
@@ -165,13 +165,9 @@ def test_canonical_name_1(
         "scientific_name": test_taxon_name_canonical_name_1.scientific_name,
         "formatted_scientific_name": test_taxon_name_canonical_name_1.formatted_scientific_name,
         "updated_by": test_taxon_name_canonical_name_1.updated_by,
-        "updated_on": test_taxon_name_canonical_name_1.updated_on.strftime(
-            "%Y-%m-%dT%H:%M:%S.%f"
-        ),
+        "updated_on": test_taxon_name_canonical_name_1.updated_on.isoformat(),
         "created_by": test_taxon_name_canonical_name_1.created_by,
-        "created_on": test_taxon_name_canonical_name_1.created_on.strftime(
-            "%Y-%m-%dT%H:%M:%S.%f"
-        ),
+        "created_on": test_taxon_name_canonical_name_1.created_on.isoformat(),
     }
 
 
@@ -204,13 +200,9 @@ def test_canonical_name_2(
         "scientific_name": test_taxon_name_canonical_name_2.scientific_name,
         "formatted_scientific_name": test_taxon_name_canonical_name_2.formatted_scientific_name,
         "updated_by": test_taxon_name_canonical_name_2.updated_by,
-        "updated_on": test_taxon_name_canonical_name_2.updated_on.strftime(
-            "%Y-%m-%dT%H:%M:%S.%f"
-        ),
+        "updated_on": test_taxon_name_canonical_name_2.updated_on.isoformat(),
         "created_by": test_taxon_name_canonical_name_2.created_by,
-        "created_on": test_taxon_name_canonical_name_2.created_on.strftime(
-            "%Y-%m-%dT%H:%M:%S.%f"
-        ),
+        "created_on": test_taxon_name_canonical_name_2.created_on.isoformat(),
     }
 
 
@@ -244,13 +236,9 @@ def test_canonical_name_3(
         "scientific_name": test_taxon_name_canonical_name_3.scientific_name,
         "formatted_scientific_name": test_taxon_name_canonical_name_3.formatted_scientific_name,
         "updated_by": test_taxon_name_canonical_name_3.updated_by,
-        "updated_on": test_taxon_name_canonical_name_3.updated_on.strftime(
-            "%Y-%m-%dT%H:%M:%S.%f"
-        ),
+        "updated_on": test_taxon_name_canonical_name_3.updated_on.isoformat(),
         "created_by": test_taxon_name_canonical_name_3.created_by,
-        "created_on": test_taxon_name_canonical_name_3.created_on.strftime(
-            "%Y-%m-%dT%H:%M:%S.%f"
-        ),
+        "created_on": test_taxon_name_canonical_name_3.created_on.isoformat(),
     }
 
 
@@ -297,7 +285,7 @@ def test_super_admin_permissions(
         "validated": True,
         "canonical_name": test_taxon_name.canonical_name,
         "created_by": test_manager.user_id,
-        "created_on": test_taxon_name.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_taxon_name.created_on.isoformat(),
     }
     response = client.post(
         "/api/v1/taxon_names", headers=superuser_token_headers, json=taxon_json
@@ -308,7 +296,7 @@ def test_super_admin_permissions(
         {
             "canonical_name": test_taxon_name_2.canonical_name,
             "updated_by": test_manager.user_id,
-            "updated_on": test_taxon_name.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+            "updated_on": test_taxon_name.created_on.isoformat(),
         }
     )
     response = client.put(
@@ -350,7 +338,7 @@ def test_manager_permissions(
         "validated": True,
         "canonical_name": test_taxon_name.canonical_name,
         "created_by": test_manager.user_id,
-        "created_on": test_taxon_name.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_taxon_name.created_on.isoformat(),
     }
     response = client.post(
         "/api/v1/taxon_names", headers=manager_token_headers, json=taxon_json
@@ -361,7 +349,7 @@ def test_manager_permissions(
         {
             "canonical_name": test_taxon_name_2.canonical_name,
             "updated_by": test_manager.user_id,
-            "updated_on": test_taxon_name.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+            "updated_on": test_taxon_name.created_on.isoformat(),
         }
     )
     response = client.put(
@@ -403,7 +391,7 @@ def test_officer_permissions(
         "validated": True,
         "canonical_name": test_taxon_name.canonical_name,
         "created_by": test_manager.user_id,
-        "created_on": test_taxon_name.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_taxon_name.created_on.isoformat(),
     }
     response = client.post(
         "/api/v1/taxon_names", headers=officer_token_headers, json=taxon_json
@@ -414,7 +402,7 @@ def test_officer_permissions(
         {
             "canonical_name": test_taxon_name_2.canonical_name,
             "updated_by": test_manager.user_id,
-            "updated_on": test_taxon_name.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+            "updated_on": test_taxon_name.created_on.isoformat(),
         }
     )
     response = client.put(

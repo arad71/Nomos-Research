@@ -22,9 +22,9 @@ def test_get_cross_references(
         "cross_reference_type": test_cross_reference.cross_reference_type,
         "active": test_cross_reference.active,
         "updated_by": test_cross_reference.updated_by,
-        "updated_on": test_cross_reference.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "updated_on": test_cross_reference.updated_on.isoformat(),
         "created_by": test_cross_reference.created_by,
-        "created_on": test_cross_reference.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_cross_reference.created_on.isoformat(),
     }
 
 
@@ -58,9 +58,9 @@ def test_edit_cross_reference(
         "cross_reference_type": "misapplied_name",
         "active": True,
         "updated_by": test_superuser.user_id,
-        "updated_on": test_cross_reference.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "updated_on": test_cross_reference.updated_on.isoformat(),
         "created_by": test_superuser.user_id,
-        "created_on": test_cross_reference.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_cross_reference.created_on.isoformat(),
     }
 
     response = client.put(
@@ -90,9 +90,9 @@ def test_edit_cross_reference_not_found(
         "cross_reference_type": "misapplied_name",
         "active": False,
         "updated_by": test_superuser.user_id,
-        "updated_on": test_cross_reference.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "updated_on": test_cross_reference.updated_on.isoformat(),
         "created_by": test_superuser.user_id,
-        "created_on": test_cross_reference.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_cross_reference.created_on.isoformat(),
     }
     response = client.put(
         "/api/v1/cross_references/1234",
@@ -124,9 +124,9 @@ def test_get_cross_reference(
         "cross_reference_type": "misapplied_name",
         "active": test_cross_reference.active,
         "updated_by": test_cross_reference.updated_by,
-        "updated_on": test_cross_reference.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "updated_on": test_cross_reference.updated_on.isoformat(),
         "created_by": test_cross_reference.created_by,
-        "created_on": test_cross_reference.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_cross_reference.created_on.isoformat(),
     }
 
 
@@ -178,7 +178,7 @@ def test_super_admin_permissions(
         "old_name_id": test_taxon_name.taxon_name_id,
         "new_name_id": test_taxon_name_2.taxon_name_id,
         "created_by": test_superuser.user_id,
-        "created_on": test_cross_reference.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_cross_reference.created_on.isoformat(),
     }
     response = client.post(
         "/api/v1/cross_references",
@@ -190,9 +190,7 @@ def test_super_admin_permissions(
     cross_reference_json.update(
         {
             "updated_by": test_superuser.user_id,
-            "updated_on": test_cross_reference.updated_on.strftime(
-                "%Y-%m-%dT%H:%M:%S.%f"
-            ),
+            "updated_on": test_cross_reference.updated_on.isoformat(),
         }
     )
     response = client.put(
@@ -231,7 +229,7 @@ def test_manager_permissions(
         "old_name_id": test_taxon_name.taxon_name_id,
         "new_name_id": test_taxon_name_2.taxon_name_id,
         "created_by": test_manager.user_id,
-        "created_on": test_cross_reference.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_cross_reference.created_on.isoformat(),
     }
     response = client.post(
         "/api/v1/cross_references",
@@ -243,9 +241,7 @@ def test_manager_permissions(
     cross_reference_json.update(
         {
             "updated_by": test_manager.user_id,
-            "updated_on": test_cross_reference.updated_on.strftime(
-                "%Y-%m-%dT%H:%M:%S.%f"
-            ),
+            "updated_on": test_cross_reference.updated_on.isoformat(),
         }
     )
     response = client.put(
@@ -290,7 +286,7 @@ def test_officer_permissions(
         "old_name_id": test_taxon_name.taxon_name_id,
         "new_name_id": test_taxon_name_2.taxon_name_id,
         "created_by": test_officer.user_id,
-        "created_on": test_cross_reference.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_cross_reference.created_on.isoformat(),
     }
     response = client.post(
         "/api/v1/cross_references",
@@ -302,9 +298,7 @@ def test_officer_permissions(
     cross_reference_json.update(
         {
             "updated_by": test_officer.user_id,
-            "updated_on": test_cross_reference.updated_on.strftime(
-                "%Y-%m-%dT%H:%M:%S.%f"
-            ),
+            "updated_on": test_cross_reference.updated_on.isoformat(),
         }
     )
     response = client.put(
