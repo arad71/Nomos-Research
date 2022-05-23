@@ -4,25 +4,23 @@ import {
   DateField,
   EditButton,
   List,
-  NumberField,
   ReferenceField,
   TextField,
+  SearchInput,
 } from 'react-admin';
 import { WithPermissions } from '@react-admin/ra-rbac';
+import { TaxonNameFilters } from '../Taxon_names';
+
+const authorFilters = [<SearchInput source="q" alwaysOn />];
 
 export const AuthorList: FC = (props) => (
-  <List {...props} sort={{ field: 'abbreviation' }}>
+  <List {...props} sort={{ field: 'abbreviation' }} filters={authorFilters}>
     <Datagrid rowClick="show">
-      <NumberField source="id" />
       <TextField source="abbreviation" />
       <TextField source="surname" />
       <TextField source="first_names" />
       <TextField source="initials" />
       <TextField source="orc_id" />
-      <ReferenceField source="created_by" reference="users">
-        <TextField source="full_name" />
-      </ReferenceField>
-      <DateField source="created_on" showTime />
       <ReferenceField source="updated_by" reference="users">
         <TextField source="full_name" />
       </ReferenceField>
