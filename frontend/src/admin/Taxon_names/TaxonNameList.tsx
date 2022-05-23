@@ -65,6 +65,7 @@ const postListColumns = {
   subgenus: <TextField source="subgenus" />,
   species: <TextField source="species" />,
   subspecies: <TextField source="subspecies" />,
+  uninomial: <TextField source="uninomial" />,
   specific_epithet: <TextField source="specific_epithet" />,
   infraspecific_epithet: <TextField source="infraspecific_epithet" />,
   publication_id: (

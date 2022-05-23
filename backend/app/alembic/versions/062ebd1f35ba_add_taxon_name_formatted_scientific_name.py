@@ -21,11 +21,9 @@ depends_on = None
 
 
 def upgrade():
-    session = Session(bind=op.get_bind())
     op.add_column(
         "taxon_name", sa.Column("formatted_scientific_name", sa.String(), nullable=True)
     )
-    trigger_calculated_fields(session)
 
 
 def downgrade():
