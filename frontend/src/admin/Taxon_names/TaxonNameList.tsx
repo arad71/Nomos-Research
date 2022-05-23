@@ -149,7 +149,9 @@ const Actions = () => (
     <WithPermissions resource="taxon_names" action="create">
       <CreateButton />
     </WithPermissions>
-    <ExportButton maxResults={100000} />
+    <WithPermissions resource="taxon_names" action="export">
+      <ExportButton maxResults={100000} />
+    </WithPermissions>
     <SelectColumnsButton
       preference={TAXON_NAMES_PREFERENCE}
       columns={postListColumns}
