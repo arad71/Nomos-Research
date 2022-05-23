@@ -15,7 +15,7 @@ from app.dataimport.wacensus import trigger_calculated_fields
 
 # revision identifiers, used by Alembic.
 revision = "062ebd1f35ba"
-down_revision = "4b15d68fbe48"
+down_revision = "665ea730d575"
 branch_labels = None
 depends_on = None
 
