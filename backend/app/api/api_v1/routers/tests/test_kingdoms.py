@@ -198,3 +198,46 @@ def test_super_admin_permissions(
         headers=superuser_token_headers,
     )
     assert response.status_code == status.HTTP_200_OK
+
+
+parameter_names = "method,endpoint,status_code"
+
+parameter_values = [
+    ("get", "/api/v1/kingdoms", status.HTTP_200_OK),
+    ("post", "/api/v1/kingdoms", status.HTTP_403_FORBIDDEN),
+    ("put", "/api/v1/kingdoms/1", status.HTTP_403_FORBIDDEN),
+    ("delete", "/api/v1/kingdoms/1", status.HTTP_403_FORBIDDEN),
+]
+
+
+@pytest.mark.parametrize(
+    parameter_names,
+    parameter_values,
+)
+def test_reader_permissions(
+    client, reader_token_headers, method, endpoint, status_code
+):
+    response = getattr(client, method)(endpoint, headers=reader_token_headers)
+    assert response.status_code == status_code
+
+
+@pytest.mark.parametrize(
+    parameter_names,
+    parameter_values,
+)
+def test_manager_permissions(
+    client, manager_token_headers, method, endpoint, status_code
+):
+    response = getattr(client, method)(endpoint, headers=manager_token_headers)
+    assert response.status_code == status_code
+
+
+@pytest.mark.parametrize(
+    parameter_names,
+    parameter_values,
+)
+def test_officer_permissions(
+    client, officer_token_headers, method, endpoint, status_code
+):
+    response = getattr(client, method)(endpoint, headers=officer_token_headers)
+    assert response.status_code == status_code
