@@ -24,4 +24,8 @@ export const GlobalTheme = makeStyles((theme) => ({
   sectionMargin: {
     marginTop: '2.2em',
   },
+  form: {
+    border: '1px solid #DFDFE2',
+    borderRadius: '5px',
+  },
 }));

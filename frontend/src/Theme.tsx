@@ -3,6 +3,9 @@ import { createTheme } from '@material-ui/core/styles';
 const theme = createTheme({
   typography: {
     fontFamily: [
+      'Helvetica Neue',
+      'Helvetica',
+      'Arial',
       'Segoe UI',
       'Roboto',
       'Oxygen',
@@ -15,7 +18,7 @@ const theme = createTheme({
   },
   palette: {
     primary: {
-      main: '#f00',
+      main: '#2c5331',
     },
     secondary: {
       main: '#ffcc80', // Another orange-ish color
