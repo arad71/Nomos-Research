@@ -11,7 +11,6 @@ import {
   BooleanField,
   Labeled,
   RichTextField,
-  FunctionField,
   useRecordContext,
 } from 'react-admin';
 import Aside from '../shared/Aside';
@@ -63,11 +62,7 @@ export const TaxonNameShow: FC = (props) => {
             />
             <TaxonNameStatus />
           </Box>
-          <ReferenceField
-            source="rank_id"
-            reference="taxon_ranks"
-            linkType={false}
-          >
+          <ReferenceField source="rank_id" reference="taxon_ranks" link={false}>
             <TextField source="rank_name" className={classes.subtitle} />
           </ReferenceField>
         </Box>
@@ -85,7 +80,7 @@ export const TaxonNameShow: FC = (props) => {
             <Box className={globalClasses.formRow}>
               <Box className={globalClasses.fieldMargin}>
                 <Labeled label="Genus">
-                  <TextField source="genus" label="Genus" />
+                  <TextField source="genus" />
                 </Labeled>
               </Box>
               <Box className={globalClasses.fieldMargin}>
