@@ -5,16 +5,16 @@ import { GlobalTheme } from '../../GlobalTheme';
 import { makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
-  form: {
-    border: '1px solid #DFDFE2',
-    borderRadius: '5px',
+  mainGrid: {
+    display: 'grid',
+    gridTemplateColumns: '3fr 3fr 1fr 3fr',
+    width: '70%',
+    gridColumnGap: '1.5em',
   },
-  formWidth: {
-    width: '75%',
-  },
-  orcid: {
-    width: '52%',
-    marginBottom: '60px',
+  orcRow: {
+    gridColumnStart: '1',
+    gridColumnEnd: '3',
+    marginBottom: '20%',
   },
 }));
 
@@ -23,28 +23,26 @@ export const AuthorCreateEdit: FC = (props) => {
   const classes = useStyles();
   return (
     <SimpleForm {...props} warnWhenUnsavedChanges>
-      <Box className={classes.formWidth}>
+      <Box>
+        <Typography variant="h5" className={globalClasses.bold} gutterBottom>
+          Author
+        </Typography>
+      </Box>
+      <Box className={classes.mainGrid}>
         <Box>
-          <Typography variant="h5" className={globalClasses.bold} gutterBottom>
-            Author
-          </Typography>
-        </Box>
-        <Box className={globalClasses.formRow}>
-          <Box className={globalClasses.fieldMargin}>
-            <TextInput source="surname" />
-          </Box>
-          <Box className={globalClasses.fieldMargin}>
-            <TextInput source="first_names" />
-          </Box>
-          <Box width={'100px'} className={globalClasses.fieldMargin}>
-            <TextInput source="initials" />
-          </Box>
-          <Box className={globalClasses.fieldMargin}>
-            <TextInput source="abbreviation" validate={[required()]} />
-          </Box>
+          <TextInput source="surname" fullWidth />
         </Box>
         <Box>
-          <TextInput className={classes.orcid} source="orc_id" />
+          <TextInput source="first_names" fullWidth />
+        </Box>
+        <Box>
+          <TextInput source="initials" fullWidth />
+        </Box>
+        <Box>
+          <TextInput source="abbreviation" fullWidth validate={[required()]} />
+        </Box>
+        <Box className={classes.orcRow}>
+          <TextInput source="orc_id" fullWidth />
         </Box>
       </Box>
     </SimpleForm>
