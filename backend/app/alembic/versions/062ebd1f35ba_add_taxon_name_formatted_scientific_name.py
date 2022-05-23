@@ -15,17 +15,15 @@ from app.dataimport.wacensus import trigger_calculated_fields
 
 # revision identifiers, used by Alembic.
 revision = "062ebd1f35ba"
-down_revision = "665ea730d575"
+down_revision = "4b15d68fbe48"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
-    session = Session(bind=op.get_bind())
     op.add_column(
         "taxon_name", sa.Column("formatted_scientific_name", sa.String(), nullable=True)
     )
-    trigger_calculated_fields(session)
 
 
 def downgrade():
