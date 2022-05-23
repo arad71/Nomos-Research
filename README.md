@@ -243,9 +243,8 @@ docker-compose logs -f name_of_service # frontend|backend|db
 ## Deployment
 
 The app is deployed using GitHub actions configured through [.github/workflows/cicd.yml](.github/workflows/cicd.yml).
-### Set up
-* Ensure that action.bash exists on the environment that you want to copy into.
-* Ensure that environment variables referenced in `cicd.yml` are defined in GitHub admin UI
+### Deployment Process
+* Process captured in wiki: https://dev.azure.com/BIO-WA/WA-BDR/_wiki/wikis/BDR-WA.wiki/96/Developer-information
 
 ### Configuration
 Environment specific configuration can be placed in a .env in the project directory on the deployment server.
