@@ -22,10 +22,12 @@ const authorFilters = [<SearchInput source="q" alwaysOn />];
 const Actions = () => (
   <TopToolbar>
     <FilterButton />
-    <WithPermissions resource="taxon_names" action="create">
+    <WithPermissions resource="authors" action="create">
       <CreateButton />
     </WithPermissions>
-    <ExportButton maxResults={100000} />
+    <WithPermissions resource="authors" action="export">
+      <ExportButton maxResults={100000} />
+    </WithPermissions>
   </TopToolbar>
 );
 
