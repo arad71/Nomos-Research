@@ -160,6 +160,7 @@ def test_canonical_name_1(
         "is_current": test_taxon_name_canonical_name_1.is_current,
         "validated": test_taxon_name_canonical_name_1.validated,
         "genus": test_taxon_name_canonical_name_1.genus,
+        "uninomial": test_taxon_name_canonical_name_1.uninomial,
         "canonical_name": test_taxon_name_canonical_name_1.canonical_name,
         "canonical_name_without_rank": test_taxon_name_canonical_name_1.canonical_name_without_rank,
         "scientific_name": test_taxon_name_canonical_name_1.scientific_name,

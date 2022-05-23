@@ -456,6 +456,7 @@ def test_taxon_name_canonical_name_1(
         is_current=True,
         validated=True,
         genus="Acanthiza",
+        uninomial="Acanthiza",
         specific_epithet=None,
         infraspecific_epithet=None,
         # publication_year=1911,
