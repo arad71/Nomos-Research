@@ -1,12 +1,50 @@
 import { required, SimpleForm, TextInput } from 'react-admin';
 import React, { FC } from 'react';
+import { Box, Typography } from '@material-ui/core';
+import { GlobalTheme } from '../../GlobalTheme';
+import { makeStyles } from '@material-ui/core';
 
-export const AuthorCreateEdit: FC = (props) => (
-  <SimpleForm {...props}>
-    <TextInput source="abbreviation" validate={[required()]} />
-    <TextInput source="surname" />
-    <TextInput source="first_names" />
-    <TextInput source="initials" />
-    <TextInput source="orc_id" />
-  </SimpleForm>
-);
+const useStyles = makeStyles((theme) => ({
+  mainGrid: {
+    display: 'grid',
+    gridTemplateColumns: '3fr 3fr 1fr 3fr',
+    width: '70%',
+    gridColumnGap: '1.5em',
+  },
+  orcRow: {
+    gridColumnStart: '1',
+    gridColumnEnd: '3',
+    marginBottom: '20%',
+  },
+}));
+
+export const AuthorCreateEdit: FC = (props) => {
+  const globalClasses = GlobalTheme();
+  const classes = useStyles();
+  return (
+    <SimpleForm {...props} warnWhenUnsavedChanges>
+      <Box>
+        <Typography variant="h5" className={globalClasses.bold} gutterBottom>
+          Author
+        </Typography>
+      </Box>
+      <Box className={classes.mainGrid}>
+        <Box>
+          <TextInput source="surname" fullWidth />
+        </Box>
+        <Box>
+          <TextInput source="first_names" fullWidth />
+        </Box>
+        <Box>
+          <TextInput source="initials" fullWidth />
+        </Box>
+        <Box>
+          <TextInput source="abbreviation" fullWidth validate={[required()]} />
+        </Box>
+        <Box className={classes.orcRow}>
+          <TextInput source="orc_id" fullWidth />
+        </Box>
+      </Box>
+    </SimpleForm>
+  );
+};

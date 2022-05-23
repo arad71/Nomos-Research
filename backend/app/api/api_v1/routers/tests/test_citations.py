@@ -17,9 +17,9 @@ def test_get_citations(client, test_citation, superuser_token_headers):
             "author_type": test_citation.author_type.value,
             "author_order": test_citation.author_order,
             "updated_by": test_citation.updated_by,
-            "updated_on": test_citation.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+            "updated_on": test_citation.updated_on.isoformat(),
             "created_by": test_citation.created_by,
-            "created_on": test_citation.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+            "created_on": test_citation.created_on.isoformat(),
         }
     ]
 
@@ -52,9 +52,9 @@ def test_edit_citation(
         "author_type": "current",
         "author_order": 0,
         "updated_by": test_superuser.user_id,
-        "updated_on": test_citation.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "updated_on": test_citation.updated_on.isoformat(),
         "created_by": test_superuser.user_id,
-        "created_on": test_citation.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_citation.created_on.isoformat(),
     }
 
     response = client.put(
@@ -79,9 +79,9 @@ def test_edit_citation_not_found(
         "author_type": "current",
         "author_order": 0,
         "updated_by": test_superuser.user_id,
-        "updated_on": test_citation.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "updated_on": test_citation.updated_on.isoformat(),
         "created_by": test_superuser.user_id,
-        "created_on": test_citation.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_citation.created_on.isoformat(),
     }
     response = client.put(
         "/api/v1/citations/1234", json=new_citation, headers=superuser_token_headers
@@ -107,9 +107,9 @@ def test_get_citation(
         "author_type": test_citation.author_type,
         "author_order": test_citation.author_order,
         "updated_by": test_citation.updated_by,
-        "updated_on": test_citation.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "updated_on": test_citation.updated_on.isoformat(),
         "created_by": test_citation.created_by,
-        "created_on": test_citation.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_citation.created_on.isoformat(),
     }
 
 
@@ -159,7 +159,7 @@ def test_super_admin_permissions(
         "taxon_name_id": test_taxon_name.taxon_name_id,
         "author_id": test_author.author_id,
         "created_by": test_superuser.user_id,
-        "created_on": test_citation.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_citation.created_on.isoformat(),
     }
     response = client.post(
         "/api/v1/citations",
@@ -171,7 +171,7 @@ def test_super_admin_permissions(
     citation_json.update(
         {
             "updated_by": test_superuser.user_id,
-            "updated_on": test_citation.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+            "updated_on": test_citation.updated_on.isoformat(),
         }
     )
     response = client.put(
@@ -210,7 +210,7 @@ def test_manager_permissions(
         "taxon_name_id": test_taxon_name.taxon_name_id,
         "author_id": test_author.author_id,
         "created_by": test_manager.user_id,
-        "created_on": test_citation.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_citation.created_on.isoformat(),
     }
     response = client.post(
         "/api/v1/citations",
@@ -222,7 +222,7 @@ def test_manager_permissions(
     citation_json.update(
         {
             "updated_by": test_manager.user_id,
-            "updated_on": test_citation.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+            "updated_on": test_citation.updated_on.isoformat(),
         }
     )
     response = client.put(
@@ -267,7 +267,7 @@ def test_officer_permissions(
         "taxon_name_id": test_taxon_name.taxon_name_id,
         "author_id": test_author.author_id,
         "created_by": test_officer.user_id,
-        "created_on": test_citation.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_citation.created_on.isoformat(),
     }
     response = client.post(
         "/api/v1/citations",
@@ -279,7 +279,7 @@ def test_officer_permissions(
     citation_json.update(
         {
             "updated_by": test_officer.user_id,
-            "updated_on": test_citation.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+            "updated_on": test_citation.updated_on.isoformat(),
         }
     )
     response = client.put(

@@ -8,7 +8,7 @@ import {
 import React, { FC } from 'react';
 
 export const UserCreateEdit: FC = (props) => (
-  <SimpleForm {...props}>
+  <SimpleForm {...props} warnWhenUnsavedChanges>
     <TextInput source="email" />
     <TextInput source="first_name" />
     <TextInput source="last_name" />

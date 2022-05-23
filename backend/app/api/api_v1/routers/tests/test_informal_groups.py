@@ -16,13 +16,9 @@ def test_get_informal_groups(
             "classification_system_id": test_hierarchy.classification_system_id,
             "classification_system": response.json()[0]["classification_system"],
             "updated_by": test_informal_group.updated_by,
-            "updated_on": test_informal_group.updated_on.strftime(
-                "%Y-%m-%dT%H:%M:%S.%f"
-            ),
+            "updated_on": test_informal_group.updated_on.isoformat(),
             "created_by": test_informal_group.created_by,
-            "created_on": test_informal_group.created_on.strftime(
-                "%Y-%m-%dT%H:%M:%S.%f"
-            ),
+            "created_on": test_informal_group.created_on.isoformat(),
         }
     ]
 
@@ -52,9 +48,9 @@ def test_edit_informal_group(
         "taxon_name_id": test_hierarchy.taxon_name_id,
         "classification_system_id": test_hierarchy.classification_system_id,
         "updated_by": test_superuser.user_id,
-        "updated_on": test_informal_group.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "updated_on": test_informal_group.updated_on.isoformat(),
         "created_by": test_superuser.user_id,
-        "created_on": test_informal_group.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_informal_group.created_on.isoformat(),
     }
 
     response = client.put(
@@ -83,9 +79,9 @@ def test_edit_informal_group_not_found(
         "taxon_name_id": test_hierarchy.taxon_name_id,
         "classification_system_id": test_hierarchy.classification_system_id,
         "updated_by": test_superuser.user_id,
-        "updated_on": test_informal_group.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "updated_on": test_informal_group.updated_on.isoformat(),
         "created_by": test_superuser.user_id,
-        "created_on": test_informal_group.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_informal_group.created_on.isoformat(),
     }
     response = client.put(
         "/api/v1/informal_groups/1234",
@@ -112,9 +108,9 @@ def test_get_informal_group(
         "classification_system_id": test_hierarchy.classification_system_id,
         "classification_system": response.json()["classification_system"],
         "updated_by": test_informal_group.updated_by,
-        "updated_on": test_informal_group.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "updated_on": test_informal_group.updated_on.isoformat(),
         "created_by": test_informal_group.created_by,
-        "created_on": test_informal_group.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_informal_group.created_on.isoformat(),
     }
 
 
@@ -157,7 +153,7 @@ def test_super_admin_permissions(
         "taxon_name_id": test_taxon_name_2.taxon_name_id,
         "classification_system_id": test_hierarchy.classification_system_id,
         "created_by": test_superuser.user_id,
-        "created_on": test_informal_group.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_informal_group.created_on.isoformat(),
     }
     response = client.post(
         "api/v1/informal_groups",
@@ -170,9 +166,7 @@ def test_super_admin_permissions(
     json.update(
         {
             "updated_by": test_superuser.user_id,
-            "updated_on": test_informal_group.updated_on.strftime(
-                "%Y-%m-%dT%H:%M:%S.%f"
-            ),
+            "updated_on": test_informal_group.updated_on.isoformat(),
         }
     )
     response = client.put(
@@ -210,7 +204,7 @@ def test_manager_permissions(
         "taxon_name_id": test_taxon_name_2.taxon_name_id,
         "classification_system_id": test_hierarchy.classification_system_id,
         "created_by": test_manager.user_id,
-        "created_on": test_informal_group.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_informal_group.created_on.isoformat(),
     }
     response = client.post(
         "api/v1/informal_groups",
@@ -223,9 +217,7 @@ def test_manager_permissions(
     json.update(
         {
             "updated_by": test_manager.user_id,
-            "updated_on": test_informal_group.updated_on.strftime(
-                "%Y-%m-%dT%H:%M:%S.%f"
-            ),
+            "updated_on": test_informal_group.updated_on.isoformat(),
         }
     )
     response = client.put(
