@@ -11,6 +11,7 @@ class AuthorCrud(crud.Crud):
     model = Author
     id_key = "author_id"
     name = "Author"
+    search_fields = ["abbreviation", "first_names", "surname", "initials", "orc_id"]
 
     def get_authors(cls, db: Session, skip: int = 0, limit: int = 100) -> t.List[Base]:
         return (
