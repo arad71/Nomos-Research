@@ -76,8 +76,9 @@ class ImportTaxonName(DataImportBase):
             "form_desc_dy": row["FORM_DESC_DY"] or None,
             "comments": row["COMMENTS"] or None,
             "contributed_by": row["CONTRIBUTED_BY"] or None,
-            "contributed_on": self.get_datetime(row["CONTRIBUTED_ON"],
-                                                "%Y-%m-%dT%H:%M:%S%z"),
+            "contributed_on": self.get_datetime(
+                row["CONTRIBUTED_ON"], "%Y-%m-%dT%H:%M:%S%z"
+            ),
             "validated": self.map_y_n_to_bool(row["VALIDATED"]),
             "source": row["SOURCE"] or None,
             "external_id": row["EXTERNAL_ID"] or None,
@@ -93,8 +94,9 @@ class ImportTaxonName(DataImportBase):
             "notes": row["NOTES"] or None,
             "reference": row["REFERENCE"] or None,
             "authorised_by": row["AUTHORISED_BY"] or None,
-            "authorised_on": self.get_datetime(row["AUTHORISED_ON"],
-                                               "%Y-%m-%dT%H:%M:%S%z"),
+            "authorised_on": self.get_datetime(
+                row["AUTHORISED_ON"], "%Y-%m-%dT%H:%M:%S%z"
+            ),
             "legacy_id": row["NAME_ID"],
             "created_by": self.current_user,
             "updated_by": self.map_user_or_default(row["UPDATED_BY"]),
