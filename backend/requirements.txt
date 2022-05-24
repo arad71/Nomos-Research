@@ -20,7 +20,7 @@ sqlalchemy-utils==0.38.2
 sqlalchemy_mixins==1.5.3
 python-dateutil==2.8.2
 python-multipart==0.0.5
-pyjwt==2.3.0
+pyjwt==2.4.0
 
 mypy==0.950
 autoflake==1.4
