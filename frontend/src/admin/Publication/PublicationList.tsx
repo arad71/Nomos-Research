@@ -23,7 +23,7 @@ export const PublicationList: FC = (props) => (
       <TextField source="title" />
       <TextField source="display_title" />
       <TextField source="abbreviated_title" />
-      <NumberField source="publication_year" />
+      <TextField source="publication_year" />
       <TextField source="volume" />
       <TextField source="edition" />
       <TextField source="pages" />
