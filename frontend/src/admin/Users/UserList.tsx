@@ -42,6 +42,7 @@ export const UserList: FC = (props) => {
       pagination={<UserPagination />}
       perPage={100}
       classes={{ content: classes.content }}
+      sort={{ field: 'updated_on' }}
       {...props}
     >
       <Datagrid rowClick="show">
