@@ -19,7 +19,7 @@ class PublicationBase(BaseModel):
     title: Optional[str]
     display_title: Optional[str]
     abbreviated_title: Optional[str]
-    year: Optional[int]
+    publication_year: Optional[int]
     volume: Optional[str]
     edition: Optional[str]
     pages: Optional[str]
