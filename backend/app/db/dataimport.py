@@ -28,7 +28,7 @@ class DataImportBase:
         if settings.WACENSUS_SUFFIX:
             import_file = import_file + settings.WACENSUS_SUFFIX
         path = os.path.join(LEGACY_DATA_DIRECTORY, import_file)
-        with open(path, mode="r", encoding="iso-8859-1") as csv_file:
+        with open(path, mode="r", encoding=settings.WACENSUS_ENCODING) as csv_file:
             csv_reader = csv.DictReader(csv_file)
             data = list(csv_reader)
             total_rows = len(data)
