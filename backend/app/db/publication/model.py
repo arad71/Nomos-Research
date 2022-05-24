@@ -34,7 +34,7 @@ class Publication(BaseModel, TableMixin):
     title = Column(String)
     display_title = Column(String)
     abbreviated_title = Column(String)
-    year = Column(Integer)
+    publication_year = Column(Integer)
     volume = Column(String)
     edition = Column(String)
     pages = Column(String)

@@ -47,6 +47,7 @@ class TaxonNameBase(BaseModel):
     subgenus: Optional[str]
     species: Optional[str]
     subspecies: Optional[str]
+    uninomial: Optional[str]
     specific_epithet: Optional[str]
     infraspecific_epithet: Optional[str]
     publication_id: Optional[int] = Field(description=PUBLICATION_ID)
