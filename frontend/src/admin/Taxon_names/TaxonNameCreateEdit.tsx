@@ -112,7 +112,7 @@ export const TaxonNameCreateEdit: FC = ({
               createForm={
                 <CitationRowForm initialValues={initialValues} {...props} />
               }
-              editForm={<CitationRowForm {...props}  children={}/>}
+              editForm={<CitationRowForm {...props} />}
               hasCreate
             >
               <ReferenceField source="author_id" reference="authors">
