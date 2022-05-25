@@ -11,7 +11,7 @@ def test_get_publications(client, test_publication, superuser_token_headers):
         {
             "publication_id": test_publication.publication_id,
             "bad_publication": test_publication.bad_publication,
-            "publication": test_publication.publication,
+            "abbreviated_title": test_publication.abbreviated_title,
             "publication_name": test_publication.publication_name,
             "author": [],
             "publication_day": test_publication.publication_day,
@@ -47,7 +47,7 @@ def test_edit_publication(
 ):
     new_publication = {
         "bad_publication": test_publication.bad_publication,
-        "publication": test_publication.publication,
+        "abbreviated_title": test_publication.abbreviated_title,
         "publication_name": test_publication.publication_name,
         "publication_day": test_publication.publication_day,
         "publication_month": test_publication.publication_month,
@@ -76,7 +76,7 @@ def test_edit_publication_not_found(
 ):
     new_publication = {
         "bad_publication": True,
-        "publication": "PUBLICATION 2",
+        "abbreviated_title": "PUBLICATION 2",
         "publication_name": "PUBLICATION_NAME",
         "updated_by": test_superuser.user_id,
         "updated_on": test_publication.updated_on.isoformat(),
@@ -104,7 +104,7 @@ def test_get_publication(
     assert response.json() == {
         "publication_id": test_publication.publication_id,
         "bad_publication": test_publication.bad_publication,
-        "publication": test_publication.publication,
+        "abbreviated_title": test_publication.abbreviated_title,
         "publication_name": test_publication.publication_name,
         "publication_day": test_publication.publication_day,
         "publication_month": test_publication.publication_month,
@@ -136,7 +136,7 @@ def test_unauthenticated_routes(client):
 
 NEW_PUBLICATION = {
     "bad_publication": False,
-    "publication": "PUBLICATION",
+    "abbreviated_title": "PUBLICATION",
     "publication_name": "PUBLICATION_NAME_NEW",
     "updated_by": None,
     "updated_on": None,

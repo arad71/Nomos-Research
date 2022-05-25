@@ -13,16 +13,15 @@ import {
 import { WithPermissions } from '@react-admin/ra-rbac';
 
 export const PublicationList: FC = (props) => (
-  <List {...props} sort={{ field: 'publication' }}>
+  <List {...props} sort={{ field: 'abbreviated_title' }}>
     <Datagrid rowClick="show">
       <TextField source="id" />
-      <TextField source="publication" />
+      <TextField source="abbreviated_title" />
       <BooleanField source="bad_publication" />
       <TextField source="publication_name" />
       <TextField source="doi" />
       <TextField source="title" />
       <TextField source="display_title" />
-      <TextField source="abbreviated_title" />
       <TextField source="publication_year" />
       <TextField source="publication_month" />
       <TextField source="publication_day" />

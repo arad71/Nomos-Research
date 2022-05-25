@@ -24,7 +24,6 @@ class Publication(BaseModel, TableMixin):
         comment=PUBLICATION_ID,
         doc=PUBLICATION_ID,
     )
-    publication = Column(Text, nullable=False)
     bad_publication = Column(
         Boolean,
         comment=BAD_PUBLICATION,
