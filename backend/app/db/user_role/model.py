@@ -2,6 +2,7 @@ from sqlalchemy import Column, ForeignKey, Integer, UniqueConstraint
 from sqlalchemy.orm import backref, relationship
 
 from app.db.models import BaseModel, TableMixin
+from app.db.role.model import Role
 from app.db.user.model import User
 
 
@@ -22,10 +23,10 @@ class UserRole(BaseModel, TableMixin):
     )
 
     role = relationship(
-        "Role", backref=backref("user_role", cascade="all, delete-orphan")
+        Role, backref=backref("user_role", cascade="all, delete-orphan")
     )
     user = relationship(
-        "User",
+        User,
         backref=backref("user_role", cascade="all, delete-orphan"),
         foreign_keys=[user_id],
         remote_side=[User.user_id],

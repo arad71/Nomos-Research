@@ -39,6 +39,17 @@ class UserCrud(crud.Crud):
         db.add(db_user)
         db.commit()
         db.refresh(db_user)
+        user_id = db_user.user_id
+        if user.role_ids:
+            for role_id in user.role_ids:
+                user_role = UserRole(
+                    user_id=user_id,
+                    role_id=role_id,
+                    created_by=current_user,
+                    updated_by=current_user,
+                )
+                db.add(user_role)
+            db.commit()
         return db_user
 
     @classmethod

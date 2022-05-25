@@ -1,6 +1,5 @@
 import React, { FC } from 'react';
 import {
-  NumberField,
   ReferenceField,
   RichTextField,
   Show,
@@ -14,14 +13,15 @@ export const PublicationShow: FC = (props) => {
   return (
     <Show aside={<Aside />} {...props}>
       <SimpleShowLayout>
-        <TextField source="publication" />
+        <TextField source="abbreviated_title" />
         <BooleanField source="bad_publication" />
         <TextField source="publication_name" />
         <TextField source="doi" />
         <TextField source="title" />
         <TextField source="display_title" />
-        <TextField source="abbreviated_title" />
-        <NumberField source="year" />
+        <TextField source="publication_year" />
+        <TextField source="publication_month" />
+        <TextField source="publication_day" />
         <TextField source="volume" />
         <TextField source="edition" />
         <TextField source="pages" />
@@ -35,7 +35,7 @@ export const PublicationShow: FC = (props) => {
         <TextField source="published" />
         <TextField source="publisher" />
         <TextField source="published_location" />
-        <TextField source="published_date" />
+        <TextField source="publication_date" />
         <TextField source="isbn" />
         <TextField source="issn" />
         <TextField source="bhl_url" />
@@ -46,7 +46,7 @@ export const PublicationShow: FC = (props) => {
           source="parent_id"
           reference="publications"
         >
-          <TextField source="publication" />
+          <TextField source="abbreviated_title" />
         </ReferenceField>
         <TextField source="reference_author_role" />
         <TextField source="language" />
@@ -55,7 +55,7 @@ export const PublicationShow: FC = (props) => {
           source="duplicate_of_id"
           reference="publications"
         >
-          <TextField source="publication" />
+          <TextField source="abbreviated_title" />
         </ReferenceField>
       </SimpleShowLayout>
     </Show>

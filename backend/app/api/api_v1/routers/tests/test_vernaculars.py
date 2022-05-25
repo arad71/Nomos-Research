@@ -13,9 +13,9 @@ def test_get_vernaculars(client, test_vernacular, superuser_token_headers):
             "language": test_vernacular.language.value,
             "enabled": test_vernacular.enabled,
             "updated_by": test_vernacular.updated_by,
-            "updated_on": test_vernacular.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+            "updated_on": test_vernacular.updated_on.isoformat(),
             "created_by": test_vernacular.created_by,
-            "created_on": test_vernacular.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+            "created_on": test_vernacular.created_on.isoformat(),
         }
     ]
 
@@ -45,9 +45,9 @@ def test_edit_vernacular(
         "language": "english",
         "enabled": True,
         "updated_by": test_superuser.user_id,
-        "updated_on": test_vernacular.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "updated_on": test_vernacular.updated_on.isoformat(),
         "created_by": test_superuser.user_id,
-        "created_on": test_vernacular.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_vernacular.created_on.isoformat(),
     }
 
     response = client.put(
@@ -71,9 +71,9 @@ def test_edit_vernacular_not_found(
         "language": "english",
         "enabled": True,
         "updated_by": test_superuser.user_id,
-        "updated_on": test_vernacular.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "updated_on": test_vernacular.updated_on.isoformat(),
         "created_by": test_superuser.user_id,
-        "created_on": test_vernacular.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_vernacular.created_on.isoformat(),
     }
     response = client.put(
         "/api/v1/vernaculars/1234", json=new_vernacular, headers=superuser_token_headers
@@ -99,9 +99,9 @@ def test_get_vernacular(
         "language": test_vernacular.language.value,
         "enabled": test_vernacular.enabled,
         "updated_by": test_vernacular.updated_by,
-        "updated_on": test_vernacular.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "updated_on": test_vernacular.updated_on.isoformat(),
         "created_by": test_vernacular.created_by,
-        "created_on": test_vernacular.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_vernacular.created_on.isoformat(),
     }
 
 

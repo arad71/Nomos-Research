@@ -13,7 +13,7 @@ class ImportTaxonName(DataImportBase):
         self.upsert_constraint = f"uc_{TaxonNameModel.__tablename__}_legacy_id"
         self.update_cols = (
             "kingdom_id",
-            "genus",
+            "uninomial",
             "subgenus",
             "specific_epithet",
             "infraspecific_epithet",
@@ -59,7 +59,7 @@ class ImportTaxonName(DataImportBase):
                 row["RANK_ID"],
                 row["KINGDOM_ID"],
             ),
-            "genus": row["NAME1"] or None,
+            "uninomial": row["NAME1"] or None,
             "specific_epithet": row["NAME2"] or None,
             "infraspecific_epithet": row["NAME3"] or None,
             "canonical_name": row["NAME"] or None,
@@ -76,7 +76,9 @@ class ImportTaxonName(DataImportBase):
             "form_desc_dy": row["FORM_DESC_DY"] or None,
             "comments": row["COMMENTS"] or None,
             "contributed_by": row["CONTRIBUTED_BY"] or None,
-            "contributed_on": self.get_datetime(row["CONTRIBUTED_ON"], "%d/%b/%y"),
+            "contributed_on": self.get_datetime(
+                row["CONTRIBUTED_ON"], "%Y-%m-%dT%H:%M:%S%z"
+            ),
             "validated": self.map_y_n_to_bool(row["VALIDATED"]),
             "source": row["SOURCE"] or None,
             "external_id": row["EXTERNAL_ID"] or None,
@@ -92,7 +94,9 @@ class ImportTaxonName(DataImportBase):
             "notes": row["NOTES"] or None,
             "reference": row["REFERENCE"] or None,
             "authorised_by": row["AUTHORISED_BY"] or None,
-            "authorised_on": self.get_datetime(row["AUTHORISED_ON"], "%d/%b/%y"),
+            "authorised_on": self.get_datetime(
+                row["AUTHORISED_ON"], "%Y-%m-%dT%H:%M:%S%z"
+            ),
             "legacy_id": row["NAME_ID"],
             "created_by": self.current_user,
             "updated_by": self.map_user_or_default(row["UPDATED_BY"]),

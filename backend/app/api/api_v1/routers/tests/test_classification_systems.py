@@ -18,13 +18,9 @@ def test_get_classification_systems(
             "class_type": test_classification_system.class_type.value,
             "preferred": test_classification_system.preferred,
             "updated_by": test_classification_system.updated_by,
-            "updated_on": test_classification_system.updated_on.strftime(
-                "%Y-%m-%dT%H:%M:%S.%f"
-            ),
+            "updated_on": test_classification_system.updated_on.isoformat(),
             "created_by": test_classification_system.created_by,
-            "created_on": test_classification_system.created_on.strftime(
-                "%Y-%m-%dT%H:%M:%S.%f"
-            ),
+            "created_on": test_classification_system.created_on.isoformat(),
         }
     ]
 
@@ -55,13 +51,9 @@ def test_edit_classification_system(
         "class_type": "informal",
         "preferred": False,
         "updated_by": test_superuser.user_id,
-        "updated_on": test_classification_system.updated_on.strftime(
-            "%Y-%m-%dT%H:%M:%S.%f"
-        ),
+        "updated_on": test_classification_system.updated_on.isoformat(),
         "created_by": test_superuser.user_id,
-        "created_on": test_classification_system.created_on.strftime(
-            "%Y-%m-%dT%H:%M:%S.%f"
-        ),
+        "created_on": test_classification_system.created_on.isoformat(),
     }
 
     response = client.put(
@@ -86,13 +78,9 @@ def test_edit_classification_system_not_found(
         "class_type": "informal",
         "preferred": False,
         "updated_by": test_superuser.user_id,
-        "updated_on": test_classification_system.updated_on.strftime(
-            "%Y-%m-%dT%H:%M:%S.%f"
-        ),
+        "updated_on": test_classification_system.updated_on.isoformat(),
         "created_by": test_superuser.user_id,
-        "created_on": test_classification_system.created_on.strftime(
-            "%Y-%m-%dT%H:%M:%S.%f"
-        ),
+        "created_on": test_classification_system.created_on.isoformat(),
     }
     response = client.put(
         "/api/v1/classification_systems/1234",
@@ -118,13 +106,9 @@ def test_get_classification_system(
         "class_type": test_classification_system.class_type.value,
         "preferred": test_classification_system.preferred,
         "updated_by": test_classification_system.updated_by,
-        "updated_on": test_classification_system.updated_on.strftime(
-            "%Y-%m-%dT%H:%M:%S.%f"
-        ),
+        "updated_on": test_classification_system.updated_on.isoformat(),
         "created_by": test_classification_system.created_by,
-        "created_on": test_classification_system.created_on.strftime(
-            "%Y-%m-%dT%H:%M:%S.%f"
-        ),
+        "created_on": test_classification_system.created_on.isoformat(),
     }
 
 

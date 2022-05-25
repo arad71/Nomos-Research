@@ -12,14 +12,15 @@ from app.db.schemas import TableBase
 
 
 class PublicationBase(BaseModel):
-    publication: str
     bad_publication: Optional[bool] = Field(description=BAD_PUBLICATION)
     publication_name: Optional[str]
     doi: Optional[str]
     title: Optional[str]
     display_title: Optional[str]
     abbreviated_title: Optional[str]
-    year: Optional[int]
+    publication_year: Optional[int]
+    publication_month: Optional[int]
+    publication_day: Optional[int]
     volume: Optional[str]
     edition: Optional[str]
     pages: Optional[str]

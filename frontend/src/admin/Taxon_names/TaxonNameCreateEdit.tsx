@@ -84,6 +84,7 @@ export const TaxonNameCreateEdit: FC = ({ id, ...props }: EditProps) => {
         <TextInput source="subgenus" />
         <TextInput source="species" />
         <TextInput source="subspecies" />
+        <TextInput source="uninomial" />
         <TextInput source="specific_epithet" />
         <TextInput source="infraspecific_epithet" />
         <ReferenceInput source="publication_id" reference="publications">

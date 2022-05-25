@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, func
+from sqlalchemy import TIMESTAMP, Column, ForeignKey, Integer, func
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy_mixins.repr import ReprMixin
 from sqlalchemy_mixins.smartquery import SmartQueryMixin
@@ -25,7 +25,7 @@ class TableMixin(object):
     @declared_attr
     def updated_on(cls):
         return Column(
-            DateTime,
+            TIMESTAMP(timezone=True),
             default=func.current_timestamp(),
             onupdate=func.current_timestamp(),
             comment="The date this record was updated on",
@@ -42,7 +42,7 @@ class TableMixin(object):
     @declared_attr
     def created_on(cls):
         return Column(
-            DateTime,
+            TIMESTAMP(timezone=True),
             default=func.current_timestamp(),
             comment="The date this record was created on",
         )

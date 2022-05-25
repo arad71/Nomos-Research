@@ -65,6 +65,7 @@ const postListColumns = {
   subgenus: <TextField source="subgenus" />,
   species: <TextField source="species" />,
   subspecies: <TextField source="subspecies" />,
+  uninomial: <TextField source="uninomial" />,
   specific_epithet: <TextField source="specific_epithet" />,
   infraspecific_epithet: <TextField source="infraspecific_epithet" />,
   publication_id: (
@@ -149,7 +150,9 @@ const Actions = () => (
     <WithPermissions resource="taxon_names" action="create">
       <CreateButton />
     </WithPermissions>
-    <ExportButton maxResults={100000} />
+    <WithPermissions resource="taxon_names" action="export">
+      <ExportButton maxResults={100000} />
+    </WithPermissions>
     <SelectColumnsButton
       preference={TAXON_NAMES_PREFERENCE}
       columns={postListColumns}

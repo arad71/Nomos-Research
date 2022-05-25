@@ -6,6 +6,7 @@ import { BACKEND_URL } from '../config';
 import authProvider from './authProvider';
 import MyLoginPage from '../views/NewLogin';
 import MyLayout from '../MyLayout';
+import theme from '../Theme';
 import Dashboard from '../Dashboard';
 import BookIcon from '@material-ui/icons/Book';
 
@@ -116,6 +117,7 @@ export const Admin: FC = () => {
       loginPage={MyLoginPage}
       dashboard={Dashboard}
       layout={MyLayout}
+      theme={theme}
       authProvider={authProvider}
       dataProvider={dataProvider}
     >
