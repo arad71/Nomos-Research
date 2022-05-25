@@ -14,13 +14,12 @@ import RichTextInput from 'ra-input-rich-text';
 
 export const PublicationCreateEdit: FC = (props) => (
   <SimpleForm {...props}>
-    <TextInput source="publication" validate={[required()]} />
+    <TextInput source="abbreviated_title" validate={[required()]} />
     <NullableBooleanInput label="Bad Publication" source="bad_publication" />
     <TextInput source="publication_name" />
     <TextInput source="doi" />
     <TextInput source="title" />
     <TextInput source="display_title" />
-    <TextInput source="abbreviated_title" />
     <NumberInput source="publication_year" />
     <NumberInput source="publication_month" />
     <NumberInput source="publication_day" />
@@ -44,7 +43,7 @@ export const PublicationCreateEdit: FC = (props) => (
     <TextInput source="tl2" />
     <TextInput source="reference_type" />
     <ReferenceInput label="Parent" source="parent_id" reference="publications">
-      <SelectInput optionText="publication" />
+      <SelectInput optionText="abbreviated_title" />
     </ReferenceInput>
     <TextInput source="reference_author_role" />
     <TextInput source="language" />
@@ -53,7 +52,7 @@ export const PublicationCreateEdit: FC = (props) => (
       source="duplicate_of_id"
       reference="publications"
     >
-      <SelectInput optionText="publication" />
+      <SelectInput optionText="abbreviated_title" />
     </ReferenceInput>
   </SimpleForm>
 );
