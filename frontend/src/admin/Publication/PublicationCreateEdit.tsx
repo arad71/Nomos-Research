@@ -5,6 +5,7 @@ import {
   required,
   SelectInput,
   SimpleForm,
+  TextField,
   TextInput,
   NullableBooleanInput,
 } from 'react-admin';
@@ -36,7 +37,7 @@ export const PublicationCreateEdit: FC = (props) => (
     <BooleanInput label="Published" source="published" defaultValue={false} />
     <TextInput source="publisher" />
     <TextInput source="published_location" />
-    <TextInput source="publication_date" />
+    <TextField source="publication_date" />
     <TextInput source="isbn" />
     <TextInput source="issn" />
     <TextInput source="bhl_url" />
