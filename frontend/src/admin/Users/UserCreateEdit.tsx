@@ -5,6 +5,7 @@ import {
   TextInput,
   ReferenceArrayInput,
   SelectArrayInput,
+  required,
 } from 'react-admin';
 
 import React, { FC } from 'react';
@@ -37,8 +38,12 @@ export const UserCreateEdit: FC = (props) => {
           </Typography>
         </Box>
         <TextInput source="first_name" />
-        <TextInput source="last_name" />
-        <TextInput source="email" className={classes.twoColSpan} />
+        <TextInput source="last_name" validate={required()} />
+        <TextInput
+          source="email"
+          className={classes.twoColSpan}
+          validate={required()}
+        />
         <PasswordInput source="password" fullWidth />
       </Box>
       <Box className={classes.mainGrid}>
