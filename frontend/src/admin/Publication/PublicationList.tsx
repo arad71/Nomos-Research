@@ -4,7 +4,6 @@ import {
   DateField,
   EditButton,
   List,
-  NumberField,
   ReferenceField,
   RichTextField,
   TextField,
@@ -13,17 +12,18 @@ import {
 import { WithPermissions } from '@react-admin/ra-rbac';
 
 export const PublicationList: FC = (props) => (
-  <List {...props} sort={{ field: 'publication' }}>
+  <List {...props} sort={{ field: 'updated_on', order: 'DESC' }}>
     <Datagrid rowClick="show">
       <TextField source="id" />
-      <TextField source="publication" />
+      <TextField source="abbreviated_title" />
       <BooleanField source="bad_publication" />
       <TextField source="publication_name" />
       <TextField source="doi" />
       <TextField source="title" />
       <TextField source="display_title" />
-      <TextField source="abbreviated_title" />
       <TextField source="publication_year" />
+      <TextField source="publication_month" />
+      <TextField source="publication_day" />
       <TextField source="volume" />
       <TextField source="edition" />
       <TextField source="pages" />
@@ -48,7 +48,7 @@ export const PublicationList: FC = (props) => (
         source="parent_id"
         reference="publications"
       >
-        <TextField source="publication" />
+        <TextField source="abbreviated_title" />
       </ReferenceField>
       <TextField source="reference_author_role" />
       <TextField source="language" />
@@ -57,7 +57,7 @@ export const PublicationList: FC = (props) => (
         source="duplicate_of_id"
         reference="publications"
       >
-        <TextField source="publication" />
+        <TextField source="abbreviated_title" />
       </ReferenceField>
       <DateField source="created_on" showTime />
       <ReferenceField source="updated_by" reference="users">

@@ -1,8 +1,9 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Text
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Text, event
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.schema import UniqueConstraint
 
 from app.db.models import BaseModel, TableMixin
+from app.db.publication.calculated import calculate_fields
 from app.db.publication.constants import (
     BAD_PUBLICATION,
     PUBLICATION_ID,
@@ -23,7 +24,6 @@ class Publication(BaseModel, TableMixin):
         comment=PUBLICATION_ID,
         doc=PUBLICATION_ID,
     )
-    publication = Column(Text, nullable=False)
     bad_publication = Column(
         Boolean,
         comment=BAD_PUBLICATION,
@@ -49,6 +49,8 @@ class Publication(BaseModel, TableMixin):
     publisher = Column(String)
     published_location = Column(String)
     publication_date = Column(String)
+    publication_month = Column(Integer)
+    publication_day = Column(Integer)
     isbn = Column(String)
     issn = Column(String)
     bhl_url = Column(String)
@@ -74,3 +76,7 @@ class Publication(BaseModel, TableMixin):
         backref=backref("duplicates"),
     )
     legacy_id = Column(Integer)
+
+
+event.listen(Publication, "before_insert", calculate_fields)
+event.listen(Publication, "before_update", calculate_fields)

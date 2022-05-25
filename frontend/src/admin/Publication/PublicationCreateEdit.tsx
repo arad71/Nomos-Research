@@ -5,6 +5,7 @@ import {
   required,
   SelectInput,
   SimpleForm,
+  TextField,
   TextInput,
   NullableBooleanInput,
 } from 'react-admin';
@@ -13,14 +14,15 @@ import RichTextInput from 'ra-input-rich-text';
 
 export const PublicationCreateEdit: FC = (props) => (
   <SimpleForm {...props}>
-    <TextInput source="publication" validate={[required()]} />
+    <TextInput source="abbreviated_title" validate={[required()]} />
     <NullableBooleanInput label="Bad Publication" source="bad_publication" />
     <TextInput source="publication_name" />
     <TextInput source="doi" />
     <TextInput source="title" />
     <TextInput source="display_title" />
-    <TextInput source="abbreviated_title" />
     <NumberInput source="publication_year" />
+    <NumberInput source="publication_month" />
+    <NumberInput source="publication_day" />
     <TextInput source="volume" />
     <TextInput source="edition" />
     <TextInput source="pages" />
@@ -34,14 +36,14 @@ export const PublicationCreateEdit: FC = (props) => (
     <BooleanInput label="Published" source="published" defaultValue={false} />
     <TextInput source="publisher" />
     <TextInput source="published_location" />
-    <TextInput source="publication_date" />
+    <TextField source="publication_date" />
     <TextInput source="isbn" />
     <TextInput source="issn" />
     <TextInput source="bhl_url" />
     <TextInput source="tl2" />
     <TextInput source="reference_type" />
     <ReferenceInput label="Parent" source="parent_id" reference="publications">
-      <SelectInput optionText="publication" />
+      <SelectInput optionText="abbreviated_title" />
     </ReferenceInput>
     <TextInput source="reference_author_role" />
     <TextInput source="language" />
@@ -50,7 +52,7 @@ export const PublicationCreateEdit: FC = (props) => (
       source="duplicate_of_id"
       reference="publications"
     >
-      <SelectInput optionText="publication" />
+      <SelectInput optionText="abbreviated_title" />
     </ReferenceInput>
   </SimpleForm>
 );

@@ -379,8 +379,11 @@ def test_publication(test_db, test_superuser) -> Publication:
     now = datetime.datetime.utcnow()
     publication = Publication(
         bad_publication=False,
-        publication="PUBLICATION",
+        abbreviated_title="PUBLICATION",
         publication_name="PUBLICATION_NAME",
+        publication_day=23,
+        publication_month=12,
+        publication_year=1998,
         updated_by=test_superuser.user_id,
         updated_on=now,
         created_by=test_superuser.user_id,
