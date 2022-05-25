@@ -22,6 +22,7 @@ export const PublicationCreateEdit: FC = (props) => (
     <TextInput source="abbreviated_title" />
     <NumberInput source="publication_year" />
     <NumberInput source="publication_month" />
+    <NumberInput source="publication_day" />
     <TextInput source="volume" />
     <TextInput source="edition" />
     <TextInput source="pages" />

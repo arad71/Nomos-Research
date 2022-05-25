@@ -50,6 +50,7 @@ class Publication(BaseModel, TableMixin):
     published_location = Column(String)
     publication_date = Column(String)
     publication_month = Column(Integer)
+    publication_day = Column(Integer)
     isbn = Column(String)
     issn = Column(String)
     bhl_url = Column(String)

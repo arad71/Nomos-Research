@@ -21,6 +21,7 @@ class PublicationBase(BaseModel):
     abbreviated_title: Optional[str]
     publication_year: Optional[int]
     publication_month: Optional[int]
+    publication_day: Optional[int]
     volume: Optional[str]
     edition: Optional[str]
     pages: Optional[str]
