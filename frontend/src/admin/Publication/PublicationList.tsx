@@ -4,7 +4,6 @@ import {
   DateField,
   EditButton,
   List,
-  NumberField,
   ReferenceField,
   RichTextField,
   TextField,
@@ -13,7 +12,7 @@ import {
 import { WithPermissions } from '@react-admin/ra-rbac';
 
 export const PublicationList: FC = (props) => (
-  <List {...props} sort={{ field: 'publication' }}>
+  <List {...props} sort={{ field: 'updated_on', order: 'DESC' }}>
     <Datagrid rowClick="show">
       <TextField source="id" />
       <TextField source="publication" />
