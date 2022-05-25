@@ -3,16 +3,57 @@ import {
   PasswordInput,
   SimpleForm,
   TextInput,
+  ReferenceArrayInput,
+  SelectArrayInput,
 } from 'react-admin';
 
 import React, { FC } from 'react';
+import { Box, Typography } from '@material-ui/core';
+import { GlobalTheme } from '../../GlobalTheme';
+import { makeStyles } from '@material-ui/core';
 
-export const UserCreateEdit: FC = (props) => (
-  <SimpleForm {...props} warnWhenUnsavedChanges>
-    <TextInput source="email" />
-    <TextInput source="first_name" />
-    <TextInput source="last_name" />
-    <PasswordInput source="password" />
-    <BooleanInput source="is_active" defaultValue={false} />
-  </SimpleForm>
-);
+const useStyles = makeStyles((theme) => ({
+  mainGrid: {
+    display: 'grid',
+    gridTemplateColumns: '50% 50%',
+    width: '50%',
+    gridColumnGap: '1.5em',
+  },
+  twoColSpan: {
+    gridColumnStart: '1',
+    gridColumnEnd: '3',
+  },
+}));
+
+export const UserCreateEdit: FC = (props) => {
+  const globalClasses = GlobalTheme();
+  const classes = useStyles();
+  return (
+    <SimpleForm {...props} warnWhenUnsavedChanges>
+      <Box className={classes.mainGrid}>
+        <Box className={classes.twoColSpan}>
+          <Typography variant="h5" className={globalClasses.bold} gutterBottom>
+            User information
+          </Typography>
+        </Box>
+        <TextInput source="first_name" />
+        <TextInput source="last_name" />
+        <TextInput source="email" className={classes.twoColSpan} />
+        <PasswordInput source="password" fullWidth />
+      </Box>
+      <Box className={classes.mainGrid}>
+        <Box className={classes.twoColSpan}>
+          <Typography variant="h5" className={globalClasses.bold} gutterBottom>
+            Access
+          </Typography>
+        </Box>
+        <Box className={classes.twoColSpan}>
+          <ReferenceArrayInput source="role_ids" reference="roles">
+            <SelectArrayInput optionText="name" fullWidth />
+          </ReferenceArrayInput>
+        </Box>
+        <BooleanInput source="is_active" defaultValue={false} />
+      </Box>
+    </SimpleForm>
+  );
+};
