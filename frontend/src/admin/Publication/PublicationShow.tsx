@@ -37,7 +37,7 @@ export const PublicationShow: FC = (props) => {
         <TextField source="published" />
         <TextField source="publisher" />
         <TextField source="published_location" />
-        <TextField source="published_date" />
+        <TextField source="publication_date" />
         <TextField source="isbn" />
         <TextField source="issn" />
         <TextField source="bhl_url" />
