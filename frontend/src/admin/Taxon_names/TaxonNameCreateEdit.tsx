@@ -1,31 +1,29 @@
 import {
-  EditProps,
-  TabbedForm,
-  FormTab,
+  BooleanInput,
   DateTimeInput,
-  NumberInput,
+  FormTab,
+  NullableBooleanInput,
   NumberField,
-  DateField,
+  NumberInput,
+  ReferenceField,
   ReferenceInput,
-  required,
   ReferenceManyField,
+  required,
   RichTextField,
+  SelectField,
   SelectInput,
+  TabbedForm,
   TextField,
   TextInput,
-  BooleanInput,
-  NullableBooleanInput,
 } from 'react-admin';
-import {
-  EditableDatagrid,
-  RowForm,
-  RowFormProps,
-} from '@react-admin/ra-editable-datagrid';
-import React, { FC } from 'react';
+import { EditableDatagrid } from '@react-admin/ra-editable-datagrid';
+import React, { FC, PropsWithChildren } from 'react';
 import NaturalisedStatus from './NaturalisedStatus';
 import PublicationStatus from './PublicationStatus';
 import { makeStyles } from '@material-ui/core/styles';
 import AuthorType from '../Citations/AuthorType';
+import { Typography } from '@material-ui/core';
+import { CitationRowForm } from '../Citations';
 
 const useStyles = makeStyles({
   tablabel: {
@@ -33,29 +31,11 @@ const useStyles = makeStyles({
   },
 });
 
-const CitationForm = (props: RowFormProps) => (
-  <RowForm {...props}>
-    <TextField source="id" disabled />
-    <ReferenceInput
-      source="taxon_name_id"
-      reference="taxon_names"
-      validate={required()}
-    >
-      <SelectInput optionText="scientific_name" />
-    </ReferenceInput>
-    <ReferenceInput
-      source="author_id"
-      reference="authors"
-      validate={required()}
-    >
-      <SelectInput optionText="abbreviation" />
-    </ReferenceInput>
-    <SelectInput source="author_type" choices={AuthorType} />
-    <NumberInput source="author_order" validate={required()} initialValue={0} />
-  </RowForm>
-);
-export const TaxonNameCreateEdit: FC = ({ id, ...props }: EditProps) => {
+export const TaxonNameCreateEdit: FC = ({
+  ...props
+}: PropsWithChildren<any>) => {
   const classes = useStyles();
+  const initialValues = { taxon_name_id: props.record?.id };
   return (
     <TabbedForm {...props}>
       <FormTab label="Name" className={classes.tablabel}>
@@ -115,25 +95,40 @@ export const TaxonNameCreateEdit: FC = ({ id, ...props }: EditProps) => {
         <TextInput source="external_id" />
         <TextInput source="family_code" />
         <TextField source="author" />
-        <ReferenceManyField
-          fullWidth
-          label="Authors"
-          reference="citations"
-          target="taxon_name_id"
-        >
-          <EditableDatagrid
-            undoable
-            createForm={<CitationForm initialValues={{ taxon_name_id: id }} />}
-            editForm={<CitationForm />}
-            rowClick="edit"
-            hasCreate
+        {(props.record?.id && (
+          <ReferenceManyField
+            fullWidth
+            label="Authors"
+            reference="citations"
+            target="taxon_name_id"
+            sort={{
+              field: 'author_type,author_order',
+              order: 'ASC,ASC',
+            }}
+            {...props}
           >
-            <TextField source="id" />
-            <TextField source="name" />
-            <NumberField source="price" label="Default Price" />
-            <DateField source="available_since" />
-          </EditableDatagrid>
-        </ReferenceManyField>
+            <EditableDatagrid
+              undoable
+              createForm={
+                <CitationRowForm initialValues={initialValues} {...props} />
+              }
+              editForm={<CitationRowForm {...props}  children={}/>}
+              hasCreate
+            >
+              <ReferenceField source="author_id" reference="authors">
+                <TextField source="abbreviation" />
+              </ReferenceField>
+              <SelectField source="author_type" choices={AuthorType} />
+              <NumberField source="author_order" />
+            </EditableDatagrid>
+          </ReferenceManyField>
+        )) || (
+          <Typography>
+            You need to save the record before you can add any authors /
+            citations.
+          </Typography>
+        )}
+
         <TextInput source="vernacular" />
         <TextField source="editor" />
         <SelectInput source="naturalised_status" choices={NaturalisedStatus} />
