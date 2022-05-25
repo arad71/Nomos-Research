@@ -1,6 +1,5 @@
 import React, { FC } from 'react';
 import {
-  NumberField,
   ReferenceField,
   RichTextField,
   Show,
@@ -47,7 +46,7 @@ export const PublicationShow: FC = (props) => {
           source="parent_id"
           reference="publications"
         >
-          <TextField source="publication" />
+          <TextField source="abbreviated_title" />
         </ReferenceField>
         <TextField source="reference_author_role" />
         <TextField source="language" />
@@ -56,7 +55,7 @@ export const PublicationShow: FC = (props) => {
           source="duplicate_of_id"
           reference="publications"
         >
-          <TextField source="publication" />
+          <TextField source="abbreviated_title" />
         </ReferenceField>
       </SimpleShowLayout>
     </Show>

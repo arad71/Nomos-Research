@@ -43,7 +43,7 @@ export const PublicationCreateEdit: FC = (props) => (
     <TextInput source="tl2" />
     <TextInput source="reference_type" />
     <ReferenceInput label="Parent" source="parent_id" reference="publications">
-      <SelectInput optionText="publication" />
+      <SelectInput optionText="abbreviated_title" />
     </ReferenceInput>
     <TextInput source="reference_author_role" />
     <TextInput source="language" />
@@ -52,7 +52,7 @@ export const PublicationCreateEdit: FC = (props) => (
       source="duplicate_of_id"
       reference="publications"
     >
-      <SelectInput optionText="publication" />
+      <SelectInput optionText="abbreviated_title" />
     </ReferenceInput>
   </SimpleForm>
 );

@@ -1,4 +1,3 @@
-// in src/users.js
 import React, { FC } from 'react';
 import {
   NumberField,
@@ -243,7 +242,7 @@ export const TaxonNameShow: FC = (props) => {
             <Box my="1.2em">
               <ReferenceField source="publication_id" reference="publications">
                 <Labeled label="Publication">
-                  <TextField source="publication" />
+                  <TextField source="abbreviated_title" />
                 </Labeled>
               </ReferenceField>
             </Box>

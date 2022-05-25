@@ -48,7 +48,7 @@ export const PublicationList: FC = (props) => (
         source="parent_id"
         reference="publications"
       >
-        <TextField source="publication" />
+        <TextField source="abbreviated_title" />
       </ReferenceField>
       <TextField source="reference_author_role" />
       <TextField source="language" />
@@ -57,7 +57,7 @@ export const PublicationList: FC = (props) => (
         source="duplicate_of_id"
         reference="publications"
       >
-        <TextField source="publication" />
+        <TextField source="abbreviated_title" />
       </ReferenceField>
       <DateField source="created_on" showTime />
       <ReferenceField source="updated_by" reference="users">
