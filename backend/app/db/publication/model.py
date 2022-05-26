@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Text, event
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, event
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.schema import UniqueConstraint
 
@@ -29,7 +29,6 @@ class Publication(BaseModel, TableMixin):
         comment=BAD_PUBLICATION,
         doc=BAD_PUBLICATION,
     )
-    publication_name = Column(Text)
     doi = Column(String)
     title = Column(String)
     display_title = Column(String)

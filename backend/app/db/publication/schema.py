@@ -13,7 +13,6 @@ from app.db.schemas import TableBase
 
 class PublicationBase(BaseModel):
     bad_publication: Optional[bool] = Field(description=BAD_PUBLICATION)
-    publication_name: Optional[str]
     doi: Optional[str]
     title: Optional[str]
     display_title: Optional[str]
