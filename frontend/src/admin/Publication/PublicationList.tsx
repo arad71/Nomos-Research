@@ -17,7 +17,6 @@ export const PublicationList: FC = (props) => (
       <TextField source="id" />
       <TextField source="abbreviated_title" />
       <BooleanField source="bad_publication" />
-      <TextField source="publication_name" />
       <TextField source="doi" />
       <TextField source="title" />
       <TextField source="display_title" />

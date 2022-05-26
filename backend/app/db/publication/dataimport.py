@@ -11,7 +11,7 @@ class ImportPublication(DataImportBase):
         self.update_cols = (
             "bad_publication",
             "abbreviated_title",
-            "publication_name",
+            "title",
             "legacy_id",
             "created_by",
             "updated_by",
@@ -23,7 +23,7 @@ class ImportPublication(DataImportBase):
             {
                 "bad_publication": self.map_y_n_to_bool(row["BAD_PUBLICATION"]),
                 "abbreviated_title": row["PUBLICATION"],
-                "publication_name": row["PUBLICATION_NAME"],
+                "title": row["PUBLICATION_NAME"],
                 "legacy_id": row["PUB_ID"],
                 "created_by": self.current_user,
                 "updated_by": self.map_row_by_unique_key(
