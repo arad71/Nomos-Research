@@ -22,7 +22,8 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      env:  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      env: 
+        NPM_TOKEN: "${{ secrets.NPM_TOKEN }}"
         
       #run: docker build frontend --tag ${{ env.REGISTRY }}/${{ env.ORG }}/${{env.IMAGE_NAME}} --build-arg NPM_TOKEN=${{secrets.NPM_TOKEN}}
       run: docker build frontend --tag ${{ env.REGISTRY }}/${{ env.ORG }}/${{env.IMAGE_NAME}}
