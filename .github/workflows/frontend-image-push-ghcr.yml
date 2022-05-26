@@ -1,0 +1,39 @@
+name: Build and push backend into ghcr
+
+on:
+  push:
+    branches: [ staging ]
+  pull_request:
+    branches: [ staging ]
+
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  ORG: bio-wa
+  IMAGE_NAME: nomos-frontend
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build the Docker image
+      env:  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        
+      #run: docker build frontend --tag ${{ env.REGISTRY }}/${{ env.ORG }}/${{env.IMAGE_NAME}} --build-arg NPM_TOKEN=${{secrets.NPM_TOKEN}}
+      run: docker build frontend --tag ${{ env.REGISTRY }}/${{ env.ORG }}/${{env.IMAGE_NAME}}
+      
+      
+    - name: Log in to the Container registry
+      uses: docker/login-action@v1
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Push the backend image 
+      run: docker push ${{ env.REGISTRY }}/${{ env.ORG }}/${{ env.IMAGE_NAME }}
