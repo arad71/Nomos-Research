@@ -19,10 +19,7 @@ export const TaxonNameFilters = [
   <TextInput source="scientific_name__contains" />,
   <TextInput source="author__contains" />,
   <NumberInput source="form_desc_yr" label="Year published" />,
-  <TextInput
-    source="publication___title__contains"
-    label="Publication name"
-  />,
+  <TextInput source="publication___title__contains" label="Publication name" />,
   <TextInput source="volume_information__contains" />,
   <TextInput
     source="vernaculars___vernacular__contains"
