@@ -72,9 +72,9 @@ const postListColumns = {
     <ReferenceField
       source="publication_id"
       reference="publications"
-      sortBy="publication___publication_name"
+      sortBy="publication___title"
     >
-      <TextField source="publication_name" />
+      <TextField source="title" />
     </ReferenceField>
   ),
   volume_information: <TextField source="volume_information" />,
