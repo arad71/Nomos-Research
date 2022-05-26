@@ -30,7 +30,7 @@ const Actions = () => (
 export const PublicationList: FC = (props) => (
   <List
     {...props}
-    sort={{ field: 'publication_name', order: 'ASC' }}
+    sort={{ field: 'title', order: 'ASC' }}
     filters={publicationFilters}
     actions={<Actions />}
   >
