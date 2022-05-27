@@ -46,7 +46,6 @@ class PublicationCrud(crud.Crud):
                 )
                 db.add(user_role)
             db.commit()
-            db.commit()
         return db_publication
 
     @classmethod
