@@ -9,6 +9,8 @@ import {
   TextField,
   TextInput,
   RichTextField,
+  ReferenceArrayInput,
+  SelectArrayInput,
 } from 'react-admin';
 import React, { FC } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
@@ -16,21 +18,6 @@ import { Box, Typography } from '@material-ui/core';
 import { GlobalTheme, GlobalGridTheme } from '../../GlobalTheme';
 
 const useStyles = makeStyles({
-  title: {
-    fontWeight: 'bold',
-    fontSize: '1.5em',
-    marginRight: '0.2em',
-  },
-  tablabel: {
-    fontWeight: 'bold',
-  },
-  subtitle: {
-    fontSize: '1em',
-  },
-  titlePos: {
-    position: 'absolute',
-    top: '65px',
-  },
   mainGrid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(8, 1fr)',
@@ -45,11 +32,14 @@ export const PublicationCreateEdit: FC = (props) => {
   const gridClasses = GlobalGridTheme();
   return (
     <>
-      <Box className={classes.titlePos}>
+      <Box className={globalClasses.titlePos}>
         <Box>
-          <RichTextField className={classes.title} source="title" />
+          <RichTextField className={globalClasses.title} source="title" />
         </Box>
-        <TextField source="verbatim_author" className={classes.subtitle} />
+        <TextField
+          source="verbatim_author"
+          className={globalClasses.subtitle}
+        />
       </Box>
       <TabbedForm {...props}>
         <FormTab label="Publication" className={globalClasses.bold}>
@@ -109,10 +99,13 @@ export const PublicationCreateEdit: FC = (props) => {
                 Publication metadata
               </Typography>
             </Box>
-            <TextInput
-              source="verbatim_author"
+            <ReferenceArrayInput
+              source="author_ids"
+              reference="authors"
               className={gridClasses.EightCol1to5span}
-            />
+            >
+              <SelectArrayInput optionText="abbreviation" fullWidth />
+            </ReferenceArrayInput>
             <TextInput
               source="publisher"
               className={gridClasses.EightCol1to5span}

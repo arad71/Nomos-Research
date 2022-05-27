@@ -1,6 +1,18 @@
 import { makeStyles } from '@material-ui/core';
 
 export const GlobalTheme = makeStyles((theme) => ({
+  title: {
+    fontWeight: 'bold',
+    fontSize: '1.5em',
+    marginRight: '0.2em',
+  },
+  subtitle: {
+    fontSize: '1em',
+  },
+  titlePos: {
+    position: 'absolute',
+    top: '65px',
+  },
   bold: {
     fontWeight: 'bold',
   },
