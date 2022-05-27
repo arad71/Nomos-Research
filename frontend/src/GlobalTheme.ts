@@ -31,6 +31,9 @@ export const GlobalTheme = makeStyles((theme) => ({
 }));
 
 export const GlobalGridTheme = makeStyles((theme) => ({
+  EightCol1to9span: {
+    gridColumn: '1 / 9',
+  },
   EightCol1to5span: {
     gridColumn: '1 / 5',
   },

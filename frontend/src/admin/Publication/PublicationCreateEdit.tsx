@@ -66,13 +66,11 @@ export const PublicationCreateEdit: FC = (props) => {
             <TextInput
               source="title"
               className={gridClasses.EightCol1to5span}
-              fullWidth
             />
             <TextInput
               source="abbreviated_title"
               validate={required()}
               className={gridClasses.EightCol5to9span}
-              fullWidth
             />
             <TextInput
               source="verbatim_author"
@@ -190,7 +188,25 @@ export const PublicationCreateEdit: FC = (props) => {
           </Box>
         </FormTab>
         <FormTab label="References" className={globalClasses.bold}></FormTab>
-        <FormTab label="Notes" className={globalClasses.bold}></FormTab>
+        <FormTab label="Notes" className={globalClasses.bold}>
+          <Box className={`${classes.mainGrid} ${globalClasses.sectionMargin}`}>
+            <Box>
+              <Typography
+                variant="h5"
+                className={globalClasses.bold}
+                gutterBottom
+              >
+                Notes
+              </Typography>
+            </Box>
+            <TextInput
+              source="notes"
+              className={gridClasses.EightCol1to9span}
+              multiline
+              fullWdith
+            />
+          </Box>
+        </FormTab>
       </TabbedForm>
     </>
   );
