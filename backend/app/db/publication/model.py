@@ -1,4 +1,5 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, event
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.schema import UniqueConstraint
 
@@ -75,6 +76,18 @@ class Publication(BaseModel, TableMixin):
         backref=backref("duplicates"),
     )
     legacy_id = Column(Integer)
+
+    @hybrid_property
+    def author_names(self):
+        return [
+            publication_author.author.author_id for publication_author in self.author
+        ]
+
+    @hybrid_property
+    def author_ids(self):
+        return [
+            publication_author.author.author_id for publication_author in self.author
+        ]
 
 
 event.listen(Publication, "before_insert", calculate_fields)

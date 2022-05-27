@@ -44,7 +44,8 @@ class PublicationBase(BaseModel):
     language: Optional[str]
     duplicate_of_id: Optional[int]
     legacy_id: Optional[int]
-    pass
+    author_names: Optional[list[str]]
+    author_ids: Optional[list[int]]
 
 
 class PublicationCreate(PublicationBase):
