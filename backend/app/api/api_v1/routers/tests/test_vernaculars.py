@@ -1,9 +1,12 @@
+import pytest
+from starlette import status
+
 from app.db.vernacular.model import Vernacular
 
 
 def test_get_vernaculars(client, test_vernacular, superuser_token_headers):
     response = client.get("/api/v1/vernaculars", headers=superuser_token_headers)
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
     assert response.json() == [
         {
             "vernacular_id": test_vernacular.vernacular_id,
@@ -25,7 +28,7 @@ def test_delete_vernacular(client, test_vernacular, test_db, superuser_token_hea
         f"/api/v1/vernaculars/{test_vernacular.vernacular_id}",
         headers=superuser_token_headers,
     )
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
     assert test_db.query(Vernacular).all() == []
 
 
@@ -33,7 +36,7 @@ def test_delete_vernacular_not_found(client, superuser_token_headers):
     response = client.delete(
         "/api/v1/vernaculars/4321", headers=superuser_token_headers
     )
-    assert response.status_code == 404
+    assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 def test_edit_vernacular(
@@ -55,7 +58,7 @@ def test_edit_vernacular(
         json=new_vernacular,
         headers=superuser_token_headers,
     )
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
     new_vernacular["vernacular_id"] = test_vernacular.vernacular_id
     new_vernacular["taxon_name"] = response.json()["taxon_name"]
     new_vernacular["updated_on"] = response.json()["updated_on"]
@@ -78,7 +81,7 @@ def test_edit_vernacular_not_found(
     response = client.put(
         "/api/v1/vernaculars/1234", json=new_vernacular, headers=superuser_token_headers
     )
-    assert response.status_code == 404
+    assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 def test_get_vernacular(
@@ -90,7 +93,7 @@ def test_get_vernacular(
         f"/api/v1/vernaculars/{test_vernacular.vernacular_id}",
         headers=superuser_token_headers,
     )
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
     assert response.json() == {
         "vernacular_id": test_vernacular.vernacular_id,
         "taxon_name_id": test_vernacular.taxon_name_id,
@@ -107,4 +110,4 @@ def test_get_vernacular(
 
 def test_vernacular_not_found(client, superuser_token_headers):
     response = client.get("/api/v1/vernaculars/123", headers=superuser_token_headers)
-    assert response.status_code == 404
+    assert response.status_code == status.HTTP_404_NOT_FOUND

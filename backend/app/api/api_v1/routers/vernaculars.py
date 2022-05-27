@@ -1,12 +1,14 @@
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, Depends, Response
 
 from app.api.dependencies.range_query import RangeQueryParameter
-from app.core.auth import get_current_active_superuser
+from app.core.auth import authorize, get_current_active_user
+from app.db.role.constants import Role
 from app.db.session import get_db
 from app.db.vernacular.crud import VernacularCrud
 from app.db.vernacular.schema import Vernacular, VernacularCreate, VernacularEdit
+from app.db.user.model import User
 
 vernaculars_router = r = APIRouter(prefix="/vernaculars")
 
@@ -15,6 +17,7 @@ vernaculars_router = r = APIRouter(prefix="/vernaculars")
     "",
     response_model=List[Vernacular],
     response_model_exclude_none=True,
+    dependencies=[authorize()],
 )
 async def vernacular_list(
     response: Response,
@@ -22,7 +25,6 @@ async def vernacular_list(
     sort: Optional[str] = None,
     filter: Optional[str] = None,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
 ):
     """
     Get all vernaculars
@@ -39,12 +41,11 @@ async def vernacular_list(
     "/{vernacular_id}",
     response_model=Vernacular,
     response_model_exclude_none=True,
+    dependencies=[authorize()],
 )
 async def vernacular_details(
-    request: Request,
     vernacular_id: int,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
 ):
     """
     Get any vernacular details
@@ -53,12 +54,24 @@ async def vernacular_details(
     return vernacular
 
 
-@r.post("", response_model=Vernacular, response_model_exclude_none=True)
+@r.post(
+    "",
+    response_model=Vernacular,
+    response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.MANAGER["name"],
+                Role.OFFICER["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
 async def vernacular_create(
-    request: Request,
     vernacular: VernacularCreate,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Create a new vernacular
@@ -70,13 +83,21 @@ async def vernacular_create(
     "/{vernacular_id}",
     response_model=Vernacular,
     response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.MANAGER["name"],
+                Role.OFFICER["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
 )
 async def vernacular_edit(
-    request: Request,
     vernacular_id: int,
     vernacular: VernacularEdit,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Update existing vernacular
@@ -88,12 +109,18 @@ async def vernacular_edit(
     "/{vernacular_id}",
     response_model=Vernacular,
     response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.SUPER_ADMIN["name"],
+                Role.MANAGER["name"],
+            ]
+        )
+    ],
 )
 async def vernacular_delete(
-    request: Request,
     vernacular_id: int,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
 ):
     """
     Delete existing vernacular
