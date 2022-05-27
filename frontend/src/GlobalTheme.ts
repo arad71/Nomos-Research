@@ -29,3 +29,36 @@ export const GlobalTheme = makeStyles((theme) => ({
     borderRadius: '5px',
   },
 }));
+
+export const GlobalGridTheme = makeStyles((theme) => ({
+  EightCol1to5span: {
+    gridColumn: '1 / 5',
+  },
+  EightCol5to9span: {
+    gridColumn: '5 / 9',
+  },
+  EightCol1to2span: {
+    gridColumn: '1 / 2',
+  },
+  EightCol2to3span: {
+    gridColumn: '2 / 3',
+  },
+  EightCol3to4span: {
+    gridColumn: '3 / 4',
+  },
+  EightCol4to5span: {
+    gridColumn: '4 / 5',
+  },
+  EightCol1to3span: {
+    gridColumn: '1 / 3',
+  },
+  EightCol3to5span: {
+    gridColumn: '3 / 5',
+  },
+  EightCol5to7span: {
+    gridColumn: '5 / 7',
+  },
+  EightCol7to9span: {
+    gridColumn: '7 / 9',
+  },
+}));

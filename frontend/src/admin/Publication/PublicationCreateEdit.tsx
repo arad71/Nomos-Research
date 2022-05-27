@@ -6,19 +6,14 @@ import {
   ReferenceInput,
   required,
   SelectInput,
-  SimpleForm,
   TextField,
   TextInput,
-  NullableBooleanInput,
   RichTextField,
-  ReferenceField,
-  PasswordInput,
 } from 'react-admin';
 import React, { FC } from 'react';
-import RichTextInput from 'ra-input-rich-text';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, Typography } from '@material-ui/core';
-import { GlobalTheme } from '../../GlobalTheme';
+import { GlobalTheme, GlobalGridTheme } from '../../GlobalTheme';
 
 const useStyles = makeStyles({
   title: {
@@ -42,38 +37,12 @@ const useStyles = makeStyles({
     width: '90%',
     gridColumnGap: '1.5em',
   },
-  twoColSpan: {
-    gridColumn: '1 / 5',
-  },
-  twoBColSpan: {
-    gridColumn: '5 / 9',
-  },
-  testSpan: {
-    gridColumn: '1 / 2',
-  },
-  testSpan2: {
-    gridColumn: '2 / 3',
-  },
-  testSpan3: {
-    gridColumn: '3 / 4',
-  },
-  testSpan4: {
-    gridColumn: '4 / 5',
-  },
-  anotherSpan: {
-    gridColumn: '1 / 3',
-  },
-  anotherSpan2: {
-    gridColumn: '3 / 5',
-  },
-  anotherSpan3: {
-    gridColumn: '5 / 7',
-  },
 });
 
 export const PublicationCreateEdit: FC = (props) => {
   const classes = useStyles();
   const globalClasses = GlobalTheme();
+  const gridClasses = GlobalGridTheme();
   return (
     <>
       <Box className={classes.titlePos}>
@@ -96,42 +65,43 @@ export const PublicationCreateEdit: FC = (props) => {
             </Box>
             <TextInput
               source="title"
-              className={classes.twoColSpan}
+              className={gridClasses.EightCol1to5span}
               fullWidth
             />
             <TextInput
               source="abbreviated_title"
               validate={required()}
-              className={classes.twoBColSpan}
+              className={gridClasses.EightCol5to9span}
               fullWidth
             />
             <TextInput
               source="verbatim_author"
-              className={classes.twoColSpan}
+              className={gridClasses.EightCol1to5span}
             />
             <NumberInput
               source="publication_day"
               label="Day"
-              className={classes.testSpan}
+              className={gridClasses.EightCol1to2span}
             />
             <NumberInput
               source="publication_month"
               label="Month"
-              className={classes.testSpan2}
+              className={gridClasses.EightCol2to3span}
             />
             <NumberInput
               source="publication_year"
               label="Year"
-              className={classes.testSpan3}
+              className={gridClasses.EightCol3to4span}
             />
             <BooleanInput
               label="Published"
               source="published"
+              className={gridClasses.EightCol4to5span}
               defaultValue={false}
             />
-            <TextInput source="doi" className={classes.twoColSpan} />
+            <TextInput source="doi" className={gridClasses.EightCol1to5span} />
             <Box
-              className={`${classes.twoColSpan} ${globalClasses.sectionMargin}`}
+              className={`${gridClasses.EightCol1to5span} ${globalClasses.sectionMargin}`}
             >
               <Typography
                 variant="h5"
@@ -143,77 +113,81 @@ export const PublicationCreateEdit: FC = (props) => {
             </Box>
             <TextInput
               source="verbatim_author"
-              className={classes.twoColSpan}
+              className={gridClasses.EightCol1to5span}
             />
-            <TextInput source="publisher" className={classes.twoColSpan} />
+            <TextInput
+              source="publisher"
+              className={gridClasses.EightCol1to5span}
+            />
             <ReferenceInput
               label="Parent"
               source="parent_id"
               reference="publications"
-              className={classes.twoColSpan}
+              className={gridClasses.EightCol1to5span}
             >
               <SelectInput optionText="title" />
             </ReferenceInput>
             <TextInput
               source="published_location"
-              className={classes.anotherSpan3}
+              className={gridClasses.EightCol5to7span}
             />
-            <TextInput source="volume" className={classes.anotherSpan} />
-            <TextInput source="edition" className={classes.anotherSpan2} />
-            <TextInput source="pages" className={classes.anotherSpan3} />
+            <TextInput
+              source="volume"
+              className={gridClasses.EightCol1to3span}
+            />
+            <TextInput
+              source="edition"
+              className={gridClasses.EightCol3to5span}
+            />
+            <TextInput
+              source="pages"
+              className={gridClasses.EightCol5to7span}
+            />
           </Box>
         </FormTab>
         <FormTab label="Details" className={globalClasses.bold}>
-          <TextInput source="abbreviated_title" validate={[required()]} />
-          <NullableBooleanInput
-            label="Bad Publication"
-            source="bad_publication"
-          />
-          <TextInput source="doi" />
-          <TextInput source="title" />
-          <TextInput source="display_title" />
-          <NumberInput source="publication_year" />
-          <NumberInput source="publication_month" />
-          <NumberInput source="publication_day" />
-          <TextInput source="volume" />
-          <TextInput source="edition" />
-          <TextInput source="pages" />
-          <TextInput source="verbatim_reference" />
-          <TextInput source="verbatim_citation" />
-          <TextInput source="verbatim_author" />
-          <TextInput source="citation" />
-          <RichTextInput source="citation_html" />
-          <TextInput source="citation_author_year" />
-          <TextInput source="notes" />
-          <BooleanInput
-            label="Published"
-            source="published"
-            defaultValue={false}
-          />
-          <TextInput source="publisher" />
-          <TextInput source="published_location" />
-          <TextField source="publication_date" />
-          <TextInput source="isbn" />
-          <TextInput source="issn" />
-          <TextInput source="bhl_url" />
-          <TextInput source="tl2" />
-          <TextInput source="reference_type" />
-          <ReferenceInput
-            label="Parent"
-            source="parent_id"
-            reference="publications"
-          >
-            <SelectInput optionText="abbreviated_title" />
-          </ReferenceInput>
-          <TextInput source="reference_author_role" />
-          <TextInput source="language" />
-          <ReferenceInput
-            label="Duplicate Of"
-            source="duplicate_of_id"
-            reference="publications"
-          >
-            <SelectInput optionText="abbreviated_title" />
-          </ReferenceInput>
+          <Box className={`${classes.mainGrid} ${globalClasses.sectionMargin}`}>
+            <Box>
+              <Typography
+                variant="h5"
+                className={globalClasses.bold}
+                gutterBottom
+              >
+                Details
+              </Typography>
+            </Box>
+            <NumberInput
+              source="legacy_id"
+              className={gridClasses.EightCol1to3span}
+            />
+            <TextInput source="isbn" className={gridClasses.EightCol3to5span} />
+            <TextInput source="issn" className={gridClasses.EightCol5to7span} />
+            <TextInput source="tl2" className={gridClasses.EightCol7to9span} />
+            <TextInput
+              source="bhl_url"
+              className={gridClasses.EightCol1to5span}
+            />
+            <TextInput
+              source="reference_type"
+              className={gridClasses.EightCol1to3span}
+            />
+            <TextInput
+              source="reference_author_role"
+              className={gridClasses.EightCol3to5span}
+            />
+            <ReferenceInput
+              label="Duplicate Of"
+              source="duplicate_of_id"
+              reference="publications"
+              className={gridClasses.EightCol5to9span}
+            >
+              <SelectInput optionText="abbreviated_title" />
+            </ReferenceInput>
+            <TextInput
+              source="language"
+              className={gridClasses.EightCol1to3span}
+            />
+          </Box>
         </FormTab>
         <FormTab label="References" className={globalClasses.bold}></FormTab>
         <FormTab label="Notes" className={globalClasses.bold}></FormTab>
