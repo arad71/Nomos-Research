@@ -15,7 +15,6 @@ export const PublicationShow: FC = (props) => {
       <SimpleShowLayout>
         <TextField source="abbreviated_title" />
         <BooleanField source="bad_publication" />
-        <TextField source="publication_name" />
         <TextField source="doi" />
         <TextField source="title" />
         <TextField source="display_title" />

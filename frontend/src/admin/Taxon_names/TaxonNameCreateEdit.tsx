@@ -68,7 +68,7 @@ export const TaxonNameCreateEdit: FC = ({
         <TextInput source="specific_epithet" />
         <TextInput source="infraspecific_epithet" />
         <ReferenceInput source="publication_id" reference="publications">
-          <SelectInput optionText="publication_name" />
+          <SelectInput optionText="title" />
         </ReferenceInput>
         <TextInput source="volume_information" />
         <BooleanInput
