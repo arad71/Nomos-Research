@@ -122,7 +122,7 @@ export const PublicationShow: FC = (props) => {
                     source="author_ids"
                   >
                     <SingleFieldList>
-                      <ChipField source="abbreviated_name" />
+                      <ChipField source="abbreviation" />
                     </SingleFieldList>
                   </ReferenceArrayField>
                 </Labeled>
@@ -218,7 +218,6 @@ export const PublicationShow: FC = (props) => {
               </Labeled>
             </Box>
           </Tab>
-          <Tab label="References" className={globalClasses.bold}></Tab>
           <Tab label="Notes" className={globalClasses.bold}>
             <Box className={globalClasses.sectionMargin}>
               <Typography
