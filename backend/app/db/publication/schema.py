@@ -59,6 +59,7 @@ class Publication(PublicationBase, TableBase):
     publication_id: int = Field(description=PUBLICATION_ID)
     author: list[Author]
     author_names: Optional[list[str]]
+    author_name: Optional[str]
 
     class Config:
         orm_mode = True
