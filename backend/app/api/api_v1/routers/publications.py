@@ -8,6 +8,7 @@ from app.db.publication.crud import PublicationCrud
 from app.db.publication.schema import Publication, PublicationCreate, PublicationEdit
 from app.db.role.constants import Role
 from app.db.session import get_db
+from app.db.user.schema import User
 
 publications_router = r = APIRouter(prefix="/publications")
 
@@ -70,12 +71,14 @@ async def publication_details(
 async def publication_create(
     publication: PublicationCreate,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_user),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Create a new publication
     """
-    return PublicationCrud.create_item(db, publication, current_user.user_id)
+    return PublicationCrud.create_item(
+        db, publication, current_user=current_user.user_id
+    )
 
 
 @r.put(
@@ -96,13 +99,13 @@ async def publication_edit(
     publication_id: int,
     publication: PublicationEdit,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_user),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Update existing publication
     """
     return PublicationCrud.edit_item(
-        db, publication_id, publication, current_user.user_id
+        db, publication_id, publication, current_user=current_user.user_id
     )
 
 
