@@ -180,7 +180,6 @@ export const PublicationCreateEdit: FC = (props) => {
             />
           </Box>
         </FormTab>
-        <FormTab label="References" className={globalClasses.bold}></FormTab>
         <FormTab label="Notes" className={globalClasses.bold}>
           <Box className={`${classes.mainGrid} ${globalClasses.sectionMargin}`}>
             <Box>
