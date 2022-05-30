@@ -6,9 +6,9 @@ from app.api.dependencies.range_query import RangeQueryParameter
 from app.core.auth import authorize, get_current_active_user
 from app.db.role.constants import Role
 from app.db.session import get_db
+from app.db.user.model import User
 from app.db.vernacular.crud import VernacularCrud
 from app.db.vernacular.schema import Vernacular, VernacularCreate, VernacularEdit
-from app.db.user.model import User
 
 vernaculars_router = r = APIRouter(prefix="/vernaculars")
 

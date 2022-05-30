@@ -111,3 +111,61 @@ def test_get_vernacular(
 def test_vernacular_not_found(client, superuser_token_headers):
     response = client.get("/api/v1/vernaculars/123", headers=superuser_token_headers)
     assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+def test_unauthenticated_routes(client):
+    response = client.get("/api/v1/vernaculars/me")
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    response = client.get("/api/v1/vernaculars")
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    response = client.get("/api/v1/vernaculars/123")
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    response = client.put("/api/v1/vernaculars/123")
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    response = client.delete("/api/v1/vernaculars/123")
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_super_admin_permissions(
+    client,
+    superuser_token_headers,
+    test_vernacular,
+    test_superuser,
+):
+    response = client.get("/api/v1/vernaculars", headers=superuser_token_headers)
+    assert response.status_code == status.HTTP_200_OK
+
+    response = client.get(
+        f"/api/v1/vernaculars/{test_vernacular.taxon_name_id}",
+        headers=superuser_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+    taxon_json = {
+        "kingdom_id": test_kingdom.kingdom_id,
+        "rank_id": test_taxon_rank.taxon_rank_id,
+        "is_current": True,
+        "validated": True,
+        "canonical_name": test_vernacular.canonical_name,
+        "created_by": test_superuser.user_id,
+        "created_on": test_vernacular.created_on.isoformat(),
+    }
+    response = client.post(
+        "/api/v1/vernaculars", headers=superuser_token_headers, json=taxon_json
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+    taxon_json.update(
+        {
+            "canonical_name": test_vernacular.canonical_name,
+            "updated_by": test_superuser.user_id,
+            "updated_on": test_vernacular.created_on.isoformat(),
+        }
+    )
+    response = client.put(
+        f"/api/v1/vernaculars/{test_vernacular.taxon_name_id}",
+        headers=superuser_token_headers,
+        json=taxon_json,
+    )
+    assert response.status_code == status.HTTP_200_OK
+
