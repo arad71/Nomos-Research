@@ -26,7 +26,6 @@ class PublicationCrud(crud.Crud):
     ):
         db_publication = Publication()
         create_data = publication.dict(exclude_unset=True)
-        create_data.pop("author_names", None)
         create_data.pop("author_ids", None)
         create_data["created_by"] = current_user
         create_data["updated_by"] = current_user
@@ -64,7 +63,6 @@ class PublicationCrud(crud.Crud):
                 status.HTTP_404_NOT_FOUND, detail="Publication not found"
             )
         update_data = publication.dict(exclude_unset=True)
-        update_data.pop("author_names", None)
 
         if "author_ids" in update_data:
             author_ids = update_data["author_ids"]

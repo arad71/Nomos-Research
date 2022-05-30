@@ -44,7 +44,6 @@ class PublicationBase(BaseModel):
     language: Optional[str]
     duplicate_of_id: Optional[int]
     legacy_id: Optional[int]
-    author_names: Optional[list[str]]
     author_ids: Optional[list[int]]
 
 
@@ -59,6 +58,7 @@ class PublicationEdit(PublicationBase):
 class Publication(PublicationBase, TableBase):
     publication_id: int = Field(description=PUBLICATION_ID)
     author: list[Author]
+    author_names: Optional[list[str]]
 
     class Config:
         orm_mode = True
