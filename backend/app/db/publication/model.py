@@ -12,6 +12,15 @@ from app.db.publication.constants import (
 )
 
 
+def abbreviation_to_name(abbreviation):
+    abbreviation_has_end_dot = abbreviation.endswith(".")
+    abbreviation = abbreviation.strip(".").replace(" ", "")
+    formatted_name = ". ".join(abbreviation.rsplit(".", 1))
+    if abbreviation_has_end_dot:
+        formatted_name += "."
+    return formatted_name
+
+
 class Publication(BaseModel, TableMixin):
     __tablename__ = "publication"
     __table_args__ = (
@@ -92,9 +101,7 @@ class Publication(BaseModel, TableMixin):
             if author.surname and author.initials:
                 author_names.append(f"{author.initials} {author.surname}")
             elif author.abbreviation:
-                author_names.append(
-                    ". ".join(filter(None, author.abbreviation.rsplit(".", 1)))
-                )
+                author_names.append(abbreviation_to_name(author.abbreviation))
         return ", ".join(author_names)
 
 
