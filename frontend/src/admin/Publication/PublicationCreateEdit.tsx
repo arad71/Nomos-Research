@@ -89,6 +89,7 @@ export const PublicationCreateEdit: FC = (props) => {
             />
             <TextInput source="doi" className={gridClasses.EightCol1to5span} />
             <Box
+              /* eslint-disable-next-line max-len */
               className={`${gridClasses.EightCol1to5span} ${globalClasses.sectionMargin}`}
             >
               <Typography
