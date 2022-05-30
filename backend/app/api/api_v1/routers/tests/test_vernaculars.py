@@ -148,7 +148,6 @@ def test_super_admin_permissions(
         "language": "english",
         "enabled": True,
         "created_by": test_superuser.user_id,
-        # "created_on": test_vernacular.created_on.isoformat(),
     }
     response = client.post(
         "/api/v1/vernaculars", headers=superuser_token_headers, json=vernacular_json
@@ -174,3 +173,139 @@ def test_super_admin_permissions(
         headers=superuser_token_headers,
     )
     assert response.status_code == status.HTTP_200_OK
+
+
+def test_manager_permissions(
+    client,
+    manager_token_headers,
+    test_vernacular,
+    test_taxon_name_canonical_name_3,
+    test_manager,
+):
+    response = client.get("/api/v1/vernaculars", headers=manager_token_headers)
+    assert response.status_code == status.HTTP_200_OK
+
+    response = client.get(
+        f"/api/v1/vernaculars/{test_vernacular.vernacular_id}",
+        headers=manager_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+    response = client.delete(
+        f"/api/v1/vernaculars/{test_vernacular.vernacular_id}",
+        headers=manager_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+    vernacular_json = {
+        "taxon_name_id": test_taxon_name_canonical_name_3.taxon_name_id,
+        "vernacular": "Vernacular 1",
+        "language": "english",
+        "enabled": True,
+        "created_by": test_manager.user_id,
+    }
+    response = client.post(
+        "/api/v1/vernaculars", headers=manager_token_headers, json=vernacular_json
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+    vernacular_id = response.json()["vernacular_id"]
+    vernacular_json.update(
+        {
+            "updated_by": test_manager.user_id,
+            "updated_on": test_vernacular.created_on.isoformat(),
+        }
+    )
+    response = client.put(
+        f"/api/v1/vernaculars/{vernacular_id}",
+        headers=manager_token_headers,
+        json=vernacular_json,
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+    response = client.delete(
+        f"/api/v1/vernaculars/{vernacular_id}",
+        headers=manager_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+
+def test_officer_permissions(
+    client,
+    officer_token_headers,
+    test_vernacular,
+    test_taxon_name_canonical_name_3,
+    test_officer,
+):
+    response = client.get("/api/v1/vernaculars", headers=officer_token_headers)
+    assert response.status_code == status.HTTP_200_OK
+
+    response = client.get(
+        f"/api/v1/vernaculars/{test_vernacular.vernacular_id}",
+        headers=officer_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+    response = client.delete(
+        f"/api/v1/vernaculars/{test_vernacular.vernacular_id}",
+        headers=officer_token_headers,
+    )
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    vernacular_json = {
+        "taxon_name_id": test_taxon_name_canonical_name_3.taxon_name_id,
+        "vernacular": "Vernacular 1",
+        "language": "english",
+        "enabled": True,
+        "created_by": test_officer.user_id,
+    }
+    response = client.post(
+        "/api/v1/vernaculars", headers=officer_token_headers, json=vernacular_json
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+    vernacular_id = response.json()["vernacular_id"]
+    vernacular_json.update(
+        {
+            "updated_by": test_officer.user_id,
+            "updated_on": test_vernacular.created_on.isoformat(),
+        }
+    )
+    response = client.put(
+        f"/api/v1/vernaculars/{vernacular_id}",
+        headers=officer_token_headers,
+        json=vernacular_json,
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+
+parameter_names = "method,endpoint,status_code"
+
+parameter_values = [
+    ("get", "/api/v1/vernaculars", status.HTTP_200_OK),
+    ("put", "/api/v1/vernaculars/1", status.HTTP_403_FORBIDDEN),
+    ("delete", "/api/v1/vernaculars/1", status.HTTP_403_FORBIDDEN),
+    ("post", "/api/v1/vernaculars", status.HTTP_403_FORBIDDEN),
+]
+
+
+@pytest.mark.parametrize(
+    parameter_names,
+    parameter_values,
+)
+def test_reader_permissions(
+    client, reader_token_headers, method, endpoint, status_code
+):
+    response = getattr(client, method)(endpoint, headers=reader_token_headers)
+    assert response.status_code == status_code
+
+
+@pytest.mark.parametrize(
+    parameter_names,
+    parameter_values,
+)
+def test_app_support_permissions(
+    client, app_support_token_headers, method, endpoint, status_code
+):
+    response = getattr(client, method)(endpoint, headers=app_support_token_headers)
+    assert response.status_code == status_code
