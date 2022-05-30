@@ -130,42 +130,47 @@ def test_super_admin_permissions(
     client,
     superuser_token_headers,
     test_vernacular,
+    test_taxon_name_canonical_name_3,
     test_superuser,
 ):
     response = client.get("/api/v1/vernaculars", headers=superuser_token_headers)
     assert response.status_code == status.HTTP_200_OK
 
     response = client.get(
-        f"/api/v1/vernaculars/{test_vernacular.taxon_name_id}",
+        f"/api/v1/vernaculars/{test_vernacular.vernacular_id}",
         headers=superuser_token_headers,
     )
     assert response.status_code == status.HTTP_200_OK
 
-    taxon_json = {
-        "kingdom_id": test_kingdom.kingdom_id,
-        "rank_id": test_taxon_rank.taxon_rank_id,
-        "is_current": True,
-        "validated": True,
-        "canonical_name": test_vernacular.canonical_name,
+    vernacular_json = {
+        "taxon_name_id": test_taxon_name_canonical_name_3.taxon_name_id,
+        "vernacular": "Vernacular 1",
+        "language": "english",
+        "enabled": True,
         "created_by": test_superuser.user_id,
-        "created_on": test_vernacular.created_on.isoformat(),
+        # "created_on": test_vernacular.created_on.isoformat(),
     }
     response = client.post(
-        "/api/v1/vernaculars", headers=superuser_token_headers, json=taxon_json
+        "/api/v1/vernaculars", headers=superuser_token_headers, json=vernacular_json
     )
     assert response.status_code == status.HTTP_200_OK
 
-    taxon_json.update(
+    vernacular_id = response.json()["vernacular_id"]
+    vernacular_json.update(
         {
-            "canonical_name": test_vernacular.canonical_name,
             "updated_by": test_superuser.user_id,
             "updated_on": test_vernacular.created_on.isoformat(),
         }
     )
     response = client.put(
-        f"/api/v1/vernaculars/{test_vernacular.taxon_name_id}",
+        f"/api/v1/vernaculars/{vernacular_id}",
         headers=superuser_token_headers,
-        json=taxon_json,
+        json=vernacular_json,
     )
     assert response.status_code == status.HTTP_200_OK
 
+    response = client.delete(
+        f"/api/v1/vernaculars/{vernacular_id}",
+        headers=superuser_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
