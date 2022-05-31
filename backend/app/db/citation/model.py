@@ -33,9 +33,14 @@ class Citation(BaseModel, TableMixin):
         comment=TAXON_NAME_ID,
         doc=TAXON_NAME_ID,
     )
-    taxon_name = relationship("TaxonName", backref=backref(name_plural, lazy="dynamic"))
+    taxon_name = relationship(
+        "TaxonName",
+        backref=backref(name_plural, lazy="dynamic", cascade="all, delete-orphan"),
+    )
     author_id = Column(Integer, ForeignKey("author.author_id"))
-    author = relationship("Author", backref=name_plural)
+    author = relationship(
+        "Author", backref=backref(name_plural, cascade="all, delete-orphan")
+    )
     author_type = Column(
         Enum(enums.AuthorType, name=__tablename__ + "__author_type"),
         comment=AUTHOR_TYPE,

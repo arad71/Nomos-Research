@@ -36,7 +36,7 @@ class Hierarchy(BaseModel, TableMixin):
         "TaxonName",
         foreign_keys=[taxon_name_id],
         remote_side=[TaxonName.taxon_name_id],
-        backref=backref("names"),
+        backref=backref("names", cascade="all, delete-orphan"),
     )
     classification_system_id = Column(
         Integer,
@@ -57,5 +57,5 @@ class Hierarchy(BaseModel, TableMixin):
         "TaxonName",
         foreign_keys=[parent_nid],
         remote_side=[TaxonName.taxon_name_id],
-        backref=backref("children"),
+        backref=backref("children", cascade="all, delete-orphan"),
     )
