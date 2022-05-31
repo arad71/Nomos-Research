@@ -54,7 +54,11 @@ export const UserCreateEdit: FC = (props) => {
         </Box>
         <Box className={classes.twoColSpan}>
           <ReferenceArrayInput source="role_ids" reference="roles">
-            <SelectArrayInput optionText="name" fullWidth />
+            <SelectArrayInput
+              optionText="name"
+              fullWidth
+              validate={required()}
+            />
           </ReferenceArrayInput>
         </Box>
         <BooleanInput source="is_active" defaultValue={false} />
