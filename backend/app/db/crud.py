@@ -4,6 +4,7 @@ import typing as t
 from fastapi import HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy import or_
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from sqlalchemy_mixins.smartquery import smart_query
 
@@ -129,8 +130,13 @@ class Crud:
 
         setattr(db_item, "updated_by", current_user)
         db.add(db_item)
-        db.commit()
-        db.refresh(db_item)
+        try:
+            db.commit()
+        except IntegrityError as e:
+            message = f'{e.args[-1].split(":")[1]}'
+            raise HTTPException(status_code=500, detail=message) from None
+        else:
+            db.refresh(db_item)
         return db_item
 
     @classmethod
