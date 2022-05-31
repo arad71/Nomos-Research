@@ -85,6 +85,10 @@ class Publication(BaseModel, TableMixin):
     def author_ids(self):
         return [publication_author.author_id for publication_author in self.author]
 
+    @hybrid_property
+    def author_name(self):
+        return ", ".join([author.display_name for author in self.author])
+
 
 event.listen(Publication, "before_insert", calculate_fields)
 event.listen(Publication, "before_update", calculate_fields)
