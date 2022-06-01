@@ -26,8 +26,15 @@ class Crud:
             setattr(db_item, "updated_by", current_user)
 
         db.add(db_item)
-        db.commit()
-        db.refresh(db_item)
+        try:
+            db.commit()
+        except IntegrityError as e:
+            message = f'{e.args[-1].split(":")[1]}'
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=message
+            ) from None
+        else:
+            db.refresh(db_item)
         return db_item
 
     @classmethod
@@ -134,7 +141,9 @@ class Crud:
             db.commit()
         except IntegrityError as e:
             message = f'{e.args[-1].split(":")[1]}'
-            raise HTTPException(status_code=500, detail=message) from None
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=message
+            ) from None
         else:
             db.refresh(db_item)
         return db_item
