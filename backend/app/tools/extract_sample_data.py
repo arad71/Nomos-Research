@@ -24,14 +24,17 @@ from app.db.user.model import User
 from app.db.user_role.model import UserRole
 from app.db.vernacular.model import Vernacular
 
+SAMPLE_DATA_XLSX = "/app/nomos_sample_data.xlsx"
 
-def addapt_numpy_int64(numpy_int64):
+
+def adapt_numpy_int64(numpy_int64):
     return AsIs(numpy_int64)
 
 
-def extract_sample_data():
-    register_adapter(numpy.int64, addapt_numpy_int64)
-
+def extract_sample_data_file(db: Session = None, delete=False):
+    register_adapter(numpy.int64, adapt_numpy_int64)
+    if not db:
+        db = SessionLocal()
     tables = (
         Author,
         Citation,
@@ -48,6 +51,7 @@ def extract_sample_data():
         UserRole,
         Vernacular,
     )
+    # We don't want to delete records from these tables as they are
     keep = (
         ClassificationSystem,
         Kingdom,
@@ -57,13 +61,12 @@ def extract_sample_data():
         Role,
         UserRole,
     )
-    db: Session = SessionLocal()
+
     db.begin()
-    output_file = "/app/nomos_sample_data.xlsx"
     limit = 500
     delete_proportion = 0.3
     writer = ExcelWriter(
-        output_file, date_format="YYYY-MM-DD", datetime_format="YYYY-MM-DD"
+        SAMPLE_DATA_XLSX, date_format="YYYY-MM-DD", datetime_format="YYYY-MM-DD"
     )
     for table in tables:
         table_name = table.__tablename__
@@ -84,7 +87,7 @@ def extract_sample_data():
             sample[date_column] = sample[date_column].dt.date
 
         sample.to_excel(writer, sheet_name=table_name)
-        if table not in keep:
+        if delete and table not in keep:
             logger.debug("Deleting sample records from {}", table_name)
             deletes = sample.sample(int(delete_proportion * n), random_state=1)
             deletes.to_excel(writer, sheet_name=f"{table_name}_deletes")
@@ -93,7 +96,7 @@ def extract_sample_data():
             query = db.query(table).filter(getattr(table, primary_key).in_(delete_ids))
             for record in query:
                 db.delete(record)
-    logger.debug("Saving sample data to {}.", output_file)
+    logger.debug("Saving sample data to {}.", SAMPLE_DATA_XLSX)
     writer.save()
     logger.debug("Flushing changes to database")
     db.flush()
@@ -101,4 +104,5 @@ def extract_sample_data():
     db.commit()
 
 
-extract_sample_data()
+if __name__ == "__main__":
+    extract_sample_data_file(None, True)
