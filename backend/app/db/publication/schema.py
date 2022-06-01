@@ -13,7 +13,6 @@ from app.db.schemas import TableBase
 
 class PublicationBase(BaseModel):
     bad_publication: Optional[bool] = Field(description=BAD_PUBLICATION)
-    publication_name: Optional[str]
     doi: Optional[str]
     title: Optional[str]
     display_title: Optional[str]
@@ -45,7 +44,7 @@ class PublicationBase(BaseModel):
     language: Optional[str]
     duplicate_of_id: Optional[int]
     legacy_id: Optional[int]
-    pass
+    author_ids: Optional[list[int]]
 
 
 class PublicationCreate(PublicationBase):
@@ -59,6 +58,8 @@ class PublicationEdit(PublicationBase):
 class Publication(PublicationBase, TableBase):
     publication_id: int = Field(description=PUBLICATION_ID)
     author: list[Author]
+    author_names: Optional[list[str]]
+    author_name: Optional[str]
 
     class Config:
         orm_mode = True

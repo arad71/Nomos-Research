@@ -1,22 +1,29 @@
 import {
-  TabbedForm,
-  FormTab,
+  BooleanInput,
   DateTimeInput,
+  FormTab,
+  NullableBooleanInput,
+  NumberField,
   NumberInput,
+  ReferenceField,
   ReferenceInput,
+  ReferenceManyField,
   required,
   RichTextField,
+  SelectField,
   SelectInput,
+  TabbedForm,
   TextField,
   TextInput,
-  BooleanInput,
-  NullableBooleanInput,
 } from 'react-admin';
-
-import React, { FC } from 'react';
+import { EditableDatagrid } from '@react-admin/ra-editable-datagrid';
+import React, { FC, PropsWithChildren } from 'react';
 import NaturalisedStatus from './NaturalisedStatus';
 import PublicationStatus from './PublicationStatus';
 import { makeStyles } from '@material-ui/core/styles';
+import AuthorType from '../Citations/AuthorType';
+import { Typography } from '@material-ui/core';
+import { CitationRowForm } from '../Citations';
 
 const useStyles = makeStyles({
   tablabel: {
@@ -24,8 +31,11 @@ const useStyles = makeStyles({
   },
 });
 
-export const TaxonNameCreateEdit: FC = (props) => {
+export const TaxonNameCreateEdit: FC = ({
+  ...props
+}: PropsWithChildren<any>) => {
   const classes = useStyles();
+  const initialValues = { taxon_name_id: props.record?.id };
   return (
     <TabbedForm {...props}>
       <FormTab label="Name" className={classes.tablabel}>
@@ -58,7 +68,7 @@ export const TaxonNameCreateEdit: FC = (props) => {
         <TextInput source="specific_epithet" />
         <TextInput source="infraspecific_epithet" />
         <ReferenceInput source="publication_id" reference="publications">
-          <SelectInput optionText="publication_name" />
+          <SelectInput optionText="title" />
         </ReferenceInput>
         <TextInput source="volume_information" />
         <BooleanInput
@@ -85,6 +95,40 @@ export const TaxonNameCreateEdit: FC = (props) => {
         <TextInput source="external_id" />
         <TextInput source="family_code" />
         <TextField source="author" />
+        {(props.record?.id && (
+          <ReferenceManyField
+            fullWidth
+            label="Authors"
+            reference="citations"
+            target="taxon_name_id"
+            sort={{
+              field: 'author_type,author_order',
+              order: 'ASC,ASC',
+            }}
+            {...props}
+          >
+            <EditableDatagrid
+              undoable
+              createForm={
+                <CitationRowForm initialValues={initialValues} {...props} />
+              }
+              editForm={<CitationRowForm {...props} />}
+              hasCreate
+            >
+              <ReferenceField source="author_id" reference="authors">
+                <TextField source="abbreviation" />
+              </ReferenceField>
+              <SelectField source="author_type" choices={AuthorType} />
+              <NumberField source="author_order" />
+            </EditableDatagrid>
+          </ReferenceManyField>
+        )) || (
+          <Typography>
+            You need to save the record before you can add any authors /
+            citations.
+          </Typography>
+        )}
+
         <TextInput source="vernacular" />
         <TextField source="editor" />
         <SelectInput source="naturalised_status" choices={NaturalisedStatus} />

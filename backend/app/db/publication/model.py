@@ -1,4 +1,5 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Text, event
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, event
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.schema import UniqueConstraint
 
@@ -29,7 +30,6 @@ class Publication(BaseModel, TableMixin):
         comment=BAD_PUBLICATION,
         doc=BAD_PUBLICATION,
     )
-    publication_name = Column(Text)
     doi = Column(String)
     title = Column(String)
     display_title = Column(String)
@@ -76,6 +76,18 @@ class Publication(BaseModel, TableMixin):
         backref=backref("duplicates"),
     )
     legacy_id = Column(Integer)
+
+    @hybrid_property
+    def author_names(self):
+        return [publication_author.abbreviation for publication_author in self.author]
+
+    @hybrid_property
+    def author_ids(self):
+        return [publication_author.author_id for publication_author in self.author]
+
+    @hybrid_property
+    def author_name(self):
+        return ", ".join([author.display_name for author in self.author])
 
 
 event.listen(Publication, "before_insert", calculate_fields)

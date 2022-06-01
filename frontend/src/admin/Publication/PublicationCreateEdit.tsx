@@ -16,7 +16,6 @@ export const PublicationCreateEdit: FC = (props) => (
   <SimpleForm {...props}>
     <TextInput source="abbreviated_title" validate={[required()]} />
     <NullableBooleanInput label="Bad Publication" source="bad_publication" />
-    <TextInput source="publication_name" />
     <TextInput source="doi" />
     <TextInput source="title" />
     <TextInput source="display_title" />

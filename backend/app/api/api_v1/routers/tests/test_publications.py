@@ -12,7 +12,7 @@ def test_get_publications(client, test_publication, superuser_token_headers):
             "publication_id": test_publication.publication_id,
             "bad_publication": test_publication.bad_publication,
             "abbreviated_title": test_publication.abbreviated_title,
-            "publication_name": test_publication.publication_name,
+            "title": test_publication.title,
             "author": [],
             "publication_day": test_publication.publication_day,
             "publication_month": test_publication.publication_month,
@@ -22,6 +22,9 @@ def test_get_publications(client, test_publication, superuser_token_headers):
             "updated_on": test_publication.updated_on.isoformat(),
             "created_by": test_publication.created_by,
             "created_on": test_publication.created_on.isoformat(),
+            "author_ids": [],
+            "author_names": [],
+            "author_name": "",
         }
     ]
 
@@ -48,7 +51,7 @@ def test_edit_publication(
     new_publication = {
         "bad_publication": test_publication.bad_publication,
         "abbreviated_title": test_publication.abbreviated_title,
-        "publication_name": test_publication.publication_name,
+        "title": test_publication.title,
         "publication_day": test_publication.publication_day,
         "publication_month": test_publication.publication_month,
         "publication_year": test_publication.publication_year,
@@ -68,6 +71,9 @@ def test_edit_publication(
     new_publication["publication_id"] = test_publication.publication_id
     new_publication["updated_on"] = response.json()["updated_on"]
     new_publication["author"] = []
+    new_publication["author_ids"] = []
+    new_publication["author_names"] = []
+    new_publication["author_name"] = ""
     assert response.json() == new_publication
 
 
@@ -77,7 +83,7 @@ def test_edit_publication_not_found(
     new_publication = {
         "bad_publication": True,
         "abbreviated_title": "PUBLICATION 2",
-        "publication_name": "PUBLICATION_NAME",
+        "title": "PUBLICATION_NAME",
         "updated_by": test_superuser.user_id,
         "updated_on": test_publication.updated_on.isoformat(),
         "created_by": test_superuser.user_id,
@@ -105,7 +111,7 @@ def test_get_publication(
         "publication_id": test_publication.publication_id,
         "bad_publication": test_publication.bad_publication,
         "abbreviated_title": test_publication.abbreviated_title,
-        "publication_name": test_publication.publication_name,
+        "title": test_publication.title,
         "publication_day": test_publication.publication_day,
         "publication_month": test_publication.publication_month,
         "publication_year": test_publication.publication_year,
@@ -115,6 +121,9 @@ def test_get_publication(
         "updated_on": test_publication.updated_on.isoformat(),
         "created_by": test_publication.created_by,
         "created_on": test_publication.created_on.isoformat(),
+        "author_ids": [],
+        "author_names": [],
+        "author_name": "",
     }
 
 
@@ -137,13 +146,13 @@ def test_unauthenticated_routes(client):
 NEW_PUBLICATION = {
     "bad_publication": False,
     "abbreviated_title": "PUBLICATION",
-    "publication_name": "PUBLICATION_NAME_NEW",
+    "title": "PUBLICATION_NAME_NEW",
     "updated_by": None,
     "updated_on": None,
 }
 UPDATE_PUBLICATION = {
     "publication": "ANOTHER_PUBLICATION",
-    "publication_name": "PUBLICATION_NAME_CHANGED",
+    "title": "PUBLICATION_NAME_CHANGED",
 }
 
 

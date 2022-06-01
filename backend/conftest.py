@@ -380,7 +380,7 @@ def test_publication(test_db, test_superuser) -> Publication:
     publication = Publication(
         bad_publication=False,
         abbreviated_title="PUBLICATION",
-        publication_name="PUBLICATION_NAME",
+        title="PUBLICATION_NAME",
         publication_day=23,
         publication_month=12,
         publication_year=1998,

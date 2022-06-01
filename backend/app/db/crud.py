@@ -57,14 +57,15 @@ class Crud:
         sort_attrs = []
         if sort:
             sort_by, sort_dir = cls.get_sort(sort)
-            direction = "-" if sort_dir == "DESC" else ""
-            sort_value = f"{direction}{sort_by}"
-            sort_attrs.append(sort_value)
+            sort_by = sort_by.split(",") if sort_by else []
+            sort_dir = sort_dir.split(",") if sort_dir else []
+            for i, sort_field in enumerate(sort_by):
+                direction = "-" if sort_dir and sort_dir[i] == "DESC" else ""
+                sort_value = f"{direction}{sort_field}"
+                sort_attrs.append(sort_value)
 
         filters = {}
         if list_filter:
-            # TODO: Implement additional filters as per
-            #  https://github.com/BIO-WA/BDRTaxMan/pull/162
             filter_items = json.loads(list_filter)
             column: str
             for column in filter_items:
