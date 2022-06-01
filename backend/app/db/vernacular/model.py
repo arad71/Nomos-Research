@@ -1,5 +1,5 @@
 from sqlalchemy import Boolean, Column, Enum, ForeignKey, Integer, String
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import backref, relationship
 from sqlalchemy.schema import UniqueConstraint
 
 from app.db.models import BaseModel, TableMixin
@@ -37,7 +37,9 @@ class Vernacular(BaseModel, TableMixin):
         comment=TAXON_NAME_ID,
         doc=TAXON_NAME_ID,
     )
-    taxon_name = relationship("TaxonName", backref="vernaculars")
+    taxon_name = relationship(
+        "TaxonName", backref=backref("vernaculars", cascade="all, delete-orphan")
+    )
     language = Column(
         Enum(enums.Language, name=__tablename__ + "__language"),
         nullable=False,

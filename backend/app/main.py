@@ -10,6 +10,7 @@ from app.api.api_v1.routers.citations import citations_router
 from app.api.api_v1.routers.classification_systems import classification_systems_router
 from app.api.api_v1.routers.cross_references import cross_references_router
 from app.api.api_v1.routers.dataimport import data_import_router
+from app.api.api_v1.routers.extract import extract_router
 from app.api.api_v1.routers.hierarchies import hierarchies_router
 from app.api.api_v1.routers.informal_groups import informal_groups_router
 from app.api.api_v1.routers.kingdoms import kingdoms_router
@@ -168,6 +169,12 @@ app.include_router(
     data_import_router,
     prefix=API_V1_URL,
     tags=["import"],
+    dependencies=[],
+)
+app.include_router(
+    extract_router,
+    prefix=API_V1_URL,
+    tags=["extract"],
     dependencies=[],
 )
 
