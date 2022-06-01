@@ -10,7 +10,7 @@ export const AuthorEdit: FC = (props) => {
 
   const handleSuccess = () => {
     notify(`Author updated`);
-    redirect('/authors');
+    redirect('/authors?sort=updated_on&order=DESC');
     refresh();
   };
 

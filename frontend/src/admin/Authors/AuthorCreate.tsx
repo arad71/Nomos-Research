@@ -10,7 +10,7 @@ export const AuthorCreate: FC = (props) => {
 
   const handleSuccess = () => {
     notify(`Author created`);
-    redirect('/authors');
+    redirect('/authors?sort=updated_on&order=DESC');
     refresh();
   };
 
