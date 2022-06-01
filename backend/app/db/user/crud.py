@@ -1,4 +1,5 @@
 from fastapi import HTTPException, status
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 import app.db.crud as crud
@@ -37,8 +38,16 @@ class UserCrud(crud.Crud):
             updated_by=current_user,
         )
         db.add(db_user)
-        db.commit()
-        db.refresh(db_user)
+        try:
+            db.commit()
+        except IntegrityError as e:
+            message = f'{e.args[-1].split(":")[1]}'
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=message
+            ) from None
+        else:
+            db.refresh(db_user)
+
         user_id = db_user.user_id
         if user.role_ids:
             for role_id in user.role_ids:
@@ -100,6 +109,13 @@ class UserCrud(crud.Crud):
             setattr(db_user, key, value)
 
         db.add(db_user)
-        db.commit()
-        db.refresh(db_user)
+        try:
+            db.commit()
+        except IntegrityError as e:
+            message = f'{e.args[-1].split(":")[1]}'
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=message
+            ) from None
+        else:
+            db.refresh(db_user)
         return db_user
