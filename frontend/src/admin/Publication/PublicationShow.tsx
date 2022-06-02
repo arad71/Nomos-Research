@@ -3,15 +3,14 @@ import {
   ReferenceField,
   RichTextField,
   Show,
-  SimpleShowLayout,
   TextField,
-  BooleanField,
   TabbedShowLayout,
   Tab,
   Labeled,
   ReferenceArrayField,
   SingleFieldList,
   ChipField,
+  FunctionField,
 } from 'react-admin';
 import Aside from '../shared/Aside';
 import { Box, Typography } from '@material-ui/core';
@@ -74,7 +73,9 @@ export const PublicationShow: FC = (props) => {
             </Box>
             <Box className={globalClasses.fieldMargin}>
               <Labeled label="Authors">
-                <TextField source="verbatim_author" />
+                <FunctionField
+                  render={(record: any) => record.author_names.join(', ')}
+                />
               </Labeled>
             </Box>
             <Box className={globalClasses.formRow}>
