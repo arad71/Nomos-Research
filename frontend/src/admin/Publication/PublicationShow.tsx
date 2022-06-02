@@ -72,7 +72,7 @@ export const PublicationShow: FC = (props) => {
               </Box>
             </Box>
             <Box className={globalClasses.fieldMargin}>
-              <Labeled label="Authors">
+              <Labeled label="Publication Authors">
                 <FunctionField
                   render={(record: any) => record.author_names.join(', ')}
                 />
