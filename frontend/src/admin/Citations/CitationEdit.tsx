@@ -3,8 +3,10 @@ import { Edit } from 'react-admin';
 import Aside from '../shared/Aside';
 import { CitationCreateEdit } from './CitationCreateEdit';
 
-export const CitationEdit: FC = (props) => (
-  <Edit {...props} aside={<Aside />}>
-    <CitationCreateEdit />
-  </Edit>
-);
+export const CitationEdit: FC = (props) => {
+  return (
+    <Edit mutationMode="pessimistic" {...props} aside={<Aside />}>
+      <CitationCreateEdit />
+    </Edit>
+  );
+};
