@@ -1,7 +1,11 @@
 import uvicorn
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from loguru import logger
+from sqlalchemy.exc import IntegrityError
+from starlette import status
 from starlette.requests import Request
+from starlette.responses import JSONResponse
 
 from app.api.api_v1.routers.auth import auth_router
 from app.api.api_v1.routers.authors import authors_router
@@ -53,6 +57,17 @@ async def db_session_middleware(request: Request, call_next):
     response = await call_next(request)
     request.state.db.close()
     return response
+
+
+@app.exception_handler(IntegrityError)
+async def integrity_exception_handler(request: Request, e: IntegrityError):
+    message = f'{e.args[-1].split(":")[1]}'
+    logger.error(e)
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        headers={"X-Error": repr(e.__repr__())},
+        content={"detail": message},
+    )
 
 
 @app.get(API_V1_URL)
