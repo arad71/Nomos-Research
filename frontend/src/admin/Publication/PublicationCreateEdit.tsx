@@ -64,10 +64,6 @@ export const PublicationCreateEdit: FC = (props) => {
               validate={required()}
               className={gridClasses.EightCol5to9span}
             />
-            {/*<TextInput*/}
-            {/*  source="verbatim_author"*/}
-            {/*  className={gridClasses.EightCol1to5span}*/}
-            {/*/>*/}
             <Labeled
               label="Publication Authors"
               className={gridClasses.EightCol1to5span}
