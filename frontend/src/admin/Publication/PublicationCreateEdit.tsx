@@ -70,7 +70,7 @@ export const PublicationCreateEdit: FC = (props) => {
             >
               <Box className={gridClasses.EightCol1to5span}>
                 <FunctionField
-                  render={(record: any) => record.author_names.join(', ')}
+                  render={(record: any) => record.author_names?.join(', ')}
                 />
               </Box>
             </Labeled>
