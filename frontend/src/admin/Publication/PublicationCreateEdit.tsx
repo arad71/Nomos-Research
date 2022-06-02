@@ -11,6 +11,8 @@ import {
   RichTextField,
   ReferenceArrayInput,
   SelectArrayInput,
+  Labeled,
+  FunctionField,
 } from 'react-admin';
 import React, { FC } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
@@ -62,10 +64,20 @@ export const PublicationCreateEdit: FC = (props) => {
               validate={required()}
               className={gridClasses.EightCol5to9span}
             />
-            <TextInput
-              source="verbatim_author"
+            {/*<TextInput*/}
+            {/*  source="verbatim_author"*/}
+            {/*  className={gridClasses.EightCol1to5span}*/}
+            {/*/>*/}
+            <Labeled
+              label="Publication Authors"
               className={gridClasses.EightCol1to5span}
-            />
+            >
+              <Box className={gridClasses.EightCol1to5span}>
+                <FunctionField
+                  render={(record: any) => record.author_names.join(', ')}
+                />
+              </Box>
+            </Labeled>
             <NumberInput
               source="publication_day"
               label="Day"
