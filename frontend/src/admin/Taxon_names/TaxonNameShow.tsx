@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
 import {
+  Datagrid,
   NumberField,
   ReferenceField,
   Show,
@@ -10,6 +11,7 @@ import {
   BooleanField,
   Labeled,
   RichTextField,
+  ReferenceManyField,
   useRecordContext,
 } from 'react-admin';
 import Aside from '../shared/Aside';
@@ -20,6 +22,7 @@ import { Box, Typography } from '@material-ui/core';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import green from '@material-ui/core/colors/green';
 import { GlobalTheme } from '../../GlobalTheme';
+import CrossRefType from '../Cross_references/CrossRefType';
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -369,8 +372,63 @@ export const TaxonNameShow: FC = (props) => {
               </Box>
             </Box>
           </Tab>
-          <Tab label="Heirarchy" className={globalClasses.bold}></Tab>
-          <Tab label="Cross References" className={globalClasses.bold}></Tab>
+          <Tab label="Hierarchy" className={globalClasses.bold}></Tab>
+          <Tab label="Related names" className={globalClasses.bold}>
+            <Box className={globalClasses.sectionMargin}>
+              <Labeled label="Previous names">
+                <ReferenceManyField
+                  label="Old names"
+                  fullWidth
+                  reference="cross_references"
+                  target="new_name_id"
+                  filter={{ active: true }}
+                  {...props}
+                >
+                  <Datagrid>
+                    <SelectField
+                      source="cross_reference_type"
+                      choices={CrossRefType}
+                    />
+                    <ReferenceField
+                      source="old_name_id"
+                      reference="taxon_names"
+                      sortBy="old_name___scientific_name"
+                      link="show"
+                    >
+                      <RichTextField source="formatted_scientific_name" />
+                    </ReferenceField>
+                    <TextField source="comments" />
+                  </Datagrid>
+                </ReferenceManyField>
+              </Labeled>
+              <Labeled label="Subsequent names">
+                <ReferenceManyField
+                  label="New names"
+                  fullWidth
+                  reference="cross_references"
+                  target="old_name_id"
+                  filter={{ active: true }}
+                  {...props}
+                >
+                  <Datagrid>
+                    <SelectField
+                      source="cross_reference_type"
+                      choices={CrossRefType}
+                    />
+                    <ReferenceField
+                      source="new_name_id"
+                      reference="taxon_names"
+                      sortBy="new_name___scientific_name"
+                      link="show"
+                    >
+                      <RichTextField source="formatted_scientific_name" />
+                    </ReferenceField>
+                    <TextField source="comments" />
+                  </Datagrid>
+                </ReferenceManyField>
+              </Labeled>
+            </Box>
+          </Tab>
           <Tab label="Notes" className={globalClasses.bold}>
             <Box className={globalClasses.sectionMargin}>
               <Labeled label="Notes">
