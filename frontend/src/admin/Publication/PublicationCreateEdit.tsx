@@ -12,7 +12,6 @@ import {
   ReferenceArrayInput,
   SelectArrayInput,
   Labeled,
-  FunctionField,
 } from 'react-admin';
 import React, { FC } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
@@ -69,9 +68,7 @@ export const PublicationCreateEdit: FC = (props) => {
               className={gridClasses.EightCol1to5span}
             >
               <Box className={gridClasses.EightCol1to5span}>
-                <FunctionField
-                  render={(record: any) => record.author_names?.join(', ')}
-                />
+                <TextField source="author_name" />
               </Box>
             </Labeled>
             <NumberInput
