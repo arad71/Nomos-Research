@@ -24,6 +24,7 @@ def test_get_publications(client, test_publication, superuser_token_headers):
             "created_on": test_publication.created_on.isoformat(),
             "author_ids": [],
             "author_names": [],
+            "author_name": "",
         }
     ]
 
@@ -72,6 +73,7 @@ def test_edit_publication(
     new_publication["author"] = []
     new_publication["author_ids"] = []
     new_publication["author_names"] = []
+    new_publication["author_name"] = ""
     assert response.json() == new_publication
 
 
@@ -121,6 +123,7 @@ def test_get_publication(
         "created_on": test_publication.created_on.isoformat(),
         "author_ids": [],
         "author_names": [],
+        "author_name": "",
     }
 
 
