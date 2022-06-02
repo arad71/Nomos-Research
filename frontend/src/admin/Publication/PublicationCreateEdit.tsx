@@ -11,6 +11,7 @@ import {
   RichTextField,
   ReferenceArrayInput,
   SelectArrayInput,
+  AutocompleteInput,
   Labeled,
 } from 'react-admin';
 import React, { FC } from 'react';
@@ -120,9 +121,10 @@ export const PublicationCreateEdit: FC = (props) => {
               label="Parent"
               source="parent_id"
               reference="publications"
+              sort={{ field: 'abbreviated_title', order: 'ASC' }}
               className={gridClasses.EightCol1to5span}
             >
-              <SelectInput optionText="title" />
+              <AutocompleteInput optionText="abbreviated_title" />
             </ReferenceInput>
             <TextInput
               source="published_location"
@@ -177,8 +179,9 @@ export const PublicationCreateEdit: FC = (props) => {
               source="duplicate_of_id"
               reference="publications"
               className={gridClasses.EightCol5to9span}
+              sort={{ field: 'abbreviated_title', order: 'ASC' }}
             >
-              <SelectInput optionText="abbreviated_title" />
+              <AutocompleteInput optionText="abbreviated_title" />
             </ReferenceInput>
             <TextInput
               source="language"
