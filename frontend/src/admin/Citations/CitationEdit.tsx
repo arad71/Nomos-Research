@@ -9,7 +9,7 @@ export const CitationEdit: FC = (props) => {
   const redirect = useRedirect();
 
   const handleSuccess = () => {
-    notify(`Author updated`);
+    notify(`Citation updated`);
     redirect('/citations?sort=updated_on&order=DESC');
     refresh();
   };
