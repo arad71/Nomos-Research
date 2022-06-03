@@ -3,11 +3,11 @@ import {
   BooleanField,
   ChipField,
   ReferenceArrayField,
-  Show,
   SingleFieldList,
   TextField,
   Labeled,
 } from 'react-admin';
+import { Show } from '@react-admin/ra-rbac';
 import Aside from '../shared/Aside';
 import { Box, Typography } from '@material-ui/core';
 import { GlobalTheme } from '../../GlobalTheme';
