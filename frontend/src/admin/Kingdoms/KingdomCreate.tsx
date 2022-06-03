@@ -4,7 +4,7 @@ import { KingdomCreateEdit } from './KingdomCreateEdit';
 
 export const KingdomCreate: FC = (props) => {
   return (
-    <Create {...props}>
+    <Create {...props} mutationMode="pessimistic">
       <KingdomCreateEdit />
     </Create>
   );
