@@ -1,21 +1,18 @@
 import React, { FC } from 'react';
 import {
+  CreateButton,
   Datagrid,
   DateField,
   EditButton,
+  ExportButton,
+  FilterButton,
   List,
   ReferenceField,
-  TextField,
   SearchInput,
+  TextField,
   TopToolbar,
-  FilterButton,
-  CreateButton,
-  ExportButton,
 } from 'react-admin';
 import { WithPermissions } from '@react-admin/ra-rbac';
-import { TaxonNameFilters } from '../Taxon_names';
-import { SelectColumnsButton } from '@react-admin/ra-preferences';
-import ResetPreferenceButton from '../shared/ResetPreferenceButton';
 
 const authorFilters = [<SearchInput source="q" alwaysOn />];
 
@@ -47,7 +44,7 @@ export const AuthorList: FC = (props) => (
       <ReferenceField source="updated_by" reference="users">
         <TextField source="full_name" />
       </ReferenceField>
-      <DateField source="updated_on" showTime />
+      <DateField source="updated_on" />
       <WithPermissions action="edit" resource="authors">
         <EditButton />
       </WithPermissions>

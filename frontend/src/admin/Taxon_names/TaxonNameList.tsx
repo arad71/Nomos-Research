@@ -113,19 +113,19 @@ const postListColumns = {
   ),
   all_vernaculars: <TextField source="all_vernaculars" />,
   notes: <TextField source="notes" />,
-  authorised_on: <DateField source="authorised_on" showTime />,
+  authorised_on: <DateField source="authorised_on" />,
   created_by: (
     <ReferenceField source="created_by" reference="users">
       <TextField source="full_name" />
     </ReferenceField>
   ),
-  created_on: <DateField source="created_on" showTime />,
+  created_on: <DateField source="created_on" />,
   updated_by: (
     <ReferenceField source="updated_by" reference="users">
       <TextField source="full_name" />
     </ReferenceField>
   ),
-  updated_on: <DateField source="updated_on" showTime />,
+  updated_on: <DateField source="updated_on" />,
 };
 
 const includeColumns = new Set([
