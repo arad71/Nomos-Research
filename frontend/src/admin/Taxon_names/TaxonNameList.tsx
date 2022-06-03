@@ -7,9 +7,7 @@ import {
   EditButton,
   ExportButton,
   FilterButton,
-  List,
   NumberField,
-  Pagination,
   ReferenceField,
   RichTextField,
   SelectField,
@@ -18,7 +16,7 @@ import {
 } from 'react-admin';
 import NaturalisedStatus from './NaturalisedStatus';
 import PublicationStatus from './PublicationStatus';
-import { WithPermissions } from '@react-admin/ra-rbac';
+import { List, WithPermissions } from '@react-admin/ra-rbac';
 
 import {
   ListProps,
@@ -27,6 +25,7 @@ import {
 } from '@react-admin/ra-preferences';
 import { TaxonNameFilters } from './TaxonNameFilters';
 import ResetPreferenceButton from '../shared/ResetPreferenceButton';
+import { DefaultPagination, useCanBulkDelete } from '../shared';
 
 const postListColumns = {
   id: <TextField source="id" />,
@@ -171,13 +170,15 @@ export const TaxonNameList = (props: ListProps) => {
     columns: postListColumns,
     omit: excludeColumns,
   });
+
   return (
     <List
       sort={{ field: 'updated_on', order: 'DESC' }}
       actions={<Actions />}
       perPage={100}
       filters={TaxonNameFilters}
-      pagination={<Pagination rowsPerPageOptions={[50, 100, 200, 500, 1000]} />}
+      pagination={<DefaultPagination />}
+      bulkActionButtons={useCanBulkDelete()}
       {...props}
     >
       <Datagrid rowClick="show">

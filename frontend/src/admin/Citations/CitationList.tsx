@@ -3,7 +3,6 @@ import {
   Datagrid,
   DateField,
   EditButton,
-  List,
   NumberField,
   ReferenceField,
   RichTextField,
@@ -11,10 +10,17 @@ import {
   TextField,
 } from 'react-admin';
 import AuthorType from './AuthorType';
-import { WithPermissions } from '@react-admin/ra-rbac';
+import { WithPermissions, List } from '@react-admin/ra-rbac';
+import { DefaultPagination, useCanBulkDelete } from '../shared';
 
 export const CitationList: FC = (props) => (
-  <List {...props} sort={{ field: 'taxon_name___scientific_name' }}>
+  <List
+    {...props}
+    sort={{ field: 'taxon_name___scientific_name' }}
+    perPage={100}
+    pagination={<DefaultPagination />}
+    bulkActionButtons={useCanBulkDelete()}
+  >
     <Datagrid rowClick="show">
       <ReferenceField
         source="taxon_name_id"

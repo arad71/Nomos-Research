@@ -1,21 +1,18 @@
 import React, { FC } from 'react';
 import {
+  CreateButton,
   Datagrid,
   DateField,
   EditButton,
-  List,
-  ReferenceField,
-  TextField,
-  SearchInput,
-  TopToolbar,
-  FilterButton,
-  CreateButton,
   ExportButton,
+  FilterButton,
+  ReferenceField,
+  SearchInput,
+  TextField,
+  TopToolbar,
 } from 'react-admin';
-import { WithPermissions } from '@react-admin/ra-rbac';
-import { TaxonNameFilters } from '../Taxon_names';
-import { SelectColumnsButton } from '@react-admin/ra-preferences';
-import ResetPreferenceButton from '../shared/ResetPreferenceButton';
+import { List, WithPermissions } from '@react-admin/ra-rbac';
+import { DefaultPagination, useCanBulkDelete } from '../shared';
 
 const authorFilters = [<SearchInput source="q" alwaysOn />];
 
@@ -34,9 +31,12 @@ const Actions = () => (
 export const AuthorList: FC = (props) => (
   <List
     {...props}
-    sort={{ field: 'abbreviation' }}
+    sort={{ field: 'abbreviation', order: 'ASC' }}
     filters={authorFilters}
     actions={<Actions />}
+    perPage={100}
+    pagination={<DefaultPagination />}
+    bulkActionButtons={useCanBulkDelete()}
   >
     <Datagrid rowClick="show">
       <TextField source="abbreviation" />
