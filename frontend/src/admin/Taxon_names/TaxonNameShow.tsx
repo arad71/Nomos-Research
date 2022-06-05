@@ -1,28 +1,27 @@
 import React, { FC } from 'react';
 import {
+  BooleanField,
   Datagrid,
+  Labeled,
   NumberField,
   ReferenceField,
-  Show,
-  TabbedShowLayout,
-  Tab,
-  SelectField,
-  TextField,
-  BooleanField,
-  Labeled,
-  RichTextField,
   ReferenceManyField,
-  useRecordContext,
+  SelectField,
+  Show,
+  Tab,
+  TabbedShowLayout,
+  TextField,
 } from 'react-admin';
 import Aside from '../shared/Aside';
 import NaturalisedStatus from './NaturalisedStatus';
 import PublicationStatus from './PublicationStatus';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, Typography } from '@material-ui/core';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import green from '@material-ui/core/colors/green';
 import { GlobalTheme } from '../../GlobalTheme';
 import CrossRefType from '../Cross_references/CrossRefType';
+import { EmbeddedCrossReferenceShow } from '../Cross_references';
+// eslint-disable-next-line max-len
+import { FormattedScientificNameWithStatus } from './FormattedScientificNameWithStatus';
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -41,28 +40,24 @@ const useStyles = makeStyles((theme) => ({
     position: 'absolute',
     top: '65px',
   },
+  equalColumnWidth: {
+    tableLayout: 'fixed',
+  },
 }));
-
-const TaxonNameStatus = () => {
-  const record = useRecordContext();
-  return record && record.is_current ? (
-    <CheckCircleIcon style={{ color: green[500] }} />
-  ) : null;
-};
 
 export const TaxonNameShow: FC = (props) => {
   const classes = useStyles();
   const globalClasses = GlobalTheme();
   return (
-    <Show aside={<Aside />} {...props}>
+    <Show
+      title={<FormattedScientificNameWithStatus />}
+      aside={<Aside />}
+      {...props}
+    >
       <>
         <Box className={classes.titlePos}>
           <Box>
-            <RichTextField
-              className={classes.title}
-              source="formatted_scientific_name"
-            />
-            <TaxonNameStatus />
+            <FormattedScientificNameWithStatus />
           </Box>
           <ReferenceField source="rank_id" reference="taxon_ranks" link={false}>
             <TextField source="rank_name" className={classes.subtitle} />
@@ -381,10 +376,14 @@ export const TaxonNameShow: FC = (props) => {
                   fullWidth
                   reference="cross_references"
                   target="new_name_id"
+                  sortBy="cross_reference_type"
                   filter={{ active: true }}
                   {...props}
                 >
-                  <Datagrid>
+                  <Datagrid
+                    className={classes.equalColumnWidth}
+                    expand={<EmbeddedCrossReferenceShow />}
+                  >
                     <SelectField
                       source="cross_reference_type"
                       choices={CrossRefType}
@@ -395,12 +394,14 @@ export const TaxonNameShow: FC = (props) => {
                       sortBy="old_name___scientific_name"
                       link="show"
                     >
-                      <RichTextField source="formatted_scientific_name" />
+                      <FormattedScientificNameWithStatus />
                     </ReferenceField>
                     <TextField source="comments" />
                   </Datagrid>
                 </ReferenceManyField>
               </Labeled>
+            </Box>
+            <Box className={globalClasses.sectionMargin}>
               <Labeled label="Subsequent names">
                 <ReferenceManyField
                   label="New names"
@@ -410,7 +411,10 @@ export const TaxonNameShow: FC = (props) => {
                   filter={{ active: true }}
                   {...props}
                 >
-                  <Datagrid>
+                  <Datagrid
+                    className={classes.equalColumnWidth}
+                    expand={<EmbeddedCrossReferenceShow />}
+                  >
                     <SelectField
                       source="cross_reference_type"
                       choices={CrossRefType}
@@ -418,10 +422,10 @@ export const TaxonNameShow: FC = (props) => {
                     <ReferenceField
                       source="new_name_id"
                       reference="taxon_names"
-                      sortBy="new_name___scientific_name"
+                      sortBy="cross_reference_type"
                       link="show"
                     >
-                      <RichTextField source="formatted_scientific_name" />
+                      <FormattedScientificNameWithStatus />
                     </ReferenceField>
                     <TextField source="comments" />
                   </Datagrid>
