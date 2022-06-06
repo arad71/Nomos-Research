@@ -1,9 +1,10 @@
 import React, { FC } from 'react';
-import { Show, TextField, Labeled } from 'react-admin';
+import { TextField, Labeled } from 'react-admin';
 import { makeStyles } from '@material-ui/core/styles';
 import Aside from '../shared/Aside';
 import { Box, Typography } from '@material-ui/core';
 import { GlobalTheme } from '../../GlobalTheme';
+import { Show } from '@react-admin/ra-rbac';
 
 const useStyles = makeStyles((theme) => ({
   showPad: {

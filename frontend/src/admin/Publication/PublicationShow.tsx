@@ -2,7 +2,6 @@ import React, { FC } from 'react';
 import {
   ReferenceField,
   RichTextField,
-  Show,
   TextField,
   TabbedShowLayout,
   Tab,
@@ -12,6 +11,7 @@ import {
   ChipField,
   FunctionField,
 } from 'react-admin';
+import { Show } from '@react-admin/ra-rbac';
 import Aside from '../shared/Aside';
 import { Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';

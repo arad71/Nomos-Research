@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
-import { Show, SimpleShowLayout, TextField } from 'react-admin';
+import { SimpleShowLayout, TextField } from 'react-admin';
+import { Show } from '@react-admin/ra-rbac';
 import Aside from '../shared/Aside';
 
 export const KingdomShow: FC = (props) => {

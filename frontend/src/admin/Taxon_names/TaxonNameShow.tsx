@@ -2,7 +2,6 @@ import React, { FC } from 'react';
 import {
   NumberField,
   ReferenceField,
-  Show,
   TabbedShowLayout,
   Tab,
   SelectField,
@@ -12,6 +11,7 @@ import {
   RichTextField,
   useRecordContext,
 } from 'react-admin';
+import { Show } from '@react-admin/ra-rbac';
 import Aside from '../shared/Aside';
 import NaturalisedStatus from './NaturalisedStatus';
 import PublicationStatus from './PublicationStatus';
