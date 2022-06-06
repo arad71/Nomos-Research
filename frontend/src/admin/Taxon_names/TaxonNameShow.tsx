@@ -1,11 +1,9 @@
 import React, { FC } from 'react';
 import {
   BooleanField,
-  Datagrid,
   Labeled,
   NumberField,
   ReferenceField,
-  ReferenceManyField,
   SelectField,
   Show,
   Tab,
@@ -18,8 +16,7 @@ import PublicationStatus from './PublicationStatus';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, Typography } from '@material-ui/core';
 import { GlobalTheme } from '../../GlobalTheme';
-import CrossRefType from '../Cross_references/CrossRefType';
-import { EmbeddedCrossReferenceShow } from '../Cross_references';
+import { CrossReferenceManyGrid } from '../Cross_references';
 // eslint-disable-next-line max-len
 import { FormattedScientificNameWithStatus } from './FormattedScientificNameWithStatus';
 
@@ -39,9 +36,6 @@ const useStyles = makeStyles((theme) => ({
   titlePos: {
     position: 'absolute',
     top: '65px',
-  },
-  equalColumnWidth: {
-    tableLayout: 'fixed',
   },
 }));
 
@@ -371,65 +365,22 @@ export const TaxonNameShow: FC = (props) => {
           <Tab label="Related names" className={globalClasses.bold}>
             <Box className={globalClasses.sectionMargin}>
               <Labeled label="Previous names">
-                <ReferenceManyField
-                  label="Old names"
-                  fullWidth
-                  reference="cross_references"
+                <CrossReferenceManyGrid
+                  props={props}
+                  source="old_name_id"
                   target="new_name_id"
-                  sortBy="cross_reference_type"
-                  filter={{ active: true }}
-                  {...props}
-                >
-                  <Datagrid
-                    className={classes.equalColumnWidth}
-                    expand={<EmbeddedCrossReferenceShow />}
-                  >
-                    <SelectField
-                      source="cross_reference_type"
-                      choices={CrossRefType}
-                    />
-                    <ReferenceField
-                      source="old_name_id"
-                      reference="taxon_names"
-                      sortBy="old_name___scientific_name"
-                      link="show"
-                    >
-                      <FormattedScientificNameWithStatus />
-                    </ReferenceField>
-                    <TextField source="comments" />
-                  </Datagrid>
-                </ReferenceManyField>
+                  label="Previous names"
+                />
               </Labeled>
             </Box>
             <Box className={globalClasses.sectionMargin}>
               <Labeled label="Subsequent names">
-                <ReferenceManyField
-                  label="New names"
-                  fullWidth
-                  reference="cross_references"
+                <CrossReferenceManyGrid
+                  props={props}
+                  source="new_name_id"
                   target="old_name_id"
-                  filter={{ active: true }}
-                  {...props}
-                >
-                  <Datagrid
-                    className={classes.equalColumnWidth}
-                    expand={<EmbeddedCrossReferenceShow />}
-                  >
-                    <SelectField
-                      source="cross_reference_type"
-                      choices={CrossRefType}
-                    />
-                    <ReferenceField
-                      source="new_name_id"
-                      reference="taxon_names"
-                      sortBy="cross_reference_type"
-                      link="show"
-                    >
-                      <FormattedScientificNameWithStatus />
-                    </ReferenceField>
-                    <TextField source="comments" />
-                  </Datagrid>
-                </ReferenceManyField>
+                  label="Subsequent names"
+                />
               </Labeled>
             </Box>
           </Tab>

@@ -40,6 +40,9 @@ export const GlobalTheme = makeStyles((theme) => ({
     border: '1px solid #DFDFE2',
     borderRadius: '5px',
   },
+  equalColumnWidth: {
+    tableLayout: 'fixed',
+  },
 }));
 
 export const GlobalGridTheme = makeStyles((theme) => ({

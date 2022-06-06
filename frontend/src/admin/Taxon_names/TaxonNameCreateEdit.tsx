@@ -2,6 +2,7 @@ import {
   BooleanInput,
   DateTimeInput,
   FormTab,
+  Labeled,
   NullableBooleanInput,
   NumberField,
   NumberInput,
@@ -22,8 +23,10 @@ import NaturalisedStatus from './NaturalisedStatus';
 import PublicationStatus from './PublicationStatus';
 import { makeStyles } from '@material-ui/core/styles';
 import AuthorType from '../Citations/AuthorType';
-import { Typography } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 import { CitationRowForm } from '../Citations';
+import { EditableCrossReferenceManyGrid } from '../Cross_references';
+import { GlobalTheme } from '../../GlobalTheme';
 
 const useStyles = makeStyles({
   tablabel: {
@@ -35,7 +38,11 @@ export const TaxonNameCreateEdit: FC = ({
   ...props
 }: PropsWithChildren<any>) => {
   const classes = useStyles();
-  const initialValues = { taxon_name_id: props.record?.id };
+  const citationInitialValues = { taxon_name_id: props.record?.id };
+  const oldNameInitialValues = { old_name_id: props.record?.id };
+  const newNameInitialValues = { new_name_id: props.record?.id };
+  const globalClasses = GlobalTheme();
+
   return (
     <TabbedForm {...props}>
       <FormTab label="Name" className={classes.tablabel}>
@@ -110,7 +117,10 @@ export const TaxonNameCreateEdit: FC = ({
             <EditableDatagrid
               undoable
               createForm={
-                <CitationRowForm initialValues={initialValues} {...props} />
+                <CitationRowForm
+                  initialValues={citationInitialValues}
+                  {...props}
+                />
               }
               editForm={<CitationRowForm {...props} />}
               hasCreate
@@ -151,8 +161,31 @@ export const TaxonNameCreateEdit: FC = ({
         <DateTimeInput source="authorised_on" />
       </FormTab>
       <FormTab label="Details" className={classes.tablabel}></FormTab>
-      <FormTab label="Heirarchy" className={classes.tablabel}></FormTab>
-      <FormTab label="Cross References" className={classes.tablabel}></FormTab>
+      <FormTab label="Hierarchy" className={classes.tablabel}></FormTab>
+      <FormTab label="Related Names" className={classes.tablabel}>
+        <Box className={globalClasses.sectionMargin}>
+          <Labeled label="Previous names">
+            <EditableCrossReferenceManyGrid
+              props={props}
+              source="old_name_id"
+              target="new_name_id"
+              label="Previous names"
+              createInitialValues={oldNameInitialValues}
+            />
+          </Labeled>
+        </Box>
+        <Box className={globalClasses.sectionMargin}>
+          <Labeled label="Subsequent names">
+            <EditableCrossReferenceManyGrid
+              props={props}
+              source="new_name_id"
+              target="old_name_id"
+              label="Subsequent names"
+              createInitialValues={newNameInitialValues}
+            />
+          </Labeled>
+        </Box>
+      </FormTab>
       <FormTab label="Notes" className={classes.tablabel}></FormTab>
     </TabbedForm>
   );
