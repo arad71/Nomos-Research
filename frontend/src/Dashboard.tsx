@@ -43,10 +43,6 @@ const Dashboard = () => {
           <Typography variant="h4" className={classes.cardtitle}>
             Welcome to Nomos taxonomic names register
           </Typography>
-          <Typography variant="h6" className={classes.cardtext}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec at
-            egestas ante. Phasellus in euismod nunc.
-          </Typography>
           <Button
             href="/#/taxon_names"
             variant="contained"
