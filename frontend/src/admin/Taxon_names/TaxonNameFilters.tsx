@@ -10,38 +10,52 @@ import {
 } from 'react-admin';
 import TaxonRank from './TaxonRank';
 import PublicationStatus from './PublicationStatus';
-import { AutocompleteArrayInput } from 'react-admin';
+import { AutocompleteArrayInput, minValue, number } from 'react-admin';
+
+const validateNumber = [number(), minValue(0)];
 
 export const TaxonNameFilters = [
   <SearchInput source="q" alwaysOn />,
-  <NumberInput source="id" label="Taxon name ID" />,
-  <NumberInput source="legacy_id" label="Legacy ID" />,
-  <TextInput source="scientific_name__contains" label="Scientific name" />,
-  <TextInput source="author__contains" label="Author" />,
-  <NumberInput source="form_desc_yr" label="Year published" />,
+  <NumberInput
+    source="id"
+    label="Taxon name ID"
+    min={0}
+    validate={validateNumber}
+  />,
+  <NumberInput
+    source="legacy_id"
+    label="Legacy ID"
+    min={0}
+    validate={validateNumber}
+  />,
+  <TextInput source="scientific_name__contains" />,
+  <TextInput source="author__contains" />,
+  <NumberInput
+    source="form_desc_yr"
+    label="Year published"
+    min={0}
+    validate={validateNumber}
+  />,
   <TextInput source="publication___title__contains" label="Publication name" />,
+  <TextInput source="volume_information__contains" />,
   <TextInput
-    source="volume_information__contains"
-    label="Volume information"
+    source="vernaculars___vernacular__contains"
+    label="Vernacular contains"
   />,
-  <TextInput source="vernaculars___vernacular__contains" label="Vernacular" />,
-  <TextInput source="phylum__contains" label="Phylum" />,
-  <TextInput source="taxon_class__contains" label="Class" />,
-  <TextInput source="order__contains" label="Order" />,
-  <TextInput source="family__contains" label="Family" />,
-  <TextInput source="genus__contains" label="Genus" />,
-  <TextInput source="subgenus__contains" label="Subgenus" />,
-  <TextInput source="species__contains" label="Species" />,
-  <TextInput source="subspecies__contains" label="Subspecies" />,
-  <TextInput source="uninomial__contains" label="Uninomial" />,
-  <TextInput source="specific_epithet__contains" label="Specific epithet" />,
-  <TextInput
-    source="infraspecific_epithet__contains"
-    label="Infraspecific epithet"
-  />,
+  <TextInput source="phylum__contains" />,
+  <TextInput source="taxon_class__contains" />,
+  <TextInput source="order__contains" />,
+  <TextInput source="family__contains" />,
+  <TextInput source="genus__contains" />,
+  <TextInput source="subgenus__contains" />,
+  <TextInput source="species__contains" />,
+  <TextInput source="subspecies__contains" />,
+  <TextInput source="uninomial__contains" />,
+  <TextInput source="specific_epithet__contains" />,
+  <TextInput source="infraspecific_epithet__contains" />,
   <TextInput
     source="cross_referenced_old_name___new_name___scientific_name__contains"
-    label="Accepted name"
+    label="Accepted name contains"
   />,
   <ReferenceArrayInput
     source="kingdom_id"
