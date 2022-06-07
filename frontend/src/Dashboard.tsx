@@ -19,6 +19,7 @@ const useStyles = makeStyles(() => ({
     borderRadius: '10px',
     color: 'white',
     padding: '10px',
+    marginTop: '1rem',
   },
   cardbutton: {
     backgroundColor: '#fff',
@@ -31,6 +32,9 @@ const useStyles = makeStyles(() => ({
     gridTemplateColumns: 'repeat(3, 1fr)',
     columnGap: '10px',
     rowGap: '1em',
+  },
+  arrowPadding: {
+    padding: '1rem',
   },
 }));
 
@@ -71,7 +75,12 @@ const Dashboard = () => {
       </Card>
       <div className={classes.wrapper}>
         <CardWithIcon
-          icon={<ArrowForwardIcon fontSize={'large'} />}
+          icon={
+            <ArrowForwardIcon
+              fontSize={'large'}
+              className={classes.arrowPadding}
+            />
+          }
           to={'/users/create'}
           title="Add user"
           subtitle="Create a new Nomos user"
