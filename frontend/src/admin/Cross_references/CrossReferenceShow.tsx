@@ -3,11 +3,11 @@ import {
   ReferenceField,
   RichTextField,
   SelectField,
-  Show,
   SimpleShowLayout,
   TextField,
   BooleanField,
 } from 'react-admin';
+import { Show } from '@react-admin/ra-rbac';
 import CrossRefType from './CrossRefType';
 import Aside from '../shared/Aside';
 

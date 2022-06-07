@@ -2,10 +2,10 @@ import React, { FC } from 'react';
 import {
   ReferenceField,
   RichTextField,
-  Show,
   SimpleShowLayout,
   TextField,
 } from 'react-admin';
+import { Show } from '@react-admin/ra-rbac';
 import Aside from '../shared/Aside';
 
 export const InformalGroupShow: FC = (props) => {

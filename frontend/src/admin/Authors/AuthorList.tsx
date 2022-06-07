@@ -47,7 +47,7 @@ export const AuthorList: FC = (props) => (
       <ReferenceField source="updated_by" reference="users">
         <TextField source="full_name" />
       </ReferenceField>
-      <DateField source="updated_on" showTime />
+      <DateField source="updated_on" />
       <WithPermissions action="edit" resource="authors">
         <EditButton />
       </WithPermissions>

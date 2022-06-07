@@ -142,4 +142,3 @@ class Crud:
             )
         db.delete(item)
         db.commit()
-        return item
