@@ -39,8 +39,8 @@ export const TaxonNameCreateEdit: FC = ({
 }: PropsWithChildren<any>) => {
   const classes = useStyles();
   const citationInitialValues = { taxon_name_id: props.record?.id };
-  const oldNameInitialValues = { old_name_id: props.record?.id };
-  const newNameInitialValues = { new_name_id: props.record?.id };
+  const oldNameInitialValues = { new_name_id: props.record?.id, active: true };
+  const newNameInitialValues = { old_name_id: props.record?.id, active: true };
   const globalClasses = GlobalTheme();
 
   return (
