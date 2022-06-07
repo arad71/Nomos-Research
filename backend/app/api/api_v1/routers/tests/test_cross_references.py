@@ -35,7 +35,7 @@ def test_delete_cross_reference(
         f"/api/v1/cross_references/{test_cross_reference.cross_reference_id}",
         headers=superuser_token_headers,
     )
-    assert response.status_code == status.HTTP_204_NO_CONTENT
+    assert response.status_code == status. HTTP_200_OK
     assert test_db.query(CrossReference).all() == []
 
 
@@ -204,7 +204,7 @@ def test_super_admin_permissions(
         f"/api/v1/cross_references/{test_cross_reference.cross_reference_id}",
         headers=superuser_token_headers,
     )
-    assert response.status_code == status.HTTP_204_NO_CONTENT
+    assert response.status_code == status. HTTP_200_OK
 
 
 def test_manager_permissions(
@@ -255,7 +255,7 @@ def test_manager_permissions(
         f"/api/v1/cross_references/{test_cross_reference.cross_reference_id}",
         headers=manager_token_headers,
     )
-    assert response.status_code == status.HTTP_204_NO_CONTENT
+    assert response.status_code == status. HTTP_200_OK
 
 
 def test_officer_permissions(

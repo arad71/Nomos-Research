@@ -113,7 +113,6 @@ async def cross_reference_edit(
 
 @r.delete(
     "/{cross_reference_id}",
-    status_code=status.HTTP_204_NO_CONTENT,
     dependencies=[
         authorize(
             scopes=[
@@ -130,4 +129,5 @@ async def cross_reference_delete(
     """
     Delete existing cross_reference
     """
-    return CrossReferenceCrud.delete_item(db, cross_reference_id)
+    CrossReferenceCrud.delete_item(db, cross_reference_id)
+    return cross_reference_id
