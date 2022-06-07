@@ -2,6 +2,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, Response
 from sqlalchemy.orm import Session
+from starlette import status
 
 from app.api.dependencies.range_query import RangeQueryParameter
 from app.core.auth import authorize, get_current_active_user
@@ -100,8 +101,7 @@ async def user_role_edit(
 
 @user_roles_router.delete(
     "/{user_role_id}",
-    response_model=UserRole,
-    response_model_exclude_none=True,
+    status_code=status.HTTP_204_NO_CONTENT,
     dependencies=[
         authorize(
             scopes=[

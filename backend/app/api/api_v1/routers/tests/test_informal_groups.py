@@ -30,7 +30,7 @@ def test_delete_informal_group(
         f"/api/v1/informal_groups/{test_informal_group.informal_group_id}",
         headers=superuser_token_headers,
     )
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_204_NO_CONTENT
     assert test_db.query(InformalGroup).all() == []
 
 
@@ -180,7 +180,7 @@ def test_super_admin_permissions(
         f"api/v1/informal_groups/{test_informal_group.informal_group_id}",
         headers=superuser_token_headers,
     )
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_204_NO_CONTENT
 
 
 def test_manager_permissions(
@@ -231,7 +231,7 @@ def test_manager_permissions(
         f"api/v1/informal_groups/{test_informal_group.informal_group_id}",
         headers=manager_token_headers,
     )
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_204_NO_CONTENT
 
 
 parameter_names = "method,endpoint,status_code"
