@@ -11,8 +11,16 @@ import ChangeHistoryIcon from '@material-ui/icons/ChangeHistory';
 import SupervisedUserCircleIcon from '@material-ui/icons/SupervisedUserCircle';
 import GroupWorkIcon from '@material-ui/icons/GroupWork';
 import LinkIcon from '@material-ui/icons/Link';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles((theme) => ({
+  noMargin: {
+    marginLeft: '-32px',
+  },
+}));
 
 const Menu = () => {
+  const classes = useStyles();
   return (
     <MultiLevelMenu initialOpen>
       <MenuItem
@@ -27,36 +35,42 @@ const Menu = () => {
           label="Taxon Names"
           icon={<BookIcon />}
           to="/taxon_names"
+          className={classes.noMargin}
         />
         <MenuItem
           name="Publications"
           label="Publications"
           to="/publications"
           icon={<SubjectIcon />}
+          className={classes.noMargin}
         />
         <MenuItem
           name="Citations"
           label="Citations"
           to="/citations"
           icon={<SupervisedUserCircleIcon />}
+          className={classes.noMargin}
         />
         <MenuItem
           name="Authors"
           label="Authors"
           icon={<PeopleIcon />}
           to="/authors"
+          className={classes.noMargin}
         />
         <MenuItem
           name="Informal Groups"
           label="Informal Groups"
           to="/informal_groups"
           icon={<LinkIcon />}
+          className={classes.noMargin}
         />
         <MenuItem
           name="Hierarchies"
           label="Hierarchies"
           to="/hierarchies"
           icon={<ChangeHistoryIcon />}
+          className={classes.noMargin}
         />
       </MenuItem>
       <MenuItem name="Admin" label="Admin">
@@ -65,24 +79,28 @@ const Menu = () => {
           label="Kingdoms"
           icon={<FiberManualRecordIcon />}
           to="/kingdoms"
+          className={classes.noMargin}
         />
         <MenuItem
           name="Taxon Ranks"
           label="Taxon Ranks"
           to="/taxon_ranks"
           icon={<GroupWorkIcon />}
+          className={classes.noMargin}
         />
         <MenuItem
           name="Classification Systems"
           label="Classification Types"
           icon={<FiberManualRecordOutlinedIcon />}
           to="/classification_systems"
+          className={classes.noMargin}
         />
         <MenuItem
           name="Users"
           label="Users"
           icon={<PeopleIcon />}
           to="/users"
+          className={classes.noMargin}
         />
       </MenuItem>
     </MultiLevelMenu>
