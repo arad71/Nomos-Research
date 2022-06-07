@@ -1,15 +1,17 @@
 import React, { FC } from 'react';
 import {
-  BooleanField,
-  Labeled,
   NumberField,
   ReferenceField,
-  SelectField,
-  Show,
-  Tab,
   TabbedShowLayout,
+  Tab,
+  SelectField,
   TextField,
+  BooleanField,
+  Labeled,
+  RichTextField,
+  useRecordContext,
 } from 'react-admin';
+import { Show } from '@react-admin/ra-rbac';
 import Aside from '../shared/Aside';
 import NaturalisedStatus from './NaturalisedStatus';
 import PublicationStatus from './PublicationStatus';

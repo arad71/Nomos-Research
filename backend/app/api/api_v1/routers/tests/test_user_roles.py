@@ -60,7 +60,7 @@ def test_delete_user_role(client, app_support_token_headers, test_user_role):
         f"/api/v1/user_roles/{test_user_role.user_role_id}",
         headers=app_support_token_headers,
     )
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_204_NO_CONTENT
 
 
 def test_unauthenticated_routes(client):
@@ -148,7 +148,7 @@ def test_app_support_permissions(
         f"/api/v1/user_roles/{test_user_role.user_role_id}",
         headers=app_support_token_headers,
     )
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_204_NO_CONTENT
 
     json = {
         "user_id": test_user.user_id,
@@ -183,7 +183,7 @@ def test_super_admin_permissions(
         f"/api/v1/user_roles/{test_user_role.user_role_id}",
         headers=superuser_token_headers,
     )
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_204_NO_CONTENT
 
     json = {
         "user_id": test_user.user_id,

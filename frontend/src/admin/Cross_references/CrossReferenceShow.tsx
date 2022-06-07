@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Show } from 'react-admin';
+import { Show } from '@react-admin/ra-rbac';
 import Aside from '../shared/Aside';
 import { CrossReferenceShowLayout } from './CrossReferenceShowLayout';
 
