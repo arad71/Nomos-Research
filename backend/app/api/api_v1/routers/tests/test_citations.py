@@ -29,7 +29,7 @@ def test_delete_citation(client, test_citation, test_db, superuser_token_headers
         f"/api/v1/citations/{test_citation.citation_id}",
         headers=superuser_token_headers,
     )
-    assert response.status_code == status.HTTP_204_NO_CONTENT
+    assert response.status_code == status.HTTP_200_OK
     assert test_db.query(Citation).all() == []
 
 
@@ -185,7 +185,7 @@ def test_super_admin_permissions(
         f"/api/v1/citations/{test_citation.citation_id}",
         headers=superuser_token_headers,
     )
-    assert response.status_code == status.HTTP_204_NO_CONTENT
+    assert response.status_code == status.HTTP_200_OK
 
 
 def test_manager_permissions(
@@ -236,7 +236,7 @@ def test_manager_permissions(
         f"/api/v1/citations/{test_citation.citation_id}",
         headers=manager_token_headers,
     )
-    assert response.status_code == status.HTTP_204_NO_CONTENT
+    assert response.status_code == status.HTTP_200_OK
 
 
 def test_officer_permissions(

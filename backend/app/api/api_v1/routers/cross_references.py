@@ -1,7 +1,6 @@
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, Response
-from starlette import status
 
 from app.api.dependencies.range_query import RangeQueryParameter
 from app.core.auth import authorize, get_current_active_user
@@ -113,7 +112,6 @@ async def cross_reference_edit(
 
 @r.delete(
     "/{cross_reference_id}",
-    status_code=status.HTTP_204_NO_CONTENT,
     dependencies=[
         authorize(
             scopes=[
