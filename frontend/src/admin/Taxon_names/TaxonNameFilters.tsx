@@ -26,7 +26,7 @@ export const TaxonNameFilters = [
   />,
   <TextInput source="vernaculars___vernacular__contains" label="Vernacular" />,
   <TextInput source="phylum__contains" label="Phylum" />,
-  <TextInput source="taxon_class__contains" label="Taxon class" />,
+  <TextInput source="taxon_class__contains" label="Class" />,
   <TextInput source="order__contains" label="Order" />,
   <TextInput source="family__contains" label="Family" />,
   <TextInput source="genus__contains" label="Genus" />,
