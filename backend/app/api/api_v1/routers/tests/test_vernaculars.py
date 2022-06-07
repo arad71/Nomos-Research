@@ -28,7 +28,7 @@ def test_delete_vernacular(client, test_vernacular, test_db, superuser_token_hea
         f"/api/v1/vernaculars/{test_vernacular.vernacular_id}",
         headers=superuser_token_headers,
     )
-    assert response.status_code == status.HTTP_204_NO_CONTENT
+    assert response.status_code == status.HTTP_200_OK
     assert test_db.query(Vernacular).all() == []
 
 
@@ -172,7 +172,7 @@ def test_super_admin_permissions(
         f"/api/v1/vernaculars/{vernacular_id}",
         headers=superuser_token_headers,
     )
-    assert response.status_code == status.HTTP_204_NO_CONTENT
+    assert response.status_code == status.HTTP_200_OK
 
 
 def test_manager_permissions(
@@ -195,7 +195,7 @@ def test_manager_permissions(
         f"/api/v1/vernaculars/{test_vernacular.vernacular_id}",
         headers=manager_token_headers,
     )
-    assert response.status_code == status.HTTP_204_NO_CONTENT
+    assert response.status_code == status.HTTP_200_OK
 
     vernacular_json = {
         "taxon_name_id": test_taxon_name_canonical_name_3.taxon_name_id,
@@ -227,7 +227,7 @@ def test_manager_permissions(
         f"/api/v1/vernaculars/{vernacular_id}",
         headers=manager_token_headers,
     )
-    assert response.status_code == status.HTTP_204_NO_CONTENT
+    assert response.status_code == status.HTTP_200_OK
 
 
 def test_officer_permissions(

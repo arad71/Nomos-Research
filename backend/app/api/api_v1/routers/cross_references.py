@@ -128,5 +128,4 @@ async def cross_reference_delete(
     """
     Delete existing cross_reference
     """
-    CrossReferenceCrud.delete_item(db, cross_reference_id)
-    return cross_reference_id
+    return CrossReferenceCrud.delete_item(db, cross_reference_id)

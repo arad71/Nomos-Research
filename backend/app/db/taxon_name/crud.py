@@ -31,3 +31,4 @@ class TaxonNameCrud(crud.Crud):
             undefer("canonical_name_without_rank")
         ).delete()
         db.commit()
+        return {cls.id_key: id}
