@@ -262,54 +262,7 @@ export const TaxonNameCreateEdit: FC = ({
             />
           </Box>
         </FormTab>
-        <FormTab label="Heirarchy" className={globalClasses.bold}>
-          <TextInput source="phylum" />
-          <TextInput source="taxon_class" label="Class" />
-          <TextInput source="order" />
-          <TextInput source="family" />
-          <TextInput source="genus" />
-          <TextInput source="subgenus" />
-          <TextInput source="species" />
-          <TextInput source="subspecies" />
-          <TextInput source="specific_epithet" />
-          <TextInput source="infraspecific_epithet" />
-          <ReferenceInput source="publication_id" reference="publications">
-            <SelectInput optionText="title" />
-          </ReferenceInput>
-          <TextInput source="volume_information" />
-          <TextInput source="origin" />
-          <TextInput multiline source="comments" />
-          <TextInput source="contributed_by" />
-          <DateTimeInput source="contributed_on" />
-          <TextInput source="source" />
-          <TextInput source="external_id" />
-          <TextInput source="family_code" />
-          <TextField source="author" />
-
-          <TextInput source="vernacular" />
-          <TextField source="editor" />
-          <SelectInput
-            source="naturalised_status"
-            choices={NaturalisedStatus}
-          />
-          <NullableBooleanInput
-            label="Naturalised Certainty"
-            source="naturalised_certainty"
-          />
-          <TextInput source="is_eradicated" />
-          <TextInput multiline source="naturalised_comments" />
-          <NumberInput source="linear_sequence" />
-          <ReferenceInput
-            label="Family NID"
-            source="family_nid"
-            reference="taxon_names"
-          >
-            <SelectInput optionText="scientific_name" />
-          </ReferenceInput>
-          <TextInput multiline source="all_vernaculars" />
-          <TextInput multiline source="notes" />
-          <DateTimeInput source="authorised_on" />
-        </FormTab>
+        <FormTab label="Heirarchy" className={globalClasses.bold}></FormTab>
         <FormTab
           label="Cross References"
           className={globalClasses.bold}
