@@ -32,7 +32,7 @@ def test_delete_classification_system(
         f"/api/v1/classification_systems/{test_classification_system.classification_system_id}",
         headers=superuser_token_headers,
     )
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_204_NO_CONTENT
     assert test_db.query(ClassificationSystem).all() == []
 
 
@@ -150,7 +150,7 @@ def test_app_support_permissions(
         f"/api/v1/classification_systems/{classification_system_id}",
         headers=app_support_token_headers,
     )
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_204_NO_CONTENT
 
     json = {
         "class_desc": "CLASS_DESC",
@@ -177,7 +177,7 @@ def test_app_support_permissions(
         f"/api/v1/classification_systems/{classification_system_id}",
         headers=app_support_token_headers,
     )
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_204_NO_CONTENT
 
 
 def test_super_admin_permissions(
@@ -200,7 +200,7 @@ def test_super_admin_permissions(
         f"/api/v1/classification_systems/{classification_system_id}",
         headers=superuser_token_headers,
     )
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_204_NO_CONTENT
 
     json = {
         "class_desc": "CLASS_DESC",
@@ -227,7 +227,7 @@ def test_super_admin_permissions(
         f"/api/v1/classification_systems/{classification_system_id}",
         headers=superuser_token_headers,
     )
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_204_NO_CONTENT
 
 
 parameter_names = "method,endpoint,status_code"

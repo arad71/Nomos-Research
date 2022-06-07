@@ -34,7 +34,7 @@ def test_delete_publication(client, test_publication, test_db, superuser_token_h
         f"/api/v1/publications/{test_publication.publication_id}",
         headers=superuser_token_headers,
     )
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_204_NO_CONTENT
     assert test_db.query(Publication).all() == []
 
 
@@ -197,7 +197,7 @@ def test_super_admin_permissions(
         f"/api/v1/publications/{test_publication.publication_id}",
         headers=superuser_token_headers,
     )
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_204_NO_CONTENT
 
 
 def test_manager_permissions(
@@ -241,7 +241,7 @@ def test_manager_permissions(
         f"/api/v1/publications/{test_publication.publication_id}",
         headers=manager_token_headers,
     )
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_204_NO_CONTENT
 
 
 def test_officer_permissions(

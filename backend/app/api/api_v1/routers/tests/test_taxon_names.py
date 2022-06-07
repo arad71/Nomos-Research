@@ -34,7 +34,7 @@ def test_delete_taxon_name(client, test_taxon_name, test_db, superuser_token_hea
         f"/api/v1/taxon_names/{test_taxon_name.taxon_name_id}",
         headers=superuser_token_headers,
     )
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_204_NO_CONTENT
     assert test_db.query(TaxonName).all() == []
 
 
@@ -330,7 +330,7 @@ def test_manager_permissions(
         f"/api/v1/taxon_names/{test_taxon_name.taxon_name_id}",
         headers=manager_token_headers,
     )
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_204_NO_CONTENT
 
     taxon_json = {
         "kingdom_id": test_kingdom.kingdom_id,

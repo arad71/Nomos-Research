@@ -29,7 +29,7 @@ def test_delete_hierarchy(client, test_hierarchy, test_db, superuser_token_heade
         f"/api/v1/hierarchies/{test_hierarchy.hierarchy_id}",
         headers=superuser_token_headers,
     )
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_204_NO_CONTENT
     assert test_db.query(Hierarchy).all() == []
 
 
@@ -184,7 +184,7 @@ def test_super_admin_permissions(
         f"/api/v1/hierarchies/{test_hierarchy.hierarchy_id}",
         headers=superuser_token_headers,
     )
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_204_NO_CONTENT
 
 
 def test_manager_permissions(
@@ -239,7 +239,7 @@ def test_manager_permissions(
         f"/api/v1/hierarchies/{test_hierarchy.hierarchy_id}",
         headers=manager_token_headers,
     )
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_204_NO_CONTENT
 
 
 parameter_names = "method,endpoint,status_code"
