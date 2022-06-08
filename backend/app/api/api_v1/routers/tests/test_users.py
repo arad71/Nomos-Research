@@ -62,7 +62,7 @@ def test_delete_user(client, test_superuser, test_db, superuser_token_headers):
         f"/api/v1/users/{test_superuser.user_id}",
         headers=superuser_token_headers,
     )
-    assert response.status_code == status.HTTP_204_NO_CONTENT
+    assert response.status_code == status.HTTP_200_OK
     assert test_db.query(model.User).all() == []
 
 

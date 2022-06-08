@@ -25,7 +25,7 @@ def test_delete_kingdom(client, test_kingdom, test_db, superuser_token_headers):
         f"/api/v1/kingdoms/{test_kingdom.kingdom_id}",
         headers=superuser_token_headers,
     )
-    assert response.status_code == status.HTTP_204_NO_CONTENT
+    assert response.status_code == status.HTTP_200_OK
     assert test_db.query(Kingdom).all() == []
 
 
@@ -126,7 +126,7 @@ def test_app_support_permissions(
         f"/api/v1/kingdoms/{kingdom_id}",
         headers=app_support_token_headers,
     )
-    assert response.status_code == status.HTTP_204_NO_CONTENT
+    assert response.status_code == status.HTTP_200_OK
 
     json = {
         "kingdom_name": "KingdomTest",
@@ -150,7 +150,7 @@ def test_app_support_permissions(
         f"/api/v1/kingdoms/{kingdom_id}",
         headers=app_support_token_headers,
     )
-    assert response.status_code == status.HTTP_204_NO_CONTENT
+    assert response.status_code == status.HTTP_200_OK
 
 
 def test_super_admin_permissions(
@@ -171,7 +171,7 @@ def test_super_admin_permissions(
         f"/api/v1/kingdoms/{kingdom_id}",
         headers=superuser_token_headers,
     )
-    assert response.status_code == status.HTTP_204_NO_CONTENT
+    assert response.status_code == status.HTTP_200_OK
 
     json = {
         "kingdom_name": "KingdomTest",
@@ -197,7 +197,7 @@ def test_super_admin_permissions(
         f"/api/v1/kingdoms/{kingdom_id}",
         headers=superuser_token_headers,
     )
-    assert response.status_code == status.HTTP_204_NO_CONTENT
+    assert response.status_code == status.HTTP_200_OK
 
 
 parameter_names = "method,endpoint,status_code"
