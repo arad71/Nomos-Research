@@ -100,8 +100,6 @@ async def user_role_edit(
 
 @user_roles_router.delete(
     "/{user_role_id}",
-    response_model=UserRole,
-    response_model_exclude_none=True,
     dependencies=[
         authorize(
             scopes=[

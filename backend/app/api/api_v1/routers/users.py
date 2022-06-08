@@ -119,8 +119,6 @@ async def user_edit(
 
 @r.delete(
     "/{user_id}",
-    response_model=User,
-    response_model_exclude_none=True,
     dependencies=[
         authorize(
             scopes=[

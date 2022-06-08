@@ -104,8 +104,6 @@ async def hierarchy_edit(
 
 @r.delete(
     "/{hierarchy_id}",
-    response_model=Hierarchy,
-    response_model_exclude_none=True,
     dependencies=[
         authorize(
             scopes=[

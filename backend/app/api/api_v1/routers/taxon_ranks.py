@@ -104,8 +104,6 @@ async def taxon_rank_edit(
 
 @r.delete(
     "/{taxon_rank_id}",
-    response_model=TaxonRank,
-    response_model_exclude_none=True,
     dependencies=[
         authorize(
             scopes=[

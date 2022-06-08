@@ -112,8 +112,6 @@ async def cross_reference_edit(
 
 @r.delete(
     "/{cross_reference_id}",
-    response_model=CrossReference,
-    response_model_exclude_none=True,
     dependencies=[
         authorize(
             scopes=[

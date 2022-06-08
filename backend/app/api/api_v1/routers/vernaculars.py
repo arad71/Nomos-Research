@@ -107,8 +107,6 @@ async def vernacular_edit(
 
 @r.delete(
     "/{vernacular_id}",
-    response_model=Vernacular,
-    response_model_exclude_none=True,
     dependencies=[
         authorize(
             scopes=[

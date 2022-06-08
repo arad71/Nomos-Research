@@ -106,8 +106,6 @@ async def author_edit(
 
 @r.delete(
     "/{author_id}",
-    response_model=Author,
-    response_model_exclude_none=True,
     dependencies=[
         authorize(
             scopes=[

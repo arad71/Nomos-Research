@@ -110,8 +110,6 @@ async def informal_group_edit(
 
 @r.delete(
     "/{informal_group_id}",
-    response_model=InformalGroup,
-    response_model_exclude_none=True,
     dependencies=[
         authorize(
             scopes=[
