@@ -268,7 +268,7 @@ export const TaxonNameCreateEdit: FC = ({
             className={`${globalClasses.mainGrid} ${globalClasses.sectionMargin}`}
           >
             <TextInput
-              source="notes"
+              source="comments"
               className={gridClasses.EightCol1to9span}
               multiline
               fullWdith
