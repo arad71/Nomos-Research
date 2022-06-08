@@ -43,6 +43,12 @@ export const GlobalTheme = makeStyles((theme) => ({
   equalColumnWidth: {
     tableLayout: 'fixed',
   },
+  mainGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(8, 1fr)',
+    width: '90%',
+    gridColumnGap: '1.5em',
+  },
 }));
 
 export const GlobalGridTheme = makeStyles((theme) => ({
