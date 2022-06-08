@@ -1,4 +1,3 @@
-// in src/users.js
 import React, { FC } from 'react';
 import {
   BooleanField,
@@ -6,18 +5,18 @@ import {
   Datagrid,
   EditButton,
   EmailField,
-  List,
   SingleFieldList,
   TextField,
   ReferenceArrayField,
   ReferenceField,
   DateField,
 } from 'react-admin';
-import { WithPermissions } from '@react-admin/ra-rbac';
+import { WithPermissions, List } from '@react-admin/ra-rbac';
 import { makeStyles } from '@material-ui/core';
 import { FilterSidebar } from './FilterSidebar';
 import { UserListActions } from './UserListActions';
 import { UserPagination } from './UserPagination';
+import { useCanBulkDelete } from '../shared';
 
 const useStyles = makeStyles({
   content: {
@@ -41,6 +40,7 @@ export const UserList: FC = (props) => {
       actions={<UserListActions />}
       pagination={<UserPagination />}
       perPage={100}
+      bulkActionButtons={useCanBulkDelete()}
       classes={{ content: classes.content }}
       sort={{ field: 'updated_on', order: 'DESC' }}
       {...props}

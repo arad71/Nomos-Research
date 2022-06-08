@@ -1,18 +1,18 @@
 import React, { FC } from 'react';
 import {
+  BooleanField,
+  CreateButton,
   Datagrid,
   DateField,
   EditButton,
-  List,
-  ReferenceField,
-  TextField,
-  BooleanField,
-  SearchInput,
-  TopToolbar,
-  CreateButton,
   ExportButton,
+  ReferenceField,
+  SearchInput,
+  TextField,
+  TopToolbar,
 } from 'react-admin';
-import { WithPermissions } from '@react-admin/ra-rbac';
+import { List, WithPermissions } from '@react-admin/ra-rbac';
+import { DefaultPagination, useCanBulkDelete } from '../shared';
 
 const publicationFilters = [<SearchInput source="q" alwaysOn />];
 
@@ -33,6 +33,9 @@ export const PublicationList: FC = (props) => (
     sort={{ field: 'title', order: 'ASC' }}
     filters={publicationFilters}
     actions={<Actions />}
+    perPage={100}
+    pagination={<DefaultPagination />}
+    bulkActionButtons={useCanBulkDelete()}
   >
     <Datagrid rowClick="show">
       <BooleanField source="bad_publication" />

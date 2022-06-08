@@ -3,16 +3,22 @@ import {
   Datagrid,
   DateField,
   EditButton,
-  List,
   NumberField,
   ReferenceField,
   RichTextField,
   TextField,
 } from 'react-admin';
-import { WithPermissions } from '@react-admin/ra-rbac';
+import { List, WithPermissions } from '@react-admin/ra-rbac';
+import { DefaultPagination, useCanBulkDelete } from '../shared';
 
 export const HierarchyList: FC = (props) => (
-  <List {...props} sort={{ field: 'parent___scientific_name' }}>
+  <List
+    {...props}
+    sort={{ field: 'parent___scientific_name' }}
+    perPage={100}
+    pagination={<DefaultPagination />}
+    bulkActionButtons={useCanBulkDelete()}
+  >
     <Datagrid rowClick="show">
       <NumberField source="id" />
       <ReferenceField
