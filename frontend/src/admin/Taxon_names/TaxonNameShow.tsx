@@ -370,7 +370,7 @@ export const TaxonNameShow: FC = (props) => {
             </Box>
           </Tab>
           <Tab label="Heirarchy" className={globalClasses.bold}></Tab>
-          <Tab label="Cross References" className={globalClasses.bold}></Tab>
+          <Tab label="Related Names" className={globalClasses.bold}></Tab>
           <Tab label="Notes" className={globalClasses.bold}>
             <Box className={globalClasses.sectionMargin}>
               <Labeled label="Notes">

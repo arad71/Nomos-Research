@@ -52,6 +52,9 @@ const useStyles = makeStyles({
     width: '90%',
     gridColumnGap: '1.5em',
   },
+  fullWidth: {
+    width: '100%',
+  },
 });
 
 const TaxonNameStatus = () => {
@@ -126,9 +129,6 @@ export const TaxonNameCreateEdit: FC = ({
               min={0}
               validate={validateNumber}
             />
-            {/*<TextField source="canonical_name" />*/}
-            {/*<TextField source="scientific_name" />*/}
-            {/*<RichTextField source="formatted_scientific_name" />*/}
             <SelectInput
               source="publication_status"
               choices={PublicationStatus}
@@ -250,11 +250,12 @@ export const TaxonNameCreateEdit: FC = ({
               choices={NaturalisedStatus}
               className={gridClasses.EightCol1to3span}
             />
-            <NullableBooleanInput
-              source="naturalised_certainty"
-              className={gridClasses.EightCol3to5span}
-              fullWidth
-            />
+            <Box className={gridClasses.EightCol3to5span}>
+              <NullableBooleanInput
+                source="naturalised_certainty"
+                className={classes.fullWidth}
+              />
+            </Box>
             <TextInput
               multiline
               source="naturalised_comments"
@@ -263,10 +264,7 @@ export const TaxonNameCreateEdit: FC = ({
           </Box>
         </FormTab>
         <FormTab label="Heirarchy" className={globalClasses.bold}></FormTab>
-        <FormTab
-          label="Cross References"
-          className={globalClasses.bold}
-        ></FormTab>
+        <FormTab label="Related Names" className={globalClasses.bold}></FormTab>
         <FormTab label="Notes" className={globalClasses.bold}>
           <Box className={`${classes.mainGrid} ${globalClasses.sectionMargin}`}>
             <TextInput
