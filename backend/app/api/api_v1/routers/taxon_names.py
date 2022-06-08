@@ -109,8 +109,6 @@ async def taxon_name_edit(
 
 @r.delete(
     "/{taxon_name_id}",
-    response_model=TaxonName,
-    response_model_exclude_none=True,
     dependencies=[
         authorize(
             scopes=[

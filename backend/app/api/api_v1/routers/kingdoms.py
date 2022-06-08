@@ -103,8 +103,6 @@ async def kingdom_edit(
 
 @r.delete(
     "/{kingdom_id}",
-    response_model=Kingdom,
-    response_model_exclude_none=True,
     dependencies=[
         authorize(
             scopes=[

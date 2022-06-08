@@ -4,6 +4,7 @@ import functools
 import os
 import traceback
 
+from dateutil.relativedelta import relativedelta
 from loguru import logger
 from pydantic import ValidationError
 from sqlalchemy.dialects.postgresql import insert as pg_insert
@@ -130,6 +131,16 @@ class DataImportBase:
             return None
 
         return datetime.datetime.strptime(value, current_format)
+
+    @staticmethod
+    def normalise_datetime(value: datetime):
+        if not value:
+            return None
+        earliest_date = datetime.datetime(2000, 1, 1)
+        delta = relativedelta(years=2000)
+        if datetime.datetime(value.year, value.month, value.day) < earliest_date:
+            value = value + delta
+        return value
 
     def map_taxon_rank_by_legacy_id(self, legacy_id: str, kingdom_id: str):
         if not legacy_id or not kingdom_id:

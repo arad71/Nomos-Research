@@ -1,70 +1,44 @@
 import React, { FC } from 'react';
 import {
-  NumberField,
-  ReferenceField,
-  Show,
-  TabbedShowLayout,
-  Tab,
-  SelectField,
-  TextField,
   BooleanField,
   Labeled,
-  RichTextField,
-  useRecordContext,
+  NumberField,
+  ReferenceField,
+  SelectField,
+  Tab,
+  TabbedShowLayout,
+  TextField,
 } from 'react-admin';
+import { Show } from '@react-admin/ra-rbac';
 import Aside from '../shared/Aside';
 import NaturalisedStatus from './NaturalisedStatus';
 import PublicationStatus from './PublicationStatus';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, Typography } from '@material-ui/core';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import green from '@material-ui/core/colors/green';
 import { GlobalTheme } from '../../GlobalTheme';
+import { CrossReferenceManyGrid } from '../Cross_references';
+// eslint-disable-next-line max-len
+import { FormattedScientificNameWithStatus } from './FormattedScientificNameWithStatus';
+import { NamePageSummary } from './NamePageSummary';
 
 const useStyles = makeStyles((theme) => ({
-  title: {
-    fontWeight: 'bold',
-    fontSize: '1.5em',
-    marginRight: '0.2em',
-  },
-  subtitle: {
-    fontSize: '1em',
-  },
   linedRow: {
     borderBottom: '1px solid #eee',
     marginTop: '1.2em',
   },
-  titlePos: {
-    position: 'absolute',
-    top: '65px',
-  },
 }));
-
-const TaxonNameStatus = () => {
-  const record = useRecordContext();
-  return record && record.is_current ? (
-    <CheckCircleIcon style={{ color: green[500] }} />
-  ) : null;
-};
 
 export const TaxonNameShow: FC = (props) => {
   const classes = useStyles();
   const globalClasses = GlobalTheme();
   return (
-    <Show aside={<Aside />} {...props}>
+    <Show
+      title={<FormattedScientificNameWithStatus />}
+      aside={<Aside />}
+      {...props}
+    >
       <>
-        <Box className={classes.titlePos}>
-          <Box>
-            <RichTextField
-              className={classes.title}
-              source="formatted_scientific_name"
-            />
-            <TaxonNameStatus />
-          </Box>
-          <ReferenceField source="rank_id" reference="taxon_ranks" link={false}>
-            <TextField source="rank_name" className={classes.subtitle} />
-          </ReferenceField>
-        </Box>
+        <NamePageSummary />
         <TabbedShowLayout>
           <Tab label="Name" className={globalClasses.bold}>
             <Box className={globalClasses.sectionMargin}>
@@ -369,12 +343,33 @@ export const TaxonNameShow: FC = (props) => {
               </Box>
             </Box>
           </Tab>
-          <Tab label="Heirarchy" className={globalClasses.bold}></Tab>
-          <Tab label="Cross References" className={globalClasses.bold}></Tab>
+          <Tab label="Hierarchy" className={globalClasses.bold}></Tab>
+          <Tab label="Related names" className={globalClasses.bold}>
+            <Box className={globalClasses.sectionMargin}>
+              <Labeled label="Previous names">
+                <CrossReferenceManyGrid
+                  props={props}
+                  source="old_name_id"
+                  target="new_name_id"
+                  label="Previous names"
+                />
+              </Labeled>
+            </Box>
+            <Box className={globalClasses.sectionMargin}>
+              <Labeled label="Subsequent names">
+                <CrossReferenceManyGrid
+                  props={props}
+                  source="new_name_id"
+                  target="old_name_id"
+                  label="Subsequent names"
+                />
+              </Labeled>
+            </Box>
+          </Tab>
           <Tab label="Notes" className={globalClasses.bold}>
             <Box className={globalClasses.sectionMargin}>
               <Labeled label="Notes">
-                <TextField source="notes" />
+                <TextField source="comments" />
               </Labeled>
             </Box>
           </Tab>

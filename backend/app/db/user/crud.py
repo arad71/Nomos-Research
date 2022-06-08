@@ -39,6 +39,7 @@ class UserCrud(crud.Crud):
         db.add(db_user)
         db.commit()
         db.refresh(db_user)
+
         user_id = db_user.user_id
         if user.role_ids:
             for role_id in user.role_ids:

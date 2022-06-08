@@ -111,8 +111,6 @@ async def publication_edit(
 
 @r.delete(
     "/{publication_id}",
-    response_model=Publication,
-    response_model_exclude_none=True,
     dependencies=[
         authorize(
             scopes=[

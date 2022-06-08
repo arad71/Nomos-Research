@@ -5,3 +5,7 @@ export * from './TaxonNameShow';
 export * from './TaxonNameCreateEdit';
 export * from './TaxonNameFilters';
 export * from './TaxonRank';
+export * from './TaxonNameStatus';
+export * from './FormattedScientificNameWithStatus';
+export * from './ScientificNameReference';
+export * from './NamePageSummary';

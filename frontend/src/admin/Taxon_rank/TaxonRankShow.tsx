@@ -3,12 +3,12 @@ import {
   NumberField,
   ReferenceField,
   required,
-  Show,
   SimpleShowLayout,
   SelectField,
   TextField,
   BooleanField,
 } from 'react-admin';
+import { Show } from '@react-admin/ra-rbac';
 import Aside from '../shared/Aside';
 import RankAbbreviation from './RankAbbreviation';
 

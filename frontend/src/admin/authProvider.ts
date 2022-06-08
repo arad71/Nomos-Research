@@ -16,6 +16,7 @@ type Action =
   | 'clone'
   | 'write' // for a field in the resource
   | 'delete'
+  | 'bulkdelete'
   | '*';
 type Actions = Action[] | Action;
 
@@ -130,7 +131,7 @@ const authProvider = {
     ];
 
     permissions[Role.APPLICATION_SUPPORT] = [
-      { action: ['show', 'list', 'export'], resource: '*' },
+      { action: ['show', 'list', 'export', 'bulkdelete'], resource: '*' },
       { action: '*', resource: 'users' },
       { action: '*', resource: 'user_roles' },
       { action: '*', resource: 'kingdoms' },

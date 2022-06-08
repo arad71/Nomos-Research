@@ -115,8 +115,6 @@ async def classification_system_edit(
 
 @r.delete(
     "/{classification_system_id}",
-    response_model=ClassificationSystem,
-    response_model_exclude_none=True,
     dependencies=[
         authorize(
             scopes=[

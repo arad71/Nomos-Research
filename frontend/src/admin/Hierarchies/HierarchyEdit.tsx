@@ -1,10 +1,12 @@
 import React, { FC } from 'react';
-import { Edit } from 'react-admin';
+import { Edit } from '@react-admin/ra-rbac';
 import Aside from '../shared/Aside';
 import { HierarchyCreateEdit } from './HierarchyCreateEdit';
 
-export const HierarchyEdit: FC = (props) => (
-  <Edit {...props} aside={<Aside />}>
-    <HierarchyCreateEdit />
-  </Edit>
-);
+export const HierarchyEdit: FC = (props) => {
+  return (
+    <Edit mutationMode="pessimistic" {...props} aside={<Aside />}>
+      <HierarchyCreateEdit />
+    </Edit>
+  );
+};

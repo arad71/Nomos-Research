@@ -86,7 +86,11 @@ const httpClient = (url: any, options: any) => {
   }
   const token = localStorage.getItem('token');
   options.headers.set('Authorization', `Bearer ${token}`);
-  return fetchUtils.fetchJson(url, options);
+  return fetchUtils.fetchJson(url, options).catch((error: any) => {
+    return new Promise(function (resolve, reject) {
+      reject({ message: error.body.detail });
+    });
+  });
 };
 
 const dataProvider = restDataProvider(

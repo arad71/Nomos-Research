@@ -3,7 +3,6 @@ import {
   Datagrid,
   DateField,
   EditButton,
-  List,
   NumberField,
   ReferenceField,
   RichTextField,
@@ -12,10 +11,17 @@ import {
   BooleanField,
 } from 'react-admin';
 import LanguageType from './LanguageType';
-import { WithPermissions } from '@react-admin/ra-rbac';
+import { List, WithPermissions } from '@react-admin/ra-rbac';
+import { DefaultPagination, useCanBulkDelete } from '../shared';
 
 export const VernacularList: FC = (props) => (
-  <List {...props} sort={{ field: 'taxon_name___scientific_name' }}>
+  <List
+    {...props}
+    sort={{ field: 'taxon_name___scientific_name' }}
+    perPage={100}
+    pagination={<DefaultPagination />}
+    bulkActionButtons={useCanBulkDelete()}
+  >
     <Datagrid rowClick="show">
       <NumberField source="id" />
       <ReferenceField

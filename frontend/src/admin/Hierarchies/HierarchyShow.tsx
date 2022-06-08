@@ -2,10 +2,10 @@ import React, { FC } from 'react';
 import {
   RichTextField,
   ReferenceField,
-  Show,
   SimpleShowLayout,
   TextField,
 } from 'react-admin';
+import { Show } from '@react-admin/ra-rbac';
 import Aside from '../shared/Aside';
 
 export const HierarchyShow: FC = (props) => {

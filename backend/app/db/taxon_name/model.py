@@ -9,7 +9,7 @@ from sqlalchemy import (
     event,
     func,
 )
-from sqlalchemy.orm import column_property, relationship
+from sqlalchemy.orm import backref, column_property, relationship
 from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy.types import Enum
 
@@ -159,6 +159,12 @@ class TaxonName(BaseModel, TableMixin):
         ForeignKey("taxon_name.taxon_name_id"),
         comment=FAMILY_NID,
         doc=FAMILY_NID,
+    )
+    family_relationship = relationship(
+        "TaxonName",
+        foreign_keys=[family_nid],
+        remote_side=[taxon_name_id],
+        backref=backref("in_family", cascade="all, delete-orphan"),
     )
     all_vernaculars = Column(String(200), index=True)
     notes = Column(String(3000))
