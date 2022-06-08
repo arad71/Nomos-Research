@@ -1,6 +1,5 @@
 import {
   BooleanInput,
-  DateTimeInput,
   FormTab,
   NullableBooleanInput,
   NumberField,
@@ -46,12 +45,6 @@ const useStyles = makeStyles({
   subtitle: {
     fontSize: '1em',
   },
-  mainGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(8, 1fr)',
-    width: '90%',
-    gridColumnGap: '1.5em',
-  },
   fullWidth: {
     width: '100%',
   },
@@ -87,7 +80,10 @@ export const TaxonNameCreateEdit: FC = ({
       </Box>
       <TabbedForm {...props} warnWhenUnsavedChanges>
         <FormTab label="Name" className={globalClasses.bold}>
-          <Box className={`${classes.mainGrid} ${globalClasses.sectionMargin}`}>
+          <Box
+            /* eslint-disable-next-line max-len */
+            className={`${globalClasses.mainGrid} ${globalClasses.sectionMargin}`}
+          >
             <ReferenceInput
               source="rank_id"
               reference="taxon_ranks"
@@ -236,7 +232,10 @@ export const TaxonNameCreateEdit: FC = ({
           </Box>
         </FormTab>
         <FormTab label="Details" className={globalClasses.bold}>
-          <Box className={`${classes.mainGrid} ${globalClasses.sectionMargin}`}>
+          <Box
+            /* eslint-disable-next-line max-len */
+            className={`${globalClasses.mainGrid} ${globalClasses.sectionMargin}`}
+          >
             <TextInput
               source="family_code"
               className={gridClasses.EightCol1to3span}
@@ -266,7 +265,10 @@ export const TaxonNameCreateEdit: FC = ({
         <FormTab label="Heirarchy" className={globalClasses.bold}></FormTab>
         <FormTab label="Related Names" className={globalClasses.bold}></FormTab>
         <FormTab label="Notes" className={globalClasses.bold}>
-          <Box className={`${classes.mainGrid} ${globalClasses.sectionMargin}`}>
+          <Box
+            /* eslint-disable-next-line max-len */
+            className={`${globalClasses.mainGrid} ${globalClasses.sectionMargin}`}
+          >
             <TextInput
               source="notes"
               className={gridClasses.EightCol1to9span}
