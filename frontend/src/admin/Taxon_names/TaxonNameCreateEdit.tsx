@@ -26,11 +26,17 @@ import AuthorType from '../Citations/AuthorType';
 import { Box, Typography } from '@material-ui/core';
 import { CitationRowForm } from '../Citations';
 import { EditableCrossReferenceManyGrid } from '../Cross_references';
-import { GlobalTheme } from '../../GlobalTheme';
+import { GlobalGridTheme, GlobalTheme } from '../../GlobalTheme';
 
 const useStyles = makeStyles({
   tablabel: {
     fontWeight: 'bold',
+  },
+  mainGrid: {
+    display: 'grid',
+    gridTemplateColumns: '3fr 3fr 1fr 3fr',
+    width: '70%',
+    gridColumnGap: '1.5em',
   },
 });
 
@@ -42,6 +48,7 @@ export const TaxonNameCreateEdit: FC = ({
   const oldNameInitialValues = { new_name_id: props.record?.id, active: true };
   const newNameInitialValues = { old_name_id: props.record?.id, active: true };
   const globalClasses = GlobalTheme();
+  const globalGridTheme = GlobalGridTheme();
 
   return (
     <TabbedForm {...props}>
@@ -163,27 +170,29 @@ export const TaxonNameCreateEdit: FC = ({
       <FormTab label="Details" className={classes.tablabel}></FormTab>
       <FormTab label="Hierarchy" className={classes.tablabel}></FormTab>
       <FormTab label="Related Names" className={classes.tablabel}>
-        <Box className={globalClasses.sectionMargin}>
-          <Labeled label="Previous names">
-            <EditableCrossReferenceManyGrid
-              props={props}
-              source="old_name_id"
-              target="new_name_id"
-              label="Previous names"
-              createInitialValues={oldNameInitialValues}
-            />
-          </Labeled>
-        </Box>
-        <Box className={globalClasses.sectionMargin}>
-          <Labeled label="Subsequent names">
-            <EditableCrossReferenceManyGrid
-              props={props}
-              source="new_name_id"
-              target="old_name_id"
-              label="Subsequent names"
-              createInitialValues={newNameInitialValues}
-            />
-          </Labeled>
+        <Box className={`${classes.mainGrid} ${globalClasses.sectionMargin}`}>
+          <Box className={globalGridTheme.EightCol1to9span}>
+            <Labeled label="Previous names">
+              <EditableCrossReferenceManyGrid
+                props={props}
+                source="old_name_id"
+                target="new_name_id"
+                label="Previous names"
+                createInitialValues={oldNameInitialValues}
+              />
+            </Labeled>
+          </Box>
+          <Box className={globalGridTheme.EightCol1to9span}>
+            <Labeled label="Subsequent names">
+              <EditableCrossReferenceManyGrid
+                props={props}
+                source="new_name_id"
+                target="old_name_id"
+                label="Subsequent names"
+                createInitialValues={newNameInitialValues}
+              />
+            </Labeled>
+          </Box>
         </Box>
       </FormTab>
       <FormTab label="Notes" className={classes.tablabel}></FormTab>
