@@ -9,13 +9,11 @@ import {
   ReferenceInput,
   ReferenceManyField,
   required,
-  RichTextField,
   SelectField,
   SelectInput,
   TabbedForm,
   TextField,
   TextInput,
-  useRecordContext,
   number,
   minValue,
 } from 'react-admin';
@@ -29,35 +27,15 @@ import { Box, Typography } from '@material-ui/core';
 import { CitationRowForm } from '../Citations';
 import { EditableCrossReferenceManyGrid } from '../Cross_references';
 import { GlobalGridTheme, GlobalTheme } from '../../GlobalTheme';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import green from '@material-ui/core/colors/green';
+import { NamePageSummary } from './NamePageSummary';
 
 const validateNumber = [number(), minValue(0)];
 
 const useStyles = makeStyles({
-  title: {
-    fontWeight: 'bold',
-    fontSize: '1.5em',
-    marginRight: '0.2em',
-  },
-  titlePos: {
-    position: 'absolute',
-    top: '65px',
-  },
-  subtitle: {
-    fontSize: '1em',
-  },
   fullWidth: {
     width: '100%',
   },
 });
-
-const TaxonNameStatus = () => {
-  const record = useRecordContext();
-  return record && record.is_current ? (
-    <CheckCircleIcon style={{ color: green[500] }} />
-  ) : null;
-};
 
 export const TaxonNameCreateEdit: FC = ({
   ...props
@@ -70,18 +48,7 @@ export const TaxonNameCreateEdit: FC = ({
   const newNameInitialValues = { old_name_id: props.record?.id, active: true };
   return (
     <>
-      <Box className={classes.titlePos}>
-        <Box>
-          <RichTextField
-            className={classes.title}
-            source="formatted_scientific_name"
-          />
-          <TaxonNameStatus />
-        </Box>
-        <ReferenceField source="rank_id" reference="taxon_ranks" link={false}>
-          <TextField source="rank_name" className={classes.subtitle} />
-        </ReferenceField>
-      </Box>
+      <NamePageSummary />
       <TabbedForm {...props} warnWhenUnsavedChanges>
         <FormTab label="Name" className={globalClasses.bold}>
           <Box
@@ -161,25 +128,24 @@ export const TaxonNameCreateEdit: FC = ({
               </Typography>
             </Box>
             <Box className={gridClasses.EightCol1to9span}>
-        {(props.record?.id && (
-          <ReferenceManyField
-            fullWidth
-            label="Authors"
-            reference="citations"
-            target="taxon_name_id"
-            sort={{
-              field: 'author_type,author_order',
-              order: 'ASC,ASC',
-            }}
-            {...props}
-          >
-            <EditableDatagrid
-              undoable
-              createForm={
-                <CitationRowForm
-                  initialValues={citationInitialValues}
+              {(props.record?.id && (
+                <ReferenceManyField
+                  fullWidth
+                  label="Authors"
+                  reference="citations"
+                  target="taxon_name_id"
+                  sort={{
+                    field: 'author_type,author_order',
+                    order: 'ASC,ASC',
+                  }}
                   {...props}
-
+                >
+                  <EditableDatagrid
+                    undoable
+                    createForm={
+                      <CitationRowForm
+                        initialValues={citationInitialValues}
+                        {...props}
                       />
                     }
                     editForm={<CitationRowForm {...props} />}
@@ -269,32 +235,34 @@ export const TaxonNameCreateEdit: FC = ({
         </FormTab>
         <FormTab label="Hierarchy" className={globalClasses.bold}></FormTab>
         <FormTab label="Related Names" className={globalClasses.bold}>
-        <Box className={`${globalClasses.mainGrid} ${globalClasses.sectionMargin}`}>
-          <Box className={globalGridTheme.EightCol1to9span}>
-            <Labeled label="Previous names">
-              <EditableCrossReferenceManyGrid
-                props={props}
-                source="old_name_id"
-                target="new_name_id"
-                label="Previous names"
-                createInitialValues={oldNameInitialValues}
-              />
-            </Labeled>
+          <Box
+            className={`${globalClasses.mainGrid} ${globalClasses.sectionMargin}`}
+          >
+            <Box className={gridClasses.EightCol1to9span}>
+              <Labeled label="Previous names">
+                <EditableCrossReferenceManyGrid
+                  props={props}
+                  source="old_name_id"
+                  target="new_name_id"
+                  label="Previous names"
+                  createInitialValues={oldNameInitialValues}
+                />
+              </Labeled>
+            </Box>
+            <Box className={gridClasses.EightCol1to9span}>
+              <Labeled label="Subsequent names">
+                <EditableCrossReferenceManyGrid
+                  props={props}
+                  source="new_name_id"
+                  target="old_name_id"
+                  label="Subsequent names"
+                  createInitialValues={newNameInitialValues}
+                />
+              </Labeled>
+            </Box>
           </Box>
-          <Box className={globalGridTheme.EightCol1to9span}>
-            <Labeled label="Subsequent names">
-              <EditableCrossReferenceManyGrid
-                props={props}
-                source="new_name_id"
-                target="old_name_id"
-                label="Subsequent names"
-                createInitialValues={newNameInitialValues}
-              />
-            </Labeled>
-          </Box>
-        </Box>
-      </FormTab>
-      <FormTab label="Notes" className={globalClasses.bold}>
+        </FormTab>
+        <FormTab label="Notes" className={globalClasses.bold}>
           <Box
             /* eslint-disable-next-line max-len */
             className={`${globalClasses.mainGrid} ${globalClasses.sectionMargin}`}

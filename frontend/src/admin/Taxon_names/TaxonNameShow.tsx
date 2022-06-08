@@ -1,15 +1,13 @@
 import React, { FC } from 'react';
 import {
-  NumberField,
-  ReferenceField,
-  TabbedShowLayout,
-  Tab,
-  SelectField,
-  TextField,
   BooleanField,
   Labeled,
-  RichTextField,
-  useRecordContext,
+  NumberField,
+  ReferenceField,
+  SelectField,
+  Tab,
+  TabbedShowLayout,
+  TextField,
 } from 'react-admin';
 import { Show } from '@react-admin/ra-rbac';
 import Aside from '../shared/Aside';
@@ -21,23 +19,12 @@ import { GlobalTheme } from '../../GlobalTheme';
 import { CrossReferenceManyGrid } from '../Cross_references';
 // eslint-disable-next-line max-len
 import { FormattedScientificNameWithStatus } from './FormattedScientificNameWithStatus';
+import { NamePageSummary } from './NamePageSummary';
 
 const useStyles = makeStyles((theme) => ({
-  title: {
-    fontWeight: 'bold',
-    fontSize: '1.5em',
-    marginRight: '0.2em',
-  },
-  subtitle: {
-    fontSize: '1em',
-  },
   linedRow: {
     borderBottom: '1px solid #eee',
     marginTop: '1.2em',
-  },
-  titlePos: {
-    position: 'absolute',
-    top: '65px',
   },
 }));
 
@@ -51,14 +38,7 @@ export const TaxonNameShow: FC = (props) => {
       {...props}
     >
       <>
-        <Box className={classes.titlePos}>
-          <Box>
-            <FormattedScientificNameWithStatus />
-          </Box>
-          <ReferenceField source="rank_id" reference="taxon_ranks" link={false}>
-            <TextField source="rank_name" className={classes.subtitle} />
-          </ReferenceField>
-        </Box>
+        <NamePageSummary />
         <TabbedShowLayout>
           <Tab label="Name" className={globalClasses.bold}>
             <Box className={globalClasses.sectionMargin}>
