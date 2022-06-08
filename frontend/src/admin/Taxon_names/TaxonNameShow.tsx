@@ -374,7 +374,7 @@ export const TaxonNameShow: FC = (props) => {
           <Tab label="Notes" className={globalClasses.bold}>
             <Box className={globalClasses.sectionMargin}>
               <Labeled label="Notes">
-                <TextField source="notes" />
+                <TextField source="comments" />
               </Labeled>
             </Box>
           </Tab>
