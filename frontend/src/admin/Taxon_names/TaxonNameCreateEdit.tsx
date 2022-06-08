@@ -236,6 +236,7 @@ export const TaxonNameCreateEdit: FC = ({
         <FormTab label="Hierarchy" className={globalClasses.bold}></FormTab>
         <FormTab label="Related Names" className={globalClasses.bold}>
           <Box
+            {/* eslint-disable-next-line max-len */}
             className={`${globalClasses.mainGrid} ${globalClasses.sectionMargin}`}
           >
             <Box className={gridClasses.EightCol1to9span}>
