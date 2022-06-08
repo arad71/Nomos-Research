@@ -1,21 +1,27 @@
 import React, { FC } from 'react';
 import {
+  BooleanField,
   Datagrid,
   DateField,
   EditButton,
-  List,
   NumberField,
   ReferenceField,
   RichTextField,
   SelectField,
   TextField,
-  BooleanField,
 } from 'react-admin';
 import CrossRefType from './CrossRefType';
-import { WithPermissions } from '@react-admin/ra-rbac';
+import { WithPermissions, List } from '@react-admin/ra-rbac';
+import { DefaultPagination, useCanBulkDelete } from '../shared';
 
 export const CrossReferenceList: FC = (props) => (
-  <List {...props} sort={{ field: 'old_name___scientific_name' }}>
+  <List
+    {...props}
+    sort={{ field: 'old_name___scientific_name' }}
+    perPage={100}
+    pagination={<DefaultPagination />}
+    bulkActionButtons={useCanBulkDelete()}
+  >
     <Datagrid rowClick="show">
       <NumberField source="id" />
       <ReferenceField

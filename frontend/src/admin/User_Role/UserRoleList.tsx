@@ -1,9 +1,14 @@
-// in src/users.js
 import React, { FC } from 'react';
-import { Datagrid, List, ReferenceField, TextField } from 'react-admin';
+import { Datagrid, ReferenceField, TextField } from 'react-admin';
+import { DefaultPagination, useCanBulkDelete } from '../shared';
+import { List } from '@react-admin/ra-rbac';
 
 export const UserRoleList: FC = (props) => (
-  <List {...props}>
+  <List
+    {...props}
+    bulkActionButtons={useCanBulkDelete()}
+    pagination={<DefaultPagination />}
+  >
     <Datagrid rowClick="show">
       <TextField source="id" />
       <TextField source="user_id" />

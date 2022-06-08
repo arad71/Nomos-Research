@@ -3,7 +3,6 @@ import {
   Datagrid,
   DateField,
   EditButton,
-  List,
   NumberField,
   ReferenceField,
   SelectField,
@@ -11,10 +10,17 @@ import {
   BooleanField,
 } from 'react-admin';
 import RankAbbreviation from './RankAbbreviation';
-import { WithPermissions } from '@react-admin/ra-rbac';
+import { WithPermissions, List } from '@react-admin/ra-rbac';
+import { DefaultPagination, useCanBulkDelete } from '../shared';
 
 export const TaxonRankList: FC = (props) => (
-  <List {...props} sort={{ field: 'rank_name' }}>
+  <List
+    {...props}
+    sort={{ field: 'rank_name' }}
+    perPage={100}
+    pagination={<DefaultPagination />}
+    bulkActionButtons={useCanBulkDelete()}
+  >
     <Datagrid rowClick="show">
       <TextField source="id" />
       <ReferenceField
