@@ -2,17 +2,23 @@ import React, { FC } from 'react';
 import {
   Datagrid,
   DateField,
-  List,
   NumberField,
   ReferenceField,
   TextField,
   EditButton,
 } from 'react-admin';
-import { WithPermissions } from '@react-admin/ra-rbac';
+import { List, WithPermissions } from '@react-admin/ra-rbac';
+import { DefaultPagination, useCanBulkDelete } from '../shared';
 
 export const KingdomList: FC = (props) => {
   return (
-    <List {...props} sort={{ field: 'kingdom_name', order: 'DESC' }}>
+    <List
+      {...props}
+      sort={{ field: 'kingdom_name', order: 'DESC' }}
+      perPage={100}
+      pagination={<DefaultPagination />}
+      bulkActionButtons={useCanBulkDelete()}
+    >
       <Datagrid rowClick="show">
         <NumberField source="id" />
         <TextField source="kingdom_name" />
