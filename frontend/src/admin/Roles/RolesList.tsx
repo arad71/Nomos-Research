@@ -1,11 +1,16 @@
-// in src/users.js
 import React, { FC } from 'react';
-import { Datagrid, List, TextField } from 'react-admin';
+import { Datagrid, TextField } from 'react-admin';
+import { List } from '@react-admin/ra-rbac';
+import { DefaultPagination } from '../shared';
 
 export const RolesList: FC = (props) => (
-  <List {...props}>
+  <List
+    {...props}
+    perPage={100}
+    bulkActionButtons={false}
+    pagination={<DefaultPagination />}
+  >
     <Datagrid rowClick="show">
-      <TextField source="role_id" />
       <TextField source="name" />
       <TextField source="description" />
     </Datagrid>
