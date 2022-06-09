@@ -93,8 +93,7 @@ jobs:
       - test
     if:
       contains('
-      refs/heads/staging
-      refs/heads/production
+      refs/heads/develop
       ', github.ref)
 
     # Steps represent a sequence of tasks that will be executed as part of the job
