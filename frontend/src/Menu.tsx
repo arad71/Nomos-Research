@@ -45,13 +45,6 @@ const Menu = () => {
           className={classes.noMargin}
         />
         <MenuItem
-          name="Citations"
-          label="Citations"
-          to="/citations"
-          icon={<SupervisedUserCircleIcon />}
-          className={classes.noMargin}
-        />
-        <MenuItem
           name="Authors"
           label="Authors"
           icon={<PeopleIcon />}

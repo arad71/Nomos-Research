@@ -63,14 +63,6 @@ const Dashboard = () => {
           >
             View Publications
           </Button>
-          <Button
-            href="/#/citations"
-            variant="contained"
-            color="secondary"
-            className={classes.cardbutton}
-          >
-            View Citations
-          </Button>
         </CardContent>
       </Card>
       <div className={classes.wrapper}>
@@ -82,8 +74,47 @@ const Dashboard = () => {
             />
           }
           to={'/users/create'}
-          title="Add user"
+          title="Add User"
           subtitle="Create a new Nomos user"
+        />
+      </div>
+      <div className={classes.wrapper}>
+        <CardWithIcon
+          icon={
+            <ArrowForwardIcon
+              fontSize={'large'}
+              className={classes.arrowPadding}
+            />
+          }
+          to={'/taxon_names/create'}
+          title="Add Name"
+          subtitle="Create a new Taxon name"
+        />
+      </div>
+      <div className={classes.wrapper}>
+        <CardWithIcon
+          icon={
+            <ArrowForwardIcon
+              fontSize={'large'}
+              className={classes.arrowPadding}
+            />
+          }
+          to={'/authors/create'}
+          title="Add Author"
+          subtitle="Create a new Author"
+        />
+      </div>
+      <div className={classes.wrapper}>
+        <CardWithIcon
+          icon={
+            <ArrowForwardIcon
+              fontSize={'large'}
+              className={classes.arrowPadding}
+            />
+          }
+          to={'/publications/create'}
+          title="Add Publication"
+          subtitle="Create a new Publication"
         />
       </div>
     </div>
