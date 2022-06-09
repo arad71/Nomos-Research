@@ -56,10 +56,18 @@ export const TaxonNameCreateEdit: FC = ({
             className={`${globalClasses.mainGrid} ${globalClasses.sectionMargin}`}
           >
             <ReferenceInput
+              source="kingdom_id"
+              reference="kingdoms"
+              validate={[required()]}
+              className={gridClasses.EightCol1to3span}
+            >
+              <SelectInput optionText="kingdom_name" fullWidth />
+            </ReferenceInput>
+            <ReferenceInput
               source="rank_id"
               reference="taxon_ranks"
               validate={[required()]}
-              className={gridClasses.EightCol1to3span}
+              className={gridClasses.EightCol3to5span}
             >
               <SelectInput optionText="rank_name" fullWidth />
             </ReferenceInput>
