@@ -43,6 +43,11 @@ export const TaxonNameShow: FC = (props) => {
           <Tab label="Name" className={globalClasses.bold}>
             <Box className={globalClasses.sectionMargin}>
               <Box className={globalClasses.fieldMargin}>
+                <ReferenceField source="kingdom_id" reference="kingdoms">
+                  <Labeled label="Kingdom">
+                    <TextField source="kingdom_name" />
+                  </Labeled>
+                </ReferenceField>
                 <ReferenceField source="rank_id" reference="taxon_ranks">
                   <Labeled label="Rank">
                     <TextField source="rank_name" />
