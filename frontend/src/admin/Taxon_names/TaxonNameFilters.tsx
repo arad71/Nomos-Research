@@ -88,6 +88,8 @@ export const TaxonNameFilters = [
 
   <DateInput source="created_on" />,
 
+  <TextInput source="admin_comment__contains" label="Admin Comment" />,
+
   <ReferenceArrayInput
     source="created_by"
     reference="users"

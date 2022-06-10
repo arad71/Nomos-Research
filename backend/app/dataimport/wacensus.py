@@ -18,7 +18,11 @@ from app.db.informal_group.dataimport import ImportInformalGroup
 from app.db.kingdom.dataimport import ImportKingdom
 from app.db.publication.dataimport import ImportPublication
 from app.db.session import SessionLocal
-from app.db.taxon_name.dataimport import ImportTaxonName, ImportTaxonNameFamilyNid
+from app.db.taxon_name.dataimport import (
+    Import,
+    ImportTaxonName,
+    ImportTaxonNameFamilyNid,
+)
 from app.db.taxon_name.model import TaxonName
 from app.db.taxon_rank.dataimport import ImportTaxonRank
 from app.db.user.crud import UserCrud
@@ -93,3 +97,9 @@ def extract_data_file(outdir, outfile):
                 with source, target:
                     logger.debug(f"Extracting {filename} to {outdir}")
                     shutil.copyfileobj(source, target)
+
+
+def import_taxon_names(csvfile):
+    db = SessionLocal()
+    admin_id = get_admin_id(db)
+    Import(db, admin_id, csvfile).ingest()

@@ -24,6 +24,37 @@ class DataImportBase:
         self.values = []
         self.upsert_constraint = None
         self.update_cols = []
+        self.line_count = 0
+        self.success_count = 0
+        self.total_rows = 0
+        self.import_name = type(self).__name__
+        logger.info(f"----- Processing {self.import_name} -----")
+
+    def _process_rows(self, data):
+        for row in data:
+            if self.line_count == 0:
+                pass
+            try:
+                self.import_row(row)
+            except ValidationError as e:
+                logger.error("Validation Error: {}", str(e))
+                logger.error(row)
+            except DataImportError as e:
+                logger.error("Data Import Error: {}", str(e))
+                logger.error(row)
+            except Exception as e:
+                logger.critical("Exception: {}", str(e))
+                logger.error(row)
+                traceback.print_exc()
+                break
+            else:
+                self.success_count += 1
+            self.line_count += 1
+            if self.line_count % 10000 == 0:
+                logger.debug(
+                    f"{self.import_name}: "
+                    f"{self.success_count}/{self.line_count}/{self.total_rows}."
+                )
 
     def ingest(self, import_file: str):
         if settings.WACENSUS_SUFFIX:
@@ -32,39 +63,13 @@ class DataImportBase:
         with open(path, mode="r", encoding=settings.WACENSUS_ENCODING) as csv_file:
             csv_reader = csv.DictReader(csv_file)
             data = list(csv_reader)
-            total_rows = len(data)
-
-            line_count = 0
-            success_count = 0
-            import_name = type(self).__name__
-            logger.info(f"----- Processing {import_name} -----")
-            for row in data:
-                if line_count == 0:
-                    pass
-                try:
-                    self.import_row(row)
-                except ValidationError as e:
-                    logger.error("Validation Error: {}", str(e))
-                    logger.error(row)
-                except DataImportError as e:
-                    logger.error("Data Import Error: {}", str(e))
-                    logger.error(row)
-                except Exception as e:
-                    logger.critical("Exception: {}", str(e))
-                    logger.error(row)
-                    traceback.print_exc()
-                    break
-                else:
-                    success_count += 1
-                line_count += 1
-                if line_count % 10000 == 0:
-                    logger.debug(
-                        f"{import_name}: {success_count}/{line_count}/{total_rows}."
-                    )
+            self.total_rows = len(data)
+            self._process_rows(data)
             if self.values:
                 self.bulk_insert()
             logger.info(
-                f"Completed {import_name}: {success_count}/{line_count}/{total_rows}."
+                f"Completed {self.import_name}: "
+                f"{self.success_count}/{self.line_count}/{self.total_rows}."
             )
         return True
 
@@ -153,6 +158,15 @@ class DataImportBase:
             .one_or_none()
         )
 
+        return getattr(result, "taxon_rank_id")
+
+    def map_taxon_rank_by_name(self, kingdom_id, rank_name):
+        result = (
+            self.db.query(TaxonRank)
+            .filter(getattr(TaxonRank, "rank_name") == rank_name)
+            .filter(getattr(TaxonRank, "kingdom_id") == kingdom_id)
+            .one_or_none()
+        )
         return getattr(result, "taxon_rank_id")
 
     def map_user_or_default(self, legacy_id):

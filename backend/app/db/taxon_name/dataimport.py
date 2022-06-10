@@ -1,4 +1,8 @@
+import csv
 import datetime
+import os
+
+from loguru import logger
 
 from app.db.dataimport import DataImportBase, DataImportError
 from app.db.kingdom.model import Kingdom
@@ -10,6 +14,7 @@ class ImportTaxonName(DataImportBase):
     def __init__(self, db, current_user):
         super().__init__(db, current_user)
         self.data_model = TaxonNameModel
+        self.legacy_id_prefix = "WACENSUS:"
         self.upsert_constraint = f"uc_{TaxonNameModel.__tablename__}_legacy_id"
         self.update_cols = (
             "kingdom_id",
@@ -97,7 +102,7 @@ class ImportTaxonName(DataImportBase):
             "authorised_on": self.get_datetime(
                 row["AUTHORISED_ON"], "%Y-%m-%dT%H:%M:%S%z"
             ),
-            "legacy_id": row["NAME_ID"],
+            "legacy_id": self.legacy_id_prefix + row["NAME_ID"],
             "created_by": self.current_user,
             "updated_by": self.map_user_or_default(row["UPDATED_BY"]),
             "updated_on": row["UPDATED_ON"] or datetime.datetime.now(),
@@ -132,3 +137,73 @@ class ImportTaxonNameFamilyNid(ImportTaxonName):
             TaxonNameModel, "legacy_id", row["FAMILY_NID"], "taxon_name_id"
         )
         self.values.append(item)
+
+
+class Import(ImportTaxonName):
+    def __init__(self, db, current_user, csvfile):
+        super().__init__(db, current_user)
+        self.csvfile = csvfile
+        self.legacy_id_prefix = os.path.split(self.csvfile)[1]
+        self.total_rows = 0
+
+    def row_mapping(self, row):
+        kingdom_id = self.map_row_by_unique_key(
+            Kingdom, "kingdom_name", row["kingdom"], "kingdom_id"
+        )
+        rank_id = self.map_taxon_rank_by_name(kingdom_id, row["taxonRank"])
+        return {
+            "kingdom_id": kingdom_id,
+            "rank_id": rank_id,
+            "uninomial": row["uninomial"] or None,
+            "specific_epithet": row["specificEpithet"] or None,
+            "infraspecific_epithet": row["infraspecificEpithet"] or None,
+            "legacy_id": self.legacy_id_prefix + row["id"],
+            "is_current": True,
+            "validated": False,
+            "admin_comment": (
+                f"Created by import script {__name__}"
+                f" from source csv {self.legacy_id_prefix}"
+                f" on {datetime.date.today()}"
+            ),
+            "created_by": self.current_user,
+            "updated_by": self.current_user,
+        }
+
+    def check_canonical_name_without_rank_exists(self, item):
+        canonical_name_without_rank = " ".join(
+            [item["uninomial"], item["specific_epithet"], item["infraspecific_epithet"]]
+        )
+        result = (
+            self.db.query(TaxonNameModel)
+            .filter("kingdom_id" == item["kingdom_id"])
+            .filter("rank_id" == item["rank_id"])
+            .filter("canonical_name_without_rank" == canonical_name_without_rank)
+            .one_or_none()
+        )
+        if result:
+            message = (
+                "Unable to map row with canonical_name_without_rank: '"
+                + canonical_name_without_rank
+                + "'"
+            )
+            logger.info(message)
+            raise DataImportError(message)
+
+    def import_row(self, row):
+        item = self.row_mapping(row)
+        self.check_canonical_name_without_rank_exists(item)
+        self.values.append(item)
+
+    def ingest(self):
+        with open(self.csvfile) as csv_file:
+            csv_reader = csv.DictReader(csv_file)
+            data = list(csv_reader)
+            self.total_rows = len(data)
+            self._process_rows(data)
+            if self.values:
+                self.bulk_insert()
+            logger.info(
+                f"Completed {self.import_name}:"
+                f" {self.success_count}/{self.line_count}/{self.total_rows}."
+            )
+        return True
