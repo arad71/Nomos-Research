@@ -52,11 +52,11 @@ export const TaxonRankList: FC = (props) => (
       <ReferenceField source="created_by" reference="users">
         <TextField source="full_name" />
       </ReferenceField>
-      <DateField source="created_on" showTime />
+      <DateField source="created_on" />
       <ReferenceField source="updated_by" reference="users">
         <TextField source="full_name" />
       </ReferenceField>
-      <DateField source="updated_on" showTime />
+      <DateField source="updated_on" />
 
       <WithPermissions resource="taxon_ranks" action="edit">
         <EditButton />
