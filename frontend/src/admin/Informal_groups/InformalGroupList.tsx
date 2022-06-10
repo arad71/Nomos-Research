@@ -38,11 +38,11 @@ export const InformalGroupList: FC = (props) => (
       <ReferenceField source="created_by" reference="users" sortBy="">
         <TextField source="full_name" />
       </ReferenceField>
-      <DateField source="created_on" showTime />
+      <DateField source="created_on" />
       <ReferenceField source="updated_by" reference="users">
         <TextField source="full_name" />
       </ReferenceField>
-      <DateField source="updated_on" showTime />
+      <DateField source="updated_on" />
       <WithPermissions resource="informal_groups" action="edit">
         <EditButton />
       </WithPermissions>

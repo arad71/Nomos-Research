@@ -10,6 +10,7 @@ const useStyles = makeStyles({
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
     overflow: 'hidden',
+    fontSize: '1.2em',
   },
   spacer: {
     flex: 1,
