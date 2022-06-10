@@ -132,7 +132,7 @@ export const TaxonNameShow: FC = (props) => {
               props={props}
               source="author_id"
               target="taxon_name_id"
-              label="Subsequent names"
+              label="Authors"
             />
             <Box className={globalClasses.sectionMargin}>
               <Typography
