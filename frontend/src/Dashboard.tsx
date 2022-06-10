@@ -19,6 +19,7 @@ const useStyles = makeStyles(() => ({
     borderRadius: '10px',
     color: 'white',
     padding: '10px',
+    marginTop: '1rem',
   },
   cardbutton: {
     backgroundColor: '#fff',
@@ -32,6 +33,9 @@ const useStyles = makeStyles(() => ({
     columnGap: '10px',
     rowGap: '1em',
   },
+  arrowPadding: {
+    padding: '1rem',
+  },
 }));
 
 const Dashboard = () => {
@@ -42,10 +46,6 @@ const Dashboard = () => {
         <CardContent>
           <Typography variant="h4" className={classes.cardtitle}>
             Welcome to Nomos taxonomic names register
-          </Typography>
-          <Typography variant="h6" className={classes.cardtext}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec at
-            egestas ante. Phasellus in euismod nunc.
           </Typography>
           <Button
             href="/#/taxon_names"
@@ -63,22 +63,58 @@ const Dashboard = () => {
           >
             View Publications
           </Button>
-          <Button
-            href="/#/citations"
-            variant="contained"
-            color="secondary"
-            className={classes.cardbutton}
-          >
-            View Citations
-          </Button>
         </CardContent>
       </Card>
       <div className={classes.wrapper}>
         <CardWithIcon
-          icon={<ArrowForwardIcon fontSize={'large'} />}
+          icon={
+            <ArrowForwardIcon
+              fontSize={'large'}
+              className={classes.arrowPadding}
+            />
+          }
           to={'/users/create'}
-          title="Add user"
+          title="Add User"
           subtitle="Create a new Nomos user"
+        />
+      </div>
+      <div className={classes.wrapper}>
+        <CardWithIcon
+          icon={
+            <ArrowForwardIcon
+              fontSize={'large'}
+              className={classes.arrowPadding}
+            />
+          }
+          to={'/taxon_names/create'}
+          title="Add Name"
+          subtitle="Create a new Taxon name"
+        />
+      </div>
+      <div className={classes.wrapper}>
+        <CardWithIcon
+          icon={
+            <ArrowForwardIcon
+              fontSize={'large'}
+              className={classes.arrowPadding}
+            />
+          }
+          to={'/authors/create'}
+          title="Add Author"
+          subtitle="Create a new Author"
+        />
+      </div>
+      <div className={classes.wrapper}>
+        <CardWithIcon
+          icon={
+            <ArrowForwardIcon
+              fontSize={'large'}
+              className={classes.arrowPadding}
+            />
+          }
+          to={'/publications/create'}
+          title="Add Publication"
+          subtitle="Create a new Publication"
         />
       </div>
     </div>

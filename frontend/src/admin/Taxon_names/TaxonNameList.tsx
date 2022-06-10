@@ -146,12 +146,6 @@ const TAXON_NAMES_PREFERENCE = 'taxon_names.list.columns';
 const Actions = () => (
   <TopToolbar>
     <FilterButton />
-    <WithPermissions resource="taxon_names" action="create">
-      <CreateButton />
-    </WithPermissions>
-    <WithPermissions resource="taxon_names" action="export">
-      <ExportButton maxResults={100000} />
-    </WithPermissions>
     <SelectColumnsButton
       preference={TAXON_NAMES_PREFERENCE}
       columns={postListColumns}
@@ -161,6 +155,12 @@ const Actions = () => (
       preferenceName={TAXON_NAMES_PREFERENCE}
       defaultValue={Array.from(includeColumns)}
     />
+    <WithPermissions resource="taxon_names" action="create">
+      <CreateButton />
+    </WithPermissions>
+    <WithPermissions resource="taxon_names" action="export">
+      <ExportButton maxResults={100000} />
+    </WithPermissions>
   </TopToolbar>
 );
 

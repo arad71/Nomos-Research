@@ -1,9 +1,11 @@
 import React, { FC } from 'react';
 import {
   BooleanField,
+  Datagrid,
   Labeled,
   NumberField,
   ReferenceField,
+  ReferenceManyField,
   SelectField,
   Tab,
   TabbedShowLayout,
@@ -17,9 +19,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Box, Typography } from '@material-ui/core';
 import { GlobalTheme } from '../../GlobalTheme';
 import { CrossReferenceManyGrid } from '../Cross_references';
+import { AuthorReferenceManyGrid } from '../Authors';
 // eslint-disable-next-line max-len
 import { FormattedScientificNameWithStatus } from './FormattedScientificNameWithStatus';
 import { NamePageSummary } from './NamePageSummary';
+import AuthorType from '../Citations/AuthorType';
 
 const useStyles = makeStyles((theme) => ({
   linedRow: {
@@ -43,6 +47,11 @@ export const TaxonNameShow: FC = (props) => {
           <Tab label="Name" className={globalClasses.bold}>
             <Box className={globalClasses.sectionMargin}>
               <Box className={globalClasses.fieldMargin}>
+                <ReferenceField source="kingdom_id" reference="kingdoms">
+                  <Labeled label="Kingdom">
+                    <TextField source="kingdom_name" />
+                  </Labeled>
+                </ReferenceField>
                 <ReferenceField source="rank_id" reference="taxon_ranks">
                   <Labeled label="Rank">
                     <TextField source="rank_name" />
@@ -116,94 +125,15 @@ export const TaxonNameShow: FC = (props) => {
                 className={globalClasses.bold}
                 gutterBottom
               >
-                Authors (placeholder section)
+                Authors
               </Typography>
             </Box>
-            <Box className={classes.linedRow}>
-              <Box className={globalClasses.formRow}>
-                <Box className={globalClasses.fieldMargin}>
-                  <Typography variant="body2" gutterBottom>
-                    1
-                  </Typography>
-                </Box>
-                <Box className={globalClasses.fieldMargin}>
-                  <Labeled label="Author">
-                    <Typography variant="body2" gutterBottom>
-                      Schodde
-                    </Typography>
-                  </Labeled>
-                </Box>
-                <Box className={globalClasses.fieldMargin}>
-                  <Labeled label="Author type">
-                    <Typography variant="body2" gutterBottom>
-                      Basionym
-                    </Typography>
-                  </Labeled>
-                </Box>
-                <Box className={globalClasses.fieldMargin}>
-                  <Labeled label="Is active">
-                    <BooleanField source="validated" />
-                  </Labeled>
-                </Box>
-              </Box>
-            </Box>
-            <Box className={classes.linedRow}>
-              <Box className={globalClasses.formRow}>
-                <Box className={globalClasses.fieldMargin}>
-                  <Typography variant="body2" gutterBottom>
-                    2
-                  </Typography>
-                </Box>
-                <Box className={globalClasses.fieldMargin}>
-                  <Labeled label="Author">
-                    <Typography variant="body2" gutterBottom>
-                      Schodde
-                    </Typography>
-                  </Labeled>
-                </Box>
-                <Box className={globalClasses.fieldMargin}>
-                  <Labeled label="Author type">
-                    <Typography variant="body2" gutterBottom>
-                      Basionym
-                    </Typography>
-                  </Labeled>
-                </Box>
-                <Box className={globalClasses.fieldMargin}>
-                  <Labeled label="Is active">
-                    <BooleanField source="validated" />
-                  </Labeled>
-                </Box>
-              </Box>
-            </Box>
-            <Box className={classes.linedRow}>
-              <Box className={globalClasses.formRow}>
-                <Box className={globalClasses.fieldMargin}>
-                  <Typography variant="body2" gutterBottom>
-                    3
-                  </Typography>
-                </Box>
-                <Box className={globalClasses.fieldMargin}>
-                  <Labeled label="Author">
-                    <Typography variant="body2" gutterBottom>
-                      Schodde
-                    </Typography>
-                  </Labeled>
-                </Box>
-                <Box className={globalClasses.fieldMargin}>
-                  <Labeled label="Author type">
-                    <Typography variant="body2" gutterBottom>
-                      Basionym
-                    </Typography>
-                  </Labeled>
-                </Box>
-                <Box className={globalClasses.fieldMargin}>
-                  <Labeled label="Is active">
-                    <BooleanField source="validated" />
-                  </Labeled>
-                </Box>
-              </Box>
-            </Box>
-            {/* Publication Section */}
+            <AuthorReferenceManyGrid
+              props={props}
+              source="author_id"
+              target="taxon_name_id"
+              label="Authors"
+            />
             <Box className={globalClasses.sectionMargin}>
               <Typography
                 variant="h5"
