@@ -1,5 +1,5 @@
 import decodeJwt from 'jwt-decode';
-import { BASE_URL } from '../config';
+import { AUTH_PROVIDER, BASE_URL } from '../config';
 import Role from './role';
 
 type loginFormType = {
@@ -33,33 +33,50 @@ function clearLocalStorage() {
   localStorage.removeItem('token');
   localStorage.removeItem('scopes');
   localStorage.removeItem('username');
+  localStorage.removeItem('logout_url');
+}
+function useAuth2() {
+  return AUTH_PROVIDER === 'auth2';
+}
+
+function getAuthToken(params: RequestInit = { method: 'POST' }) {
+  const url = useAuth2() ? 'api/auth2token' : 'api/token';
+  const request = new Request(`${BASE_URL}/${url}`, params);
+  return fetch(request)
+    .then((response) => {
+      if (response.status < 200 || response.status >= 300) {
+        throw new Error(response.statusText);
+      }
+      return response.json();
+    })
+    .then(({ access_token: accessToken }) => {
+      const { logout_url, scopes }: any = decodeJwt(accessToken);
+      localStorage.setItem('token', accessToken);
+      localStorage.setItem('scopes', scopes);
+      if (logout_url) {
+        localStorage.setItem('logout_url', logout_url);
+      }
+    });
 }
 
 const authProvider = {
   login: ({ username, password }: loginFormType) => {
-    const formData = new FormData();
-    localStorage.setItem('username', username);
-    formData.append('username', username);
-    formData.append('password', password);
-    const request = new Request(`${BASE_URL}/api/token`, {
-      method: 'POST',
-      body: formData,
-    });
-    return fetch(request)
-      .then((response) => {
-        if (response.status < 200 || response.status >= 300) {
-          throw new Error(response.statusText);
-        }
-        return response.json();
-      })
-      .then(({ access_token: accessToken }) => {
-        const decodedToken: any = decodeJwt(accessToken);
-        localStorage.setItem('token', accessToken);
-        localStorage.setItem('scopes', decodedToken.scopes);
-      });
+    const params: RequestInit = { method: 'POST' };
+    if (!useAuth2()) {
+      const formData = new FormData();
+      localStorage.setItem('username', username);
+      formData.append('username', username);
+      formData.append('password', password);
+      params.body = formData;
+    }
+    return getAuthToken(params);
   },
   logout: () => {
+    const logoutUrl = localStorage.getItem('logout_url');
     clearLocalStorage();
+    if (logoutUrl) {
+      window.location.href = logoutUrl;
+    }
     return Promise.resolve();
   },
   getIdentity: () => {
@@ -73,8 +90,16 @@ const authProvider = {
     }
     return Promise.resolve();
   },
-  checkAuth: () =>
-    localStorage.getItem('token') ? Promise.resolve() : Promise.reject(),
+  checkAuth: () => {
+    let token = localStorage.getItem('token');
+    if (!token) {
+      if (useAuth2()) {
+        return getAuthToken();
+      }
+      return Promise.reject();
+    }
+    return Promise.resolve();
+  },
   getPermissions: () =>
     // See https://marmelab.com/ra-enterprise/modules/ra-rbac#resource
     Promise.resolve({
