@@ -1,4 +1,4 @@
-import decodeJwt from 'jwt-decode';
+import decodeJwt, { JwtPayload } from 'jwt-decode';
 import { AUTH_PROVIDER, BASE_URL } from '../config';
 import Role from './role';
 
@@ -91,14 +91,18 @@ const authProvider = {
     return Promise.resolve();
   },
   checkAuth: () => {
-    let token = localStorage.getItem('token');
+    const token = localStorage.getItem('token');
     if (!token) {
       if (useAuth2()) {
         return getAuthToken();
       }
       return Promise.reject();
     }
-    return Promise.resolve();
+    const decoded: JwtPayload = decodeJwt(token);
+    if (decoded && decoded.exp && decoded.exp > Date.now() / 1000) {
+      return Promise.resolve();
+    }
+    return Promise.reject();
   },
   getPermissions: () =>
     // See https://marmelab.com/ra-enterprise/modules/ra-rbac#resource
