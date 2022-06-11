@@ -107,7 +107,6 @@ def authenticate_user(db, email: str, password: str) -> Union[bool, User]:
 
 
 def use_auth2(settings=Depends(get_settings)):
-    logger.debug("Scope not granted", exc_info=True)
     if settings.AUTH_PROVIDER != "auth2":
         logger.error("Cannot use authentication provider {}.", settings.AUTH_PROVIDER)
         raise HTTPException(
