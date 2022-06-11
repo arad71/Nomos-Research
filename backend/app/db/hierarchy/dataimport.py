@@ -23,7 +23,10 @@ class ImportHierarchy(DataImportBase):
         self.values.append(
             {
                 "taxon_name_id": self.map_row_by_unique_key(
-                    TaxonName, "legacy_id", row["NAME_ID"], "taxon_name_id"
+                    TaxonName,
+                    "legacy_id",
+                    self.legacy_id_prefix + row["NAME_ID"] if row["NAME_ID"] else "",
+                    "taxon_name_id",
                 ),
                 "classification_system_id": self.map_row_by_unique_key(
                     ClassificationSystem,
@@ -32,7 +35,12 @@ class ImportHierarchy(DataImportBase):
                     "classification_system_id",
                 ),
                 "parent_nid": self.map_row_by_unique_key(
-                    TaxonName, "legacy_id", row["PARENT_NID"], "taxon_name_id"
+                    TaxonName,
+                    "legacy_id",
+                    self.legacy_id_prefix + row["PARENT_NID"]
+                    if row["PARENT_NID"]
+                    else "",
+                    "taxon_name_id",
                 ),
                 "created_by": self.current_user,
                 "updated_by": self.map_row_by_unique_key(

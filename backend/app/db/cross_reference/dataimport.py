@@ -30,10 +30,20 @@ class ImportCrossReference(DataImportBase):
         self.values.append(
             {
                 "old_name_id": self.map_row_by_unique_key(
-                    TaxonName, "legacy_id", row["OLD_NAME_ID"], "taxon_name_id"
+                    TaxonName,
+                    "legacy_id",
+                    self.legacy_id_prefix + row["OLD_NAME_ID"]
+                    if row["OLD_NAME_ID"]
+                    else "",
+                    "taxon_name_id",
                 ),
                 "new_name_id": self.map_row_by_unique_key(
-                    TaxonName, "legacy_id", row["NEW_NAME_ID"], "taxon_name_id"
+                    TaxonName,
+                    "legacy_id",
+                    self.legacy_id_prefix + row["NEW_NAME_ID"]
+                    if row["NEW_NAME_ID"]
+                    else "",
+                    "taxon_name_id",
                 ),
                 "cross_reference_type": self.map_cross_reference_type_enum(
                     row["XREF_TYPE"]

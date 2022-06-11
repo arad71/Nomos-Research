@@ -27,6 +27,7 @@ class DataImportBase:
         self.line_count = 0
         self.success_count = 0
         self.total_rows = 0
+        self.legacy_id_prefix = "WACENSUS:"
         self.import_name = type(self).__name__
         logger.info(f"----- Processing {self.import_name} -----")
 

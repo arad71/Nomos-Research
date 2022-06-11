@@ -14,7 +14,6 @@ class ImportTaxonName(DataImportBase):
     def __init__(self, db, current_user):
         super().__init__(db, current_user)
         self.data_model = TaxonNameModel
-        self.legacy_id_prefix = "WACENSUS:"
         self.upsert_constraint = f"uc_{TaxonNameModel.__tablename__}_legacy_id"
         self.update_cols = (
             "kingdom_id",
@@ -134,7 +133,10 @@ class ImportTaxonNameFamilyNid(ImportTaxonName):
     def import_row(self, row):
         item = self.row_mapping(row)
         item["family_nid"] = self.map_row_by_unique_key(
-            TaxonNameModel, "legacy_id", row["FAMILY_NID"], "taxon_name_id"
+            TaxonNameModel,
+            "legacy_id",
+            self.legacy_id_prefix + row["FAMILY_NID"] if row["FAMILY_NID"] else "",
+            "taxon_name_id",
         )
         self.values.append(item)
 
