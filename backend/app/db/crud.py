@@ -87,7 +87,9 @@ class Crud:
                             conditions[f"{search_field}__contains"] = filter_value
                         filters[or_] = conditions
                 else:
-                    if isinstance(getattr(cls.model, column).type, TIMESTAMP):
+                    if hasattr(cls.model, column) and isinstance(
+                        getattr(cls.model, column).type, TIMESTAMP
+                    ):
                         column = f"{column}__between"
                         filter_value = cls._get_timestamp_range(filter_value)
                     elif isinstance(filter_value, list):
