@@ -27,10 +27,6 @@ def upgrade():
 
 
 def downgrade():
-    op.alter_column(
-        "taxon_name",
-        "legacy_id",
-        existing_type=sa.String(),
-        type_=sa.Integer(),
-        existing_nullable=True,
-    )
+    # with the prefix in legacy_id values,
+    # column "legacy_id" cannot be cast automatically to type integer
+    pass
