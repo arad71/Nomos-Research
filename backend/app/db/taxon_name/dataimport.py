@@ -141,7 +141,7 @@ class ImportTaxonNameFamilyNid(ImportTaxonName):
         self.values.append(item)
 
 
-class Import(ImportTaxonName):
+class ImportTaxonNameUpload(ImportTaxonName):
     def __init__(self, db, current_user, csvfile):
         super().__init__(db, current_user)
         self.csvfile = csvfile
