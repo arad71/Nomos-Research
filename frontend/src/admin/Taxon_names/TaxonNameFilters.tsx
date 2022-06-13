@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   DateInput,
-  NullableBooleanInput,
+  BooleanInput,
   NumberInput,
   ReferenceArrayInput,
   SearchInput,
@@ -82,8 +82,8 @@ export const TaxonNameFilters = [
   >
     <SelectArrayInput optionText="class_desc" />
   </ReferenceArrayInput>,
-  <NullableBooleanInput label="Is current?" source="is_current" />,
-  <NullableBooleanInput label="Is validated?" source="validated" />,
+  <BooleanInput label="Is current?" source="is_current" />,
+  <BooleanInput label="Is validated?" source="validated" />,
   <SelectArrayInput source="publication_status" choices={PublicationStatus} />,
 
   <DateInput source="created_on" />,
