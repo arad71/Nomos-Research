@@ -29,7 +29,7 @@ class ImportVernacular(DataImportBase):
                 "taxon_name_id": self.map_row_by_unique_key(
                     TaxonName,
                     "legacy_id",
-                    self.legacy_id_prefix + row["NAME_ID"] if row["NAME_ID"] else "",
+                    self.legacy_id_prefix + row["NAME_ID"] if row["NAME_ID"] else None,
                     "taxon_name_id",
                 ),
                 "vernacular": row["VERNACULAR"],

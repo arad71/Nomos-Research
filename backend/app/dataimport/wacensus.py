@@ -19,11 +19,7 @@ from app.db.informal_group.dataimport import ImportInformalGroup
 from app.db.kingdom.dataimport import ImportKingdom
 from app.db.publication.dataimport import ImportPublication
 from app.db.session import SessionLocal
-from app.db.taxon_name.dataimport import (
-    Import,
-    ImportTaxonName,
-    ImportTaxonNameFamilyNid,
-)
+from app.db.taxon_name.dataimport import ImportTaxonName, ImportTaxonNameFamilyNid
 from app.db.taxon_name.model import TaxonName
 from app.db.taxon_rank.dataimport import ImportTaxonRank
 from app.db.user.crud import UserCrud
@@ -43,11 +39,17 @@ def get_admin_id(db: SessionLocal):
     return admin.user_id
 
 
-def trigger_calculated_fields(db):
+def trigger_calculated_fields(db, legacy_id_prefix=None):
     # Calculate fields after related data imported
     line_count = 0
     logger.debug("Triggering calculated fields")
-    for r in db.query(TaxonName).all():
+    if legacy_id_prefix:
+        taxon_names = db.query(TaxonName).filter(
+            TaxonName.legacy_id.contains(legacy_id_prefix)
+        )
+    else:
+        taxon_names = db.query(TaxonName).all()
+    for r in taxon_names:
         orm.attributes.flag_dirty(r)
         db.add(r)
         line_count += 1
@@ -104,9 +106,3 @@ def extract_data_file(outdir, outfile):
                 with source, target:
                     logger.debug(f"Extracting {filename} to {outdir}")
                     shutil.copyfileobj(source, target)
-
-
-def import_taxon_names(csvfile):
-    db = SessionLocal()
-    admin_id = get_admin_id(db)
-    Import(db, admin_id, csvfile).ingest()

@@ -25,7 +25,7 @@ class ImportHierarchy(DataImportBase):
                 "taxon_name_id": self.map_row_by_unique_key(
                     TaxonName,
                     "legacy_id",
-                    self.legacy_id_prefix + row["NAME_ID"] if row["NAME_ID"] else "",
+                    self.legacy_id_prefix + row["NAME_ID"] if row["NAME_ID"] else None,
                     "taxon_name_id",
                 ),
                 "classification_system_id": self.map_row_by_unique_key(
@@ -39,7 +39,7 @@ class ImportHierarchy(DataImportBase):
                     "legacy_id",
                     self.legacy_id_prefix + row["PARENT_NID"]
                     if row["PARENT_NID"]
-                    else "",
+                    else None,
                     "taxon_name_id",
                 ),
                 "created_by": self.current_user,

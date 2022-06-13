@@ -135,7 +135,7 @@ class ImportTaxonNameFamilyNid(ImportTaxonName):
         item["family_nid"] = self.map_row_by_unique_key(
             TaxonNameModel,
             "legacy_id",
-            self.legacy_id_prefix + row["FAMILY_NID"] if row["FAMILY_NID"] else "",
+            self.legacy_id_prefix + row["FAMILY_NID"] if row["FAMILY_NID"] else None,
             "taxon_name_id",
         )
         self.values.append(item)
@@ -145,7 +145,7 @@ class Import(ImportTaxonName):
     def __init__(self, db, current_user, csvfile):
         super().__init__(db, current_user)
         self.csvfile = csvfile
-        self.legacy_id_prefix = os.path.split(self.csvfile)[1]
+        self.legacy_id_prefix = os.path.split(self.csvfile)[1].split(".")[0] + ":"
         self.total_rows = 0
 
     def row_mapping(self, row):

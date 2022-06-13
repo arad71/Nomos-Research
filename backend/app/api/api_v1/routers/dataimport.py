@@ -3,7 +3,8 @@ from fastapi.responses import FileResponse
 from fastapi_key_auth import AuthorizerDependency
 from starlette.background import BackgroundTasks
 
-from app.dataimport.wacensus import import_data, import_taxon_names
+from app.dataimport.csv import import_taxon_names
+from app.dataimport.wacensus import import_data
 from app.db.dataimport import LEGACY_DATA_DIRECTORY
 
 data_import_router = r = APIRouter(prefix="/dataimport")

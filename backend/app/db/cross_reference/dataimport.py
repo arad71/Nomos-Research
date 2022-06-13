@@ -34,7 +34,7 @@ class ImportCrossReference(DataImportBase):
                     "legacy_id",
                     self.legacy_id_prefix + row["OLD_NAME_ID"]
                     if row["OLD_NAME_ID"]
-                    else "",
+                    else None,
                     "taxon_name_id",
                 ),
                 "new_name_id": self.map_row_by_unique_key(
@@ -42,7 +42,7 @@ class ImportCrossReference(DataImportBase):
                     "legacy_id",
                     self.legacy_id_prefix + row["NEW_NAME_ID"]
                     if row["NEW_NAME_ID"]
-                    else "",
+                    else None,
                     "taxon_name_id",
                 ),
                 "cross_reference_type": self.map_cross_reference_type_enum(
