@@ -43,8 +43,8 @@ def import_wacensus_data(background_tasks: BackgroundTasks):
 def import_csvupload_data(background_tasks: BackgroundTasks, upload_file: UploadFile):
     contents = upload_file.file.read()
     flie_path = "/legacy_data/" + upload_file.filename
-    with open(flie_path, "wb+") as f:
-        f.write(contents)
+    with open(flie_path, "wb+") as file_path:
+        file_path.write(contents)
 
     background_tasks.add_task(import_taxon_names, flie_path)
     return background_tasks.tasks
