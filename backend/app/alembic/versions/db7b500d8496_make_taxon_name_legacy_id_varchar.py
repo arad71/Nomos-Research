@@ -24,6 +24,10 @@ def upgrade():
         type_=sa.String(),
         existing_nullable=True,
     )
+    op.execute(
+        "UPDATE taxon_name set legacy_id = CONCAT('WACENSUS:', legacy_id) WHERE"
+        " legacy_id IS NOT NULL"
+    )
 
 
 def downgrade():
