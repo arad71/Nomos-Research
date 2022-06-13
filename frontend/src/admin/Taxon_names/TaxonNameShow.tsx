@@ -1,194 +1,310 @@
-// in src/users.js
 import React, { FC } from 'react';
 import {
-  DateField,
+  BooleanField,
+  Datagrid,
+  Labeled,
   NumberField,
   ReferenceField,
-  Show,
-  TabbedShowLayout,
-  Tab,
+  ReferenceManyField,
   SelectField,
+  Tab,
+  TabbedShowLayout,
   TextField,
-  BooleanField,
-  RichTextField,
-  Labeled,
 } from 'react-admin';
+import { Show } from '@react-admin/ra-rbac';
 import Aside from '../shared/Aside';
 import NaturalisedStatus from './NaturalisedStatus';
 import PublicationStatus from './PublicationStatus';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, Typography } from '@material-ui/core';
+import { GlobalTheme } from '../../GlobalTheme';
+import { CrossReferenceManyGrid } from '../Cross_references';
+import { AuthorReferenceManyGrid } from '../Authors';
+// eslint-disable-next-line max-len
+import { FormattedScientificNameWithStatus } from './FormattedScientificNameWithStatus';
+import { NamePageSummary } from './NamePageSummary';
+import AuthorType from '../Citations/AuthorType';
 
-const useStyles = makeStyles({
-  tablabel: {
-    fontWeight: 'bold',
+const useStyles = makeStyles((theme) => ({
+  linedRow: {
+    borderBottom: '1px solid #eee',
+    marginTop: '1.2em',
   },
-});
+}));
 
 export const TaxonNameShow: FC = (props) => {
   const classes = useStyles();
+  const globalClasses = GlobalTheme();
   return (
-    <Show aside={<Aside />} {...props}>
-      <TabbedShowLayout>
-        <Tab label="Name" className={classes.tablabel}>
-          <ReferenceField source="kingdom_id" reference="kingdoms">
-            <TextField source="kingdom_name" />
-          </ReferenceField>
-          <ReferenceField source="rank_id" reference="taxon_ranks">
-            <TextField source="rank_name" />
-          </ReferenceField>
-          <TextField source="canonical_name" />
-          <TextField source="scientific_name" />
-          <RichTextField source="formatted_scientific_name" />
-          <TextField source="phylum" />
-          <TextField source="taxon_class" label="Class" />
-          <TextField source="order" />
-          <TextField source="family" />
-          <TextField source="genus" />
-          <TextField source="subgenus" />
-          <TextField source="species" />
-          <TextField source="subspecies" />
-          <TextField source="specific_epithet" />
-          <TextField source="infraspecific_epithet" />
-          <ReferenceField source="publication_id" reference="publications">
-            <TextField source="publication_name" />
-          </ReferenceField>
-          <TextField source="volume_information" />
-          <BooleanField source="is_current" />
-          <TextField source="origin" />
-          <SelectField
-            source="publication_status"
-            choices={PublicationStatus}
-          />
-          <NumberField source="form_desc_yr" />
-          <NumberField source="form_desc_mn" />
-          <NumberField source="form_desc_dy" />
-          <TextField source="comments" />
-          <TextField source="contributed_by" />
-          git
-          <DateField source="contributed_on" showTime />
-          <BooleanField source="validated" />
-          <TextField source="source" />
-          <TextField source="external_id" />
-          <TextField source="family_code" />
-          <TextField source="author" />
-          <TextField source="vernacular" />
-          <TextField source="editor" />
-          <SelectField
-            source="naturalised_status"
-            choices={NaturalisedStatus}
-          />
-          <BooleanField source="naturalised_certainty" />
-          <TextField source="is_eradicated" />
-          <TextField source="naturalised_comments" />
-          <NumberField source="linear_sequence" />
-          <ReferenceField
-            label="Family"
-            source="family_nid"
-            reference="taxon_names"
-          >
-            <RichTextField source="formatted_scientific_name" />
-          </ReferenceField>
-          <TextField source="all_vernaculars" />
-          <TextField source="notes" />
-          <DateField source="authorised_on" showTime />
-        </Tab>
-        <Tab label="Details" className={classes.tablabel}>
-          <Box
-            display={{ xs: 'block', sm: 'flex' }}
-            my="1.2em"
-            justifyContent="flex-start"
-          >
-            <Box mr={{ xs: 0, sm: '1em' }}>
-              <Labeled label="Family code">
-                <TextField source="family_code" />
-              </Labeled>
+    <Show
+      title={<FormattedScientificNameWithStatus />}
+      aside={<Aside />}
+      {...props}
+    >
+      <>
+        <NamePageSummary />
+        <TabbedShowLayout>
+          <Tab label="Name" className={globalClasses.bold}>
+            <Box className={globalClasses.sectionMargin}>
+              <Box className={globalClasses.fieldMargin}>
+                <ReferenceField source="kingdom_id" reference="kingdoms">
+                  <Labeled label="Kingdom">
+                    <TextField source="kingdom_name" />
+                  </Labeled>
+                </ReferenceField>
+                <ReferenceField source="rank_id" reference="taxon_ranks">
+                  <Labeled label="Rank">
+                    <TextField source="rank_name" />
+                  </Labeled>
+                </ReferenceField>
+              </Box>
             </Box>
-            <Box mr={{ xs: 0, sm: '1em' }}>
-              <Labeled label="Origin">
-                <TextField source="origin" />
-              </Labeled>
+            <Box className={globalClasses.formRow}>
+              <Box className={globalClasses.fieldMargin}>
+                <Labeled label="genus">
+                  <TextField source="genus" />
+                </Labeled>
+              </Box>
+              <Box className={globalClasses.fieldMargin}>
+                <Labeled label="Uninomial">
+                  <TextField source="uninomial" />
+                </Labeled>
+              </Box>
+              <Box className={globalClasses.fieldMargin}>
+                <Labeled label="Specific Epithet">
+                  <TextField source="specific_epithet" />
+                </Labeled>
+              </Box>
+              <Box className={globalClasses.fieldMargin}>
+                <Labeled label="Infraspecific Epithet">
+                  <TextField source="infraspecific_epithet" />
+                </Labeled>
+              </Box>
             </Box>
-          </Box>
-          <Box
-            display={{ xs: 'block', sm: 'flex' }}
-            mb="1.2em"
-            justifyContent="flex-start"
-          >
-            <Box mr={{ xs: 0, sm: '1em' }}>
-              <Labeled label="Naturalised status">
-                <SelectField
-                  source="naturalised_status"
-                  choices={NaturalisedStatus}
+            <Box className={globalClasses.formRow}>
+              <Box className={globalClasses.fieldMargin}>
+                <Labeled label="Day">
+                  <NumberField source="form_desc_dy" />
+                </Labeled>
+              </Box>
+              <Box className={globalClasses.fieldMargin}>
+                <Labeled label="Month">
+                  <NumberField source="form_desc_mn" />
+                </Labeled>
+              </Box>
+              <Box className={globalClasses.fieldMargin}>
+                <Labeled label="Year">
+                  <TextField source="form_desc_yr" />
+                </Labeled>
+              </Box>
+            </Box>
+            <Box className={globalClasses.formRow}>
+              <Box className={globalClasses.fieldMargin}>
+                <Labeled label="Publication status">
+                  <SelectField
+                    source="publication_status"
+                    choices={PublicationStatus}
+                  />
+                </Labeled>
+              </Box>
+              <Box className={globalClasses.fieldMargin}>
+                <Labeled label="Is current">
+                  <BooleanField source="is_current" />
+                </Labeled>
+              </Box>
+              <Box className={globalClasses.fieldMargin}>
+                <Labeled label="Validated">
+                  <BooleanField source="validated" />
+                </Labeled>
+              </Box>
+            </Box>
+            {/* Authors Section */}
+            <Box className={globalClasses.sectionMargin}>
+              <Typography
+                variant="h5"
+                className={globalClasses.bold}
+                gutterBottom
+              >
+                Authors
+              </Typography>
+            </Box>
+            <AuthorReferenceManyGrid
+              props={props}
+              source="author_id"
+              target="taxon_name_id"
+              label="Authors"
+            />
+            <Box className={globalClasses.sectionMargin}>
+              <Typography
+                variant="h5"
+                className={globalClasses.bold}
+                gutterBottom
+              >
+                Publication
+              </Typography>
+            </Box>
+            <Box my="1.2em">
+              <ReferenceField source="publication_id" reference="publications">
+                <Labeled label="Publication">
+                  <TextField source="abbreviated_title" />
+                </Labeled>
+              </ReferenceField>
+            </Box>
+            {/* Vernacular Section */}
+            <Box className={globalClasses.sectionMargin}>
+              <Typography
+                variant="h5"
+                className={globalClasses.bold}
+                gutterBottom
+              >
+                Vernacular names (placeholder section)
+              </Typography>
+            </Box>
+            <Box className={classes.linedRow}>
+              <Box className={globalClasses.formRow}>
+                <Box className={globalClasses.fieldMargin}>
+                  <Typography variant="body2" gutterBottom>
+                    1
+                  </Typography>
+                </Box>
+                <Box className={globalClasses.fieldMargin}>
+                  <Labeled label="Name">
+                    <Typography variant="body2" gutterBottom>
+                      Red-tailed black cockatoo
+                    </Typography>
+                  </Labeled>
+                </Box>
+                <Box className={globalClasses.fieldMargin}>
+                  <Labeled label="Name type">
+                    <Typography variant="body2" gutterBottom>
+                      Common
+                    </Typography>
+                  </Labeled>
+                </Box>
+                <Box className={globalClasses.fieldMargin}>
+                  <Labeled label="Language">
+                    <Typography variant="body2" gutterBottom>
+                      English
+                    </Typography>
+                  </Labeled>
+                </Box>
+                <Box className={globalClasses.fieldMargin}>
+                  <Labeled label="Preferred">
+                    <Typography variant="body2" gutterBottom>
+                      Enabled
+                    </Typography>
+                  </Labeled>
+                </Box>
+              </Box>
+            </Box>
+            <Box className={classes.linedRow}>
+              <Box className={globalClasses.formRow}>
+                <Box className={globalClasses.fieldMargin}>
+                  <Typography variant="body2" gutterBottom>
+                    2
+                  </Typography>
+                </Box>
+                <Box className={globalClasses.fieldMargin}>
+                  <Labeled label="Name">
+                    <Typography variant="body2" gutterBottom>
+                      Red-tailed black cockatoo
+                    </Typography>
+                  </Labeled>
+                </Box>
+                <Box className={globalClasses.fieldMargin}>
+                  <Labeled label="Name type">
+                    <Typography variant="body2" gutterBottom>
+                      Common
+                    </Typography>
+                  </Labeled>
+                </Box>
+                <Box className={globalClasses.fieldMargin}>
+                  <Labeled label="Language">
+                    <Typography variant="body2" gutterBottom>
+                      English
+                    </Typography>
+                  </Labeled>
+                </Box>
+                <Box className={globalClasses.fieldMargin}>
+                  <Labeled label="Preferred">
+                    <Typography variant="body2" gutterBottom>
+                      Enabled
+                    </Typography>
+                  </Labeled>
+                </Box>
+              </Box>
+            </Box>
+          </Tab>
+          <Tab label="Details" className={globalClasses.bold}>
+            <Box className={globalClasses.sectionMargin}>
+              <Box className={globalClasses.formRow}>
+                <Box className={globalClasses.fieldMargin}>
+                  <Labeled label="Family code">
+                    <TextField source="family_code" />
+                  </Labeled>
+                </Box>
+                <Box className={globalClasses.fieldMargin}>
+                  <Labeled label="Origin">
+                    <TextField source="origin" />
+                  </Labeled>
+                </Box>
+              </Box>
+            </Box>
+            <Box className={globalClasses.formRow}>
+              <Box className={globalClasses.fieldMargin}>
+                <Labeled label="Naturalised status">
+                  <SelectField
+                    source="naturalised_status"
+                    choices={NaturalisedStatus}
+                  />
+                </Labeled>
+              </Box>
+              <Box className={globalClasses.fieldMargin}>
+                <Labeled label="Naturalised certainty">
+                  <BooleanField source="naturalised_certainty" />
+                </Labeled>
+              </Box>
+            </Box>
+            <Box className={globalClasses.formRow}>
+              <Box className={globalClasses.fieldMargin}>
+                <Labeled label="Naturalised comments">
+                  <TextField source="naturalised_comments" />
+                </Labeled>
+              </Box>
+            </Box>
+          </Tab>
+          <Tab label="Hierarchy" className={globalClasses.bold}></Tab>
+          <Tab label="Related names" className={globalClasses.bold}>
+            <Box className={globalClasses.sectionMargin}>
+              <Labeled label="Previous names">
+                <CrossReferenceManyGrid
+                  props={props}
+                  source="old_name_id"
+                  target="new_name_id"
+                  label="Previous names"
                 />
               </Labeled>
             </Box>
-            <Box mr={{ xs: 0, sm: '1em' }}>
-              <Labeled label="Naturalised certainty">
-                <BooleanField source="naturalised_certainty" />
+            <Box className={globalClasses.sectionMargin}>
+              <Labeled label="Subsequent names">
+                <CrossReferenceManyGrid
+                  props={props}
+                  source="new_name_id"
+                  target="old_name_id"
+                  label="Subsequent names"
+                />
               </Labeled>
             </Box>
-          </Box>
-          <Box
-            display={{ xs: 'block', sm: 'flex' }}
-            mb="1em"
-            justifyContent="flex-start"
-          >
-            <Box mr={{ xs: 0, sm: '1em' }}>
-              <Labeled label="Naturalised comments">
-                <TextField source="naturalised_comments" />
+          </Tab>
+          <Tab label="Notes" className={globalClasses.bold}>
+            <Box className={globalClasses.sectionMargin}>
+              <Labeled label="Notes">
+                <TextField source="comments" />
               </Labeled>
             </Box>
-          </Box>
-          <Box mt="2.2em">
-            <Typography variant="h6" gutterBottom>
-              Type Specimen (placeholder section)
-            </Typography>
-          </Box>
-          <Box
-            display={{ xs: 'block', sm: 'flex' }}
-            my="1.2em"
-            justifyContent="flex-start"
-          >
-            <Box mr={{ xs: 0, sm: '1em' }}>
-              <Labeled label="Type specimen Status">
-                <Typography variant="body2" gutterBottom>
-                  See notes
-                </Typography>
-              </Labeled>
-            </Box>
-            <Box mr={{ xs: 0, sm: '1em' }}>
-              <Labeled label="Type specimen ID">
-                <Typography variant="body2" gutterBottom>
-                  WAM001
-                </Typography>
-              </Labeled>
-            </Box>
-          </Box>
-          <Box
-            display={{ xs: 'block', sm: 'flex' }}
-            mb="1.2em"
-            justifyContent="flex-start"
-          >
-            <Box mr={{ xs: 0, sm: '1em' }}>
-              <Labeled label="Type specimen location">
-                <Typography variant="body2" gutterBottom>
-                  WA Museum Welshpool
-                </Typography>
-              </Labeled>
-            </Box>
-          </Box>
-        </Tab>
-        <Tab label="Heirarchy" className={classes.tablabel}></Tab>
-        <Tab label="Cross References" className={classes.tablabel}></Tab>
-        <Tab label="Notes" className={classes.tablabel}>
-          <Box my="1.2em">
-            <Labeled label="Notes">
-              <TextField source="notes" />
-            </Labeled>
-          </Box>
-        </Tab>
-      </TabbedShowLayout>
+          </Tab>
+        </TabbedShowLayout>
+      </>
     </Show>
   );
 };

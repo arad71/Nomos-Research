@@ -11,13 +11,20 @@ def test_get_publications(client, test_publication, superuser_token_headers):
         {
             "publication_id": test_publication.publication_id,
             "bad_publication": test_publication.bad_publication,
-            "publication": test_publication.publication,
-            "publication_name": test_publication.publication_name,
+            "abbreviated_title": test_publication.abbreviated_title,
+            "title": test_publication.title,
             "author": [],
+            "publication_day": test_publication.publication_day,
+            "publication_month": test_publication.publication_month,
+            "publication_year": test_publication.publication_year,
+            "publication_date": test_publication.publication_date,
             "updated_by": test_publication.updated_by,
-            "updated_on": test_publication.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+            "updated_on": test_publication.updated_on.isoformat(),
             "created_by": test_publication.created_by,
-            "created_on": test_publication.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+            "created_on": test_publication.created_on.isoformat(),
+            "author_ids": [],
+            "author_names": [],
+            "author_name": "",
         }
     ]
 
@@ -43,12 +50,16 @@ def test_edit_publication(
 ):
     new_publication = {
         "bad_publication": test_publication.bad_publication,
-        "publication": test_publication.publication,
-        "publication_name": test_publication.publication_name,
+        "abbreviated_title": test_publication.abbreviated_title,
+        "title": test_publication.title,
+        "publication_day": test_publication.publication_day,
+        "publication_month": test_publication.publication_month,
+        "publication_year": test_publication.publication_year,
+        "publication_date": test_publication.publication_date,
         "updated_by": test_superuser.user_id,
-        "updated_on": test_publication.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "updated_on": test_publication.updated_on.isoformat(),
         "created_by": test_superuser.user_id,
-        "created_on": test_publication.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_publication.created_on.isoformat(),
     }
 
     response = client.put(
@@ -60,6 +71,9 @@ def test_edit_publication(
     new_publication["publication_id"] = test_publication.publication_id
     new_publication["updated_on"] = response.json()["updated_on"]
     new_publication["author"] = []
+    new_publication["author_ids"] = []
+    new_publication["author_names"] = []
+    new_publication["author_name"] = ""
     assert response.json() == new_publication
 
 
@@ -68,12 +82,12 @@ def test_edit_publication_not_found(
 ):
     new_publication = {
         "bad_publication": True,
-        "publication": "PUBLICATION 2",
-        "publication_name": "PUBLICATION_NAME",
+        "abbreviated_title": "PUBLICATION 2",
+        "title": "PUBLICATION_NAME",
         "updated_by": test_superuser.user_id,
-        "updated_on": test_publication.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "updated_on": test_publication.updated_on.isoformat(),
         "created_by": test_superuser.user_id,
-        "created_on": test_publication.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_publication.created_on.isoformat(),
     }
     response = client.put(
         "/api/v1/publications/1234",
@@ -96,13 +110,20 @@ def test_get_publication(
     assert response.json() == {
         "publication_id": test_publication.publication_id,
         "bad_publication": test_publication.bad_publication,
-        "publication": test_publication.publication,
-        "publication_name": test_publication.publication_name,
+        "abbreviated_title": test_publication.abbreviated_title,
+        "title": test_publication.title,
+        "publication_day": test_publication.publication_day,
+        "publication_month": test_publication.publication_month,
+        "publication_year": test_publication.publication_year,
+        "publication_date": test_publication.publication_date,
         "author": [],
         "updated_by": test_publication.updated_by,
-        "updated_on": test_publication.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "updated_on": test_publication.updated_on.isoformat(),
         "created_by": test_publication.created_by,
-        "created_on": test_publication.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_publication.created_on.isoformat(),
+        "author_ids": [],
+        "author_names": [],
+        "author_name": "",
     }
 
 
@@ -124,14 +145,14 @@ def test_unauthenticated_routes(client):
 
 NEW_PUBLICATION = {
     "bad_publication": False,
-    "publication": "PUBLICATION",
-    "publication_name": "PUBLICATION_NAME_NEW",
+    "abbreviated_title": "PUBLICATION",
+    "title": "PUBLICATION_NAME_NEW",
     "updated_by": None,
     "updated_on": None,
 }
 UPDATE_PUBLICATION = {
     "publication": "ANOTHER_PUBLICATION",
-    "publication_name": "PUBLICATION_NAME_CHANGED",
+    "title": "PUBLICATION_NAME_CHANGED",
 }
 
 
@@ -153,7 +174,7 @@ def test_super_admin_permissions(
     publication_json = {
         **NEW_PUBLICATION,
         "created_by": test_superuser.user_id,
-        "created_on": test_publication.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_publication.created_on.isoformat(),
     }
     response = client.post(
         "/api/v1/publications", headers=superuser_token_headers, json=publication_json
@@ -163,7 +184,7 @@ def test_super_admin_permissions(
     publication_json = {
         **UPDATE_PUBLICATION,
         "updated_by": test_superuser.user_id,
-        "updated_on": test_publication.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "updated_on": test_publication.updated_on.isoformat(),
     }
     response = client.put(
         f"/api/v1/publications/{test_publication.publication_id}",
@@ -197,7 +218,7 @@ def test_manager_permissions(
     publication_json = {
         **NEW_PUBLICATION,
         "created_by": test_manager.user_id,
-        "created_on": test_publication.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_publication.created_on.isoformat(),
     }
     response = client.post(
         "/api/v1/publications", headers=manager_token_headers, json=publication_json
@@ -207,7 +228,7 @@ def test_manager_permissions(
     publication_json = {
         **UPDATE_PUBLICATION,
         "updated_by": test_manager.user_id,
-        "updated_on": test_publication.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "updated_on": test_publication.updated_on.isoformat(),
     }
     response = client.put(
         f"/api/v1/publications/{test_publication.publication_id}",
@@ -247,7 +268,7 @@ def test_officer_permissions(
     publication_json = {
         **NEW_PUBLICATION,
         "created_by": test_officer.user_id,
-        "created_on": test_publication.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_publication.created_on.isoformat(),
     }
     response = client.post(
         "/api/v1/publications", headers=officer_token_headers, json=publication_json
@@ -258,7 +279,7 @@ def test_officer_permissions(
         {
             **UPDATE_PUBLICATION,
             "updated_by": test_officer.user_id,
-            "updated_on": test_publication.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+            "updated_on": test_publication.updated_on.isoformat(),
         }
     )
     response = client.put(

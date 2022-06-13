@@ -37,6 +37,10 @@ class ImportCitation(DataImportBase):
                 "updated_by": self.map_row_by_unique_key(
                     UserModel, "legacy_id_name", row["UPDATED_BY"], "user_id"
                 ),
-                "updated_on": row["UPDATED_ON"],
+                "updated_on": self.normalise_datetime(
+                    self.get_datetime(
+                        value=row["UPDATED_ON"], current_format="%Y-%m-%dT%H:%M:%S%z"
+                    )
+                ),
             }
         )

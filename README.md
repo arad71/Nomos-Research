@@ -70,6 +70,19 @@ Once you have set up the initial database you can import the data from WA Census
 docker-compose run --rm backend python app/import.py
 ```
 
+### Example data
+
+Extracting example data can be performed using:
+
+```bash
+docker-compose exec backend app/tools/extract_sample_data.py
+```
+
+The example data file [backend/nomos_sample_data.xlsx](backend/nomos_sample_data.xlsx) can then be uploaded to
+[google drive](https://drive.google.com/drive/u/1/folders/1i5ID5i6yodmXkK5FjFZsXQJT_gfToIfL).
+
+
+
 ### Rebuilding containers:
 
 ```
@@ -230,9 +243,8 @@ docker-compose logs -f name_of_service # frontend|backend|db
 ## Deployment
 
 The app is deployed using GitHub actions configured through [.github/workflows/cicd.yml](.github/workflows/cicd.yml).
-### Set up
-* Ensure that action.bash exists on the environment that you want to copy into.
-* Ensure that environment variables referenced in `cicd.yml` are defined in GitHub admin UI
+### Deployment Process
+* Process captured in wiki: https://dev.azure.com/BIO-WA/WA-BDR/_wiki/wikis/BDR-WA.wiki/96/Developer-information
 
 ### Configuration
 Environment specific configuration can be placed in a .env in the project directory on the deployment server.

@@ -10,8 +10,8 @@ class ImportPublication(DataImportBase):
         self.upsert_constraint = f"uc_{PublicationModel.__tablename__}_legacy_id"
         self.update_cols = (
             "bad_publication",
-            "publication",
-            "publication_name",
+            "abbreviated_title",
+            "title",
             "legacy_id",
             "created_by",
             "updated_by",
@@ -22,8 +22,8 @@ class ImportPublication(DataImportBase):
         self.values.append(
             {
                 "bad_publication": self.map_y_n_to_bool(row["BAD_PUBLICATION"]),
-                "publication": row["PUBLICATION"],
-                "publication_name": row["PUBLICATION_NAME"],
+                "abbreviated_title": row["PUBLICATION"],
+                "title": row["PUBLICATION_NAME"],
                 "legacy_id": row["PUB_ID"],
                 "created_by": self.current_user,
                 "updated_by": self.map_row_by_unique_key(

@@ -1,10 +1,8 @@
-// in src/users.js
 import React, { FC } from 'react';
 import {
   Datagrid,
   DateField,
   EditButton,
-  List,
   NumberField,
   ReferenceField,
   SelectField,
@@ -12,9 +10,17 @@ import {
   BooleanField,
 } from 'react-admin';
 import RankAbbreviation from './RankAbbreviation';
+import { WithPermissions, List } from '@react-admin/ra-rbac';
+import { DefaultPagination, useCanBulkDelete } from '../shared';
 
 export const TaxonRankList: FC = (props) => (
-  <List {...props} sort={{ field: 'rank_name' }}>
+  <List
+    {...props}
+    sort={{ field: 'rank_name' }}
+    perPage={100}
+    pagination={<DefaultPagination />}
+    bulkActionButtons={useCanBulkDelete()}
+  >
     <Datagrid rowClick="show">
       <TextField source="id" />
       <ReferenceField
@@ -46,12 +52,15 @@ export const TaxonRankList: FC = (props) => (
       <ReferenceField source="created_by" reference="users">
         <TextField source="full_name" />
       </ReferenceField>
-      <DateField source="created_on" showTime />
+      <DateField source="created_on" />
       <ReferenceField source="updated_by" reference="users">
         <TextField source="full_name" />
       </ReferenceField>
-      <DateField source="updated_on" showTime />
-      <EditButton />
+      <DateField source="updated_on" />
+
+      <WithPermissions resource="taxon_ranks" action="edit">
+        <EditButton />
+      </WithPermissions>
     </Datagrid>
   </List>
 );

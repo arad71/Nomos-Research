@@ -1,18 +1,24 @@
-// in src/users.js
 import React, { FC } from 'react';
 import {
   Datagrid,
   DateField,
   EditButton,
-  List,
   NumberField,
   ReferenceField,
   RichTextField,
   TextField,
 } from 'react-admin';
+import { List, WithPermissions } from '@react-admin/ra-rbac';
+import { DefaultPagination, useCanBulkDelete } from '../shared';
 
 export const HierarchyList: FC = (props) => (
-  <List {...props} sort={{ field: 'parent___scientific_name' }}>
+  <List
+    {...props}
+    sort={{ field: 'parent___scientific_name' }}
+    perPage={100}
+    pagination={<DefaultPagination />}
+    bulkActionButtons={useCanBulkDelete()}
+  >
     <Datagrid rowClick="show">
       <NumberField source="id" />
       <ReferenceField
@@ -39,12 +45,14 @@ export const HierarchyList: FC = (props) => (
       <ReferenceField source="created_by" reference="users">
         <TextField source="full_name" />
       </ReferenceField>
-      <DateField source="created_on" showTime />
+      <DateField source="created_on" />
       <ReferenceField source="updated_by" reference="users">
         <TextField source="full_name" />
       </ReferenceField>
-      <DateField source="updated_on" showTime />
-      <EditButton />
+      <DateField source="updated_on" />
+      <WithPermissions resource="hierarchies" action="edit">
+        <EditButton />
+      </WithPermissions>
     </Datagrid>
   </List>
 );

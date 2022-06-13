@@ -17,9 +17,9 @@ def test_get_hierarchies(client, test_hierarchy, superuser_token_headers):
             "parent_nid": test_hierarchy.parent_nid,
             "parent": response.json()[0]["parent"],
             "updated_by": test_hierarchy.updated_by,
-            "updated_on": test_hierarchy.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+            "updated_on": test_hierarchy.updated_on.isoformat(),
             "created_by": test_hierarchy.created_by,
-            "created_on": test_hierarchy.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+            "created_on": test_hierarchy.created_on.isoformat(),
         }
     ]
 
@@ -48,9 +48,9 @@ def test_edit_hierarchy(
         "classification_system_id": test_hierarchy.classification_system_id,
         "parent_nid": test_hierarchy.parent_nid,
         "updated_by": test_superuser.user_id,
-        "updated_on": test_hierarchy.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "updated_on": test_hierarchy.updated_on.isoformat(),
         "created_by": test_superuser.user_id,
-        "created_on": test_hierarchy.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_hierarchy.created_on.isoformat(),
     }
 
     response = client.put(
@@ -75,9 +75,9 @@ def test_edit_hierarchy_not_found(
         "classification_system_id": test_hierarchy.classification_system_id,
         "parent_nid": test_hierarchy.parent_nid,
         "updated_by": test_superuser.user_id,
-        "updated_on": test_hierarchy.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "updated_on": test_hierarchy.updated_on.isoformat(),
         "created_by": test_superuser.user_id,
-        "created_on": test_hierarchy.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_hierarchy.created_on.isoformat(),
     }
     response = client.put(
         "/api/v1/hierarchies/1234", json=new_hierarchy, headers=superuser_token_headers
@@ -104,9 +104,9 @@ def test_get_hierarchy(
         "parent_nid": test_hierarchy.parent_nid,
         "parent": response.json()["parent"],
         "updated_by": test_hierarchy.updated_by,
-        "updated_on": test_hierarchy.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "updated_on": test_hierarchy.updated_on.isoformat(),
         "created_by": test_hierarchy.created_by,
-        "created_on": test_hierarchy.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_hierarchy.created_on.isoformat(),
     }
 
 
@@ -157,7 +157,7 @@ def test_super_admin_permissions(
         "classification_system_id": test_classification_system.classification_system_id,
         "parent_nid": test_taxon_name_2.taxon_name_id,
         "created_by": test_superuser.user_id,
-        "created_on": test_hierarchy.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_hierarchy.created_on.isoformat(),
     }
     response = client.post(
         "/api/v1/hierarchies",
@@ -170,7 +170,7 @@ def test_super_admin_permissions(
         {
             "taxon_name_id": test_taxon_name_2.taxon_name_id,
             "updated_by": test_superuser.user_id,
-            "updated_on": test_hierarchy.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+            "updated_on": test_hierarchy.updated_on.isoformat(),
         }
     )
     response = client.put(
@@ -212,7 +212,7 @@ def test_manager_permissions(
         "classification_system_id": test_classification_system.classification_system_id,
         "parent_nid": test_taxon_name_2.taxon_name_id,
         "created_by": test_manager.user_id,
-        "created_on": test_hierarchy.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_hierarchy.created_on.isoformat(),
     }
     response = client.post(
         "/api/v1/hierarchies",
@@ -225,7 +225,7 @@ def test_manager_permissions(
         {
             "taxon_name_id": test_taxon_name_2.taxon_name_id,
             "updated_by": test_manager.user_id,
-            "updated_on": test_hierarchy.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+            "updated_on": test_hierarchy.updated_on.isoformat(),
         }
     )
     response = client.put(

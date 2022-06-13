@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, Depends, Response
 
 from app.api.dependencies.range_query import RangeQueryParameter
 from app.core.auth import authorize, get_current_active_user
@@ -106,8 +106,6 @@ async def author_edit(
 
 @r.delete(
     "/{author_id}",
-    response_model=Author,
-    response_model_exclude_none=True,
     dependencies=[
         authorize(
             scopes=[

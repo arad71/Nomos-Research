@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
 import {
-  Show,
   SimpleShowLayout,
   TextField,
   BooleanField,
   SelectField,
 } from 'react-admin';
+import { Show } from '@react-admin/ra-rbac';
 import Aside from '../shared/Aside';
 import ClassificationType from './ClassificationType';
 

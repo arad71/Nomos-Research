@@ -1,56 +1,214 @@
 import {
+  TabbedForm,
+  FormTab,
   BooleanInput,
   NumberInput,
   ReferenceInput,
   required,
   SelectInput,
-  SimpleForm,
+  TextField,
   TextInput,
-  NullableBooleanInput,
+  RichTextField,
+  ReferenceArrayInput,
+  SelectArrayInput,
+  AutocompleteInput,
+  Labeled,
 } from 'react-admin';
 import React, { FC } from 'react';
-import RichTextInput from 'ra-input-rich-text';
+import { makeStyles } from '@material-ui/core/styles';
+import { Box, Typography } from '@material-ui/core';
+import { GlobalTheme, GlobalGridTheme } from '../../GlobalTheme';
 
-export const PublicationCreateEdit: FC = (props) => (
-  <SimpleForm {...props}>
-    <TextInput source="publication" validate={[required()]} />
-    <NullableBooleanInput label="Bad Publication" source="bad_publication" />
-    <TextInput source="publication_name" />
-    <TextInput source="doi" />
-    <TextInput source="title" />
-    <TextInput source="display_title" />
-    <TextInput source="abbreviated_title" />
-    <NumberInput source="year" />
-    <TextInput source="volume" />
-    <TextInput source="edition" />
-    <TextInput source="pages" />
-    <TextInput source="verbatim_reference" />
-    <TextInput source="verbatim_citation" />
-    <TextInput source="verbatim_author" />
-    <TextInput source="citation" />
-    <RichTextInput source="citation_html" />
-    <TextInput source="citation_author_year" />
-    <TextInput source="notes" />
-    <BooleanInput label="Published" source="published" defaultValue={false} />
-    <TextInput source="publisher" />
-    <TextInput source="published_location" />
-    <TextInput source="publication_date" />
-    <TextInput source="isbn" />
-    <TextInput source="issn" />
-    <TextInput source="bhl_url" />
-    <TextInput source="tl2" />
-    <TextInput source="reference_type" />
-    <ReferenceInput label="Parent" source="parent_id" reference="publications">
-      <SelectInput optionText="publication" />
-    </ReferenceInput>
-    <TextInput source="reference_author_role" />
-    <TextInput source="language" />
-    <ReferenceInput
-      label="Duplicate Of"
-      source="duplicate_of_id"
-      reference="publications"
-    >
-      <SelectInput optionText="publication" />
-    </ReferenceInput>
-  </SimpleForm>
-);
+const useStyles = makeStyles({
+  mainGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(8, 1fr)',
+    width: '90%',
+    gridColumnGap: '1.5em',
+  },
+});
+
+export const PublicationCreateEdit: FC = (props) => {
+  const classes = useStyles();
+  const globalClasses = GlobalTheme();
+  const gridClasses = GlobalGridTheme();
+  return (
+    <>
+      <Box className={globalClasses.titlePos}>
+        <Box>
+          <RichTextField className={globalClasses.title} source="title" />
+        </Box>
+        <TextField
+          source="verbatim_author"
+          className={globalClasses.subtitle}
+        />
+      </Box>
+      <TabbedForm {...props}>
+        <FormTab label="Publication" className={globalClasses.bold}>
+          <Box className={`${classes.mainGrid} ${globalClasses.sectionMargin}`}>
+            <Box>
+              <Typography
+                variant="h5"
+                className={globalClasses.bold}
+                gutterBottom
+              >
+                Publication
+              </Typography>
+            </Box>
+            <TextInput
+              source="title"
+              className={gridClasses.EightCol1to5span}
+            />
+            <TextInput
+              source="abbreviated_title"
+              validate={required()}
+              className={gridClasses.EightCol5to9span}
+            />
+            <Labeled
+              label="Publication Authors"
+              className={gridClasses.EightCol1to5span}
+            >
+              <Box className={gridClasses.EightCol1to5span}>
+                <TextField source="author_name" />
+              </Box>
+            </Labeled>
+            <NumberInput
+              source="publication_day"
+              label="Day"
+              className={gridClasses.EightCol1to2span}
+            />
+            <NumberInput
+              source="publication_month"
+              label="Month"
+              className={gridClasses.EightCol2to3span}
+            />
+            <NumberInput
+              source="publication_year"
+              label="Year"
+              className={gridClasses.EightCol3to4span}
+            />
+            <BooleanInput
+              label="Published"
+              source="published"
+              className={gridClasses.EightCol4to5span}
+              defaultValue={false}
+            />
+            <TextInput source="doi" className={gridClasses.EightCol1to5span} />
+            <Box
+              /* eslint-disable-next-line max-len */
+              className={`${gridClasses.EightCol1to5span} ${globalClasses.sectionMargin}`}
+            >
+              <Typography
+                variant="h5"
+                className={globalClasses.bold}
+                gutterBottom
+              >
+                Publication metadata
+              </Typography>
+            </Box>
+            <ReferenceArrayInput
+              source="author_ids"
+              reference="authors"
+              className={gridClasses.EightCol1to5span}
+            >
+              <SelectArrayInput optionText="abbreviation" fullWidth />
+            </ReferenceArrayInput>
+            <TextInput
+              source="publisher"
+              className={gridClasses.EightCol1to5span}
+            />
+            <ReferenceInput
+              label="Parent"
+              source="parent_id"
+              reference="publications"
+              sort={{ field: 'abbreviated_title', order: 'ASC' }}
+              className={gridClasses.EightCol1to5span}
+            >
+              <AutocompleteInput optionText="abbreviated_title" />
+            </ReferenceInput>
+            <TextInput
+              source="published_location"
+              className={gridClasses.EightCol5to7span}
+            />
+            <TextInput
+              source="volume"
+              className={gridClasses.EightCol1to3span}
+            />
+            <TextInput
+              source="edition"
+              className={gridClasses.EightCol3to5span}
+            />
+            <TextInput
+              source="pages"
+              className={gridClasses.EightCol5to7span}
+            />
+          </Box>
+        </FormTab>
+        <FormTab label="Details" className={globalClasses.bold}>
+          <Box className={`${classes.mainGrid} ${globalClasses.sectionMargin}`}>
+            <Box>
+              <Typography
+                variant="h5"
+                className={globalClasses.bold}
+                gutterBottom
+              >
+                Details
+              </Typography>
+            </Box>
+            <NumberInput
+              source="legacy_id"
+              className={gridClasses.EightCol1to3span}
+            />
+            <TextInput source="isbn" className={gridClasses.EightCol3to5span} />
+            <TextInput source="issn" className={gridClasses.EightCol5to7span} />
+            <TextInput source="tl2" className={gridClasses.EightCol7to9span} />
+            <TextInput
+              source="bhl_url"
+              className={gridClasses.EightCol1to5span}
+            />
+            <TextInput
+              source="reference_type"
+              className={gridClasses.EightCol1to3span}
+            />
+            <TextInput
+              source="reference_author_role"
+              className={gridClasses.EightCol3to5span}
+            />
+            <ReferenceInput
+              label="Duplicate Of"
+              source="duplicate_of_id"
+              reference="publications"
+              className={gridClasses.EightCol5to9span}
+              sort={{ field: 'abbreviated_title', order: 'ASC' }}
+            >
+              <AutocompleteInput optionText="abbreviated_title" />
+            </ReferenceInput>
+            <TextInput
+              source="language"
+              className={gridClasses.EightCol1to3span}
+            />
+          </Box>
+        </FormTab>
+        <FormTab label="Notes" className={globalClasses.bold}>
+          <Box className={`${classes.mainGrid} ${globalClasses.sectionMargin}`}>
+            <Box>
+              <Typography
+                variant="h5"
+                className={globalClasses.bold}
+                gutterBottom
+              >
+                Notes
+              </Typography>
+            </Box>
+            <TextInput
+              source="notes"
+              className={gridClasses.EightCol1to9span}
+              multiline
+              fullWdith
+            />
+          </Box>
+        </FormTab>
+      </TabbedForm>
+    </>
+  );
+};

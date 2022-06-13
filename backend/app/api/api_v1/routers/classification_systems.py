@@ -1,15 +1,16 @@
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, Depends, Response
 
 from app.api.dependencies.range_query import RangeQueryParameter
-from app.core.auth import get_current_active_superuser
+from app.core.auth import authorize, get_current_active_user
 from app.db.classification_system.crud import ClassificationSystemCrud
 from app.db.classification_system.schema import (
     ClassificationSystem,
     ClassificationSystemCreate,
     ClassificationSystemEdit,
 )
+from app.db.role.constants import Role
 from app.db.session import get_db
 
 classification_systems_router = r = APIRouter(prefix="/classification_systems")
@@ -19,6 +20,7 @@ classification_systems_router = r = APIRouter(prefix="/classification_systems")
     "",
     response_model=List[ClassificationSystem],
     response_model_exclude_none=True,
+    dependencies=[authorize()],
 )
 async def classification_system_list(
     response: Response,
@@ -26,7 +28,6 @@ async def classification_system_list(
     sort: Optional[str] = None,
     filter: Optional[str] = None,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
 ):
     """
     Get all classification_systems
@@ -44,12 +45,11 @@ async def classification_system_list(
     "/{classification_system_id}",
     response_model=ClassificationSystem,
     response_model_exclude_none=True,
+    dependencies=[authorize()],
 )
 async def classification_system_details(
-    request: Request,
     classification_system_id: int,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
 ):
     """
     Get any classification_system details
@@ -64,12 +64,19 @@ async def classification_system_details(
     "",
     response_model=ClassificationSystem,
     response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.APPLICATION_SUPPORT["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
 )
 async def classification_system_create(
-    request: Request,
     classification_system: ClassificationSystemCreate,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Create a new classification_system
@@ -83,13 +90,20 @@ async def classification_system_create(
     "/{classification_system_id}",
     response_model=ClassificationSystem,
     response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.APPLICATION_SUPPORT["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
 )
 async def classification_system_edit(
-    request: Request,
     classification_system_id: int,
     classification_system: ClassificationSystemEdit,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Update existing classification_system
@@ -101,14 +115,18 @@ async def classification_system_edit(
 
 @r.delete(
     "/{classification_system_id}",
-    response_model=ClassificationSystem,
-    response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.APPLICATION_SUPPORT["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
 )
 async def classification_system_delete(
-    request: Request,
     classification_system_id: int,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
 ):
     """
     Delete existing classification_system

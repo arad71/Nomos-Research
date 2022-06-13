@@ -1,14 +1,13 @@
-// in src/users.js
 import React, { FC } from 'react';
 import {
   NumberField,
   ReferenceField,
   RichTextField,
   SelectField,
-  Show,
   SimpleShowLayout,
   TextField,
 } from 'react-admin';
+import { Show } from '@react-admin/ra-rbac';
 import AuthorType from './AuthorType';
 import Aside from '../shared/Aside';
 

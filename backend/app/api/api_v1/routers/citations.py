@@ -106,8 +106,6 @@ async def citation_edit(
 
 @r.delete(
     "/{citation_id}",
-    response_model=Citation,
-    response_model_exclude_none=True,
     dependencies=[
         authorize(
             scopes=[

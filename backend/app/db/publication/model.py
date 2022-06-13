@@ -1,8 +1,10 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Text
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, event
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.schema import UniqueConstraint
 
 from app.db.models import BaseModel, TableMixin
+from app.db.publication.calculated import calculate_fields
 from app.db.publication.constants import (
     BAD_PUBLICATION,
     PUBLICATION_ID,
@@ -23,18 +25,16 @@ class Publication(BaseModel, TableMixin):
         comment=PUBLICATION_ID,
         doc=PUBLICATION_ID,
     )
-    publication = Column(Text, nullable=False)
     bad_publication = Column(
         Boolean,
         comment=BAD_PUBLICATION,
         doc=BAD_PUBLICATION,
     )
-    publication_name = Column(Text)
     doi = Column(String)
     title = Column(String)
     display_title = Column(String)
     abbreviated_title = Column(String)
-    year = Column(Integer)
+    publication_year = Column(Integer)
     volume = Column(String)
     edition = Column(String)
     pages = Column(String)
@@ -49,6 +49,8 @@ class Publication(BaseModel, TableMixin):
     publisher = Column(String)
     published_location = Column(String)
     publication_date = Column(String)
+    publication_month = Column(Integer)
+    publication_day = Column(Integer)
     isbn = Column(String)
     issn = Column(String)
     bhl_url = Column(String)
@@ -74,3 +76,19 @@ class Publication(BaseModel, TableMixin):
         backref=backref("duplicates"),
     )
     legacy_id = Column(Integer)
+
+    @hybrid_property
+    def author_names(self):
+        return [publication_author.abbreviation for publication_author in self.author]
+
+    @hybrid_property
+    def author_ids(self):
+        return [publication_author.author_id for publication_author in self.author]
+
+    @hybrid_property
+    def author_name(self):
+        return ", ".join([author.display_name for author in self.author])
+
+
+event.listen(Publication, "before_insert", calculate_fields)
+event.listen(Publication, "before_update", calculate_fields)

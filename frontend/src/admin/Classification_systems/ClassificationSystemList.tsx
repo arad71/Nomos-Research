@@ -1,10 +1,8 @@
-// in src/users.js
 import React, { FC } from 'react';
 import {
   Datagrid,
   DateField,
   EditButton,
-  List,
   NumberField,
   ReferenceField,
   SelectField,
@@ -12,9 +10,17 @@ import {
   BooleanField,
 } from 'react-admin';
 import ClassificationType from './ClassificationType';
+import { List, WithPermissions } from '@react-admin/ra-rbac';
+import { DefaultPagination, useCanBulkDelete } from '../shared';
 
 export const ClassificationSystemList: FC = (props) => (
-  <List {...props} sort={{ field: 'class_desc', order: 'DESC' }}>
+  <List
+    {...props}
+    sort={{ field: 'class_desc', order: 'DESC' }}
+    perPage={100}
+    pagination={<DefaultPagination />}
+    bulkActionButtons={useCanBulkDelete()}
+  >
     <Datagrid rowClick="show">
       <NumberField source="id" />
       <TextField source="class_desc" />
@@ -24,12 +30,14 @@ export const ClassificationSystemList: FC = (props) => (
       <ReferenceField source="created_by" reference="users">
         <TextField source="full_name" />
       </ReferenceField>
-      <DateField source="created_on" showTime />
+      <DateField source="created_on" />
       <ReferenceField source="updated_by" reference="users">
         <TextField source="full_name" />
       </ReferenceField>
-      <DateField source="updated_on" showTime />
-      <EditButton />
+      <DateField source="updated_on" />
+      <WithPermissions action="edit" resource="classification_systems">
+        <EditButton />
+      </WithPermissions>
     </Datagrid>
   </List>
 );

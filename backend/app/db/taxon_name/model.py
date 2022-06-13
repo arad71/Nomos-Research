@@ -9,7 +9,7 @@ from sqlalchemy import (
     event,
     func,
 )
-from sqlalchemy.orm import column_property, relationship
+from sqlalchemy.orm import backref, column_property, relationship
 from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy.types import Enum
 
@@ -69,6 +69,7 @@ class TaxonName(BaseModel, TableMixin):
         doc=RANK_ID,
     )
     taxon_rank = relationship("TaxonRank", backref=name_plural)
+    uninomial = Column(String, index=True)
     # kingdom = Column(String)
     phylum = Column(String)
     taxon_class = Column(String, name="class", key="class")
@@ -159,6 +160,12 @@ class TaxonName(BaseModel, TableMixin):
         comment=FAMILY_NID,
         doc=FAMILY_NID,
     )
+    family_relationship = relationship(
+        "TaxonName",
+        foreign_keys=[family_nid],
+        remote_side=[taxon_name_id],
+        backref=backref("in_family", cascade="all, delete-orphan"),
+    )
     all_vernaculars = Column(String(200), index=True)
     notes = Column(String(3000))
     reference = Column(Text)
@@ -166,7 +173,8 @@ class TaxonName(BaseModel, TableMixin):
     authorised_on = Column(DateTime)
     legacy_id = Column(Integer)
     canonical_name_without_rank = column_property(
-        func.CONCAT_WS(" ", genus, specific_epithet, infraspecific_epithet)
+        func.CONCAT_WS(" ", uninomial, specific_epithet, infraspecific_epithet),
+        deferred=True,
     )
 
 

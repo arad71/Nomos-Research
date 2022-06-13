@@ -1,5 +1,6 @@
-from sqlalchemy import Column, Integer, String
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String, func
+from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.orm import column_property, relationship
 from sqlalchemy.schema import UniqueConstraint
 
 from app.db.author.constants import (
@@ -11,6 +12,15 @@ from app.db.author.constants import (
     TABLE_DESCRIPTION,
 )
 from app.db.models import BaseModel, TableMixin
+
+
+def abbreviation_to_display_name(abbreviation):
+    abbreviation_has_end_dot = abbreviation.endswith(".")
+    abbreviation = abbreviation.strip(".").replace(" ", "")
+    display_name = ". ".join(abbreviation.rsplit(".", 1))
+    if abbreviation_has_end_dot:
+        display_name += "."
+    return display_name
 
 
 class Author(BaseModel, TableMixin):
@@ -30,3 +40,11 @@ class Author(BaseModel, TableMixin):
         "Publication", secondary="publication_author", back_populates="author"
     )
     legacy_id_name = Column(String())
+    full_name = column_property(func.CONCAT_WS(" ", initials, surname))
+
+    @hybrid_property
+    def display_name(self):
+        if self.surname and self.initials:
+            return f"{self.initials} {self.surname}"
+        elif self.abbreviation:
+            return abbreviation_to_display_name(self.abbreviation)

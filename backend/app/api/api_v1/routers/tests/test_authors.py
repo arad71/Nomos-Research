@@ -14,10 +14,11 @@ def test_get_authors(client, test_author, superuser_token_headers):
             "surname": test_author.surname,
             "first_names": test_author.first_names,
             "initials": test_author.initials,
+            "full_name": test_author.full_name,
             "updated_by": test_author.updated_by,
-            "updated_on": test_author.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+            "updated_on": test_author.updated_on.isoformat(),
             "created_by": test_author.created_by,
-            "created_on": test_author.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+            "created_on": test_author.created_on.isoformat(),
         }
     ]
 
@@ -42,10 +43,11 @@ def test_edit_author(client, test_author, test_superuser, superuser_token_header
         "surname": "Author2",
         "first_names": "Test",
         "initials": "TA2",
+        "full_name": "TA2 Author2",
         "updated_by": test_superuser.user_id,
-        "updated_on": test_author.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "updated_on": test_author.updated_on.isoformat(),
         "created_by": test_superuser.user_id,
-        "created_on": test_author.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_author.created_on.isoformat(),
     }
 
     response = client.put(
@@ -68,9 +70,9 @@ def test_edit_author_not_found(
         "first_names": "Test",
         "initials": "TA2",
         "updated_by": test_superuser.user_id,
-        "updated_on": test_author.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "updated_on": test_author.updated_on.isoformat(),
         "created_by": test_superuser.user_id,
-        "created_on": test_author.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_author.created_on.isoformat(),
     }
     response = client.put(
         "/api/v1/authors/1234", json=new_author, headers=superuser_token_headers
@@ -93,10 +95,11 @@ def test_get_author(
         "surname": test_author.surname,
         "first_names": test_author.first_names,
         "initials": test_author.initials,
+        "full_name": test_author.full_name,
         "updated_by": test_author.updated_by,
-        "updated_on": test_author.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "updated_on": test_author.updated_on.isoformat(),
         "created_by": test_author.created_by,
-        "created_on": test_author.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_author.created_on.isoformat(),
     }
 
 
@@ -137,7 +140,7 @@ def test_super_admin_permissions(
         "first_names": "Another",
         "initials": "AA",
         "created_by": test_superuser.user_id,
-        "created_on": test_author.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_author.created_on.isoformat(),
     }
 
     response = client.post(
@@ -150,7 +153,7 @@ def test_super_admin_permissions(
         "abbreviation": "Yet Another Author",
         "initials": "YAA",
         "updated_by": test_superuser.user_id,
-        "updated_on": test_author.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "updated_on": test_author.updated_on.isoformat(),
     }
 
     response = client.put(
@@ -188,7 +191,7 @@ def test_manager_permissions(
         "first_names": "Another",
         "initials": "AA",
         "created_by": test_manager.user_id,
-        "created_on": test_author.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_author.created_on.isoformat(),
     }
     response = client.post(
         "/api/v1/authors", headers=manager_token_headers, json=author_json
@@ -200,7 +203,7 @@ def test_manager_permissions(
         "first_names": "Yet Another",
         "initials": "YAA",
         "updated_by": test_manager.user_id,
-        "updated_on": test_author.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "updated_on": test_author.updated_on.isoformat(),
     }
     response = client.put(
         f"/api/v1/authors/{test_author.author_id}",
@@ -243,7 +246,7 @@ def test_officer_permissions(
         "first_names": "Another",
         "initials": "AA",
         "created_by": test_officer.user_id,
-        "created_on": test_author.created_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+        "created_on": test_author.created_on.isoformat(),
     }
     response = client.post(
         "/api/v1/authors", headers=officer_token_headers, json=author_json
@@ -256,7 +259,7 @@ def test_officer_permissions(
             "first_names": "Yet Another",
             "initials": "YAA",
             "updated_by": test_officer.user_id,
-            "updated_on": test_author.updated_on.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+            "updated_on": test_author.updated_on.isoformat(),
         }
     )
     response = client.put(

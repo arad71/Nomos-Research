@@ -1,5 +1,6 @@
 import os
 import shutil
+from uuid import uuid4
 from zipfile import ZipFile
 
 import requests
@@ -23,12 +24,18 @@ from app.db.taxon_name.model import TaxonName
 from app.db.taxon_rank.dataimport import ImportTaxonRank
 from app.db.user.crud import UserCrud
 from app.db.user.dataimport import ImportUser, ImportUserDefaults
+from app.db.user.schema import UserCreate
 from app.db.vernacular.dataimport import ImportVernacular
 
 
 def get_admin_id(db: SessionLocal):
-    admin_email = os.getenv("ADMIN_EMAIL", "admin@taxman.com")
+    admin_email = "wacensus-migration@bdr.wa.gov.au"
     admin = UserCrud.get_user_by_email(db=db, email=admin_email)
+    if not admin:
+        admin = UserCrud.create_item(
+            db,
+            UserCreate(email=admin_email, is_active=False, password=str(uuid4())),
+        )
     return admin.user_id
 
 
@@ -57,21 +64,21 @@ def import_data(url: AnyUrl = settings.WACENSUS_DATA_FILE_URL):
     admin_id = get_admin_id(db)
     logger.info("Data Import Started")
     import_user = ImportUser(db, admin_id)
-    import_user.ingest("HBTUSERS_DATA_TABLE.csv")
+    import_user.ingest("HBTUSERS")
     import_user.insert_stub_records()
-    ImportAuthor(db, admin_id).ingest("HBTAUTHORS_DATA_TABLE.csv")
-    ImportKingdom(db, admin_id).ingest("HBTKINGDOMS_DATA_TABLE.csv")
-    ImportPublication(db, admin_id).ingest("HBTPUBLICATIONS_DATA_TABLE.csv")
-    ImportClassificationSystem(db, admin_id).ingest("HBTCLASS_SYSTEMS_DATA_TABLE.csv")
-    ImportUserDefaults(db, admin_id).ingest("HBTUSERS_DATA_TABLE.csv")
-    ImportTaxonRank(db, admin_id).ingest("HBTRANKS_DATA_TABLE.csv")
-    ImportTaxonName(db, admin_id).ingest("HBTNAMES_DATA_TABLE.csv")
-    ImportTaxonNameFamilyNid(db, admin_id).ingest("HBTNAMES_DATA_TABLE.csv")
-    ImportCitation(db, admin_id).ingest("HBTCITATIONS_DATA_TABLE.csv")
-    ImportVernacular(db, admin_id).ingest("HBTVERNACULARS_DATA_TABLE.csv")
-    ImportCrossReference(db, admin_id).ingest("HBTXREFS_DATA_TABLE.csv")
-    ImportHierarchy(db, admin_id).ingest("HBTPARENTS_DATA_TABLE.csv")
-    ImportInformalGroup(db, admin_id).ingest("HBTGROUPS_DATA_TABLE.csv")
+    ImportAuthor(db, admin_id).ingest("HBTAUTHORS")
+    ImportKingdom(db, admin_id).ingest("HBTKINGDOMS")
+    ImportPublication(db, admin_id).ingest("HBTPUBLICATIONS")
+    ImportClassificationSystem(db, admin_id).ingest("HBTCLASS_SYSTEMS")
+    ImportUserDefaults(db, admin_id).ingest("HBTUSERS")
+    ImportTaxonRank(db, admin_id).ingest("HBTRANKS")
+    ImportTaxonName(db, admin_id).ingest("HBTNAMES")
+    ImportTaxonNameFamilyNid(db, admin_id).ingest("HBTNAMES")
+    ImportCitation(db, admin_id).ingest("HBTCITATIONS")
+    ImportVernacular(db, admin_id).ingest("HBTVERNACULARS")
+    ImportCrossReference(db, admin_id).ingest("HBTXREFS")
+    ImportHierarchy(db, admin_id).ingest("HBTPARENTS")
+    ImportInformalGroup(db, admin_id).ingest("HBTGROUPS")
     trigger_calculated_fields(db)
     logger.info("Import completed")
     logger.remove(log)
@@ -86,7 +93,7 @@ def download_data_file(url, outfile):
 def extract_data_file(outdir, outfile):
     with ZipFile(outfile, "r") as zip:
         for file in zip.namelist():
-            if file.endswith("DATA_TABLE.csv"):
+            if file.endswith(settings.WACENSUS_SUFFIX):
                 filename = os.path.basename(file)
                 source = zip.open(file)
                 target = open(os.path.join(outdir, filename), "wb")

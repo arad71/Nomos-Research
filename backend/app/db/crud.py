@@ -1,3 +1,4 @@
+import datetime
 import json
 import typing as t
 
@@ -5,6 +6,7 @@ from fastapi import HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
+from sqlalchemy.sql.sqltypes import TIMESTAMP
 from sqlalchemy_mixins.smartquery import smart_query
 
 from app.core.config import settings
@@ -41,6 +43,14 @@ class Crud:
         item = db.query(cls.model).filter(getattr(cls.model, property) == value).first()
         return item
 
+    @staticmethod
+    def _get_timestamp_range(date_string):
+        day_start = datetime.datetime.strptime(date_string, "%Y-%m-%d")
+        day_end = datetime.datetime.strptime(
+            date_string + "T23:59:59", "%Y-%m-%dT%H:%M:%S"
+        )
+        return day_start, day_end
+
     @classmethod
     def get_items(
         cls,
@@ -57,14 +67,15 @@ class Crud:
         sort_attrs = []
         if sort:
             sort_by, sort_dir = cls.get_sort(sort)
-            direction = "-" if sort_dir == "DESC" else ""
-            sort_value = f"{direction}{sort_by}"
-            sort_attrs.append(sort_value)
+            sort_by = sort_by.split(",") if sort_by else []
+            sort_dir = sort_dir.split(",") if sort_dir else []
+            for i, sort_field in enumerate(sort_by):
+                direction = "-" if sort_dir and sort_dir[i] == "DESC" else ""
+                sort_value = f"{direction}{sort_field}"
+                sort_attrs.append(sort_value)
 
         filters = {}
         if list_filter:
-            # TODO: Implement additional filters as per
-            #  https://github.com/BIO-WA/BDRTaxMan/pull/162
             filter_items = json.loads(list_filter)
             column: str
             for column in filter_items:
@@ -76,7 +87,12 @@ class Crud:
                             conditions[f"{search_field}__contains"] = filter_value
                         filters[or_] = conditions
                 else:
-                    if isinstance(filter_value, list):
+                    if hasattr(cls.model, column) and isinstance(
+                        getattr(cls.model, column).type, TIMESTAMP
+                    ):
+                        column = f"{column}__between"
+                        filter_value = cls._get_timestamp_range(filter_value)
+                    elif isinstance(filter_value, list):
                         column = f"{column}__in"
                     filters[column] = filter_value
 
@@ -141,4 +157,4 @@ class Crud:
             )
         db.delete(item)
         db.commit()
-        return item
+        return {cls.id_key: id}

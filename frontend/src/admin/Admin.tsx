@@ -1,13 +1,14 @@
 import React, { FC } from 'react';
-import { fetchUtils, Admin as ReactAdmin, Resource } from 'react-admin';
+import { fetchUtils, Admin as ReactAdmin } from 'react-admin';
+import { Resource } from '@react-admin/ra-rbac';
 import restDataProvider from 'ra-data-rest-client';
 import { BACKEND_URL } from '../config';
 import authProvider from './authProvider';
 import MyLoginPage from '../views/NewLogin';
 import MyLayout from '../MyLayout';
+import theme from '../Theme';
 import Dashboard from '../Dashboard';
 import BookIcon from '@material-ui/icons/Book';
-import role from './role';
 
 import { UserList, UserShow, UserEdit, UserCreate } from './Users';
 import {
@@ -85,7 +86,11 @@ const httpClient = (url: any, options: any) => {
   }
   const token = localStorage.getItem('token');
   options.headers.set('Authorization', `Bearer ${token}`);
-  return fetchUtils.fetchJson(url, options);
+  return fetchUtils.fetchJson(url, options).catch((error: any) => {
+    return new Promise(function (resolve, reject) {
+      reject({ message: error.body.detail });
+    });
+  });
 };
 
 const dataProvider = restDataProvider(
@@ -116,127 +121,98 @@ export const Admin: FC = () => {
       loginPage={MyLoginPage}
       dashboard={Dashboard}
       layout={MyLayout}
+      theme={theme}
       authProvider={authProvider}
       dataProvider={dataProvider}
     >
-      {(permissions: string) => [
-        permissions.includes(role.SUPER_ADMIN) ? (
-          <Resource
-            name="users"
-            key="user_id"
-            list={UserList}
-            show={UserShow}
-            edit={UserEdit}
-            create={UserCreate}
-          />
-        ) : null,
-        permissions.includes(role.SUPER_ADMIN) ? (
-          <Resource
-            name="kingdoms"
-            list={KingdomList}
-            show={KingdomShow}
-            edit={KingdomEdit}
-            create={KingdomCreate}
-          />
-        ) : null,
-        permissions.includes(role.SUPER_ADMIN) ? (
-          <Resource
-            name="classification_systems"
-            list={ClassificationSystemList}
-            show={ClassificationSystemShow}
-            edit={ClassificationSystemEdit}
-            create={ClassificationSystemCreate}
-          />
-        ) : null,
-        permissions.includes(role.SUPER_ADMIN) ? (
-          <Resource
-            name="authors"
-            list={AuthorList}
-            show={AuthorShow}
-            edit={AuthorEdit}
-            create={AuthorCreate}
-          />
-        ) : null,
-        permissions.includes(role.SUPER_ADMIN) ? (
-          <Resource
-            name="taxon_ranks"
-            list={TaxonRankList}
-            show={TaxonRankShow}
-            edit={TaxonRankEdit}
-            create={TaxonRankCreate}
-          />
-        ) : null,
-        permissions.includes(role.SUPER_ADMIN) ? (
-          <Resource
-            name="publications"
-            list={PublicationList}
-            show={PublicationShow}
-            edit={PublicationEdit}
-            create={PublicationCreate}
-          />
-        ) : null,
-        permissions.includes(role.SUPER_ADMIN) ? (
-          <Resource
-            name="citations"
-            list={CitationList}
-            show={CitationShow}
-            edit={CitationEdit}
-            create={CitationCreate}
-          />
-        ) : null,
-        permissions.includes(role.SUPER_ADMIN) ? (
-          <Resource
-            name="taxon_names"
-            list={TaxonNameList}
-            show={TaxonNameShow}
-            edit={TaxonNameEdit}
-            create={TaxonNameCreate}
-            icon={BookIcon}
-          />
-        ) : null,
-        permissions.includes(role.SUPER_ADMIN) ? (
-          <Resource
-            name="informal_groups"
-            list={InformalGroupList}
-            show={InformalGroupShow}
-            edit={InformalGroupEdit}
-            create={InformalGroupCreate}
-          />
-        ) : null,
-        permissions.includes(role.SUPER_ADMIN) ? (
-          <Resource
-            name="hierarchies"
-            list={HierarchyList}
-            show={HierarchyShow}
-            edit={HierarchyEdit}
-            create={HierarchyCreate}
-          />
-        ) : null,
-        permissions.includes(role.SUPER_ADMIN) ? (
-          <Resource
-            name="cross_references"
-            list={CrossReferenceList}
-            show={CrossReferenceShow}
-            edit={CrossReferenceEdit}
-            create={CrossReferenceCreate}
-          />
-        ) : null,
-        permissions.includes(role.SUPER_ADMIN) ? (
-          <Resource
-            name="vernaculars"
-            list={VernacularList}
-            show={VernacularShow}
-            edit={VernacularEdit}
-            create={VernacularCreate}
-          />
-        ) : null,
-        permissions.includes(role.SUPER_ADMIN) ? (
-          <Resource name="user_roles" show={UserRoleShow} list={UserRoleList} />
-        ) : null,
-        permissions.includes(role.SUPER_ADMIN) ? (
-          <Resource name="roles" show={RolesShow} list={RolesList} />
-        ) : null,
-      ]}
+      <Resource
+        name="users"
+        key="user_id"
+        list={UserList}
+        show={UserShow}
+        edit={UserEdit}
+        create={UserCreate}
+      />
+      <Resource
+        name="kingdoms"
+        list={KingdomList}
+        show={KingdomShow}
+        edit={KingdomEdit}
+        create={KingdomCreate}
+      />
+      <Resource
+        name="classification_systems"
+        list={ClassificationSystemList}
+        show={ClassificationSystemShow}
+        edit={ClassificationSystemEdit}
+        create={ClassificationSystemCreate}
+      />
+      <Resource
+        name="authors"
+        list={AuthorList}
+        show={AuthorShow}
+        edit={AuthorEdit}
+        create={AuthorCreate}
+      />
+      <Resource
+        name="taxon_ranks"
+        list={TaxonRankList}
+        show={TaxonRankShow}
+        edit={TaxonRankEdit}
+        create={TaxonRankCreate}
+      />
+      <Resource
+        name="publications"
+        list={PublicationList}
+        show={PublicationShow}
+        edit={PublicationEdit}
+        create={PublicationCreate}
+      />
+      <Resource
+        name="citations"
+        list={CitationList}
+        show={CitationShow}
+        edit={CitationEdit}
+        create={CitationCreate}
+      />
+      <Resource
+        name="taxon_names"
+        list={TaxonNameList}
+        show={TaxonNameShow}
+        edit={TaxonNameEdit}
+        create={TaxonNameCreate}
+        icon={BookIcon}
+      />
+      <Resource
+        name="informal_groups"
+        list={InformalGroupList}
+        show={InformalGroupShow}
+        edit={InformalGroupEdit}
+        create={InformalGroupCreate}
+      />
+      <Resource
+        name="hierarchies"
+        list={HierarchyList}
+        show={HierarchyShow}
+        edit={HierarchyEdit}
+        create={HierarchyCreate}
+      />
+      <Resource
+        name="cross_references"
+        list={CrossReferenceList}
+        show={CrossReferenceShow}
+        edit={CrossReferenceEdit}
+        create={CrossReferenceCreate}
+      />
+      <Resource
+        name="vernaculars"
+        list={VernacularList}
+        show={VernacularShow}
+        edit={VernacularEdit}
+        create={VernacularCreate}
+      />
+      <Resource name="user_roles" show={UserRoleShow} list={UserRoleList} />
+      <Resource name="roles" show={RolesShow} list={RolesList} />
     </ReactAdmin>
   );
 };

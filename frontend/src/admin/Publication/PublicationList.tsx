@@ -1,70 +1,55 @@
-// in src/users.js
 import React, { FC } from 'react';
 import {
+  BooleanField,
+  CreateButton,
   Datagrid,
   DateField,
   EditButton,
-  List,
-  NumberField,
+  ExportButton,
   ReferenceField,
-  RichTextField,
+  SearchInput,
   TextField,
-  BooleanField,
+  TopToolbar,
 } from 'react-admin';
+import { List, WithPermissions } from '@react-admin/ra-rbac';
+import { DefaultPagination, useCanBulkDelete } from '../shared';
+
+const publicationFilters = [<SearchInput source="q" alwaysOn />];
+
+const Actions = () => (
+  <TopToolbar>
+    <WithPermissions resource="publications" action="create">
+      <CreateButton />
+    </WithPermissions>
+    <WithPermissions resource="publications" action="export">
+      <ExportButton maxResults={100000} />
+    </WithPermissions>
+  </TopToolbar>
+);
 
 export const PublicationList: FC = (props) => (
-  <List {...props} sort={{ field: 'publication' }}>
+  <List
+    {...props}
+    sort={{ field: 'title', order: 'ASC' }}
+    filters={publicationFilters}
+    actions={<Actions />}
+    perPage={100}
+    pagination={<DefaultPagination />}
+    bulkActionButtons={useCanBulkDelete()}
+  >
     <Datagrid rowClick="show">
-      <TextField source="id" />
-      <TextField source="publication" />
       <BooleanField source="bad_publication" />
-      <TextField source="publication_name" />
-      <TextField source="doi" />
       <TextField source="title" />
       <TextField source="display_title" />
-      <TextField source="abbreviated_title" />
-      <NumberField source="year" />
-      <TextField source="volume" />
-      <TextField source="edition" />
-      <TextField source="pages" />
-      <TextField source="verbatim_reference" />
-      <TextField source="verbatim_citation" />
-      <TextField source="verbatim_author" />
-      <TextField source="citation" />
-      <RichTextField source="citation_html" />
-      <TextField source="citation_author_year" />
-      <TextField source="notes" />
+      <TextField source="publication_year" />
       <TextField source="published" />
-      <TextField source="publisher" />
-      <TextField source="published_location" />
-      <TextField source="published_date" />
-      <TextField source="isbn" />
-      <TextField source="issn" />
-      <TextField source="bhl_url" />
-      <TextField source="tl2" />
-      <TextField source="reference_type" />
-      <ReferenceField
-        label="Parent"
-        source="parent_id"
-        reference="publications"
-      >
-        <TextField source="publication" />
-      </ReferenceField>
-      <TextField source="reference_author_role" />
-      <TextField source="language" />
-      <ReferenceField
-        label="Duplicate Of"
-        source="duplicate_of_id"
-        reference="publications"
-      >
-        <TextField source="publication" />
-      </ReferenceField>
-      <DateField source="created_on" showTime />
       <ReferenceField source="updated_by" reference="users">
         <TextField source="full_name" />
       </ReferenceField>
-      <DateField source="updated_on" showTime />
-      <EditButton />
+      <DateField source="updated_on" />
+      <WithPermissions resource="publications" action="edit">
+        <EditButton />
+      </WithPermissions>
     </Datagrid>
   </List>
 );

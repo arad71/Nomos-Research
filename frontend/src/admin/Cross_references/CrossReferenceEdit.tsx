@@ -1,10 +1,12 @@
 import React, { FC } from 'react';
-import { Edit } from 'react-admin';
+import { Edit } from '@react-admin/ra-rbac';
 import Aside from '../shared/Aside';
 import { CrossRefCreateEdit } from './CrossRefCreateEdit';
 
-export const CrossReferenceEdit: FC = (props) => (
-  <Edit {...props} aside={<Aside />}>
-    <CrossRefCreateEdit />
-  </Edit>
-);
+export const CrossReferenceEdit: FC = (props) => {
+  return (
+    <Edit mutationMode="pessimistic" {...props} aside={<Aside />}>
+      <CrossRefCreateEdit />
+    </Edit>
+  );
+};

@@ -1,10 +1,8 @@
-// in src/users.js
 import React, { FC } from 'react';
 import {
   Datagrid,
   DateField,
   EditButton,
-  List,
   NumberField,
   ReferenceField,
   RichTextField,
@@ -13,9 +11,17 @@ import {
   BooleanField,
 } from 'react-admin';
 import LanguageType from './LanguageType';
+import { List, WithPermissions } from '@react-admin/ra-rbac';
+import { DefaultPagination, useCanBulkDelete } from '../shared';
 
 export const VernacularList: FC = (props) => (
-  <List {...props} sort={{ field: 'taxon_name___scientific_name' }}>
+  <List
+    {...props}
+    sort={{ field: 'taxon_name___scientific_name' }}
+    perPage={100}
+    pagination={<DefaultPagination />}
+    bulkActionButtons={useCanBulkDelete()}
+  >
     <Datagrid rowClick="show">
       <NumberField source="id" />
       <ReferenceField
@@ -40,7 +46,9 @@ export const VernacularList: FC = (props) => (
         <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" showTime />
-      <EditButton />
+      <WithPermissions resource="vernaculars" action="edit">
+        <EditButton />
+      </WithPermissions>
     </Datagrid>
   </List>
 );

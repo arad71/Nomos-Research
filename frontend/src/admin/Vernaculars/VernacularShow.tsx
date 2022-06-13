@@ -3,12 +3,12 @@ import {
   NumberField,
   ReferenceField,
   RichTextField,
-  Show,
   SimpleShowLayout,
   SelectField,
   TextField,
   BooleanField,
 } from 'react-admin';
+import { Show } from '@react-admin/ra-rbac';
 import Aside from '../shared/Aside';
 import LanguageType from './LanguageType';
 

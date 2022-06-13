@@ -1,10 +1,11 @@
-import subprocess
-
 import uvicorn
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
+from sqlalchemy.exc import IntegrityError
+from starlette import status
 from starlette.requests import Request
+from starlette.responses import JSONResponse
 
 from app.api.api_v1.routers.auth import auth_router
 from app.api.api_v1.routers.authors import authors_router
@@ -13,6 +14,7 @@ from app.api.api_v1.routers.citations import citations_router
 from app.api.api_v1.routers.classification_systems import classification_systems_router
 from app.api.api_v1.routers.cross_references import cross_references_router
 from app.api.api_v1.routers.dataimport import data_import_router
+from app.api.api_v1.routers.extract import extract_router
 from app.api.api_v1.routers.hierarchies import hierarchies_router
 from app.api.api_v1.routers.informal_groups import informal_groups_router
 from app.api.api_v1.routers.kingdoms import kingdoms_router
@@ -56,6 +58,17 @@ async def db_session_middleware(request: Request, call_next):
     response = await call_next(request)
     request.state.db.close()
     return response
+
+
+@app.exception_handler(IntegrityError)
+async def integrity_exception_handler(request: Request, e: IntegrityError):
+    message = f'{e.args[-1].split(":")[1]}'
+    logger.error(e)
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        headers={"X-Error": repr(e.__repr__())},
+        content={"detail": message},
+    )
 
 
 @app.get(API_V1_URL)
@@ -171,6 +184,12 @@ app.include_router(
     data_import_router,
     prefix=API_V1_URL,
     tags=["import"],
+    dependencies=[],
+)
+app.include_router(
+    extract_router,
+    prefix=API_V1_URL,
+    tags=["extract"],
     dependencies=[],
 )
 

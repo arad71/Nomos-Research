@@ -42,7 +42,7 @@ class CrossReference(BaseModel, TableMixin):
         "TaxonName",
         foreign_keys=[old_name_id],
         remote_side=[TaxonName.taxon_name_id],
-        backref=backref("cross_referenced_old_name"),
+        backref=backref("cross_referenced_old_name", cascade="all, delete-orphan"),
     )
     new_name_id = Column(
         Integer,
@@ -54,7 +54,7 @@ class CrossReference(BaseModel, TableMixin):
         "TaxonName",
         foreign_keys=[new_name_id],
         remote_side=[TaxonName.taxon_name_id],
-        backref=backref("cross_referenced_new_name"),
+        backref=backref("cross_referenced_new_name", cascade="all, delete-orphan"),
     )
     cross_reference_type = Column(
         Enum(enums.CrossReferenceType, name=__tablename__ + "__cross_reference_type"),

@@ -4,7 +4,7 @@ import { TaxonNameCreateEdit } from './TaxonNameCreateEdit';
 
 export const TaxonNameCreate: FC = (props) => {
   return (
-    <Create {...props}>
+    <Create mutationMode="pessimistic" {...props}>
       <TaxonNameCreateEdit />
     </Create>
   );

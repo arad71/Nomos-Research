@@ -1,4 +1,3 @@
-// in src/users.js
 import React, { FC } from 'react';
 import {
   BooleanField,
@@ -6,15 +5,18 @@ import {
   Datagrid,
   EditButton,
   EmailField,
-  List,
   SingleFieldList,
   TextField,
   ReferenceArrayField,
+  ReferenceField,
+  DateField,
 } from 'react-admin';
+import { WithPermissions, List } from '@react-admin/ra-rbac';
 import { makeStyles } from '@material-ui/core';
 import { FilterSidebar } from './FilterSidebar';
 import { UserListActions } from './UserListActions';
 import { UserPagination } from './UserPagination';
+import { useCanBulkDelete } from '../shared';
 
 const useStyles = makeStyles({
   content: {
@@ -38,7 +40,9 @@ export const UserList: FC = (props) => {
       actions={<UserListActions />}
       pagination={<UserPagination />}
       perPage={100}
+      bulkActionButtons={useCanBulkDelete()}
       classes={{ content: classes.content }}
+      sort={{ field: 'updated_on', order: 'DESC' }}
       {...props}
     >
       <Datagrid rowClick="show">
@@ -50,13 +54,20 @@ export const UserList: FC = (props) => {
           label="User Roles"
           reference="roles"
           source="role_ids"
+          sortBy="user_role___role___name"
         >
           <SingleFieldList>
             <ChipField className={classes.roleFonts} source="name" />
           </SingleFieldList>
         </ReferenceArrayField>
         <BooleanField source="is_active" />
-        <EditButton className={classes.textFonts} />
+        <ReferenceField source="updated_by" reference="users">
+          <TextField source="full_name" />
+        </ReferenceField>
+        <DateField source="updated_on" />
+        <WithPermissions action="edit" resource="users">
+          <EditButton className={classes.textFonts} />
+        </WithPermissions>
       </Datagrid>
     </List>
   );

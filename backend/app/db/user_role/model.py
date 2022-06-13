@@ -1,11 +1,12 @@
 from sqlalchemy import Column, ForeignKey, Integer, UniqueConstraint
 from sqlalchemy.orm import backref, relationship
-from sqlalchemy_mixins.smartquery import SmartQueryMixin
 
-from app.db.session import Base
+from app.db.models import BaseModel, TableMixin
+from app.db.role.model import Role
+from app.db.user.model import User
 
 
-class UserRole(Base, SmartQueryMixin):
+class UserRole(BaseModel, TableMixin):
     __tablename__ = "user_role"
     user_role_id = Column(Integer, primary_key=True)
     user_id = Column(
@@ -22,10 +23,13 @@ class UserRole(Base, SmartQueryMixin):
     )
 
     role = relationship(
-        "Role", backref=backref("user_role", cascade="all, delete-orphan")
+        Role, backref=backref("user_role", cascade="all, delete-orphan")
     )
     user = relationship(
-        "User", backref=backref("user_role", cascade="all, delete-orphan")
+        User,
+        backref=backref("user_role", cascade="all, delete-orphan"),
+        foreign_keys=[user_id],
+        remote_side=[User.user_id],
     )
 
     __table_args__ = (UniqueConstraint("user_id", "role_id", name="unique_user_role"),)
