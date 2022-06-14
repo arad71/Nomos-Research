@@ -12,6 +12,7 @@ import React, { FC } from 'react';
 import { Box, Typography } from '@material-ui/core';
 import { GlobalTheme } from '../../GlobalTheme';
 import { makeStyles } from '@material-ui/core';
+import { AUTH_PROVIDER } from '../../config';
 
 const useStyles = makeStyles((theme) => ({
   mainGrid: {
@@ -44,7 +45,9 @@ export const UserCreateEdit: FC = (props) => {
           className={classes.twoColSpan}
           validate={required()}
         />
-        <PasswordInput source="password" fullWidth />
+        {AUTH_PROVIDER !== 'auth2' && (
+          <PasswordInput source="password" fullWidth />
+        )}
       </Box>
       <Box className={classes.mainGrid}>
         <Box className={classes.twoColSpan}>
