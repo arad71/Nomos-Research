@@ -29,7 +29,7 @@ async def curation_checklist(
     current: Optional[bool] = None,
     anyUpdated: Optional[datetime] = None,
     updated: Optional[datetime] = None,
-    validated: Optional[bool] = None,
+    validated: Optional[bool] = True,
     crossReferenceUpdated: Optional[datetime] = None,
     acceptedNameUpdated: Optional[datetime] = None,
     db=Depends(get_db),
