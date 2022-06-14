@@ -39,11 +39,17 @@ def get_admin_id(db: SessionLocal):
     return admin.user_id
 
 
-def trigger_calculated_fields(db):
+def trigger_calculated_fields(db, legacy_id_prefix=None):
     # Calculate fields after related data imported
     line_count = 0
     logger.debug("Triggering calculated fields")
-    for r in db.query(TaxonName).all():
+    if legacy_id_prefix:
+        taxon_names = db.query(TaxonName).filter(
+            TaxonName.legacy_id.contains(legacy_id_prefix)
+        )
+    else:
+        taxon_names = db.query(TaxonName).all()
+    for r in taxon_names:
         orm.attributes.flag_dirty(r)
         db.add(r)
         line_count += 1

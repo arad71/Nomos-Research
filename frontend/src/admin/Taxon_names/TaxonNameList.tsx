@@ -112,6 +112,7 @@ const postListColumns = {
   ),
   all_vernaculars: <TextField source="all_vernaculars" />,
   notes: <TextField source="notes" />,
+  admin_comment: <TextField source="admin_comment" />,
   authorised_on: <DateField source="authorised_on" />,
   created_by: (
     <ReferenceField source="created_by" reference="users">
