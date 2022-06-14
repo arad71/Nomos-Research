@@ -173,7 +173,14 @@ class ImportTaxonNameUpload(ImportTaxonName):
 
     def check_canonical_name_without_rank_exists(self, item):
         canonical_name_without_rank = " ".join(
-            [item["uninomial"], item["specific_epithet"], item["infraspecific_epithet"]]
+            filter(
+                None,
+                [
+                    item["uninomial"],
+                    item["specific_epithet"],
+                    item["infraspecific_epithet"],
+                ],
+            )
         )
         result = (
             self.db.query(TaxonNameModel)
