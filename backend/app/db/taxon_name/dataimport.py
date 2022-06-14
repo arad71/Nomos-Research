@@ -164,7 +164,7 @@ class ImportTaxonNameUpload(ImportTaxonName):
             "validated": False,
             "admin_comment": (
                 f"Created by import script {__name__}"
-                f" from source csv {self.legacy_id_prefix}"
+                f" from source csv {self.legacy_id_prefix[:-1]}"
                 f" on {datetime.date.today()}"
             ),
             "created_by": self.current_user,
