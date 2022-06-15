@@ -11,7 +11,7 @@ import React from 'react';
 
 export const VernacularRowForm = (props: RowFormProps) => (
   <RowForm {...props}>
-    <TextInput source="vernacular" />
+    <TextInput source="vernacular" validate={required()} />
     <SelectInput
       source="language"
       validate={required()}

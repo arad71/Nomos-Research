@@ -248,8 +248,8 @@ export const TaxonNameCreateEdit: FC = ({
                 </ReferenceManyField>
               )) || (
                 <Typography>
-                  You need to save the record before you can add any authors /
-                  citations.
+                  You need to save the record before you can add any
+                  vernaculars.
                 </Typography>
               )}
             </Box>
