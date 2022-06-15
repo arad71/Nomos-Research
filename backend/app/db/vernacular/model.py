@@ -1,9 +1,10 @@
-from sqlalchemy import Boolean, Column, Enum, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Column, Enum, ForeignKey, Integer, String, event
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.schema import UniqueConstraint
 
 from app.db.models import BaseModel, TableMixin
 from app.db.vernacular import enums
+from app.db.vernacular.calculated import calculate_fields
 from app.db.vernacular.constants import (
     LANG_PREF,
     LANGUAGE,
@@ -38,7 +39,8 @@ class Vernacular(BaseModel, TableMixin):
         doc=TAXON_NAME_ID,
     )
     taxon_name = relationship(
-        "TaxonName", backref=backref("vernaculars", cascade="all, delete-orphan")
+        "TaxonName",
+        backref=backref("vernaculars", lazy="dynamic", cascade="all, delete-orphan"),
     )
     language = Column(
         Enum(enums.Language, name=__tablename__ + "__language"),
@@ -59,3 +61,7 @@ class Vernacular(BaseModel, TableMixin):
     source = Column(String(50), comment=SOURCE, doc=SOURCE)
     enabled = Column(Boolean, nullable=False)
     sort_order = Column(Integer)
+
+
+event.listen(Vernacular, "after_insert", calculate_fields)
+event.listen(Vernacular, "after_update", calculate_fields)
