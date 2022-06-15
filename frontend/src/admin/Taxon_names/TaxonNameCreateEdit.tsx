@@ -6,6 +6,7 @@ import {
   NumberField,
   NumberInput,
   ReferenceField,
+  BooleanField,
   ReferenceInput,
   ReferenceManyField,
   required,
@@ -23,8 +24,10 @@ import NaturalisedStatus from './NaturalisedStatus';
 import PublicationStatus from './PublicationStatus';
 import { makeStyles } from '@material-ui/core/styles';
 import AuthorType from '../Citations/AuthorType';
+import LanguageType from '../Vernaculars/LanguageType';
 import { Box, Typography } from '@material-ui/core';
 import { CitationRowForm } from '../Citations';
+import { VernacularRowForm, EmbeddedVernacularShow } from '../Vernaculars';
 import { EditableCrossReferenceManyGrid } from '../Cross_references';
 import { GlobalGridTheme, GlobalTheme } from '../../GlobalTheme';
 import { NamePageSummary } from './NamePageSummary';
@@ -44,6 +47,10 @@ export const TaxonNameCreateEdit: FC = ({
   const globalClasses = GlobalTheme();
   const gridClasses = GlobalGridTheme();
   const citationInitialValues = { taxon_name_id: props.record?.id };
+  const vernacularInitialValues = {
+    taxon_name_id: props.record?.id,
+    enabled: true,
+  };
   const oldNameInitialValues = { new_name_id: props.record?.id, active: true };
   const newNameInitialValues = { old_name_id: props.record?.id, active: true };
   return (
@@ -201,13 +208,51 @@ export const TaxonNameCreateEdit: FC = ({
                 className={globalClasses.bold}
                 gutterBottom
               >
-                Vernacular names (placeholder)
+                Vernacular names
               </Typography>
             </Box>
-            <TextInput
-              source="vernacular"
-              className={gridClasses.EightCol1to5span}
-            />
+            <Box className={gridClasses.EightCol1to9span}>
+              {(props.record?.id && (
+                <ReferenceManyField
+                  fullWidth
+                  label="Vernaculars"
+                  reference="vernaculars"
+                  target="taxon_name_id"
+                  sort={{
+                    field: 'vernacular,sort_order',
+                    order: 'ASC,ASC',
+                  }}
+                  {...props}
+                >
+                  <EditableDatagrid
+                    undoable
+                    createForm={
+                      <VernacularRowForm
+                        initialValues={vernacularInitialValues}
+                        {...props}
+                      />
+                    }
+                    editForm={<VernacularRowForm {...props} />}
+                    hasCreate
+                    expand={<EmbeddedVernacularShow />}
+                  >
+                    <TextField source="vernacular" />
+                    <SelectField source="language" choices={LanguageType} />
+                    <BooleanField
+                      source="lang_pref"
+                      label="Preferred language"
+                    />
+                    <BooleanField source="preferred" />
+                    <NumberField source="sort_order" />
+                  </EditableDatagrid>
+                </ReferenceManyField>
+              )) || (
+                <Typography>
+                  You need to save the record before you can add any authors /
+                  citations.
+                </Typography>
+              )}
+            </Box>
           </Box>
         </FormTab>
         <FormTab label="Details" className={globalClasses.bold}>
