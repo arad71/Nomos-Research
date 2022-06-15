@@ -116,7 +116,7 @@ def map_vernacular(target):
 def map_vernaculars(target):
     vernaculars = target.vernaculars.filter_by(enabled=True).order_by(desc("preferred"))
     if vernaculars.count:
-        return ",".join(
+        return ", ".join(
             filter(
                 None,
                 [vernacular.vernacular for vernacular in vernaculars],

@@ -1,10 +1,11 @@
 from sqlalchemy import Boolean, Column, Enum, ForeignKey, Integer, String, event
 from sqlalchemy.orm import backref, relationship
+from sqlalchemy.orm.session import Session
 from sqlalchemy.schema import UniqueConstraint
 
 from app.db.models import BaseModel, TableMixin
 from app.db.vernacular import enums
-from app.db.vernacular.calculated import calculate_fields
+from app.db.vernacular.calculated import trigger_taxon_name_calculated_fields
 from app.db.vernacular.constants import (
     LANG_PREF,
     LANGUAGE,
@@ -63,5 +64,11 @@ class Vernacular(BaseModel, TableMixin):
     sort_order = Column(Integer)
 
 
-event.listen(Vernacular, "after_insert", calculate_fields)
-event.listen(Vernacular, "after_update", calculate_fields)
+def before_flush(session, flush_context, instances):
+    for item in session.__dict__["identity_map"].items():
+        instance = item[1]
+        if isinstance(instance, Vernacular):
+            trigger_taxon_name_calculated_fields(session, instance)
+
+
+event.listen(Session, "before_flush", before_flush)
