@@ -27,7 +27,7 @@ export const ClassSystemCreateEdit: FC = (props) => {
     <SimpleForm {...props} warnWhenUnsavedChanges>
       <Box>
         <Typography variant="h5" className={globalClasses.bold} gutterBottom>
-          Classification
+          Classification system
         </Typography>
       </Box>
       <Box className={classes.mainGrid}>

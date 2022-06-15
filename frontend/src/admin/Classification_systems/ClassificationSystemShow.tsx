@@ -20,7 +20,7 @@ export const ClassificationSystemShow: FC = (props) => {
     <Show aside={<Aside />} {...props}>
       <Box className={classes.showPad}>
         <Typography variant="h5" className={globalClasses.bold} gutterBottom>
-          Classification
+          Classification system
         </Typography>
         <Box className={globalClasses.formRow}>
           <Box className={globalClasses.fieldMargin}>
