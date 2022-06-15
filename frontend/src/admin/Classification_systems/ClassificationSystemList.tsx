@@ -88,7 +88,7 @@ export const ClassificationSystemList = (props: ListProps) => {
   return (
     <List
       {...props}
-      sort={{ field: 'class_desc', order: 'DESC' }}
+      sort={{ field: 'class_desc', order: 'ASC' }}
       actions={<Actions />}
       perPage={100}
       filters={ClassificationSystemFilters}
