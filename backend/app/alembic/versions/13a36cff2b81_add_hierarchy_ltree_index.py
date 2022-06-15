@@ -1,7 +1,7 @@
 """Add hierarchy ltree index
 
 Revision ID: 13a36cff2b81
-Revises: cb18cf9a9606
+Revises: 015e61499a44
 Create Date: 2022-05-11 21:21:08.543008+08:00
 
 """
@@ -12,7 +12,7 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "13a36cff2b81"
-down_revision = "cb18cf9a9606"
+down_revision = "015e61499a44"
 branch_labels = None
 depends_on = None
 
@@ -22,7 +22,7 @@ def upgrade():
     op.execute("CREATE EXTENSION IF NOT EXISTS ltree")
     op.add_column(
         "hierarchy",
-        sa.Column("path", sqlalchemy_utils.types.ltree.LtreeType(), nullable=False),
+        sa.Column("path", sqlalchemy_utils.types.ltree.LtreeType(), nullable=True),
     )
     op.create_index(
         "ix_nodes_path", "hierarchy", ["path"], unique=False, postgresql_using="gist"

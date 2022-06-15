@@ -59,20 +59,8 @@ def run_migrations_online():
     In this scenario we need to create an Engine
     and associate a connection with the context.
     """
-    import app.db.author.model
-    import app.db.citation.model
-    import app.db.classification_system.model
-    import app.db.cross_reference.model
-    import app.db.hierarchy.model
-    import app.db.informal_group.model
-    import app.db.kingdom.model
-    import app.db.publication.model
-    import app.db.role.model
-    import app.db.taxon_name.model
-    import app.db.taxon_rank.model
-    import app.db.user.model
-    import app.db.user_role.model
-    import app.db.vernacular.model
+    # Import the model classes so that alembic knows about them.
+    import app.model
 
     configuration = config.get_section(config.config_ini_section)
     configuration["sqlalchemy.url"] = get_url()

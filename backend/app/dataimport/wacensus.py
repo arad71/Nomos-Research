@@ -17,6 +17,7 @@ from app.db.dataimport import LEGACY_DATA_DIRECTORY
 from app.db.hierarchy.dataimport import ImportHierarchy
 from app.db.informal_group.dataimport import ImportInformalGroup
 from app.db.kingdom.dataimport import ImportKingdom
+from app.db.models import BaseModel
 from app.db.publication.dataimport import ImportPublication
 from app.db.session import SessionLocal
 from app.db.taxon_name.dataimport import ImportTaxonName, ImportTaxonNameFamilyNid
@@ -26,6 +27,7 @@ from app.db.user.crud import UserCrud
 from app.db.user.dataimport import ImportUser, ImportUserDefaults
 from app.db.user.schema import UserCreate
 from app.db.vernacular.dataimport import ImportVernacular
+from app.tools.hierarchy_calculation import rebuild_hierarchy_paths
 
 
 def get_admin_id(db: SessionLocal):
@@ -39,11 +41,11 @@ def get_admin_id(db: SessionLocal):
     return admin.user_id
 
 
-def trigger_calculated_fields(db):
+def trigger_calculated_fields(db, table: BaseModel = TaxonName):
     # Calculate fields after related data imported
     line_count = 0
-    logger.debug("Triggering calculated fields")
-    for r in db.query(TaxonName).all():
+    logger.debug("Triggering calculated fields on table {}", table)
+    for r in db.query(table).all():
         orm.attributes.flag_dirty(r)
         db.add(r)
         line_count += 1
@@ -80,6 +82,7 @@ def import_data(url: AnyUrl = settings.WACENSUS_DATA_FILE_URL):
     ImportHierarchy(db, admin_id).ingest("HBTPARENTS")
     ImportInformalGroup(db, admin_id).ingest("HBTGROUPS")
     trigger_calculated_fields(db)
+    rebuild_hierarchy_paths(db)
     logger.info("Import completed")
     logger.remove(log)
 

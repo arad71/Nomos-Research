@@ -16,26 +16,36 @@ def test_hierarchy_children(
 
     now = datetime.datetime.utcnow()
     name = test_animalia
-    animal = create_hierarchy(
-        name, now, None, test_classification_system, test_db, test_superuser
-    )
+    # animal = create_hierarchy(
+    #     name, now, None, test_classification_system, test_db, test_superuser
+    # )
     chordate = create_hierarchy(
-        test_chordata, now, animal, test_classification_system, test_db, test_superuser
+        test_chordata,
+        now,
+        test_animalia,
+        test_classification_system,
+        test_db,
+        test_superuser,
     )
     mammal = create_hierarchy(
         test_mammalia,
         now,
-        chordate,
+        test_chordata,
         test_classification_system,
         test_db,
         test_superuser,
     )
     carnivore = create_hierarchy(
-        test_carnivora, now, mammal, test_classification_system, test_db, test_superuser
+        test_carnivora,
+        now,
+        test_mammalia,
+        test_classification_system,
+        test_db,
+        test_superuser,
     )
 
-    print(animal.children())
-    assert animal.children()
+    print(chordate.children())
+    assert chordate.children()
 
 
 def create_hierarchy(

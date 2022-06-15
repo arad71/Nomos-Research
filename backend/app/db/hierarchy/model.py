@@ -1,6 +1,8 @@
 from fastapi import Depends
-from sqlalchemy import Column, ForeignKey, Index, Integer, Sequence, func
-from sqlalchemy.orm import backref, foreign, relationship, remote
+from loguru import logger
+from sqlalchemy import Column, ForeignKey, Index, Integer, Sequence, and_, event, func
+from sqlalchemy.engine import Connection
+from sqlalchemy.orm import Mapper, backref, foreign, relationship, remote
 from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy_utils import Ltree, LtreeType
 
@@ -22,7 +24,7 @@ class Hierarchy(BaseModel, TableMixin):
     name_plural = "hierarchies"
 
     hierarchy_id = Column(Integer, id_seq, primary_key=True)
-    path = Column(LtreeType, nullable=False)
+    path = Column(LtreeType, nullable=True)
 
     parent = relationship(
         "Hierarchy",
@@ -40,8 +42,9 @@ class Hierarchy(BaseModel, TableMixin):
         updated_on=None,
         created_by=None,
         created_on=None,
-        engine=Depends(get_db),
+        # engine=Depends(get_db),
     ):
+        engine = get_db().__next__()
         _id = engine.execute(id_seq)
         self.hierarchy_id = _id
         self.taxon_name = taxon_name
@@ -53,7 +56,8 @@ class Hierarchy(BaseModel, TableMixin):
         self.parent = parent
 
         # self.name = name
-        ltree_id = Ltree(str(_id))
+        ltree_id = Ltree(str(taxon_name.taxon_name_id))
+        logger.debug(ltree_id)
         self.path = ltree_id if parent is None else parent.path + ltree_id
 
     taxon_name_id = Column(
@@ -67,7 +71,7 @@ class Hierarchy(BaseModel, TableMixin):
         "TaxonName",
         foreign_keys=[taxon_name_id],
         remote_side=[TaxonName.taxon_name_id],
-        backref=backref("names", cascade="all, delete-orphan"),
+        backref=backref("hierarchies", cascade="all, delete-orphan"),
     )
     classification_system_id = Column(
         Integer,
@@ -84,13 +88,27 @@ class Hierarchy(BaseModel, TableMixin):
         comment=PARENT_NAME_ID,
         doc=PARENT_NAME_ID,
     )
-    # parent = relationship(
-    #     "TaxonName",
-    #     foreign_keys=[parent_nid],
-    #     remote_side=[TaxonName.taxon_name_id],
-    #     backref=backref("children", cascade="all, delete-orphan"),
-    # )
+    parent_name = relationship(
+        "TaxonName",
+        foreign_keys=[parent_nid],
+        remote_side=[TaxonName.taxon_name_id],
+        backref=backref("hierarchy_children", cascade="all, delete-orphan"),
+    )
 
+    direct_parent = relationship(
+        "Hierarchy",
+        # foreign_keys=[parent_nid, classification_system_id],
+        # remote_side="[Hierarchy.taxon_name_id, Hierarchy.classification_system_id ]",
+        backref=backref(
+            "direct_children",
+            # cascade="all, delete-orphan"
+        ),
+        primaryjoin=and_(
+            remote(taxon_name_id) == foreign(parent_nid),
+            remote(classification_system_id) == foreign(classification_system_id),
+        ),
+        viewonly=True,
+    )
     __table_args__ = (
         UniqueConstraint(
             "taxon_name_id",
@@ -100,3 +118,22 @@ class Hierarchy(BaseModel, TableMixin):
         Index("ix_nodes_path", path, postgresql_using="gist"),
         {"comment": TABLE_DESCRIPTION},
     )
+
+
+def calculate_fields(mapper, connection, target: Hierarchy):
+    logger.debug(target)
+    parent = target.direct_parent
+    logger.debug(parent)
+    parent_path = target.direct_parent.path
+    logger.debug(parent_path, target.direct_parent.direct_parent)
+    target.query()
+
+    target.path = map_path(mapper, connection, target)
+
+
+# @event.listens_for(Hierarchy.parent_nid, 'set')
+# def handle_parent_change(target, value, oldvalue, initiator):
+#     if oldvalue != value:
+#         clear
+# event.listen(Hierarchy, "before_insert", calculate_fields)
+# event.listen(Hierarchy, "before_update", calculate_fields)
