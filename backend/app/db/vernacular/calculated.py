@@ -11,3 +11,4 @@ def trigger_taxon_name_calculated_fields(session, target):
     for taxon_name in taxon_names:
         orm.attributes.flag_dirty(taxon_name)
         session.add(taxon_name)
+    return session
