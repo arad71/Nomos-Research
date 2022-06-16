@@ -11,6 +11,6 @@ class VernacularCrud(crud.Crud):
     @classmethod
     def create_item(cls, db, item, current_user):
         vernacular = super().create_item(db, item, current_user=current_user)
-        session = trigger_taxon_name_calculated_fields(db, vernacular)
-        session.commit()
+        trigger_taxon_name_calculated_fields(db, vernacular)
+        db.commit()
         return vernacular
