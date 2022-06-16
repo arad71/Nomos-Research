@@ -9,7 +9,7 @@ import React, { FC } from 'react';
 import AuthorType from './AuthorType';
 
 export const CitationCreateEdit: FC = (props) => (
-  <SimpleForm {...props}>
+  <SimpleForm {...props} warnWhenUnsavedChanges>
     <ReferenceInput
       source="taxon_name_id"
       reference="taxon_names"

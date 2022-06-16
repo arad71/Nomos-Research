@@ -10,7 +10,7 @@ import React, { FC } from 'react';
 import RankAbbreviation from './RankAbbreviation';
 
 export const TaxonRankCreateEdit: FC = (props) => (
-  <SimpleForm {...props}>
+  <SimpleForm {...props} warnWhenUnsavedChanges>
     <ReferenceInput label="Kingdom" source="kingdom_id" reference="kingdoms">
       <SelectInput optionText="kingdom_name" validate={[required()]} />
     </ReferenceInput>

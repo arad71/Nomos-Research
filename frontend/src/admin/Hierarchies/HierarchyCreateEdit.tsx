@@ -2,7 +2,7 @@ import { ReferenceInput, required, SelectInput, SimpleForm } from 'react-admin';
 import React, { FC } from 'react';
 
 export const HierarchyCreateEdit: FC = (props) => (
-  <SimpleForm {...props}>
+  <SimpleForm {...props} warnWhenUnsavedChanges>
     <ReferenceInput source="taxon_name_id" reference="taxon_names">
       <SelectInput optionText="scientific_name" validate={required()} />
     </ReferenceInput>
