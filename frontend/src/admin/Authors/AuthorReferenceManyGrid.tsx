@@ -42,7 +42,7 @@ export const AuthorReferenceManyGrid = (props: {
           </Datagrid>
         </ReferenceManyField>
       ) : (
-        <span>No related citations found</span>
+        <span>No related authors found</span>
       )}
     </>
   );
