@@ -4,7 +4,9 @@ CURATION_ENDPOINT = "/api/v1/checklist/curation"
 
 
 def test_checklist(client, test_cross_reference, test_taxon_name, checklist_api_key):
-    response = client.get(CURATION_ENDPOINT, headers={"x-api-key": checklist_api_key})
+    response = client.get(
+        CURATION_ENDPOINT + "?validated=true", headers={"x-api-key": checklist_api_key}
+    )
     assert response.status_code == 200
     assert response.json() == [
         {
