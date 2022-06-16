@@ -248,7 +248,17 @@ The app is deployed using GitHub actions configured through [.github/workflows/c
 
 ### Configuration
 Environment specific configuration can be placed in a .env in the project directory on the deployment server.
-Take a look at [.env.default](.env.default) for an example of how to configure the app.
+Take a look at [.env.example](.env.example) for an example of how to configure the app.
+
+#### Authentication providers
+
+Two authentication providers are supported and can be switched between using  the environment variable `AUTH_PROVIDER`
+
+| Provider | Info                                                                                                                              |
+|----------|-----------------------------------------------------------------------------------------------------------------------------------|
+| password | Use password based authentication. Enables password on the user edit form                                                         |
+| auth2    | Auth2 authentication is based on request headers set by the proxy https://dev.azure.com/BIO-WA/WA-BDR/_wiki/wikis/BDR-WA.wiki/70/Authentication. For local development the user details are set in nginx.conf. |
+
 
 ### Environments
 In order to deploy to the **staging** environment push code to the `staging` branch via a pull request into **staging**.

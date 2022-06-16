@@ -171,11 +171,12 @@ class TaxonName(BaseModel, TableMixin):
     reference = Column(Text)
     authorised_by = Column(String(16))
     authorised_on = Column(DateTime)
-    legacy_id = Column(Integer)
+    legacy_id = Column(String)
     canonical_name_without_rank = column_property(
         func.CONCAT_WS(" ", uninomial, specific_epithet, infraspecific_epithet),
         deferred=True,
     )
+    admin_comment = Column(String)
 
 
 event.listen(TaxonName, "before_insert", calculate_fields)

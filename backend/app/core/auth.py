@@ -1,4 +1,5 @@
 from typing import Any, Callable, Optional, Sequence, Union
+from uuid import uuid4
 
 import jwt
 from fastapi import Depends, HTTPException, Security, status
@@ -6,10 +7,12 @@ from fastapi.security import SecurityScopes
 from jwt import PyJWTError
 from loguru import logger
 from pydantic import ValidationError
+from sqlalchemy.orm import Session
 
 import app.db.user.model as model
 import app.db.user.schema as schema
 from app.core import security
+from app.core.config import get_settings
 from app.db import session
 from app.db.role.constants import Role
 from app.db.user.crud import UserCrud
@@ -103,6 +106,15 @@ def authenticate_user(db, email: str, password: str) -> Union[bool, User]:
     return user
 
 
+def use_auth2(settings=Depends(get_settings)):
+    if settings.AUTH_PROVIDER != "auth2":
+        logger.error("Cannot use authentication provider {}.", settings.AUTH_PROVIDER)
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Endpoint can only be used when using auth2 ",
+        )
+
+
 def sign_up_new_user(db, email: str, password: str):
     user = UserCrud.get_user_by_email(db, email)
     if user:
@@ -116,3 +128,25 @@ def sign_up_new_user(db, email: str, password: str):
         ),
     )
     return new_user
+
+
+def auth2_authenticate_user(
+    db: Session,
+    x_email: str,
+    x_first_name: str,
+    x_last_name: str,
+) -> Union[bool, User]:
+    user = UserCrud.get_user_by_email(db, x_email)
+    if not user:
+        password = str(uuid4())
+        user = UserCrud.create_item(
+            db,
+            schema.UserCreate(
+                email=x_email,
+                first_name=x_first_name,
+                last_name=x_last_name,
+                is_active=False,
+                password=password,
+            ),
+        )
+    return user

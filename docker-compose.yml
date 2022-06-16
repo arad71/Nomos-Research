@@ -57,6 +57,8 @@ services:
       WACENSUS_DATA_FILE_URL: ${WACENSUS_DATA_FILE_URL:-https://example.org/datafile.zip}
       WACENSUS_SUFFIX: ${WACENSUS_SUFFIX:-.csv}
       WACENSUS_ENCODING: ${WACENSUS_ENCODING:-utf-8}
+      AUTH_PROVIDER: ${AUTH_PROVIDER:-auth2}
+
     depends_on:
       - "postgres"
 
@@ -72,6 +74,7 @@ services:
       - './frontend/node_modules:/app/node_modules:cached'
     environment:
       - NODE_ENV=${NODE_ENV:-development}
+      - REACT_APP_AUTH_PROVIDER=${AUTH_PROVIDER:-auth2}
       - REACT_APP_BASE_URL=${REACT_APP_BASE_URL:-http://localhost:8000}
       - REACT_APP_BACKEND_URL=${REACT_APP_BACKEND_URL:-http://localhost:8000/api/v1}
 
