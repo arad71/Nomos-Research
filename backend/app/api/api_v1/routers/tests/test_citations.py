@@ -130,7 +130,6 @@ def test_unauthenticated_routes(client):
 
 
 NEW_CITATION = {
-    "author_type": "current",
     "author_order": 0,
     "updated_by": None,
     "updated_on": None,
@@ -156,6 +155,7 @@ def test_super_admin_permissions(
 
     citation_json = {
         **NEW_CITATION,
+        "author_type": "basionym",
         "taxon_name_id": test_taxon_name.taxon_name_id,
         "author_id": test_author.author_id,
         "created_by": test_superuser.user_id,
@@ -167,6 +167,7 @@ def test_super_admin_permissions(
         json=citation_json,
     )
     assert response.status_code == status.HTTP_200_OK
+    citation_id = response.json()["citation_id"]
 
     citation_json.update(
         {
@@ -175,14 +176,14 @@ def test_super_admin_permissions(
         }
     )
     response = client.put(
-        f"/api/v1/citations/{test_citation.citation_id}",
+        f"/api/v1/citations/{citation_id}",
         headers=superuser_token_headers,
         json=citation_json,
     )
     assert response.status_code == status.HTTP_200_OK
 
     response = client.delete(
-        f"/api/v1/citations/{test_citation.citation_id}",
+        f"/api/v1/citations/{citation_id}",
         headers=superuser_token_headers,
     )
     assert response.status_code == status.HTTP_200_OK
@@ -207,6 +208,7 @@ def test_manager_permissions(
 
     citation_json = {
         **NEW_CITATION,
+        "author_type": "basionym",
         "taxon_name_id": test_taxon_name.taxon_name_id,
         "author_id": test_author.author_id,
         "created_by": test_manager.user_id,
@@ -218,7 +220,7 @@ def test_manager_permissions(
         json=citation_json,
     )
     assert response.status_code == status.HTTP_200_OK
-
+    citation_id = response.json()["citation_id"]
     citation_json.update(
         {
             "updated_by": test_manager.user_id,
@@ -226,14 +228,14 @@ def test_manager_permissions(
         }
     )
     response = client.put(
-        f"/api/v1/citations/{test_citation.citation_id}",
+        f"/api/v1/citations/{citation_id}",
         headers=manager_token_headers,
         json=citation_json,
     )
     assert response.status_code == status.HTTP_200_OK
 
     response = client.delete(
-        f"/api/v1/citations/{test_citation.citation_id}",
+        f"/api/v1/citations/{citation_id}",
         headers=manager_token_headers,
     )
     assert response.status_code == status.HTTP_200_OK
@@ -264,6 +266,7 @@ def test_officer_permissions(
 
     citation_json = {
         **NEW_CITATION,
+        "author_type": "basionym",
         "taxon_name_id": test_taxon_name.taxon_name_id,
         "author_id": test_author.author_id,
         "created_by": test_officer.user_id,
@@ -275,7 +278,7 @@ def test_officer_permissions(
         json=citation_json,
     )
     assert response.status_code == status.HTTP_200_OK
-
+    citation_id = response.json()["citation_id"]
     citation_json.update(
         {
             "updated_by": test_officer.user_id,
@@ -283,7 +286,7 @@ def test_officer_permissions(
         }
     )
     response = client.put(
-        f"/api/v1/citations/{test_citation.citation_id}",
+        f"/api/v1/citations/{citation_id}",
         headers=officer_token_headers,
         json=citation_json,
     )
