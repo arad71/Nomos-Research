@@ -142,13 +142,14 @@ class ImportTaxonNameFamilyNid(ImportTaxonName):
 
 
 class ImportTaxonNameUpload(ImportTaxonName):
-    def __init__(self, db, current_user, csvfile):
+    def __init__(self, db, current_user, csvfile, mapping_type):
         super().__init__(db, current_user)
         self.csvfile = csvfile
+        self.mapping_type = mapping_type
         self.legacy_id_prefix = os.path.split(self.csvfile)[1].split(".")[0] + ":"
         self.total_rows = 0
 
-    def row_mapping(self, row):
+    def row_mapping_vanilla(self, row):
         kingdom_id = self.map_row_by_unique_key(
             Kingdom, "kingdom_name", row["kingdom"], "kingdom_id"
         )
@@ -160,6 +161,40 @@ class ImportTaxonNameUpload(ImportTaxonName):
             "specific_epithet": row["specificEpithet"] or None,
             "infraspecific_epithet": row["infraspecificEpithet"] or None,
             "legacy_id": self.legacy_id_prefix + row["id"],
+            "is_current": True,
+            "validated": False,
+            "admin_comment": (
+                f"Created by import script {__name__}"
+                f" from source csv {self.legacy_id_prefix[:-1]}"
+                f" on {datetime.date.today()}"
+            ),
+            "created_by": self.current_user,
+            "updated_by": self.current_user,
+        }
+
+    @staticmethod
+    def _get_split_names(
+        uninomial=None, specific_epithet=None, infraspecific_epithet=None
+    ):
+        return uninomial, specific_epithet, infraspecific_epithet
+
+    def row_mapping_curation_data_extract(self, row):
+        if row["SourceTable"] != "WAMChecklistNameLookup":
+            return None
+        kingdom_id = self.map_row_by_unique_key(
+            Kingdom, "kingdom_name", row["Kingdom"], "kingdom_id"
+        )
+        rank_id = self.map_taxon_rank_by_name(kingdom_id, row["Rank"])
+        uninomial, specific_epithet, infraspecific_epithet = self._get_split_names(
+            *row["lookupCanonicalName"].split()
+        )
+        return {
+            "kingdom_id": kingdom_id,
+            "rank_id": rank_id,
+            "uninomial": uninomial,
+            "specific_epithet": specific_epithet,
+            "infraspecific_epithet": infraspecific_epithet,
+            "legacy_id": self.legacy_id_prefix + row["NameID"],
             "is_current": True,
             "validated": False,
             "admin_comment": (
@@ -199,9 +234,13 @@ class ImportTaxonNameUpload(ImportTaxonName):
             raise DataImportError(message)
 
     def import_row(self, row):
-        item = self.row_mapping(row)
-        self.check_canonical_name_without_rank_exists(item)
-        self.values.append(item)
+        if self.mapping_type == "Vanilla":
+            item = self.row_mapping_vanilla(row)
+        else:
+            item = self.row_mapping_curation_data_extract(row)
+        if item:
+            self.check_canonical_name_without_rank_exists(item)
+            self.values.append(item)
 
     def ingest(self):
         with open(self.csvfile) as csv_file:
