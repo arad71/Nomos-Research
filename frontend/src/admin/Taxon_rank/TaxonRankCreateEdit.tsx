@@ -27,7 +27,7 @@ export const TaxonRankCreateEdit: FC = (props) => {
     <SimpleForm {...props} warnWhenUnsavedChanges>
       <Box>
         <Typography variant="h5" className={globalClasses.bold} gutterBottom>
-          Classification system
+          Taxon rank
         </Typography>
       </Box>
       <Box className={classes.mainGrid}>
