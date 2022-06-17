@@ -24,12 +24,12 @@ authorizer = AuthorizerDependency(key_pattern="API_KEY_")
 )
 async def curation_checklist(
     response: Response,
+    validated: bool,
     limit: Optional[int] = 10,
     offset: Optional[int] = 0,
     current: Optional[bool] = None,
     anyUpdated: Optional[datetime] = None,
     updated: Optional[datetime] = None,
-    validated: Optional[bool] = True,
     crossReferenceUpdated: Optional[datetime] = None,
     acceptedNameUpdated: Optional[datetime] = None,
     db=Depends(get_db),
@@ -86,21 +86,20 @@ async def curation_checklist(
         )
         .filter(or_(CrossReference.active, CrossReference.active == None))  # noqa: E711
     )
-    if validated is not None:
-        if validated:
-            statement = statement.filter(
-                and_(
-                    original_name.validated == validated,
-                    accepted_name.validated == validated,
-                )
+    if validated:
+        statement = statement.filter(
+            and_(
+                original_name.validated == validated,
+                accepted_name.validated == validated,
             )
-        else:
-            statement = statement.filter(
-                or_(
-                    original_name.validated == validated,
-                    accepted_name.validated == validated,
-                )
+        )
+    else:
+        statement = statement.filter(
+            or_(
+                original_name.validated == validated,
+                accepted_name.validated == validated,
             )
+        )
     if updated:
         statement = statement.filter(original_name.updated_on >= updated)
     if crossReferenceUpdated:
