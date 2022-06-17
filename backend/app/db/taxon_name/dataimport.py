@@ -179,7 +179,7 @@ class ImportTaxonNameUpload(ImportTaxonName):
         return uninomial, specific_epithet, infraspecific_epithet
 
     def row_mapping_curation_data_extract(self, row):
-        if row["SourceTable"] != "WAMChecklistNameLookup":
+        if row["SourceTable"] != "WAMChecklistNameLookup" or not row["Kingdom"]:
             return None
         kingdom_id = self.map_row_by_unique_key(
             Kingdom, "kingdom_name", row["Kingdom"], "kingdom_id"
