@@ -6,11 +6,16 @@ import {
   ReferenceManyField,
   SelectField,
   TextField,
-  useRecordContext,
 } from 'react-admin';
+import { Box, Typography } from '@material-ui/core';
 
-import { GlobalTheme } from '../../GlobalTheme';
 import AuthorType from '../Citations/AuthorType';
+
+const Empty = () => (
+  <Box>
+    <Typography variant="body1">No related authors found</Typography>
+  </Box>
+);
 
 export const AuthorReferenceManyGrid = (props: {
   source: string;
@@ -18,32 +23,25 @@ export const AuthorReferenceManyGrid = (props: {
   label: string;
   props: React.PropsWithChildren<{}>;
 }) => {
-  const record = useRecordContext();
   return (
-    <>
-      {record.author ? (
-        <ReferenceManyField
-          fullWidth
-          label="Authors"
-          reference="citations"
-          target={props.target}
-          sort={{
-            field: 'author_type,author_order',
-            order: 'ASC,ASC',
-          }}
-          {...props.props}
-        >
-          <Datagrid>
-            <ReferenceField source={props.source} reference="authors">
-              <TextField source="abbreviation" />
-            </ReferenceField>
-            <SelectField source="author_type" choices={AuthorType} />
-            <NumberField source="author_order" />
-          </Datagrid>
-        </ReferenceManyField>
-      ) : (
-        <span>No related citations found</span>
-      )}
-    </>
+    <ReferenceManyField
+      fullWidth
+      label="Authors"
+      reference="citations"
+      target={props.target}
+      sort={{
+        field: 'author_type,author_order',
+        order: 'ASC,ASC',
+      }}
+      {...props.props}
+    >
+      <Datagrid empty={<Empty />}>
+        <ReferenceField source={props.source} reference="authors" allowEmpty>
+          <TextField source="abbreviation" />
+        </ReferenceField>
+        <SelectField source="author_type" choices={AuthorType} />
+        <NumberField source="author_order" />
+      </Datagrid>
+    </ReferenceManyField>
   );
 };
