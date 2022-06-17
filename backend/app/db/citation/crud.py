@@ -28,3 +28,11 @@ class CitationCrud(crud.Crud):
         trigger_taxon_name_calculated_fields(db, taxon_name_id)
         db.commit()
         return citation
+
+    @classmethod
+    def create_item(cls, db: Session, citation, current_user):
+        citation = super().create_item(db, citation, current_user=current_user)
+        taxon_name_id = citation.taxon_name_id
+        trigger_taxon_name_calculated_fields(db, taxon_name_id)
+        db.commit()
+        return citation
