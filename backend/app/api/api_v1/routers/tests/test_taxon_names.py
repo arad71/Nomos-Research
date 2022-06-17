@@ -76,6 +76,7 @@ def test_edit_taxon_name(
     new_taxon_name["updated_on"] = response.json()["updated_on"]
     new_taxon_name["kingdom"] = response.json()["kingdom"]
     new_taxon_name["taxon_rank"] = response.json()["taxon_rank"]
+    new_taxon_name["all_vernaculars"] = response.json()["all_vernaculars"]
     assert response.json() == new_taxon_name
 
 

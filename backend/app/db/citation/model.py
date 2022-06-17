@@ -17,6 +17,12 @@ class Citation(BaseModel, TableMixin):
     __tablename__ = "citation"
     __table_args__ = (
         UniqueConstraint(
+            "author_id",
+            "taxon_name_id",
+            "author_type",
+            name=f"uc_{__tablename__}_author_id",
+        ),
+        UniqueConstraint(
             "legacy_id_name",
             "taxon_name_id",
             "author_type",

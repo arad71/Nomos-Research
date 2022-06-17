@@ -1,7 +1,7 @@
 from itertools import groupby
 from operator import attrgetter
 
-from sqlalchemy import asc
+from sqlalchemy import asc, desc
 
 from app.db.citation.enums import AuthorType
 from app.db.taxon_name.constants import ANIMAL_KINGDOM_NAME, PLANTAE_KINGDOM_NAME
@@ -13,6 +13,8 @@ def calculate_fields(mapper, connection, target):
     # If we don't have an ID yet we cannot have relationships
     if hasattr(target, "taxon_name_id") and target.taxon_name_id:
         target.author = map_authors(mapper, connection, target)
+        target.vernacular = map_vernacular(target)
+        target.all_vernaculars = map_vernaculars(target)
 
     if any([target.canonical_name, target.author]):
         target.scientific_name = " ".join(
@@ -99,4 +101,25 @@ def map_editors(mapper, connection, target):
     if citations.count():
         return stringify_citation_authors(list(citations))
 
+    return None
+
+
+def map_vernacular(target):
+    vernacular = (
+        target.vernaculars.filter_by(preferred=True).order_by(asc("sort_order")).first()
+    )
+    if vernacular:
+        return vernacular.vernacular
+    return None
+
+
+def map_vernaculars(target):
+    vernaculars = target.vernaculars.filter_by(enabled=True).order_by(desc("preferred"))
+    if vernaculars.count:
+        return ", ".join(
+            filter(
+                None,
+                [vernacular.vernacular for vernacular in vernaculars],
+            )
+        )
     return None

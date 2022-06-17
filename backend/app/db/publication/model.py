@@ -79,7 +79,7 @@ class Publication(BaseModel, TableMixin):
 
     @hybrid_property
     def author_names(self):
-        return [publication_author.abbreviation for publication_author in self.author]
+        return [publication_author.display_name for publication_author in self.author]
 
     @hybrid_property
     def author_ids(self):
