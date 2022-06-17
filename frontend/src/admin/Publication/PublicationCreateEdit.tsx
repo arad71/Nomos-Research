@@ -43,7 +43,7 @@ export const PublicationCreateEdit: FC = (props) => {
           className={globalClasses.subtitle}
         />
       </Box>
-      <TabbedForm {...props}>
+      <TabbedForm {...props} warnWhenUnsavedChanges>
         <FormTab label="Publication" className={globalClasses.bold}>
           <Box className={`${classes.mainGrid} ${globalClasses.sectionMargin}`}>
             <Box>

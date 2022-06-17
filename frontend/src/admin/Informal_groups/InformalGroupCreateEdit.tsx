@@ -2,7 +2,7 @@ import { ReferenceInput, required, SelectInput, SimpleForm } from 'react-admin';
 import React, { FC } from 'react';
 
 export const InformalGroupCreateEdit: FC = (props) => (
-  <SimpleForm {...props}>
+  <SimpleForm {...props} warnWhenUnsavedChanges>
     <ReferenceInput
       source="classification_system_id"
       reference="classification_systems"
