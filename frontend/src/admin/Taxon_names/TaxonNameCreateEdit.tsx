@@ -325,7 +325,7 @@ export const TaxonNameCreateEdit: FC = ({
               source="comments"
               className={gridClasses.EightCol1to9span}
               multiline
-              fullWdith
+              fullWidth
             />
           </Box>
         </FormTab>
