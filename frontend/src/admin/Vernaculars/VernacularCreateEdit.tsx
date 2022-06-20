@@ -11,7 +11,7 @@ import React, { FC } from 'react';
 import LanguageType from './LanguageType';
 
 export const VernacularCreateEdit: FC = (props) => (
-  <SimpleForm {...props}>
+  <SimpleForm {...props} warnWhenUnsavedChanges>
     <TextInput source="vernacular" validate={required()} />
     <ReferenceInput source="taxon_name_id" reference="taxon_names">
       <SelectInput optionText="scientific_name" validate={required()} />

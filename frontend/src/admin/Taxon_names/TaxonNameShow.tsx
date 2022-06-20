@@ -20,6 +20,7 @@ import { Box, Typography } from '@material-ui/core';
 import { GlobalTheme } from '../../GlobalTheme';
 import { CrossReferenceManyGrid } from '../Cross_references';
 import { AuthorReferenceManyGrid } from '../Authors';
+import { VernacularReferenceManyGrid } from '../Vernaculars';
 // eslint-disable-next-line max-len
 import { FormattedScientificNameWithStatus } from './FormattedScientificNameWithStatus';
 import { NamePageSummary } from './NamePageSummary';
@@ -157,83 +158,14 @@ export const TaxonNameShow: FC = (props) => {
                 className={globalClasses.bold}
                 gutterBottom
               >
-                Vernacular names (placeholder section)
+                Vernacular names
               </Typography>
             </Box>
-            <Box className={classes.linedRow}>
-              <Box className={globalClasses.formRow}>
-                <Box className={globalClasses.fieldMargin}>
-                  <Typography variant="body2" gutterBottom>
-                    1
-                  </Typography>
-                </Box>
-                <Box className={globalClasses.fieldMargin}>
-                  <Labeled label="Name">
-                    <Typography variant="body2" gutterBottom>
-                      Red-tailed black cockatoo
-                    </Typography>
-                  </Labeled>
-                </Box>
-                <Box className={globalClasses.fieldMargin}>
-                  <Labeled label="Name type">
-                    <Typography variant="body2" gutterBottom>
-                      Common
-                    </Typography>
-                  </Labeled>
-                </Box>
-                <Box className={globalClasses.fieldMargin}>
-                  <Labeled label="Language">
-                    <Typography variant="body2" gutterBottom>
-                      English
-                    </Typography>
-                  </Labeled>
-                </Box>
-                <Box className={globalClasses.fieldMargin}>
-                  <Labeled label="Preferred">
-                    <Typography variant="body2" gutterBottom>
-                      Enabled
-                    </Typography>
-                  </Labeled>
-                </Box>
-              </Box>
-            </Box>
-            <Box className={classes.linedRow}>
-              <Box className={globalClasses.formRow}>
-                <Box className={globalClasses.fieldMargin}>
-                  <Typography variant="body2" gutterBottom>
-                    2
-                  </Typography>
-                </Box>
-                <Box className={globalClasses.fieldMargin}>
-                  <Labeled label="Name">
-                    <Typography variant="body2" gutterBottom>
-                      Red-tailed black cockatoo
-                    </Typography>
-                  </Labeled>
-                </Box>
-                <Box className={globalClasses.fieldMargin}>
-                  <Labeled label="Name type">
-                    <Typography variant="body2" gutterBottom>
-                      Common
-                    </Typography>
-                  </Labeled>
-                </Box>
-                <Box className={globalClasses.fieldMargin}>
-                  <Labeled label="Language">
-                    <Typography variant="body2" gutterBottom>
-                      English
-                    </Typography>
-                  </Labeled>
-                </Box>
-                <Box className={globalClasses.fieldMargin}>
-                  <Labeled label="Preferred">
-                    <Typography variant="body2" gutterBottom>
-                      Enabled
-                    </Typography>
-                  </Labeled>
-                </Box>
-              </Box>
-            </Box>
+            <VernacularReferenceManyGrid
+              props={props}
+              target="taxon_name_id"
+              label="Vernaculars"
+            />
           </Tab>
           <Tab label="Details" className={globalClasses.bold}>
             <Box className={globalClasses.sectionMargin}>

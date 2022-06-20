@@ -1,5 +1,6 @@
 import os
 import shutil
+from uuid import uuid4
 from zipfile import ZipFile
 
 import requests
@@ -23,20 +24,32 @@ from app.db.taxon_name.model import TaxonName
 from app.db.taxon_rank.dataimport import ImportTaxonRank
 from app.db.user.crud import UserCrud
 from app.db.user.dataimport import ImportUser, ImportUserDefaults
+from app.db.user.schema import UserCreate
 from app.db.vernacular.dataimport import ImportVernacular
 
 
 def get_admin_id(db: SessionLocal):
-    admin_email = os.getenv("ADMIN_EMAIL", "admin@taxman.com")
+    admin_email = "wacensus-migration@bdr.wa.gov.au"
     admin = UserCrud.get_user_by_email(db=db, email=admin_email)
-    return admin.user_id if admin else None
+    if not admin:
+        admin = UserCrud.create_item(
+            db,
+            UserCreate(email=admin_email, is_active=False, password=str(uuid4())),
+        )
+    return admin.user_id
 
 
-def trigger_calculated_fields(db):
+def trigger_calculated_fields(db, legacy_id_prefix=None):
     # Calculate fields after related data imported
     line_count = 0
     logger.debug("Triggering calculated fields")
-    for r in db.query(TaxonName).all():
+    if legacy_id_prefix:
+        taxon_names = db.query(TaxonName).filter(
+            TaxonName.legacy_id.contains(legacy_id_prefix)
+        )
+    else:
+        taxon_names = db.query(TaxonName).all()
+    for r in taxon_names:
         orm.attributes.flag_dirty(r)
         db.add(r)
         line_count += 1

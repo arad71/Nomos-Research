@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { fetchUtils, Admin as ReactAdmin } from 'react-admin';
 import { Resource } from '@react-admin/ra-rbac';
 import restDataProvider from 'ra-data-rest-client';
-import { BACKEND_URL } from '../config';
+import { AUTH_PROVIDER, BACKEND_URL } from '../config';
 import authProvider from './authProvider';
 import MyLoginPage from '../views/NewLogin';
 import MyLayout from '../MyLayout';
@@ -118,7 +118,7 @@ const dataProvider = restDataProvider(
 export const Admin: FC = () => {
   return (
     <ReactAdmin
-      loginPage={MyLoginPage}
+      loginPage={AUTH_PROVIDER === 'auth2' ? false : MyLoginPage}
       dashboard={Dashboard}
       layout={MyLayout}
       theme={theme}

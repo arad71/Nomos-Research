@@ -7,9 +7,15 @@ import {
   SelectField,
   TextField,
 } from 'react-admin';
+import { Box, Typography } from '@material-ui/core';
 
-import { GlobalTheme } from '../../GlobalTheme';
 import AuthorType from '../Citations/AuthorType';
+
+const Empty = () => (
+  <Box>
+    <Typography variant="body1">No related authors found</Typography>
+  </Box>
+);
 
 export const AuthorReferenceManyGrid = (props: {
   source: string;
@@ -29,8 +35,8 @@ export const AuthorReferenceManyGrid = (props: {
       }}
       {...props.props}
     >
-      <Datagrid>
-        <ReferenceField source={props.source} reference="authors">
+      <Datagrid empty={<Empty />}>
+        <ReferenceField source={props.source} reference="authors" allowEmpty>
           <TextField source="abbreviation" />
         </ReferenceField>
         <SelectField source="author_type" choices={AuthorType} />
