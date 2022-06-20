@@ -14,7 +14,7 @@ import { DefaultPagination, useCanBulkDelete } from '../shared';
 export const HierarchyList: FC = (props) => (
   <List
     {...props}
-    sort={{ field: 'parent___scientific_name' }}
+    // sort={{ field: 'parent___scientific_name' }}
     perPage={100}
     pagination={<DefaultPagination />}
     bulkActionButtons={useCanBulkDelete()}
