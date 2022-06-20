@@ -18,7 +18,7 @@ def get_scopes() -> dict:
 
 
 oauth2_scheme = OAuth2PasswordBearer(
-    tokenUrl="/api/token",
+    tokenUrl="/api/auth2token" if settings.AUTH_PROVIDER == "auth2" else "/api/token",
     scopes=get_scopes(),
 )
 
