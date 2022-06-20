@@ -1,4 +1,6 @@
+import zipfile
 from enum import Enum
+from pathlib import Path
 
 from fastapi import APIRouter, Depends, UploadFile
 from fastapi.responses import FileResponse
@@ -53,9 +55,17 @@ def import_csvupload_data(
     mapping_type: MappingType,
 ):
     contents = upload_file.file.read()
-    flie_path = "/legacy_data/" + upload_file.filename
-    with open(flie_path, "wb+") as file_path:
-        file_path.write(contents)
-
-    background_tasks.add_task(import_taxon_names, flie_path, mapping_type)
+    file_path = "/legacy_data/" + upload_file.filename
+    with open(file_path, "wb+") as uploaded_file:
+        uploaded_file.write(contents)
+    if file_path.endswith(".zip"):
+        extracted_folder = file_path + "_extracted/"
+        Path(extracted_folder).mkdir(parents=True)
+        with zipfile.ZipFile(file_path, "r") as uploaded_file:
+            uploaded_file.extractall(extracted_folder)
+            files = Path(extracted_folder).glob("*")
+            for file in files:
+                background_tasks.add_task(import_taxon_names, file, mapping_type)
+    else:
+        background_tasks.add_task(import_taxon_names, file_path, mapping_type)
     return background_tasks.tasks
