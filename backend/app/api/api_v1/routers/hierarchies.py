@@ -1,11 +1,19 @@
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, Response
+from loguru import logger
+from sqlalchemy.orm import Session
 
+from app import model
 from app.api.dependencies.range_query import RangeQueryParameter
 from app.core.auth import authorize, get_current_active_user
 from app.db.hierarchy.crud import HierarchyCrud
-from app.db.hierarchy.schema import Hierarchy, HierarchyCreate, HierarchyEdit
+from app.db.hierarchy.schema import (
+    Hierarchy,
+    HierarchyAncestor,
+    HierarchyCreate,
+    HierarchyEdit,
+)
 from app.db.role.constants import Role
 from app.db.session import get_db
 
@@ -121,3 +129,27 @@ async def hierarchy_delete(
     Delete existing hierarchy
     """
     return HierarchyCrud.delete_item(db, hierarchy_id)
+
+
+@r.get(
+    "/ancestors/{taxon_name_id}",
+    response_model=List[HierarchyAncestor],
+    response_model_exclude_none=True,
+    dependencies=[authorize()],
+)
+async def hierarchy_ancestors(
+    taxon_name_id: int,
+    db: Session = Depends(get_db),
+):
+    current_hierarchy = HierarchyCrud.get_by_property(
+        db, "taxon_name_id", taxon_name_id
+    )
+    logger.debug(current_hierarchy)
+    ret = (
+        db.query(model.Hierarchy)
+        .order_by(model.Hierarchy.path)
+        .filter(model.Hierarchy.path.ancestor_of(current_hierarchy.path))
+        .all()
+    )
+    logger.debug(ret)
+    return ret

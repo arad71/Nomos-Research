@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+from sqlalchemy_utils import Ltree
 
 from app.db.classification_system.schema import ClassificationSystem
 from app.db.hierarchy.constants import (
@@ -35,3 +36,16 @@ class Hierarchy(HierarchyBase, TableBase):
     class Config:
         orm_mode = True
         schema_extra = {"description": TABLE_DESCRIPTION}
+
+
+class HierarchyAncestor(BaseModel):
+    taxon_name_id: int
+    parent_nid: int
+    classification_system_id: int
+    formatted_scientific_name: str
+    scientific_name: str
+    rank_name: str
+    classification_system: ClassificationSystem
+
+    class Config:
+        orm_mode = True

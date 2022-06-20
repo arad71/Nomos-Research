@@ -2,6 +2,7 @@ from fastapi import Depends
 from loguru import logger
 from sqlalchemy import Column, ForeignKey, Index, Integer, Sequence, and_, event, func
 from sqlalchemy.engine import Connection
+from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import Mapper, backref, foreign, relationship, remote
 from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy_utils import Ltree, LtreeType
@@ -109,6 +110,12 @@ class Hierarchy(BaseModel, TableMixin):
         ),
         viewonly=True,
     )
+    rank_name = association_proxy("taxon_name", "rank_name")
+    scientific_name = association_proxy("taxon_name", "scientific_name")
+    formatted_scientific_name = association_proxy(
+        "taxon_name", "formatted_scientific_name"
+    )
+
     __table_args__ = (
         UniqueConstraint(
             "taxon_name_id",

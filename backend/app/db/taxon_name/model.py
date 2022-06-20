@@ -9,6 +9,7 @@ from sqlalchemy import (
     event,
     func,
 )
+from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import backref, column_property, relationship
 from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy.types import Enum
@@ -177,6 +178,8 @@ class TaxonName(BaseModel, TableMixin):
         deferred=True,
     )
     admin_comment = Column(String)
+    kingdom_name = association_proxy("kingdom", "kingdom_name")
+    rank_name = association_proxy("taxon_rank", "rank_name")
 
 
 event.listen(TaxonName, "before_insert", calculate_fields)
