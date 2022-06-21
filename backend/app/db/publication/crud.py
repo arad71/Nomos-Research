@@ -13,7 +13,7 @@ class PublicationCrud(crud.Crud):
     name = "Publication"
     search_fields = [
         "title",
-        "display_title",
+        "abbreviated_title",
     ]
 
     @classmethod

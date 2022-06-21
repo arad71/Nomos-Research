@@ -12,6 +12,7 @@ def test_get_publications(client, test_publication, superuser_token_headers):
             "publication_id": test_publication.publication_id,
             "bad_publication": test_publication.bad_publication,
             "abbreviated_title": test_publication.abbreviated_title,
+            "display_title": test_publication.display_title,
             "title": test_publication.title,
             "author": [],
             "publication_day": test_publication.publication_day,
@@ -74,6 +75,7 @@ def test_edit_publication(
     new_publication["author_ids"] = []
     new_publication["author_names"] = []
     new_publication["author_name"] = ""
+    new_publication["display_title"] = test_publication.display_title
     assert response.json() == new_publication
 
 
@@ -111,6 +113,7 @@ def test_get_publication(
         "publication_id": test_publication.publication_id,
         "bad_publication": test_publication.bad_publication,
         "abbreviated_title": test_publication.abbreviated_title,
+        "display_title": test_publication.display_title,
         "title": test_publication.title,
         "publication_day": test_publication.publication_day,
         "publication_month": test_publication.publication_month,
