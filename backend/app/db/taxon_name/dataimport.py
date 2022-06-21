@@ -179,7 +179,7 @@ class ImportTaxonNameUpload(ImportTaxonName):
         return uninomial, specific_epithet, infraspecific_epithet
 
     def row_mapping_curation_data_extract(self, row):
-        if row["SourceTable"] != "WAMChecklistNameLookup" or not row["Kingdom"]:
+        if not row["Kingdom"]:
             return None
         kingdom_id = self.map_row_by_unique_key(
             Kingdom, "kingdom_name", row["Kingdom"], "kingdom_id"
@@ -201,6 +201,7 @@ class ImportTaxonNameUpload(ImportTaxonName):
                 f"Created by import script {__name__}"
                 f" from source csv {self.legacy_id_prefix[:-1]}"
                 f" on {datetime.date.today()}"
+                f" File_NameID: {row['File_NameID']}"
             ),
             "created_by": self.current_user,
             "updated_by": self.current_user,
