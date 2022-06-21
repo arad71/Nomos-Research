@@ -1,5 +1,6 @@
+import typing
+
 from pydantic import BaseModel, Field
-from sqlalchemy_utils import Ltree
 
 from app.db.classification_system.schema import ClassificationSystem
 from app.db.hierarchy.constants import (
@@ -30,22 +31,14 @@ class HierarchyEdit(HierarchyBase):
 class Hierarchy(HierarchyBase, TableBase):
     hierarchy_id: int
     taxon_name: TaxonName
-    parent: TaxonName
+    parent_name: TaxonName
     classification_system: ClassificationSystem
-
-    class Config:
-        orm_mode = True
-        schema_extra = {"description": TABLE_DESCRIPTION}
-
-
-class HierarchyAncestor(BaseModel):
-    taxon_name_id: int
-    parent_nid: int
-    classification_system_id: int
     formatted_scientific_name: str
     scientific_name: str
     rank_name: str
-    classification_system: ClassificationSystem
+    path: typing.Any
 
     class Config:
         orm_mode = True
+        arbitrary_types_allowed = True
+        schema_extra = {"description": TABLE_DESCRIPTION}

@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -99,6 +99,7 @@ class TaxonName(TaxonNameBase, TableBase):
     scientific_name: Optional[str]
     formatted_scientific_name: Optional[str]
     canonical_name_without_rank: Optional[str]
+    path: List[str]
 
     class Config:
         orm_mode = True

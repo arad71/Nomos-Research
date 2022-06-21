@@ -1,5 +1,6 @@
 import datetime
 import json
+import re
 import typing as t
 
 from fastapi import HTTPException, status
@@ -8,6 +9,7 @@ from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 from sqlalchemy_mixins.smartquery import smart_query
+from sqlalchemy_utils import Ltree
 
 from app.core.config import settings
 from app.db.session import Base
@@ -18,6 +20,7 @@ class Crud:
     model: Base = None
     name: str = None
     id_key: str = None
+    PATH_PATTERN = "(\\w+)__(ancestor_of|descendant_of)"
 
     @classmethod
     def create_item(cls, db: Session, item: BaseModel, current_user: int = None):
@@ -80,12 +83,25 @@ class Crud:
             column: str
             for column in filter_items:
                 filter_value = filter_items[column]
+                path_match = re.match(cls.PATH_PATTERN, column)
                 if column == "q":
                     if cls.search_fields:
                         conditions = {}
                         for search_field in cls.search_fields:
                             conditions[f"{search_field}__contains"] = filter_value
                         filters[or_] = conditions
+                elif path_match:
+                    # Filtering using sqlalchemy ltree path
+                    # See https://www.kite.com/blog/python/sqlalchemy/
+                    column = path_match.group(1)
+                    search = path_match.group(2)
+                    path_attr = getattr(cls.model, column)
+                    search_attr = getattr(path_attr, search)
+                    # TODO: Support multiple hierarchies here by filtering by each
+                    #  hierarchy rather than just the first one
+                    if isinstance(filter_value, list):
+                        filter_value = filter_value.pop()
+                    query = query.where(search_attr(Ltree(filter_value)))
                 else:
                     if hasattr(cls.model, column) and isinstance(
                         getattr(cls.model, column).type, TIMESTAMP

@@ -1,9 +1,7 @@
-from fastapi import Depends
 from loguru import logger
-from sqlalchemy import Column, ForeignKey, Index, Integer, Sequence, and_, event, func
-from sqlalchemy.engine import Connection
+from sqlalchemy import Column, ForeignKey, Index, Integer, Sequence, and_, func
 from sqlalchemy.ext.associationproxy import association_proxy
-from sqlalchemy.orm import Mapper, backref, foreign, relationship, remote
+from sqlalchemy.orm import backref, foreign, relationship, remote
 from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy_utils import Ltree, LtreeType
 

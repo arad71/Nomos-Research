@@ -1,7 +1,7 @@
 """Add hierarchy ltree index
 
 Revision ID: 13a36cff2b81
-Revises: f766633341be
+Revises: 36aa968a7287
 Create Date: 2022-05-11 21:21:08.543008+08:00
 
 """
@@ -12,7 +12,7 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "13a36cff2b81"
-down_revision = "f766633341be"
+down_revision = "36aa968a7287"
 branch_labels = None
 depends_on = None
 

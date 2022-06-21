@@ -10,6 +10,7 @@ from sqlalchemy import (
     func,
 )
 from sqlalchemy.ext.associationproxy import association_proxy
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import backref, column_property, relationship
 from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy.types import Enum
@@ -180,6 +181,10 @@ class TaxonName(BaseModel, TableMixin):
     admin_comment = Column(String)
     kingdom_name = association_proxy("kingdom", "kingdom_name")
     rank_name = association_proxy("taxon_rank", "rank_name")
+
+    @hybrid_property
+    def path(self):
+        return [hierarchy.path.path for hierarchy in self.hierarchies]
 
 
 event.listen(TaxonName, "before_insert", calculate_fields)

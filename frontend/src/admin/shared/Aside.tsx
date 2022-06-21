@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Aside = () => {
+const Aside = (props: any) => {
   const classes = useStyles();
   const globalClasses = GlobalTheme();
   const location = useLocation();
@@ -100,7 +100,7 @@ const Aside = () => {
           </Box>
         </SimpleShowLayout>
       </Card>
-      {isTaxonNames && <TaxonHierarchy />}
+      {isTaxonNames && <TaxonHierarchy {...props} />}
     </Box>
   );
 };
