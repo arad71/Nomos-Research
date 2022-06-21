@@ -44,7 +44,7 @@ export const PublicationShow: FC = (props) => {
       <>
         <Box className={classes.titlePos}>
           <Box>
-            <RichTextField className={classes.title} source="title" />
+            <RichTextField className={classes.title} source="display_title" />
           </Box>
           <TextField source="verbatim_author" className={classes.subtitle} />
         </Box>
