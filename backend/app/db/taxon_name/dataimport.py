@@ -179,7 +179,7 @@ class ImportTaxonNameUpload(ImportTaxonName):
         return uninomial, specific_epithet, infraspecific_epithet
 
     def row_mapping_curation_data_extract(self, row):
-        if row["SourceTable"] != "WAMChecklistNameLookup" or not row["Kingdom"]:
+        if not row["Kingdom"]:
             return None
         kingdom_id = self.map_row_by_unique_key(
             Kingdom, "kingdom_name", row["Kingdom"], "kingdom_id"
@@ -234,9 +234,10 @@ class ImportTaxonNameUpload(ImportTaxonName):
             raise DataImportError(message)
 
     def import_row(self, row):
+        item = None
         if self.mapping_type == "Vanilla":
             item = self.row_mapping_vanilla(row)
-        else:
+        elif self.mapping_type == "Curation Data Extract":
             item = self.row_mapping_curation_data_extract(row)
         if item:
             self.check_canonical_name_without_rank_exists(item)

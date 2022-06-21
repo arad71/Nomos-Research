@@ -35,27 +35,42 @@ def test_import_csvupload_data_access(client, checklist_api_key):
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
-def test_import_csvupload_new_names(client, import_api_key):
+def test_import_csvupload_new_names(
+    client, import_api_key, superuser_token_headers
+):
     test_data_file = os.getcwd() + "/app/tests/csvupload_new_names.csv"
     with open(test_data_file) as tmp:
         response = client.post(
             CSVUPLOAD_ENDPOINT,
             headers={"x-api-key": import_api_key},
+            data={"mapping_type": "Vanilla"},
             files={"upload_file": ("csvupload_new_names.csv", tmp)},
         )
-    assert response.status_code == status.HTTP_201_CREATED
+    logger.info(len(response.json()))
+    response = client.get(
+        "/api/v1/taxon_names", headers=superuser_token_headers
+    )
+    logger.info(len(response.json()))
+    assert len(response.json()) == 3
 
 
 def test_import_csvupload_existing_names(
     client,
     import_api_key,
+    test_taxon_name_canonical_name_4,
+    superuser_token_headers,
 ):
     test_data_file = os.getcwd() + "/app/tests/csvupload_existing_names.csv"
     with open(test_data_file) as tmp:
         response = client.post(
             CSVUPLOAD_ENDPOINT,
             headers={"x-api-key": import_api_key},
+            data={"mapping_type": "Vanilla"},
             files={"upload_file": ("csvupload_existing_names.csv", tmp)},
         )
-    logger.info(response.json())
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    logger.info(len(response.json()))
+    response = client.get(
+        "/api/v1/taxon_names", headers=superuser_token_headers
+    )
+    logger.info(len(response.json()))
+    assert len(response.json()) == 1
