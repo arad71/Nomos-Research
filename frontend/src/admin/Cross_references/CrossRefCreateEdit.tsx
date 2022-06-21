@@ -10,7 +10,7 @@ import React, { FC } from 'react';
 import CrossRefType from './CrossRefType';
 
 export const CrossRefCreateEdit: FC = (props) => (
-  <SimpleForm {...props}>
+  <SimpleForm {...props} warnWhenUnsavedChanges>
     <ReferenceInput source="old_name_id" reference="taxon_names">
       <SelectInput optionText="scientific_name" validate={required()} />
     </ReferenceInput>

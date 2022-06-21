@@ -32,7 +32,6 @@ class Publication(BaseModel, TableMixin):
     )
     doi = Column(String)
     title = Column(String)
-    display_title = Column(String)
     abbreviated_title = Column(String)
     publication_year = Column(Integer)
     volume = Column(String)
@@ -79,7 +78,7 @@ class Publication(BaseModel, TableMixin):
 
     @hybrid_property
     def author_names(self):
-        return [publication_author.abbreviation for publication_author in self.author]
+        return [publication_author.display_name for publication_author in self.author]
 
     @hybrid_property
     def author_ids(self):
@@ -88,6 +87,13 @@ class Publication(BaseModel, TableMixin):
     @hybrid_property
     def author_name(self):
         return ", ".join([author.display_name for author in self.author])
+
+    @hybrid_property
+    def display_title(self):
+        if self.title:
+            return self.title
+        elif self.abbreviated_title:
+            return self.abbreviated_title
 
 
 event.listen(Publication, "before_insert", calculate_fields)
