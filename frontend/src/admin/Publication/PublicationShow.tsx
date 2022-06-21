@@ -62,7 +62,7 @@ export const PublicationShow: FC = (props) => {
             <Box className={globalClasses.formRow}>
               <Box className={globalClasses.fieldMargin}>
                 <Labeled label="Title">
-                  <TextField source="display_title" />
+                  <TextField source="title" />
                 </Labeled>
               </Box>
               <Box className={globalClasses.fieldMargin}>
