@@ -219,9 +219,12 @@ class ImportTaxonNameUpload(ImportTaxonName):
         )
         result = (
             self.db.query(TaxonNameModel)
-            .filter("kingdom_id" == item["kingdom_id"])
-            .filter("rank_id" == item["rank_id"])
-            .filter("canonical_name_without_rank" == canonical_name_without_rank)
+            .filter(
+                TaxonNameModel.kingdom_id == item["kingdom_id"],
+                TaxonNameModel.rank_id == item["rank_id"],
+                TaxonNameModel.canonical_name_without_rank
+                == canonical_name_without_rank,
+            )
             .one_or_none()
         )
         if result:

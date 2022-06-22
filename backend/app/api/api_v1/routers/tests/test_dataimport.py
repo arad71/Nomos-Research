@@ -2,6 +2,8 @@ import os
 
 from starlette import status
 
+from app.api.api_v1.routers.dataimport import MappingType
+from app.dataimport.csv import import_taxon_names
 from app.db.dataimport import LEGACY_DATA_DIRECTORY
 from app.db.taxon_name.model import TaxonName
 
@@ -38,20 +40,12 @@ def test_import_csvupload_data_access(client, checklist_api_key):
 def test_import_csvupload_new_names(
     client,
     import_api_key,
-    test_kingdom,
-    test_taxon_rank,
     test_taxon_name_canonical_name_4,
     test_db,
 ):
     test_data_file = os.getcwd() + "/app/tests/csvupload_new_names.csv"
-    with open(test_data_file, "rb") as tmp:
-        response = client.post(
-            CSVUPLOAD_ENDPOINT + "?mapping_type=Vanilla",
-            headers={"x-api-key": import_api_key},
-            files={"upload_file": ("csvupload_new_names.csv", tmp)},
-        )
-    assert response.status_code == status.HTTP_201_CREATED
-    assert test_db.query(TaxonName).count() == 3
+    import_taxon_names(test_data_file, MappingType.vanilla, db=test_db)
+    assert test_db.query(TaxonName).count() == 4
 
 
 def test_import_csvupload_existing_names(
@@ -61,11 +55,5 @@ def test_import_csvupload_existing_names(
     test_db,
 ):
     test_data_file = os.getcwd() + "/app/tests/csvupload_existing_names.csv"
-    with open(test_data_file) as tmp:
-        response = client.post(
-            CSVUPLOAD_ENDPOINT + "?mapping_type=Vanilla",
-            headers={"x-api-key": import_api_key},
-            files={"upload_file": ("csvupload_existing_names.csv", tmp)},
-        )
-    assert response.status_code == status.HTTP_201_CREATED
+    import_taxon_names(test_data_file, MappingType.vanilla, db=test_db)
     assert test_db.query(TaxonName).count() == 1
