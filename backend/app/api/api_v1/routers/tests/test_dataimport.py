@@ -1,6 +1,5 @@
 import os
 
-from loguru import logger
 from starlette import status
 
 from app.db.dataimport import LEGACY_DATA_DIRECTORY
@@ -35,22 +34,16 @@ def test_import_csvupload_data_access(client, checklist_api_key):
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
-def test_import_csvupload_new_names(
-    client, import_api_key, superuser_token_headers
-):
+def test_import_csvupload_new_names(client, import_api_key, superuser_token_headers):
     test_data_file = os.getcwd() + "/app/tests/csvupload_new_names.csv"
-    with open(test_data_file) as tmp:
+    with open(test_data_file, "rb") as tmp:
         response = client.post(
-            CSVUPLOAD_ENDPOINT,
+            CSVUPLOAD_ENDPOINT + "?mapping_type=Vanilla",
             headers={"x-api-key": import_api_key},
-            data={"mapping_type": "Vanilla"},
             files={"upload_file": ("csvupload_new_names.csv", tmp)},
         )
-    logger.info(len(response.json()))
-    response = client.get(
-        "/api/v1/taxon_names", headers=superuser_token_headers
-    )
-    logger.info(len(response.json()))
+    assert response.status_code == status.HTTP_201_CREATED
+    response = client.get("/api/v1/taxon_names", headers=superuser_token_headers)
     assert len(response.json()) == 3
 
 
@@ -63,14 +56,10 @@ def test_import_csvupload_existing_names(
     test_data_file = os.getcwd() + "/app/tests/csvupload_existing_names.csv"
     with open(test_data_file) as tmp:
         response = client.post(
-            CSVUPLOAD_ENDPOINT,
+            CSVUPLOAD_ENDPOINT + "?mapping_type=Vanilla",
             headers={"x-api-key": import_api_key},
-            data={"mapping_type": "Vanilla"},
             files={"upload_file": ("csvupload_existing_names.csv", tmp)},
         )
-    logger.info(len(response.json()))
-    response = client.get(
-        "/api/v1/taxon_names", headers=superuser_token_headers
-    )
-    logger.info(len(response.json()))
+    assert response.status_code == status.HTTP_201_CREATED
+    response = client.get("/api/v1/taxon_names", headers=superuser_token_headers)
     assert len(response.json()) == 1
