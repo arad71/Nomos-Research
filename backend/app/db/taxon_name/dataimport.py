@@ -235,9 +235,9 @@ class ImportTaxonNameUpload(ImportTaxonName):
 
     def import_row(self, row):
         item = None
-        if self.mapping_type == "Vanilla":
+        if self.mapping_type.value == "Vanilla":
             item = self.row_mapping_vanilla(row)
-        elif self.mapping_type == "Curation Data Extract":
+        elif self.mapping_type.value == "Curation Data Extract":
             item = self.row_mapping_curation_data_extract(row)
         if item:
             self.check_canonical_name_without_rank_exists(item)

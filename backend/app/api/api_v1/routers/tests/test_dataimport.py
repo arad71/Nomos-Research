@@ -3,6 +3,7 @@ import os
 from starlette import status
 
 from app.db.dataimport import LEGACY_DATA_DIRECTORY
+from app.db.taxon_name.model import TaxonName
 
 LOG_ENDPOINT = "/api/v1/dataimport"
 WACENSUS_ENDPOINT = "/api/v1/dataimport/wacensus"
@@ -34,7 +35,14 @@ def test_import_csvupload_data_access(client, checklist_api_key):
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
-def test_import_csvupload_new_names(client, import_api_key, superuser_token_headers):
+def test_import_csvupload_new_names(
+    client,
+    import_api_key,
+    test_kingdom,
+    test_taxon_rank,
+    test_taxon_name_canonical_name_4,
+    test_db,
+):
     test_data_file = os.getcwd() + "/app/tests/csvupload_new_names.csv"
     with open(test_data_file, "rb") as tmp:
         response = client.post(
@@ -43,15 +51,14 @@ def test_import_csvupload_new_names(client, import_api_key, superuser_token_head
             files={"upload_file": ("csvupload_new_names.csv", tmp)},
         )
     assert response.status_code == status.HTTP_201_CREATED
-    response = client.get("/api/v1/taxon_names", headers=superuser_token_headers)
-    assert len(response.json()) == 3
+    assert test_db.query(TaxonName).count() == 3
 
 
 def test_import_csvupload_existing_names(
     client,
     import_api_key,
     test_taxon_name_canonical_name_4,
-    superuser_token_headers,
+    test_db,
 ):
     test_data_file = os.getcwd() + "/app/tests/csvupload_existing_names.csv"
     with open(test_data_file) as tmp:
@@ -61,5 +68,4 @@ def test_import_csvupload_existing_names(
             files={"upload_file": ("csvupload_existing_names.csv", tmp)},
         )
     assert response.status_code == status.HTTP_201_CREATED
-    response = client.get("/api/v1/taxon_names", headers=superuser_token_headers)
-    assert len(response.json()) == 1
+    assert test_db.query(TaxonName).count() == 1

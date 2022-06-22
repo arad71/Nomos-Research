@@ -1,4 +1,4 @@
 id,kingdom,taxonRank,uninomial,specificEpithet,infraspecificEpithet
-1,Animalia,Genus,Testgenus,,
-2,Animalia,Species,Testgenus,Testspecies,
-3,Animalia,Species,Testgenus,Testspecies,Testsubspecies
+1,Kingdom1,Rank Name 1,Testgenus,,
+2,Kingdom1,Rank Name 1,Testgenus,Testspecies,
+3,Kingdom1,Rank Name 1,Testgenus,Testspecies,Testsubspecies
