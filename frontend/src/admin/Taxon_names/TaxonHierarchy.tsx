@@ -8,6 +8,7 @@ import {
   TextField,
 } from 'react-admin';
 import { Box, Typography } from '@material-ui/core';
+import { hierarchyRowClick } from './HierarchyRowClick';
 
 const useStyles = makeStyles({
   bold: {
@@ -30,12 +31,16 @@ const TaxonHierarchy = () => {
         source="path"
         sort={{ field: 'path', order: 'ASC' }}
       >
-        <Datagrid rowClick={false}>
-          <TextField source="rank_name" sortBy="path" label="Rank" />
+        <Datagrid rowClick={hierarchyRowClick}>
+          <TextField
+            source="rank_name"
+            sortBy="taxon_name___taxon_rank___rank_name"
+            label="Rank"
+          />
           <ReferenceField
             source="taxon_name_id"
             reference="taxon_names"
-            link="show"
+            link={false}
             sortBy="taxon_name___scientific_name"
           >
             <RichTextField source="formatted_scientific_name" />

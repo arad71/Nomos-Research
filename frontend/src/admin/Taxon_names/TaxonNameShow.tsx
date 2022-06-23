@@ -4,8 +4,10 @@ import {
   Datagrid,
   Labeled,
   NumberField,
+  Pagination,
   ReferenceField,
   ReferenceManyField,
+  RichTextField,
   SelectField,
   Tab,
   TabbedShowLayout,
@@ -24,18 +26,11 @@ import { VernacularReferenceManyGrid } from '../Vernaculars';
 // eslint-disable-next-line max-len
 import { FormattedScientificNameWithStatus } from './FormattedScientificNameWithStatus';
 import { NamePageSummary } from './NamePageSummary';
-import AuthorType from '../Citations/AuthorType';
-
-const useStyles = makeStyles((theme) => ({
-  linedRow: {
-    borderBottom: '1px solid #eee',
-    marginTop: '1.2em',
-  },
-}));
+import { hierarchyRowClick } from './HierarchyRowClick';
 
 export const TaxonNameShow: FC = (props) => {
-  const classes = useStyles();
   const globalClasses = GlobalTheme();
+
   return (
     <Show
       title={<FormattedScientificNameWithStatus />}
@@ -167,7 +162,7 @@ export const TaxonNameShow: FC = (props) => {
               label="Vernaculars"
             />
           </Tab>
-          <Tab label="Details" className={globalClasses.bold}>
+          <Tab label="Details" path="details" className={globalClasses.bold}>
             <Box className={globalClasses.sectionMargin}>
               <Box className={globalClasses.formRow}>
                 <Box className={globalClasses.fieldMargin}>
@@ -205,8 +200,81 @@ export const TaxonNameShow: FC = (props) => {
               </Box>
             </Box>
           </Tab>
-          <Tab label="Hierarchy" className={globalClasses.bold}></Tab>
-          <Tab label="Related names" className={globalClasses.bold}>
+          <Tab
+            label="Hierarchy"
+            path="hierarchy"
+            className={globalClasses.bold}
+          >
+            <ReferenceManyField
+              perPage={100}
+              pagination={<Pagination rowsPerPageOptions={[]} />}
+              reference="hierarchies"
+              target="path__descendant_of"
+              label="Child taxon names"
+              source="path"
+              sort={{ field: 'path', order: 'ASC' }}
+              filter={{ taxon_name___scientific_name__gt: '' }}
+            >
+              <Datagrid
+                rowClick={hierarchyRowClick}
+                className={globalClasses.equalColumnWidth}
+              >
+                <TextField
+                  source="rank_name"
+                  sortBy="taxon_name___taxon_rank___rank_name"
+                  label="Rank"
+                />
+                <ReferenceField
+                  source="taxon_name_id"
+                  reference="taxon_names"
+                  link={false}
+                >
+                  <RichTextField source="formatted_scientific_name" />
+                </ReferenceField>
+                <ReferenceField
+                  source="taxon_name_id"
+                  reference="taxon_names"
+                  label="Author"
+                  sortBy="taxon_name___author"
+                  link={false}
+                >
+                  <RichTextField source="author" />
+                </ReferenceField>
+                <ReferenceField
+                  source="taxon_name_id"
+                  reference="taxon_names"
+                  label="Year"
+                  sortBy="taxon_name___form_desc_yr"
+                  link={false}
+                >
+                  <RichTextField source="form_desc_yr" />
+                </ReferenceField>
+                <ReferenceField
+                  source="taxon_name_id"
+                  reference="taxon_names"
+                  label="Is current"
+                  sortBy="taxon_name___is_current"
+                  link={false}
+                >
+                  <BooleanField source="is_current" />
+                </ReferenceField>
+                <ReferenceField
+                  source="taxon_name_id"
+                  reference="taxon_names"
+                  link={false}
+                  label="Vernaculars"
+                  sortBy="taxon_name___all_vernaculars"
+                >
+                  <TextField source="all_vernaculars" />
+                </ReferenceField>
+              </Datagrid>
+            </ReferenceManyField>
+          </Tab>
+          <Tab
+            label="Related names"
+            path="related_names"
+            className={globalClasses.bold}
+          >
             <Box className={globalClasses.sectionMargin}>
               <Labeled label="Previous names">
                 <CrossReferenceManyGrid
@@ -228,7 +296,7 @@ export const TaxonNameShow: FC = (props) => {
               </Labeled>
             </Box>
           </Tab>
-          <Tab label="Notes" className={globalClasses.bold}>
+          <Tab label="Notes" path="notes" className={globalClasses.bold}>
             <Box className={globalClasses.sectionMargin}>
               <Labeled label="Notes">
                 <TextField source="comments" />
