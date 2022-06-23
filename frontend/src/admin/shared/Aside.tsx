@@ -77,6 +77,7 @@ const Aside = () => {
                 source="created_by"
                 reference="users"
                 label="Created"
+                link="show"
               >
                 <Labeled label="Created by" className={classes.labelMargin}>
                   <TextField source="full_name" />
@@ -91,7 +92,7 @@ const Aside = () => {
             </Box>
             <Box className={classes.panelSection}>
               <PeopleAltIcon className={classes.iconStyles} />
-              <ReferenceField source="updated_by" reference="users">
+              <ReferenceField source="updated_by" reference="users" link="show">
                 <Labeled label="Updated by" className={classes.labelMargin}>
                   <TextField source="full_name" />
                 </Labeled>
