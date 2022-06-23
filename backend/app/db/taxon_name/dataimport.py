@@ -179,7 +179,7 @@ class ImportTaxonNameUpload(ImportTaxonName):
         return uninomial, specific_epithet, infraspecific_epithet
 
     def row_mapping_curation_data_extract(self, row):
-        if row["SourceTable"] != "WAMChecklistNameLookup" or not row["Kingdom"]:
+        if not row["Kingdom"]:
             return None
         kingdom_id = self.map_row_by_unique_key(
             Kingdom, "kingdom_name", row["Kingdom"], "kingdom_id"
@@ -201,6 +201,7 @@ class ImportTaxonNameUpload(ImportTaxonName):
                 f"Created by import script {__name__}"
                 f" from source csv {self.legacy_id_prefix[:-1]}"
                 f" on {datetime.date.today()}"
+                f" File_NameID: {row['File_NameID']}"
             ),
             "created_by": self.current_user,
             "updated_by": self.current_user,
@@ -219,9 +220,12 @@ class ImportTaxonNameUpload(ImportTaxonName):
         )
         result = (
             self.db.query(TaxonNameModel)
-            .filter("kingdom_id" == item["kingdom_id"])
-            .filter("rank_id" == item["rank_id"])
-            .filter("canonical_name_without_rank" == canonical_name_without_rank)
+            .filter(
+                TaxonNameModel.kingdom_id == item["kingdom_id"],
+                TaxonNameModel.rank_id == item["rank_id"],
+                TaxonNameModel.canonical_name_without_rank
+                == canonical_name_without_rank,
+            )
             .one_or_none()
         )
         if result:
@@ -234,9 +238,10 @@ class ImportTaxonNameUpload(ImportTaxonName):
             raise DataImportError(message)
 
     def import_row(self, row):
-        if self.mapping_type == "Vanilla":
+        item = None
+        if self.mapping_type.value == "Vanilla":
             item = self.row_mapping_vanilla(row)
-        else:
+        elif self.mapping_type.value == "Curation Data Extract":
             item = self.row_mapping_curation_data_extract(row)
         if item:
             self.check_canonical_name_without_rank_exists(item)

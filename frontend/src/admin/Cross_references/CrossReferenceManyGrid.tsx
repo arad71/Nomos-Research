@@ -11,6 +11,13 @@ import { EmbeddedCrossReferenceShow } from './EmbeddedCrossReferenceShow';
 import CrossRefType from './CrossRefType';
 import { FormattedScientificNameWithStatus, TaxonName } from '../Taxon_names';
 import { GlobalTheme } from '../../GlobalTheme';
+import { Box, Typography } from '@material-ui/core';
+
+const Empty = () => (
+  <Box>
+    <Typography variant="body1">No synonyms exist</Typography>
+  </Box>
+);
 
 export const CrossReferenceManyGrid = (props: {
   source: string;
@@ -30,6 +37,7 @@ export const CrossReferenceManyGrid = (props: {
       {...props.props}
     >
       <Datagrid
+        empty={<Empty />}
         className={globalClasses.equalColumnWidth}
         expand={<EmbeddedCrossReferenceShow />}
       >

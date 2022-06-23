@@ -6,7 +6,6 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 const useStyles = makeStyles({
   title: {
-    fontWeight: 'bold',
     fontSize: '1.5em',
     marginRight: '0.2em',
   },
