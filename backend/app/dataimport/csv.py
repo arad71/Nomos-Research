@@ -7,8 +7,7 @@ from app.db.session import SessionLocal
 from app.db.taxon_name.dataimport import ImportTaxonNameUpload
 
 
-def import_taxon_names(csvfile, mapping_type):
-    db = SessionLocal()
+def import_taxon_names(csvfile, mapping_type, db=SessionLocal()):
     admin_id = get_admin_id(db)
     ImportTaxonNameUpload(db, admin_id, csvfile, mapping_type).ingest()
     csv_name = os.path.split(csvfile)[1].split(".")[0]
