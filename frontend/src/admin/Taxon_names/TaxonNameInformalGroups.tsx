@@ -31,6 +31,7 @@ const TaxonNameInformalGroups = () => {
           <ReferenceField
             source="classification_system_id"
             reference="classification_systems"
+            link="show"
             allowEmpty
           >
             <ChipField source="class_desc" />
