@@ -31,6 +31,11 @@ import { VernacularRowForm, EmbeddedVernacularShow } from '../Vernaculars';
 import { EditableCrossReferenceManyGrid } from '../Cross_references';
 import { GlobalGridTheme, GlobalTheme } from '../../GlobalTheme';
 import { NamePageSummary } from './NamePageSummary';
+import { EmbeddedCrossReferenceShow } from '../Cross_references/EmbeddedCrossReferenceShow';
+
+import CrossRefType from '../Cross_references/CrossRefType';
+import { FormattedScientificNameWithStatus } from '../Taxon_names';
+import { CrossReferenceRowForm } from '../Cross_references/CrossReferenceRowForm';
 
 const validateNumber = [number(), minValue(0)];
 
@@ -294,13 +299,53 @@ export const TaxonNameCreateEdit: FC = ({
           >
             <Box className={gridClasses.EightCol1to9span}>
               <Labeled label="Previous names">
-                <EditableCrossReferenceManyGrid
-                  props={props}
-                  source="old_name_id"
-                  target="new_name_id"
-                  label="Previous names"
-                  createInitialValues={oldNameInitialValues}
-                />
+                {(props.record?.id && (
+                  <ReferenceManyField
+                    fullWidth
+                    reference="cross_references"
+                    target="new_name_id"
+                    filter={{ active: true }}
+                    {...props}
+                  >
+                    <EditableDatagrid
+                      undoable
+                      createForm={
+                        <CrossReferenceRowForm
+                          source="old_name_id"
+                          initialValues={oldNameInitialValues}
+                          {...props}
+                        />
+                      }
+                      editForm={
+                        <CrossReferenceRowForm
+                          source="old_name_id"
+                          {...props}
+                        />
+                      }
+                      hasCreate
+                      expand={<EmbeddedCrossReferenceShow />}
+                    >
+                      <SelectField
+                        source="cross_reference_type"
+                        choices={CrossRefType}
+                      />
+                      <ReferenceField
+                        source="old_name_id"
+                        reference="taxon_names"
+                        sortBy="cross_reference_type"
+                        link="show"
+                      >
+                        <FormattedScientificNameWithStatus />
+                      </ReferenceField>
+                      <TextField source="comments" />
+                    </EditableDatagrid>
+                  </ReferenceManyField>
+                )) || (
+                  <Typography>
+                    You need to save the record before you can add any
+                    vernaculars.
+                  </Typography>
+                )}
               </Labeled>
             </Box>
             <Box className={gridClasses.EightCol1to9span}>
