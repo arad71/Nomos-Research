@@ -1,3 +1,4 @@
+import loguru
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -85,6 +86,7 @@ class PublicationCrud(crud.Crud):
                 db.add(publication_author)
 
         update_data.pop("author_ids", None)
+        update_data.pop("display_title", None)
         update_data["updated_by"] = current_user
         for key, value in update_data.items():
             setattr(db_publication, key, value)
