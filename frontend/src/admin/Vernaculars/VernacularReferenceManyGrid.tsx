@@ -25,8 +25,8 @@ export const VernacularReferenceManyGrid = (props: {
       reference="vernaculars"
       target={props.target}
       sort={{
-        field: 'vernacular,sort_order',
-        order: 'ASC,ASC',
+        field: 'preferred,sort_order,vernacular',
+        order: 'ASC,ASC,ASC',
       }}
       {...props.props}
     >
