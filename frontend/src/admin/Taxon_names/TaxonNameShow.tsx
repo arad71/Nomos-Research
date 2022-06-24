@@ -147,7 +147,7 @@ export const TaxonNameShow: FC = (props) => {
             <Box my="1.2em">
               <ReferenceField source="publication_id" reference="publications">
                 <Labeled label="Publication">
-                  <TextField source="abbreviated_title" />
+                  <TextField source="display_title" />
                 </Labeled>
               </ReferenceField>
             </Box>
