@@ -40,10 +40,7 @@ export const PublicationList: FC = (props) => (
   >
     <Datagrid rowClick="show">
       <TextField source="title" />
-      <FunctionField
-        label="Authors"
-        render={(record: any) => record.author_names.join(', ')}
-      />
+      <TextField source="author_name" />
       <TextField source="publication_year" />
       <TextField source="published" />
       <TextField source="display_title" />

@@ -76,9 +76,7 @@ export const PublicationShow: FC = (props) => {
             </Box>
             <Box className={globalClasses.fieldMargin}>
               <Labeled label="Publication Authors">
-                <FunctionField
-                  render={(record: any) => record.author_names.join(', ')}
-                />
+                <TextField source="author_name" />
               </Labeled>
             </Box>
             <Box className={globalClasses.formRow}>
