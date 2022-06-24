@@ -152,6 +152,23 @@ export const PublicationShow: FC = (props) => {
                 </Labeled>
               </Box>
             </Box>
+            <Box className={globalClasses.formRow}>
+              <Box className={globalClasses.fieldMargin}>
+                <Labeled label="Volume">
+                  <TextField source="volume" />
+                </Labeled>
+              </Box>
+              <Box className={globalClasses.fieldMargin}>
+                <Labeled label="Edition">
+                  <TextField source="edition" />
+                </Labeled>
+              </Box>
+              <Box className={globalClasses.fieldMargin}>
+                <Labeled label="Pages">
+                  <TextField source="pages" />
+                </Labeled>
+              </Box>
+            </Box>
           </Tab>
           <Tab label="Details" className={globalClasses.bold}>
             <Box className={globalClasses.sectionMargin}>

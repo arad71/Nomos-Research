@@ -7,6 +7,7 @@ import {
   TextField,
   Labeled,
 } from 'react-admin';
+import TaxonNameInformalGroups from '../Taxon_names/TaxonNameInformalGroups';
 import TaxonHierarchy from '../Taxon_names/TaxonHierarchy';
 import { useLocation } from 'react-router-dom';
 import { GlobalTheme } from '../../GlobalTheme';
@@ -101,7 +102,12 @@ const Aside = (props: any) => {
           </Box>
         </SimpleShowLayout>
       </Card>
-      {isTaxonNames && <TaxonHierarchy {...props} />}
+      {isTaxonNames && (
+        <>
+          <TaxonNameInformalGroups />
+          <TaxonHierarchy {...props} />
+        </>
+      )}
     </Box>
   );
 };

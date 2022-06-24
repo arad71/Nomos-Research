@@ -26,9 +26,17 @@ import { VernacularReferenceManyGrid } from '../Vernaculars';
 // eslint-disable-next-line max-len
 import { FormattedScientificNameWithStatus } from './FormattedScientificNameWithStatus';
 import { NamePageSummary } from './NamePageSummary';
+import AuthorType from '../Citations/AuthorType';
 import { hierarchyRowClick } from './HierarchyRowClick';
 
+const useStyles = makeStyles((theme) => ({
+  bottomPadding: {
+    paddingBottom: '1.5em',
+  },
+}));
+
 export const TaxonNameShow: FC = (props) => {
+  const classes = useStyles();
   const globalClasses = GlobalTheme();
 
   return (
@@ -142,7 +150,7 @@ export const TaxonNameShow: FC = (props) => {
             <Box my="1.2em">
               <ReferenceField source="publication_id" reference="publications">
                 <Labeled label="Publication">
-                  <TextField source="abbreviated_title" />
+                  <TextField source="display_title" />
                 </Labeled>
               </ReferenceField>
             </Box>
@@ -156,25 +164,24 @@ export const TaxonNameShow: FC = (props) => {
                 Vernacular names
               </Typography>
             </Box>
-            <VernacularReferenceManyGrid
-              props={props}
-              target="taxon_name_id"
-              label="Vernaculars"
-            />
+            <Box className={classes.bottomPadding}>
+              <VernacularReferenceManyGrid
+                props={props}
+                target="taxon_name_id"
+                label="Vernaculars"
+              />
+            </Box>
           </Tab>
           <Tab label="Details" path="details" className={globalClasses.bold}>
             <Box className={globalClasses.sectionMargin}>
-              <Box className={globalClasses.formRow}>
-                <Box className={globalClasses.fieldMargin}>
-                  <Labeled label="Family code">
-                    <TextField source="family_code" />
-                  </Labeled>
-                </Box>
-                <Box className={globalClasses.fieldMargin}>
-                  <Labeled label="Origin">
-                    <TextField source="origin" />
-                  </Labeled>
-                </Box>
+              <Box className={globalClasses.sectionMargin}>
+                <Typography
+                  variant="h5"
+                  className={globalClasses.bold}
+                  gutterBottom
+                >
+                  Naturalised Status
+                </Typography>
               </Box>
             </Box>
             <Box className={globalClasses.formRow}>
