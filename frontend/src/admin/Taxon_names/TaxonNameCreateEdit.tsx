@@ -38,6 +38,9 @@ const useStyles = makeStyles({
   fullWidth: {
     width: '100%',
   },
+  bottomMargin: {
+    marginBottom: '2em',
+  },
 });
 
 export const TaxonNameCreateEdit: FC = ({
@@ -225,6 +228,7 @@ export const TaxonNameCreateEdit: FC = ({
                   {...props}
                 >
                   <EditableDatagrid
+                    className={classes.bottomMargin}
                     undoable
                     createForm={
                       <VernacularRowForm
