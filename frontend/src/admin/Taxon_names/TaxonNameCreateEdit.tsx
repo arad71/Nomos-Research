@@ -260,14 +260,14 @@ export const TaxonNameCreateEdit: FC = ({
             /* eslint-disable-next-line max-len */
             className={`${globalClasses.mainGrid} ${globalClasses.sectionMargin}`}
           >
-            <TextInput
-              source="family_code"
-              className={gridClasses.EightCol1to3span}
-            />
-            <TextInput
-              source="origin"
-              className={gridClasses.EightCol3to5span}
-            />
+            <Typography
+              variant="h5"
+              /* eslint-disable-next-line max-len */
+              className={`${gridClasses.EightCol1to3span} ${globalClasses.bold}`}
+              gutterBottom
+            >
+              Naturalised Status
+            </Typography>
             <SelectInput
               source="naturalised_status"
               choices={NaturalisedStatus}
