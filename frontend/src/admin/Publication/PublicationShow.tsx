@@ -46,7 +46,10 @@ export const PublicationShow: FC = (props) => {
           <Box>
             <RichTextField className={classes.title} source="display_title" />
           </Box>
-          <TextField source="verbatim_author" className={classes.subtitle} />
+          <FunctionField
+            render={(record: any) => record.author_names.join(', ')}
+            className={classes.subtitle}
+          />
         </Box>
         <TabbedShowLayout>
           <Tab label="Publication" className={globalClasses.bold}>

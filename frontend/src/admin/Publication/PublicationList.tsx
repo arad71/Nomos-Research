@@ -10,6 +10,7 @@ import {
   SearchInput,
   TextField,
   TopToolbar,
+  FunctionField,
 } from 'react-admin';
 import { List, WithPermissions } from '@react-admin/ra-rbac';
 import { DefaultPagination, useCanBulkDelete } from '../shared';
@@ -38,11 +39,15 @@ export const PublicationList: FC = (props) => (
     bulkActionButtons={useCanBulkDelete()}
   >
     <Datagrid rowClick="show">
-      <BooleanField source="bad_publication" />
       <TextField source="title" />
-      <TextField source="display_title" />
+      <FunctionField
+        label="Authors"
+        render={(record: any) => record.author_names.join(', ')}
+      />
       <TextField source="publication_year" />
       <TextField source="published" />
+      <TextField source="display_title" />
+      <BooleanField source="bad_publication" />
       <ReferenceField source="updated_by" reference="users">
         <TextField source="full_name" />
       </ReferenceField>
