@@ -27,9 +27,8 @@ import { NamePageSummary } from './NamePageSummary';
 import AuthorType from '../Citations/AuthorType';
 
 const useStyles = makeStyles((theme) => ({
-  linedRow: {
-    borderBottom: '1px solid #eee',
-    marginTop: '1.2em',
+  bottomPadding: {
+    paddingBottom: '1.5em',
   },
 }));
 
@@ -161,11 +160,13 @@ export const TaxonNameShow: FC = (props) => {
                 Vernacular names
               </Typography>
             </Box>
-            <VernacularReferenceManyGrid
-              props={props}
-              target="taxon_name_id"
-              label="Vernaculars"
-            />
+            <Box className={classes.bottomPadding}>
+              <VernacularReferenceManyGrid
+                props={props}
+                target="taxon_name_id"
+                label="Vernaculars"
+              />
+            </Box>
           </Tab>
           <Tab label="Details" className={globalClasses.bold}>
             <Box className={globalClasses.sectionMargin}>
