@@ -24,12 +24,13 @@ async def users_list(
     sort: Optional[str] = None,
     filter: Optional[str] = None,
     db=Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Get all users
     """
     users, content_range = UserCrud.get_items(
-        db, range=range, sort=sort, list_filter=filter
+        db, current_user, range=range, sort=sort, list_filter=filter
     )
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = content_range
@@ -55,11 +56,12 @@ async def user_me(current_user: User = Depends(get_current_active_user)):
 async def user_details(
     user_id: int,
     db=Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Get any user details
     """
-    user = UserCrud.get_item(db, user_id)
+    user = UserCrud.get_item(db, current_user, user_id)
     return user
 
 

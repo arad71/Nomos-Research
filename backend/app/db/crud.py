@@ -11,6 +11,7 @@ from sqlalchemy_mixins.smartquery import smart_query
 
 from app.core.config import settings
 from app.db.session import Base
+from app.db.user.model import User
 
 
 class Crud:
@@ -32,8 +33,11 @@ class Crud:
         return db_item
 
     @classmethod
-    def get_item(cls, db: Session, id: int):
-        item = db.query(cls.model).filter(getattr(cls.model, cls.id_key) == id).first()
+    def get_item(cls, db: Session, id: int, current_user: User):
+        filters = {getattr(cls.model, cls.id_key): id}
+        if not current_user.is_super_admin():
+            filters[getattr(cls.model, "deleted")] = False
+        item = db.query(cls.model).filter(**filters).first()
         if not item:
             raise HTTPException(status_code=404, detail=cls.name + " not found")
         return item
@@ -55,6 +59,7 @@ class Crud:
     def get_items(
         cls,
         db: Session,
+        current_user: User,
         range: str = f"[0,{settings.DEFAULT_PAGE_SIZE}]",
         sort: str = None,
         list_filter: str = None,
@@ -75,6 +80,8 @@ class Crud:
                 sort_attrs.append(sort_value)
 
         filters = {}
+        if not current_user.is_super_admin():
+            filters["deleted"] = False
         if list_filter:
             filter_items = json.loads(list_filter)
             column: str
@@ -149,12 +156,14 @@ class Crud:
         return db_item
 
     @classmethod
-    def delete_item(cls, db: Session, id: int):
+    def delete_item(cls, db: Session, id: int, current_user: int):
         item = cls.get_item(db, id)
         if not item:
             raise HTTPException(
                 status.HTTP_404_NOT_FOUND, detail=cls.name + " not found"
             )
-        db.delete(item)
+        item.deleted = True
+        item.deleted_by = current_user
+        # db.delete(item)
         db.commit()
         return {cls.id_key: id}

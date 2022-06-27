@@ -26,7 +26,7 @@ async def role_list(
     """
     Get all scopes
     """
-    roles, content_range = RoleCrud.get_items(db, range=range)
+    roles, content_range = RoleCrud.get_items(db, current_user, range=range)
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = content_range
     return roles
@@ -45,5 +45,5 @@ async def role_details(
     """
     Get any role details
     """
-    role = RoleCrud.get_item(db, role_id)
+    role = RoleCrud.get_item(db, current_user, role_id)
     return role
