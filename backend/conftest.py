@@ -15,6 +15,7 @@ from app.db.cross_reference.model import CrossReference
 from app.db.hierarchy.model import Hierarchy
 from app.db.informal_group.model import InformalGroup
 from app.db.kingdom.model import Kingdom
+from app.db.models import BaseModel
 from app.db.publication.model import Publication
 from app.db.role.constants import Role
 from app.db.role.model import Role as RoleModel
@@ -49,6 +50,7 @@ def test_db():
     # Run a parent transaction that can roll back all changes
     test_session_maker = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     test_session = test_session_maker()
+    BaseModel.set_session(test_session)
     test_session.begin_nested()
 
     @event.listens_for(test_session, "after_transaction_end")
@@ -459,6 +461,19 @@ def test_mammalia(
 
 
 @pytest.fixture
+def test_reptilia(
+    test_db, test_kingdom, test_publication, test_superuser, test_rank_class
+) -> TaxonName:
+    """
+    Taxon Name for testing
+    """
+    now = datetime.datetime.utcnow()
+    return create_taxon_name(
+        "Reptilia", now, test_db, test_kingdom, test_superuser, test_rank_class
+    )
+
+
+@pytest.fixture
 def test_carnivora(
     test_db, test_kingdom, test_publication, test_superuser, test_rank_class
 ) -> TaxonName:
@@ -471,44 +486,34 @@ def test_carnivora(
     )
 
 
-def create_taxon_name(name, now, test_db, test_kingdom, test_superuser, rank):
-    taxon_name = TaxonName(
-        kingdom_id=test_kingdom.kingdom_id,
-        rank_id=rank.taxon_rank_id,
-        is_current=True,
-        validated=True,
-        genus=name,
-        updated_by=test_superuser.user_id,
-        updated_on=now,
-        created_by=test_superuser.user_id,
-        created_on=now,
-    )
-    test_db.add(taxon_name)
-    test_db.commit()
-    return taxon_name
-
-
 @pytest.fixture
-def test_animal(
-    test_db, test_kingdom, test_taxon_rank, test_publication, test_superuser
+def test_panthera(
+    test_db, test_kingdom, test_publication, test_superuser, test_rank_class
 ) -> TaxonName:
     """
     Taxon Name for testing
     """
-
     now = datetime.datetime.utcnow()
-    taxon_name = TaxonName(
+    return create_taxon_name(
+        "Panthera", now, test_db, test_kingdom, test_superuser, test_rank_class
+    )
+
+
+def create_taxon_name(name, now, test_db, test_kingdom, test_superuser, rank):
+    taxon_name = TaxonName.create(
         kingdom_id=test_kingdom.kingdom_id,
-        rank_id=test_taxon_rank.taxon_rank_id,
+        rank_id=rank.taxon_rank_id,
         is_current=True,
         validated=True,
+        uninomial=name,
         updated_by=test_superuser.user_id,
         updated_on=now,
         created_by=test_superuser.user_id,
         created_on=now,
     )
-    test_db.add(taxon_name)
-    test_db.commit()
+    # taxon_name.
+    # test_db.add(taxon_name)
+    # test_db.commit()
     return taxon_name
 
 
