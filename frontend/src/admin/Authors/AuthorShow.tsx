@@ -5,6 +5,7 @@ import Aside from '../shared/Aside';
 import { Box, Typography } from '@material-ui/core';
 import { GlobalTheme } from '../../GlobalTheme';
 import { Show } from '@react-admin/ra-rbac';
+import { DisplayName } from './DisplayName';
 
 const useStyles = makeStyles((theme) => ({
   showPad: {
@@ -16,7 +17,7 @@ export const AuthorShow: FC = (props) => {
   const classes = useStyles();
   const globalClasses = GlobalTheme();
   return (
-    <Show aside={<Aside />} {...props}>
+    <Show aside={<Aside />} {...props} title={<DisplayName />}>
       <Box className={classes.showPad}>
         <Typography variant="h5" className={globalClasses.bold} gutterBottom>
           Author

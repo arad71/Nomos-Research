@@ -19,6 +19,7 @@ def test_get_authors(client, test_author, superuser_token_headers):
             "updated_on": test_author.updated_on.isoformat(),
             "created_by": test_author.created_by,
             "created_on": test_author.created_on.isoformat(),
+            "display_name": test_author.display_name,
         }
     ]
 
@@ -57,6 +58,7 @@ def test_edit_author(client, test_author, test_superuser, superuser_token_header
     )
     assert response.status_code == status.HTTP_200_OK
     new_author["author_id"] = test_author.author_id
+    new_author["display_name"] = test_author.display_name
     new_author["updated_on"] = response.json()["updated_on"]
     assert response.json() == new_author
 
@@ -100,6 +102,7 @@ def test_get_author(
         "updated_on": test_author.updated_on.isoformat(),
         "created_by": test_author.created_by,
         "created_on": test_author.created_on.isoformat(),
+        "display_name": test_author.display_name,
     }
 
 
