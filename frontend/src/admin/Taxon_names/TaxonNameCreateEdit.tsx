@@ -354,13 +354,53 @@ export const TaxonNameCreateEdit: FC = ({
             </Box>
             <Box className={gridClasses.EightCol1to9span}>
               <Labeled label="Subsequent names">
-                <EditableCrossReferenceManyGrid
-                  props={props}
-                  source="new_name_id"
-                  target="old_name_id"
-                  label="Subsequent names"
-                  createInitialValues={newNameInitialValues}
-                />
+                {(props.record?.id && (
+                  <ReferenceManyField
+                    fullWidth
+                    reference="cross_references"
+                    target="old_name_id"
+                    filter={{ active: true }}
+                    {...props}
+                  >
+                    <EditableDatagrid
+                      undoable
+                      createForm={
+                        <CrossReferenceRowForm
+                          source="new_name_id"
+                          initialValues={newNameInitialValues}
+                          {...props}
+                        />
+                      }
+                      editForm={
+                        <CrossReferenceRowForm
+                          source="new_name_id"
+                          {...props}
+                        />
+                      }
+                      hasCreate
+                      expand={<EmbeddedCrossReferenceShow />}
+                    >
+                      <SelectField
+                        source="cross_reference_type"
+                        choices={CrossRefType}
+                      />
+                      <ReferenceField
+                        source="new_name_id"
+                        reference="taxon_names"
+                        sortBy="cross_reference_type"
+                        link="show"
+                      >
+                        <FormattedScientificNameWithStatus />
+                      </ReferenceField>
+                      <TextField source="comments" />
+                    </EditableDatagrid>
+                  </ReferenceManyField>
+                )) || (
+                  <Typography>
+                    You need to save the record before you can add any related
+                    names.
+                  </Typography>
+                )}
               </Labeled>
             </Box>
           </Box>
