@@ -10,7 +10,6 @@ import {
   SearchInput,
   TextField,
   TopToolbar,
-  FunctionField,
 } from 'react-admin';
 import { List, WithPermissions } from '@react-admin/ra-rbac';
 import { DefaultPagination, useCanBulkDelete } from '../shared';
