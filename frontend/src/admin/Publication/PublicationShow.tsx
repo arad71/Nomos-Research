@@ -9,7 +9,6 @@ import {
   ReferenceArrayField,
   SingleFieldList,
   ChipField,
-  FunctionField,
 } from 'react-admin';
 import { Show } from '@react-admin/ra-rbac';
 import Aside from '../shared/Aside';
@@ -46,7 +45,7 @@ export const PublicationShow: FC = (props) => {
           <Box>
             <RichTextField className={classes.title} source="display_title" />
           </Box>
-          <TextField source="verbatim_author" className={classes.subtitle} />
+          <TextField source="author_name" />
         </Box>
         <TabbedShowLayout>
           <Tab label="Publication" className={globalClasses.bold}>
@@ -73,9 +72,7 @@ export const PublicationShow: FC = (props) => {
             </Box>
             <Box className={globalClasses.fieldMargin}>
               <Labeled label="Publication Authors">
-                <FunctionField
-                  render={(record: any) => record.author_names.join(', ')}
-                />
+                <TextField source="author_name" />
               </Labeled>
             </Box>
             <Box className={globalClasses.formRow}>
