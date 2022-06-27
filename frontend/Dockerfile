@@ -7,6 +7,7 @@ COPY .npmrc.docker .npmrc
 ADD package.json /package.json
 ADD package-lock.json /package-lock.json
 
+ENV NODE_ENV=$NODE_ENV
 ENV NODE_PATH=/node_modules
 ENV PATH=$PATH:/node_modules/.bin
 RUN npm config set fetch-retry-mintimeout 20000
