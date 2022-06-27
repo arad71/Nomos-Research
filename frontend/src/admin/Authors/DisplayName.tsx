@@ -13,7 +13,7 @@ export const DisplayName = () => {
   const classes = useStyles();
   return (
     <>
-      <RichTextField source="display_name" className={classes.title} />
+      <TextField source="display_name" className={classes.title} />
     </>
   );
 };
