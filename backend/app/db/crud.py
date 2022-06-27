@@ -156,14 +156,12 @@ class Crud:
         return db_item
 
     @classmethod
-    def delete_item(cls, db: Session, id: int, current_user: int):
+    def delete_item(cls, db: Session, id: int):
         item = cls.get_item(db, id)
         if not item:
             raise HTTPException(
                 status.HTTP_404_NOT_FOUND, detail=cls.name + " not found"
             )
         item.deleted = True
-        item.deleted_by = current_user
-        # db.delete(item)
         db.commit()
         return {cls.id_key: id}
