@@ -74,3 +74,5 @@ def test_hierarchy_children(
     carnivore.save()
     assert carnivore.path == Ltree("1.2.4.5")
     assert panther.path == Ltree("1.2.4.5.6")
+
+    assert panther.find_root_parent() == chordate

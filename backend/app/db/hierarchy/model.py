@@ -151,6 +151,12 @@ class Hierarchy(BaseModel, TableMixin):
         for child in self.direct_children:
             child.calculate_path(parent=self)
 
+    def find_root_parent(self: "Hierarchy"):
+        parent = self.direct_parent
+        if parent:
+            parent = self.direct_parent.find_root_parent()
+        return parent or self
+
 
 @event.listens_for(Hierarchy, "before_insert")
 @event.listens_for(Hierarchy, "before_update")
