@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { Edit } from '@react-admin/ra-rbac';
 import Aside from '../shared/Aside';
 import { ClassSystemCreateEdit } from './ClassSystemCreateEdit';
-import { ClassificationDescription } from './ClassDesc';
+import { ClassificationDescription } from './ClassificationDescription';
 
 export const ClassificationSystemEdit: FC = (props) => {
   return (

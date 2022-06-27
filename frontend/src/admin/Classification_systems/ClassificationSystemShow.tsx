@@ -6,7 +6,7 @@ import { Box, Typography } from '@material-ui/core';
 import Aside from '../shared/Aside';
 import ClassificationType from './ClassificationType';
 import { GlobalTheme } from '../../GlobalTheme';
-import { ClassificationDescription } from './ClassDesc';
+import { ClassificationDescription } from './ClassificationDescription';
 
 const useStyles = makeStyles((theme) => ({
   showPad: {
