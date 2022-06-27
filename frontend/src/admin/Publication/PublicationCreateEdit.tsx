@@ -117,15 +117,17 @@ export const PublicationCreateEdit: FC = (props) => {
               source="publisher"
               className={gridClasses.EightCol1to5span}
             />
-            <ReferenceInput
-              label="Parent"
-              source="parent_id"
-              reference="publications"
-              sort={{ field: 'abbreviated_title', order: 'ASC' }}
-              className={gridClasses.EightCol1to5span}
-            >
-              <AutocompleteInput optionText="abbreviated_title" />
-            </ReferenceInput>
+            <Box className={gridClasses.EightCol1to5span}>
+              <ReferenceInput
+                label="Parent"
+                source="parent_id"
+                reference="publications"
+                sort={{ field: 'abbreviated_title', order: 'ASC' }}
+                fullWidth
+              >
+                <AutocompleteInput optionText="abbreviated_title" />
+              </ReferenceInput>
+            </Box>
             <TextInput
               source="published_location"
               className={gridClasses.EightCol5to7span}

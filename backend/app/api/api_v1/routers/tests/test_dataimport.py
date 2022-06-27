@@ -1,9 +1,15 @@
+import os
+
 from starlette import status
 
+from app.api.api_v1.routers.dataimport import MappingType
+from app.dataimport.csv import import_taxon_names
 from app.db.dataimport import LEGACY_DATA_DIRECTORY
+from app.db.taxon_name.model import TaxonName
 
 LOG_ENDPOINT = "/api/v1/dataimport"
 WACENSUS_ENDPOINT = "/api/v1/dataimport/wacensus"
+CSVUPLOAD_ENDPOINT = "/api/v1/dataimport/csvupload"
 
 
 def test_import_wacensus_data_access(client, checklist_api_key):
@@ -22,3 +28,32 @@ def test_data_import_log_file(client, import_api_key):
     response = client.get(LOG_ENDPOINT, headers={"x-api-key": import_api_key})
     assert response.text == log_file_contents
     # We do not test the post endpoint as this actually imports the data
+
+
+def test_import_csvupload_data_access(client, checklist_api_key):
+    response = client.post(CSVUPLOAD_ENDPOINT)
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    response = client.post(CSVUPLOAD_ENDPOINT, headers={"x-api-key": checklist_api_key})
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_import_csvupload_new_names(
+    client,
+    import_api_key,
+    test_taxon_name_canonical_name_4,
+    test_db,
+):
+    test_data_file = os.getcwd() + "/app/tests/csvupload_new_names.csv"
+    import_taxon_names(test_data_file, MappingType.vanilla, db=test_db)
+    assert test_db.query(TaxonName).count() == 4
+
+
+def test_import_csvupload_existing_names(
+    client,
+    import_api_key,
+    test_taxon_name_canonical_name_4,
+    test_db,
+):
+    test_data_file = os.getcwd() + "/app/tests/csvupload_existing_names.csv"
+    import_taxon_names(test_data_file, MappingType.vanilla, db=test_db)
+    assert test_db.query(TaxonName).count() == 1

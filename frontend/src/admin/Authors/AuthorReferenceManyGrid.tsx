@@ -10,6 +10,7 @@ import {
 import { Box, Typography } from '@material-ui/core';
 
 import AuthorType from '../Citations/AuthorType';
+import { GlobalTheme } from '../../GlobalTheme';
 
 const Empty = () => (
   <Box>
@@ -23,6 +24,7 @@ export const AuthorReferenceManyGrid = (props: {
   label: string;
   props: React.PropsWithChildren<{}>;
 }) => {
+  const globalClasses = GlobalTheme();
   return (
     <ReferenceManyField
       fullWidth
@@ -35,7 +37,7 @@ export const AuthorReferenceManyGrid = (props: {
       }}
       {...props.props}
     >
-      <Datagrid empty={<Empty />}>
+      <Datagrid empty={<Empty />} className={globalClasses.equalColumnWidth}>
         <ReferenceField source={props.source} reference="authors" allowEmpty>
           <TextField source="abbreviation" />
         </ReferenceField>
