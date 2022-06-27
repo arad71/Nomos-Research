@@ -28,13 +28,13 @@ import LanguageType from '../Vernaculars/LanguageType';
 import { Box, Typography } from '@material-ui/core';
 import { CitationRowForm } from '../Citations';
 import { VernacularRowForm, EmbeddedVernacularShow } from '../Vernaculars';
-import { EditableCrossReferenceManyGrid } from '../Cross_references';
 import { GlobalGridTheme, GlobalTheme } from '../../GlobalTheme';
 import { NamePageSummary } from './NamePageSummary';
+// eslint-disable-next-line max-len
 import { EmbeddedCrossReferenceShow } from '../Cross_references/EmbeddedCrossReferenceShow';
-
 import CrossRefType from '../Cross_references/CrossRefType';
 import { FormattedScientificNameWithStatus } from '../Taxon_names';
+// eslint-disable-next-line max-len
 import { CrossReferenceRowForm } from '../Cross_references/CrossReferenceRowForm';
 
 const validateNumber = [number(), minValue(0)];
