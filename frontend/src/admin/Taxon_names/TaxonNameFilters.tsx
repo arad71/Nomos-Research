@@ -36,7 +36,7 @@ export const TaxonNameFilters = [
     source="volume_information__contains"
     label="Volume information"
   />,
-  <TextInput source="vernaculars___vernacular__contains" label="Vernacular" />,
+  <TextInput source="all_vernaculars__contains" label="Vernacular" />,
   <TextInput source="phylum__contains" label="Phylum" />,
   <TextInput source="taxon_class__contains" label="Class" />,
   <TextInput source="order__contains" label="Order" />,
