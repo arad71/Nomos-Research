@@ -66,13 +66,17 @@ def test_hierarchy_children(
     assert carnivore.direct_parent == mammal
     assert mammal.direct_children == [carnivore]
     assert mammal.parent_name == test_chordata
-    assert chordate.path == Ltree(f"1.2")
+    test_db.refresh(chordate)
+    assert chordate.path == Ltree("1.2")
     assert mammal.path == Ltree("1.2.3")
     assert carnivore.path == Ltree("1.2.3.5")
+    test_db.refresh(panther)
     assert panther.path == Ltree("1.2.3.5.6")
     carnivore.parent_nid = reptile.taxon_name_id
     carnivore.save()
+    test_db.refresh(carnivore)
     assert carnivore.path == Ltree("1.2.4.5")
+    test_db.refresh(panther)
     assert panther.path == Ltree("1.2.4.5.6")
-
     assert panther.find_root_parent() == chordate
+    assert False

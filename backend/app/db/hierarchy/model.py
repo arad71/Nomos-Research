@@ -1,7 +1,8 @@
+from loguru import logger
 from sqlalchemy import Column, ForeignKey, Index, Integer, Sequence, and_, event, func
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.associationproxy import association_proxy
-from sqlalchemy.orm import backref, foreign, relationship, remote
+from sqlalchemy.orm import Session, backref, foreign, relationship, remote
 from sqlalchemy.orm.attributes import set_committed_value
 from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy_utils import Ltree, LtreeType
@@ -136,13 +137,20 @@ class Hierarchy(BaseModel, TableMixin):
         return parent_path
 
     def calculate_path(self, parent: "Hierarchy" = None):
-        # hierarchy_calculation.clear_hierarchy_path(hierarchy, False)
         new_path = self.get_path()
-        if new_path != self.path:
+        if new_path != self.path or True:
+            session: Session = self.session
+            values = {"path": new_path}
             set_committed_value(self, "path", new_path)
             if parent:
-                set_committed_value(self, "updated_by", parent.updated_by)
-                set_committed_value(self, "updated_on", parent.updated_on)
+                values.update(
+                    updated_by=parent.updated_by, updated_on=parent.updated_on
+                )
+            session.execute(
+                self.__table__.update()
+                .values(values)
+                .where(Hierarchy.hierarchy_id == self.hierarchy_id)
+            )
 
             self.calculate_path_for_children()
 
@@ -151,15 +159,29 @@ class Hierarchy(BaseModel, TableMixin):
         for child in self.direct_children:
             child.calculate_path(parent=self)
 
-    def find_root_parent(self: "Hierarchy"):
+    def find_root_parent(self: "Hierarchy") -> "Hierarchy":
         parent = self.direct_parent
         if parent:
             parent = self.direct_parent.find_root_parent()
         return parent or self
 
+    @staticmethod
+    def rebuild_hierarchy_paths():
+        logger.info("Rebuilding hierarchy paths")
+        done = set()
+        hierarchy: Hierarchy
+        for hierarchy in Hierarchy.all():
+            root = hierarchy.find_root_parent()
+            if root not in done:
+                logger.debug("Rebuilding hierarchy for {} and descendants.", root)
+                root.path = None
+                root.save()
+                done.add(root)
+        return done
 
-@event.listens_for(Hierarchy, "before_insert")
-@event.listens_for(Hierarchy, "before_update")
+
+@event.listens_for(Hierarchy, "after_insert")
+@event.listens_for(Hierarchy, "after_update")
 def calculate_fields(
     mapper,
     connection: Connection,
