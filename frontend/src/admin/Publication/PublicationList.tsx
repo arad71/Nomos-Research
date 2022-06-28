@@ -38,11 +38,12 @@ export const PublicationList: FC = (props) => (
     bulkActionButtons={useCanBulkDelete()}
   >
     <Datagrid rowClick="show">
-      <BooleanField source="bad_publication" />
       <TextField source="title" />
-      <TextField source="display_title" />
+      <TextField source="author_name" />
       <TextField source="publication_year" />
       <TextField source="published" />
+      <TextField source="display_title" />
+      <BooleanField source="bad_publication" />
       <ReferenceField source="updated_by" reference="users">
         <TextField source="full_name" />
       </ReferenceField>

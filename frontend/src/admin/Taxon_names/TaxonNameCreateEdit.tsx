@@ -28,15 +28,23 @@ import LanguageType from '../Vernaculars/LanguageType';
 import { Box, Typography } from '@material-ui/core';
 import { CitationRowForm } from '../Citations';
 import { VernacularRowForm, EmbeddedVernacularShow } from '../Vernaculars';
-import { EditableCrossReferenceManyGrid } from '../Cross_references';
 import { GlobalGridTheme, GlobalTheme } from '../../GlobalTheme';
 import { NamePageSummary } from './NamePageSummary';
+// eslint-disable-next-line max-len
+import { EmbeddedCrossReferenceShow } from '../Cross_references/EmbeddedCrossReferenceShow';
+import CrossRefType from '../Cross_references/CrossRefType';
+import { FormattedScientificNameWithStatus } from '../Taxon_names';
+// eslint-disable-next-line max-len
+import { CrossReferenceRowForm } from '../Cross_references/CrossReferenceRowForm';
 
 const validateNumber = [number(), minValue(0)];
 
 const useStyles = makeStyles({
   fullWidth: {
     width: '100%',
+  },
+  bottomMargin: {
+    marginBottom: '2em',
   },
 });
 
@@ -225,6 +233,7 @@ export const TaxonNameCreateEdit: FC = ({
                   {...props}
                 >
                   <EditableDatagrid
+                    className={classes.bottomMargin}
                     undoable
                     createForm={
                       <VernacularRowForm
@@ -260,14 +269,14 @@ export const TaxonNameCreateEdit: FC = ({
             /* eslint-disable-next-line max-len */
             className={`${globalClasses.mainGrid} ${globalClasses.sectionMargin}`}
           >
-            <TextInput
-              source="family_code"
-              className={gridClasses.EightCol1to3span}
-            />
-            <TextInput
-              source="origin"
-              className={gridClasses.EightCol3to5span}
-            />
+            <Typography
+              variant="h5"
+              /* eslint-disable-next-line max-len */
+              className={`${gridClasses.EightCol1to3span} ${globalClasses.bold}`}
+              gutterBottom
+            >
+              Naturalised Status
+            </Typography>
             <SelectInput
               source="naturalised_status"
               choices={NaturalisedStatus}
@@ -294,24 +303,104 @@ export const TaxonNameCreateEdit: FC = ({
           >
             <Box className={gridClasses.EightCol1to9span}>
               <Labeled label="Previous names">
-                <EditableCrossReferenceManyGrid
-                  props={props}
-                  source="old_name_id"
-                  target="new_name_id"
-                  label="Previous names"
-                  createInitialValues={oldNameInitialValues}
-                />
+                {(props.record?.id && (
+                  <ReferenceManyField
+                    fullWidth
+                    reference="cross_references"
+                    target="new_name_id"
+                    filter={{ active: true }}
+                    {...props}
+                  >
+                    <EditableDatagrid
+                      undoable
+                      createForm={
+                        <CrossReferenceRowForm
+                          source="old_name_id"
+                          initialValues={oldNameInitialValues}
+                          {...props}
+                        />
+                      }
+                      editForm={
+                        <CrossReferenceRowForm
+                          source="old_name_id"
+                          {...props}
+                        />
+                      }
+                      hasCreate
+                      expand={<EmbeddedCrossReferenceShow />}
+                    >
+                      <SelectField
+                        source="cross_reference_type"
+                        choices={CrossRefType}
+                      />
+                      <ReferenceField
+                        source="old_name_id"
+                        reference="taxon_names"
+                        sortBy="cross_reference_type"
+                        link="show"
+                      >
+                        <FormattedScientificNameWithStatus />
+                      </ReferenceField>
+                      <TextField source="comments" />
+                    </EditableDatagrid>
+                  </ReferenceManyField>
+                )) || (
+                  <Typography>
+                    You need to save the record before you can add any related
+                    names.
+                  </Typography>
+                )}
               </Labeled>
             </Box>
             <Box className={gridClasses.EightCol1to9span}>
               <Labeled label="Subsequent names">
-                <EditableCrossReferenceManyGrid
-                  props={props}
-                  source="new_name_id"
-                  target="old_name_id"
-                  label="Subsequent names"
-                  createInitialValues={newNameInitialValues}
-                />
+                {(props.record?.id && (
+                  <ReferenceManyField
+                    fullWidth
+                    reference="cross_references"
+                    target="old_name_id"
+                    filter={{ active: true }}
+                    {...props}
+                  >
+                    <EditableDatagrid
+                      undoable
+                      createForm={
+                        <CrossReferenceRowForm
+                          source="new_name_id"
+                          initialValues={newNameInitialValues}
+                          {...props}
+                        />
+                      }
+                      editForm={
+                        <CrossReferenceRowForm
+                          source="new_name_id"
+                          {...props}
+                        />
+                      }
+                      hasCreate
+                      expand={<EmbeddedCrossReferenceShow />}
+                    >
+                      <SelectField
+                        source="cross_reference_type"
+                        choices={CrossRefType}
+                      />
+                      <ReferenceField
+                        source="new_name_id"
+                        reference="taxon_names"
+                        sortBy="cross_reference_type"
+                        link="show"
+                      >
+                        <FormattedScientificNameWithStatus />
+                      </ReferenceField>
+                      <TextField source="comments" />
+                    </EditableDatagrid>
+                  </ReferenceManyField>
+                )) || (
+                  <Typography>
+                    You need to save the record before you can add any related
+                    names.
+                  </Typography>
+                )}
               </Labeled>
             </Box>
           </Box>
@@ -325,7 +414,7 @@ export const TaxonNameCreateEdit: FC = ({
               source="comments"
               className={gridClasses.EightCol1to9span}
               multiline
-              fullWdith
+              fullWidth
             />
           </Box>
         </FormTab>

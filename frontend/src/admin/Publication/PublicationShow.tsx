@@ -9,13 +9,13 @@ import {
   ReferenceArrayField,
   SingleFieldList,
   ChipField,
-  FunctionField,
 } from 'react-admin';
 import { Show } from '@react-admin/ra-rbac';
 import Aside from '../shared/Aside';
 import { Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { GlobalTheme } from '../../GlobalTheme';
+import { DisplayTitle } from './DisplayTitle';
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -40,13 +40,13 @@ export const PublicationShow: FC = (props) => {
   const classes = useStyles();
   const globalClasses = GlobalTheme();
   return (
-    <Show aside={<Aside />} {...props}>
+    <Show aside={<Aside />} {...props} title={<DisplayTitle />}>
       <>
         <Box className={classes.titlePos}>
           <Box>
-            <RichTextField className={classes.title} source="title" />
+            <RichTextField className={classes.title} source="display_title" />
           </Box>
-          <TextField source="verbatim_author" className={classes.subtitle} />
+          <TextField source="author_name" />
         </Box>
         <TabbedShowLayout>
           <Tab label="Publication" className={globalClasses.bold}>
@@ -73,9 +73,7 @@ export const PublicationShow: FC = (props) => {
             </Box>
             <Box className={globalClasses.fieldMargin}>
               <Labeled label="Publication Authors">
-                <FunctionField
-                  render={(record: any) => record.author_names.join(', ')}
-                />
+                <TextField source="author_name" />
               </Labeled>
             </Box>
             <Box className={globalClasses.formRow}>
@@ -149,6 +147,23 @@ export const PublicationShow: FC = (props) => {
               <Box className={globalClasses.fieldMargin}>
                 <Labeled label="Published Location">
                   <TextField source="published_location" />
+                </Labeled>
+              </Box>
+            </Box>
+            <Box className={globalClasses.formRow}>
+              <Box className={globalClasses.fieldMargin}>
+                <Labeled label="Volume">
+                  <TextField source="volume" />
+                </Labeled>
+              </Box>
+              <Box className={globalClasses.fieldMargin}>
+                <Labeled label="Edition">
+                  <TextField source="edition" />
+                </Labeled>
+              </Box>
+              <Box className={globalClasses.fieldMargin}>
+                <Labeled label="Pages">
+                  <TextField source="pages" />
                 </Labeled>
               </Box>
             </Box>

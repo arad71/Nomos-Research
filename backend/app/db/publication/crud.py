@@ -13,7 +13,7 @@ class PublicationCrud(crud.Crud):
     name = "Publication"
     search_fields = [
         "title",
-        "display_title",
+        "abbreviated_title",
     ]
 
     @classmethod
@@ -85,6 +85,7 @@ class PublicationCrud(crud.Crud):
                 db.add(publication_author)
 
         update_data.pop("author_ids", None)
+        update_data.pop("display_title", None)
         update_data["updated_by"] = current_user
         for key, value in update_data.items():
             setattr(db_publication, key, value)

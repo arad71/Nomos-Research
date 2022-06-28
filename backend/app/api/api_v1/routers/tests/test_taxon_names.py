@@ -231,6 +231,7 @@ def test_canonical_name_3(
         "is_current": test_taxon_name_canonical_name_3.is_current,
         "validated": test_taxon_name_canonical_name_3.validated,
         "genus": test_taxon_name_canonical_name_3.genus,
+        "uninomial": test_taxon_name_canonical_name_3.uninomial,
         "specific_epithet": test_taxon_name_canonical_name_3.specific_epithet,
         "infraspecific_epithet": test_taxon_name_canonical_name_3.infraspecific_epithet,
         "canonical_name": test_taxon_name_canonical_name_3.canonical_name,

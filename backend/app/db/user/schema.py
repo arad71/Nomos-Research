@@ -4,6 +4,7 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
+from app.core.config import settings
 from app.db.role.constants import Role
 from app.db.user.constants import EMAIL, TABLE_DESCRIPTION
 from app.db.user_role.schema import UserRole
@@ -24,7 +25,10 @@ class UserOut(UserBase):
 
 
 class UserCreate(UserBase):
-    password: str
+    if settings.AUTH_PROVIDER == "auth2":
+        password: t.Optional[str] = None
+    else:
+        password: str = None
 
     class Config:
         orm_mode = True

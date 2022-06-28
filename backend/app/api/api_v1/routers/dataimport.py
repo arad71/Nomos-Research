@@ -1,3 +1,7 @@
+import zipfile
+from enum import Enum
+from pathlib import Path
+
 from fastapi import APIRouter, Depends, UploadFile
 from fastapi.responses import FileResponse
 from fastapi_key_auth import AuthorizerDependency
@@ -33,6 +37,11 @@ def import_wacensus_data(background_tasks: BackgroundTasks):
     return background_tasks.tasks
 
 
+class MappingType(Enum):
+    vanilla = "Vanilla"
+    curation_data_extract = "Curation Data Extract"
+
+
 @r.post(
     "/csvupload",
     status_code=201,
@@ -40,11 +49,23 @@ def import_wacensus_data(background_tasks: BackgroundTasks):
         Depends(authorizer),
     ],
 )
-def import_csvupload_data(background_tasks: BackgroundTasks, upload_file: UploadFile):
+def import_csvupload_data(
+    background_tasks: BackgroundTasks,
+    upload_file: UploadFile,
+    mapping_type: MappingType,
+):
     contents = upload_file.file.read()
-    flie_path = "/legacy_data/" + upload_file.filename
-    with open(flie_path, "wb+") as file_path:
-        file_path.write(contents)
-
-    background_tasks.add_task(import_taxon_names, flie_path)
+    file_path = "/legacy_data/" + upload_file.filename
+    with open(file_path, "wb+") as uploaded_file:
+        uploaded_file.write(contents)
+    if file_path.endswith(".zip"):
+        extracted_folder = file_path + "_extracted/"
+        Path(extracted_folder).mkdir(parents=True)
+        with zipfile.ZipFile(file_path, "r") as uploaded_file:
+            uploaded_file.extractall(extracted_folder)
+            files = Path(extracted_folder).glob("*")
+            for file in files:
+                background_tasks.add_task(import_taxon_names, file, mapping_type)
+    else:
+        background_tasks.add_task(import_taxon_names, file_path, mapping_type)
     return background_tasks.tasks

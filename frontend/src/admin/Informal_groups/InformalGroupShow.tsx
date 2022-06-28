@@ -10,7 +10,7 @@ import Aside from '../shared/Aside';
 
 export const InformalGroupShow: FC = (props) => {
   return (
-    <Show aside={<Aside />} {...props}>
+    <Show aside={<Aside />} {...props} title="Informal group">
       <SimpleShowLayout>
         <ReferenceField
           source="classification_system_id"

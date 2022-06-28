@@ -7,6 +7,7 @@ import {
   TextField,
   Labeled,
 } from 'react-admin';
+import TaxonNameInformalGroups from '../Taxon_names/TaxonNameInformalGroups';
 import TaxonHierarchy from '../Taxon_names/TaxonHierarchy';
 import { useLocation } from 'react-router-dom';
 import { GlobalTheme } from '../../GlobalTheme';
@@ -77,6 +78,7 @@ const Aside = () => {
                 source="created_by"
                 reference="users"
                 label="Created"
+                link="show"
               >
                 <Labeled label="Created by" className={classes.labelMargin}>
                   <TextField source="full_name" />
@@ -91,7 +93,7 @@ const Aside = () => {
             </Box>
             <Box className={classes.panelSection}>
               <PeopleAltIcon className={classes.iconStyles} />
-              <ReferenceField source="updated_by" reference="users">
+              <ReferenceField source="updated_by" reference="users" link="show">
                 <Labeled label="Updated by" className={classes.labelMargin}>
                   <TextField source="full_name" />
                 </Labeled>
@@ -100,7 +102,12 @@ const Aside = () => {
           </Box>
         </SimpleShowLayout>
       </Card>
-      {isTaxonNames && <TaxonHierarchy />}
+      {isTaxonNames && (
+        <>
+          <TaxonNameInformalGroups />
+          <TaxonHierarchy />
+        </>
+      )}
     </Box>
   );
 };
