@@ -121,3 +121,25 @@ async def hierarchy_delete(
     Delete existing hierarchy
     """
     return HierarchyCrud.delete_item(db, hierarchy_id)
+
+
+@r.post(
+    "/rebuild",
+    response_model=List[Hierarchy],
+    response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.MANAGER["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
+async def hierarchy_rebuild(
+    db=Depends(get_db),
+):
+    """
+    Rebuild hierarchical indexes
+    """
+    return HierarchyCrud.rebuild(db)
