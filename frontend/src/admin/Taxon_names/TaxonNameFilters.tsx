@@ -22,7 +22,7 @@ export const TaxonNameFilters = [
     min={0}
     validate={validateNumber}
   />,
-  <NumberInput
+  <TextInput
     source="legacy_id"
     label="Legacy ID"
     min={0}
