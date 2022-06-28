@@ -488,14 +488,14 @@ def test_carnivora(
 
 @pytest.fixture
 def test_panthera(
-    test_db, test_kingdom, test_publication, test_superuser, test_rank_class
+    test_db, test_kingdom, test_publication, test_superuser, test_rank_genus
 ) -> TaxonName:
     """
     Taxon Name for testing
     """
     now = datetime.datetime.utcnow()
     return create_taxon_name(
-        "Panthera", now, test_db, test_kingdom, test_superuser, test_rank_class
+        "Panthera", now, test_db, test_kingdom, test_superuser, test_rank_genus
     )
 
 
@@ -705,6 +705,28 @@ def test_rank_order(
     """
 
     return create_rank(test_rank_class, "Order", test_db, test_kingdom, test_superuser)
+
+
+@pytest.fixture
+def test_rank_family(
+    test_db, test_kingdom, test_superuser, test_rank_order
+) -> TaxonRank:
+    """
+    Taxon Rank for testing
+    """
+
+    return create_rank(test_rank_order, "Family", test_db, test_kingdom, test_superuser)
+
+
+@pytest.fixture
+def test_rank_genus(
+    test_db, test_kingdom, test_superuser, test_rank_family
+) -> TaxonRank:
+    """
+    Taxon Rank for testing
+    """
+
+    return create_rank(test_rank_family, "Genus", test_db, test_kingdom, test_superuser)
 
 
 def create_rank(parent, rank_name, test_db, test_kingdom, test_superuser):
