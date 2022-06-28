@@ -12,6 +12,7 @@ from app.db.informal_group.schema import (
 )
 from app.db.role.constants import Role
 from app.db.session import get_db
+from app.db.user.schema import User
 
 informal_groups_router = r = APIRouter(prefix="/informal_groups")
 
@@ -28,12 +29,13 @@ async def informal_group_list(
     sort: Optional[str] = None,
     filter: Optional[str] = None,
     db=Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Get all informal_groups
     """
     informal_groups, content_range = InformalGroupCrud.get_items(
-        db, range=range, sort=sort, list_filter=filter
+        db, current_user, range=range, sort=sort, list_filter=filter
     )
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = content_range
@@ -49,11 +51,12 @@ async def informal_group_list(
 async def informal_group_details(
     informal_group_id: int,
     db=Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Get any informal_group details
     """
-    informal_group = InformalGroupCrud.get_item(db, informal_group_id)
+    informal_group = InformalGroupCrud.get_item(db, current_user, informal_group_id)
     return informal_group
 
 

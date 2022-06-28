@@ -8,6 +8,7 @@ from app.db.kingdom.crud import KingdomCrud
 from app.db.kingdom.schema import Kingdom, KingdomCreate, KingdomEdit
 from app.db.role.constants import Role
 from app.db.session import get_db
+from app.db.user.schema import User
 
 kingdoms_router = r = APIRouter(prefix="/kingdoms")
 
@@ -24,12 +25,13 @@ async def kingdom_list(
     sort: Optional[str] = None,
     filter: Optional[str] = None,
     db=Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Get all kingdoms
     """
     kingdoms, content_range = KingdomCrud.get_items(
-        db, range=range, sort=sort, list_filter=filter
+        db, current_user, range=range, sort=sort, list_filter=filter
     )
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = content_range
@@ -45,11 +47,12 @@ async def kingdom_list(
 async def kingdom_details(
     kingdom_id: int,
     db=Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Get any kingdom details
     """
-    return KingdomCrud.get_item(db, kingdom_id)
+    return KingdomCrud.get_item(db, current_user, kingdom_id)
 
 
 @r.post(

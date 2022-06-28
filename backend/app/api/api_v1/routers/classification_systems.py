@@ -12,6 +12,7 @@ from app.db.classification_system.schema import (
 )
 from app.db.role.constants import Role
 from app.db.session import get_db
+from app.db.user.schema import User
 
 classification_systems_router = r = APIRouter(prefix="/classification_systems")
 
@@ -28,13 +29,14 @@ async def classification_system_list(
     sort: Optional[str] = None,
     filter: Optional[str] = None,
     db=Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Get all classification_systems
     """
 
     classification_systems, content_range = ClassificationSystemCrud.get_items(
-        db, range=range, sort=sort, list_filter=filter
+        db, current_user, range=range, sort=sort, list_filter=filter
     )
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = content_range
@@ -50,12 +52,13 @@ async def classification_system_list(
 async def classification_system_details(
     classification_system_id: int,
     db=Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Get any classification_system details
     """
     classification_system = ClassificationSystemCrud.get_item(
-        db, classification_system_id
+        db, current_user, classification_system_id
     )
     return classification_system
 

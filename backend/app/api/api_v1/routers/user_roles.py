@@ -24,11 +24,12 @@ async def user_role_list(
     response: Response,
     range: Optional[str] = RangeQueryParameter,
     db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Get all user_roles
     """
-    user_roles, content_range = UserRoleCrud.get_items(db, range=range)
+    user_roles, content_range = UserRoleCrud.get_items(db, current_user, range=range)
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = content_range
     return user_roles
@@ -42,11 +43,12 @@ async def user_role_list(
 async def user_role_details(
     user_role_id: int,
     db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Get any user_role details
     """
-    return UserRoleCrud.get_item(db, user_role_id)
+    return UserRoleCrud.get_item(db, current_user, user_role_id)
 
 
 @user_roles_router.post(

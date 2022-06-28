@@ -22,7 +22,7 @@ def upgrade():
         sa.Column(
             "deleted",
             sa.Boolean(),
-            nullable=True,
+            nullable=False,
             comment="If this record is soft deleted",
         ),
     )
@@ -31,7 +31,7 @@ def upgrade():
         sa.Column(
             "deleted",
             sa.Boolean(),
-            nullable=True,
+            nullable=False,
             comment="If this record is soft deleted",
         ),
     )
@@ -40,7 +40,7 @@ def upgrade():
         sa.Column(
             "deleted",
             sa.Boolean(),
-            nullable=True,
+            nullable=False,
             comment="If this record is soft deleted",
         ),
     )
@@ -49,7 +49,7 @@ def upgrade():
         sa.Column(
             "deleted",
             sa.Boolean(),
-            nullable=True,
+            nullable=False,
             comment="If this record is soft deleted",
         ),
     )
@@ -58,7 +58,7 @@ def upgrade():
         sa.Column(
             "deleted",
             sa.Boolean(),
-            nullable=True,
+            nullable=False,
             comment="If this record is soft deleted",
         ),
     )
@@ -67,7 +67,7 @@ def upgrade():
         sa.Column(
             "deleted",
             sa.Boolean(),
-            nullable=True,
+            nullable=False,
             comment="If this record is soft deleted",
         ),
     )
@@ -76,7 +76,7 @@ def upgrade():
         sa.Column(
             "deleted",
             sa.Boolean(),
-            nullable=True,
+            nullable=False,
             comment="If this record is soft deleted",
         ),
     )
@@ -85,7 +85,7 @@ def upgrade():
         sa.Column(
             "deleted",
             sa.Boolean(),
-            nullable=True,
+            nullable=False,
             comment="If this record is soft deleted",
         ),
     )
@@ -97,7 +97,7 @@ def upgrade():
         sa.Column(
             "deleted",
             sa.Boolean(),
-            nullable=True,
+            nullable=False,
             comment="If this record is soft deleted",
         ),
     )
@@ -109,7 +109,7 @@ def upgrade():
         sa.Column(
             "deleted",
             sa.Boolean(),
-            nullable=True,
+            nullable=False,
             comment="If this record is soft deleted",
         ),
     )
@@ -118,7 +118,7 @@ def upgrade():
         sa.Column(
             "deleted",
             sa.Boolean(),
-            nullable=True,
+            nullable=False,
             comment="If this record is soft deleted",
         ),
     )
@@ -127,7 +127,7 @@ def upgrade():
         sa.Column(
             "deleted",
             sa.Boolean(),
-            nullable=True,
+            nullable=False,
             comment="If this record is soft deleted",
         ),
     )
@@ -136,7 +136,7 @@ def upgrade():
         sa.Column(
             "deleted",
             sa.Boolean(),
-            nullable=True,
+            nullable=False,
             comment="If this record is soft deleted",
         ),
     )

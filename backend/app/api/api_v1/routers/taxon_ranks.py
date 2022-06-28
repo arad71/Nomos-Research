@@ -24,12 +24,13 @@ async def taxon_rank_list(
     sort: Optional[str] = None,
     filter: Optional[str] = None,
     db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Get all taxon_ranks
     """
     taxon_ranks, content_range = TaxonRankCrud.get_items(
-        db, range=range, sort=sort, list_filter=filter
+        db, current_user, range=range, sort=sort, list_filter=filter
     )
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = content_range
@@ -45,11 +46,12 @@ async def taxon_rank_list(
 async def taxon_rank_details(
     taxon_rank_id: int,
     db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Get any taxon_rank details
     """
-    taxon_rank = TaxonRankCrud.get_item(db, taxon_rank_id)
+    taxon_rank = TaxonRankCrud.get_item(db, current_user, taxon_rank_id)
     return taxon_rank
 
 

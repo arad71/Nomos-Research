@@ -8,6 +8,7 @@ from app.db.hierarchy.crud import HierarchyCrud
 from app.db.hierarchy.schema import Hierarchy, HierarchyCreate, HierarchyEdit
 from app.db.role.constants import Role
 from app.db.session import get_db
+from app.db.user.schema import User
 
 hierarchies_router = r = APIRouter(prefix="/hierarchies")
 
@@ -24,12 +25,13 @@ async def hierarchy_list(
     sort: Optional[str] = None,
     filter: Optional[str] = None,
     db=Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Get all hierarchies
     """
     hierarchies, content_range = HierarchyCrud.get_items(
-        db, range=range, sort=sort, list_filter=filter
+        db, current_user, range=range, sort=sort, list_filter=filter
     )
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = content_range
@@ -45,11 +47,12 @@ async def hierarchy_list(
 async def hierarchy_details(
     hierarchy_id: int,
     db=Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Get any hierarchy details
     """
-    hierarchy = HierarchyCrud.get_item(db, hierarchy_id)
+    hierarchy = HierarchyCrud.get_item(db, current_user, hierarchy_id)
     return hierarchy
 
 

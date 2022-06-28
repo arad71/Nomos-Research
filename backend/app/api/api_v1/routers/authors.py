@@ -8,6 +8,7 @@ from app.db.author.crud import AuthorCrud
 from app.db.author.schema import Author, AuthorCreate, AuthorEdit
 from app.db.role.constants import Role
 from app.db.session import get_db
+from app.db.user.schema import User
 
 authors_router = r = APIRouter(prefix="/authors")
 
@@ -24,12 +25,13 @@ async def author_list(
     sort: Optional[str] = None,
     filter: Optional[str] = None,
     db=Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Get all authors
     """
     authors, content_range = AuthorCrud.get_items(
-        db, range=range, sort=sort, list_filter=filter
+        db, current_user, range=range, sort=sort, list_filter=filter
     )
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = content_range
@@ -45,11 +47,12 @@ async def author_list(
 async def author_details(
     author_id: int,
     db=Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Get any author details
     """
-    author = AuthorCrud.get_item(db, author_id)
+    author = AuthorCrud.get_item(db, current_user, author_id)
     return author
 
 

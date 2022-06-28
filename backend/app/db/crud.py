@@ -33,11 +33,20 @@ class Crud:
         return db_item
 
     @classmethod
-    def get_item(cls, db: Session, id: int, current_user: User):
-        filters = {getattr(cls.model, cls.id_key): id}
-        if not current_user.is_super_admin():
-            filters[getattr(cls.model, "deleted")] = False
-        item = db.query(cls.model).filter(**filters).first()
+    def get_item(cls, db: Session, current_user: User, id: int):
+        if current_user.is_super_admin():
+            item = (
+                db.query(cls.model).filter(getattr(cls.model, cls.id_key) == id).first()
+            )
+        else:
+            item = (
+                db.query(cls.model)
+                .filter(
+                    getattr(cls.model, cls.id_key) == id,
+                    getattr(cls.model, "deleted") == False,  # noqa
+                )
+                .first()
+            )
         if not item:
             raise HTTPException(status_code=404, detail=cls.name + " not found")
         return item
@@ -80,8 +89,6 @@ class Crud:
                 sort_attrs.append(sort_value)
 
         filters = {}
-        if not current_user.is_super_admin():
-            filters["deleted"] = False
         if list_filter:
             filter_items = json.loads(list_filter)
             column: str
@@ -113,7 +120,15 @@ class Crud:
         total = query.count()
         content_range = f"{range_str}/{total}"
         # Results with limit and offset
-        results = query.offset(skip).limit(limit).all()
+        if not current_user.is_super_admin() and hasattr(cls.model, "deleted"):
+            results = (
+                query.filter(getattr(cls.model, "deleted") == False)  # noqa
+                .offset(skip)
+                .limit(limit)
+                .all()
+            )
+        else:
+            results = query.offset(skip).limit(limit).all()
         return results, content_range
 
     @classmethod

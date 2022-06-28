@@ -18,6 +18,8 @@ class TableMixin(object):
     def deleted(cls):
         return Column(
             Boolean,
+            default=False,
+            nullable=False,
             comment="If this record is soft deleted",
         )
 

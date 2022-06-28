@@ -25,12 +25,13 @@ async def vernacular_list(
     sort: Optional[str] = None,
     filter: Optional[str] = None,
     db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Get all vernaculars
     """
     vernaculars, content_range = VernacularCrud.get_items(
-        db, range=range, sort=sort, list_filter=filter
+        db, current_user, range=range, sort=sort, list_filter=filter
     )
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = content_range
@@ -46,11 +47,12 @@ async def vernacular_list(
 async def vernacular_details(
     vernacular_id: int,
     db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Get any vernacular details
     """
-    vernacular = VernacularCrud.get_item(db, vernacular_id)
+    vernacular = VernacularCrud.get_item(db, current_user, vernacular_id)
     return vernacular
 
 
