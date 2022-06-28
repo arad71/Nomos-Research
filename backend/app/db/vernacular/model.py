@@ -41,7 +41,7 @@ class Vernacular(BaseModel, TableMixin):
     )
     taxon_name = relationship(
         "TaxonName",
-        backref=backref("vernaculars", lazy="dynamic", cascade="all, delete-orphan"),
+        backref=backref("vernaculars", cascade="all, delete-orphan"),
     )
     language = Column(
         Enum(enums.Language, name=__tablename__ + "__language"),
