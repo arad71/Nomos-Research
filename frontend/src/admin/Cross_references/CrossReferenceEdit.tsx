@@ -5,7 +5,12 @@ import { CrossRefCreateEdit } from './CrossRefCreateEdit';
 
 export const CrossReferenceEdit: FC = (props) => {
   return (
-    <Edit mutationMode="pessimistic" {...props} aside={<Aside />}>
+    <Edit
+      mutationMode="pessimistic"
+      {...props}
+      aside={<Aside />}
+      title="Cross reference"
+    >
       <CrossRefCreateEdit />
     </Edit>
   );

@@ -12,6 +12,7 @@ import Aside from '../shared/Aside';
 import { Box, Typography } from '@material-ui/core';
 import { GlobalTheme } from '../../GlobalTheme';
 import { makeStyles } from '@material-ui/core';
+import { FullName } from './FullName';
 
 const useStyles = makeStyles((theme) => ({
   showPad: {
@@ -23,7 +24,7 @@ export const UserShow: FC = (props) => {
   const globalClasses = GlobalTheme();
   const classes = useStyles();
   return (
-    <Show aside={<Aside />} {...props}>
+    <Show aside={<Aside />} {...props} title={<FullName />}>
       <Box className={classes.showPad}>
         <Typography variant="h5" className={globalClasses.bold} gutterBottom>
           User information

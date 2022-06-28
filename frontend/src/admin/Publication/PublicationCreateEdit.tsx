@@ -8,7 +8,6 @@ import {
   SelectInput,
   TextField,
   TextInput,
-  RichTextField,
   ReferenceArrayInput,
   SelectArrayInput,
   AutocompleteInput,
@@ -36,7 +35,7 @@ export const PublicationCreateEdit: FC = (props) => {
     <>
       <Box className={globalClasses.titlePos}>
         <Box>
-          <RichTextField className={globalClasses.title} source="title" />
+          <TextField className={globalClasses.title} source="display_title" />
         </Box>
         <TextField
           source="verbatim_author"

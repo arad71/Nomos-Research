@@ -12,7 +12,7 @@ import AuthorType from './AuthorType';
 import Aside from '../shared/Aside';
 
 export const CitationShow: FC = (props) => (
-  <Show aside={<Aside />} {...props}>
+  <Show aside={<Aside />} {...props} title="Citation">
     <SimpleShowLayout>
       <ReferenceField source="taxon_name_id" reference="taxon_names">
         <RichTextField source="formatted_scientific_name" />

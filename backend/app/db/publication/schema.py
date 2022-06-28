@@ -60,6 +60,7 @@ class Publication(PublicationBase, TableBase):
     author: list[Author]
     author_names: Optional[list[str]]
     author_name: Optional[str]
+    display_title: Optional[str]
 
     class Config:
         orm_mode = True
