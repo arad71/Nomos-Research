@@ -178,6 +178,31 @@ class Crud:
                 status.HTTP_404_NOT_FOUND, detail=cls.name + " not found"
             )
         item.deleted = True
+        item.updated_by = current_user.user_id
         db.commit()
         db.refresh(item)
         return item
+
+    @classmethod
+    def undelete_item(cls, db: Session, current_user: User, id: int):
+        item = cls.get_item(db, current_user, id)
+        if not item:
+            raise HTTPException(
+                status.HTTP_404_NOT_FOUND, detail=cls.name + " not found"
+            )
+        item.deleted = False
+        item.updated_by = current_user.user_id
+        db.commit()
+        db.refresh(item)
+        return item
+
+    @classmethod
+    def remove_item(cls, db: Session, current_user: User, id: int):
+        item = cls.get_item(db, current_user, id)
+        if not item:
+            raise HTTPException(
+                status.HTTP_404_NOT_FOUND, detail=cls.name + " not found"
+            )
+        db.delete(item)
+        db.commit()
+        return {cls.id_key: id}

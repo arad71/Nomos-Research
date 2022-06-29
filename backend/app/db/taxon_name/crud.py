@@ -32,6 +32,7 @@ class TaxonNameCrud(crud.Crud):
         #     undefer("canonical_name_without_rank")
         # ).delete()
         item.deleted = True
+        item.updated_by = current_user.user_id
         db.commit()
         db.refresh(item)
         return item
