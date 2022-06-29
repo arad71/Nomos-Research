@@ -1,6 +1,6 @@
 import { Card as MuiCard, CardContent, withStyles } from '@material-ui/core';
 import { FilterLiveSearch } from 'react-admin';
-import { IsActiveFilter, RolesFilter } from './UserFilters';
+import { DeletedFilter, IsActiveFilter, RolesFilter } from './UserFilters';
 import React from 'react';
 
 export const Card = withStyles((theme) => ({
@@ -21,6 +21,7 @@ export const FilterSidebar = () => (
       <FilterLiveSearch />
       <RolesFilter />
       <IsActiveFilter />
+      <DeletedFilter />
     </CardContent>
   </Card>
 );

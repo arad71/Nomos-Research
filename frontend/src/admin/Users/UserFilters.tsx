@@ -33,3 +33,9 @@ export const RolesFilter = () => (
     />
   </FilterList>
 );
+export const DeletedFilter = () => (
+  <FilterList label="Soft Deleted" icon={<ToggleOn />}>
+    <FilterListItem label="Deleted" value={{ deleted: true }} />
+    <FilterListItem label="Not deleted" value={{ deleted: false }} />
+  </FilterList>
+);
