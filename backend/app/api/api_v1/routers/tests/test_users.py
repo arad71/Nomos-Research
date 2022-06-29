@@ -63,7 +63,7 @@ def test_delete_user(client, test_superuser, test_db, superuser_token_headers):
         headers=superuser_token_headers,
     )
     assert response.status_code == status.HTTP_200_OK
-    assert test_db.query(model.User).all() == []
+    assert response.json()["deleted"] is True
 
 
 def test_delete_user_not_found(client, superuser_token_headers):

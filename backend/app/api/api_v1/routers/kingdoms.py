@@ -101,7 +101,7 @@ async def kingdom_edit(
     """
     Update existing kingdom
     """
-    return KingdomCrud.edit_item(db, kingdom_id, kingdom, current_user.user_id)
+    return KingdomCrud.edit_item(db, current_user, kingdom_id, kingdom)
 
 
 @r.delete(
@@ -118,8 +118,9 @@ async def kingdom_edit(
 async def kingdom_delete(
     kingdom_id: int,
     db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Delete existing kingdom
     """
-    return KingdomCrud.delete_item(db, kingdom_id)
+    return KingdomCrud.delete_item(db, current_user, kingdom_id)

@@ -107,7 +107,7 @@ async def informal_group_edit(
     Update existing informal_group
     """
     return InformalGroupCrud.edit_item(
-        db, informal_group_id, informal_group, current_user.user_id
+        db, current_user, informal_group_id, informal_group
     )
 
 
@@ -125,8 +125,9 @@ async def informal_group_edit(
 async def informal_group_delete(
     informal_group_id: int,
     db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Delete existing informal_group
     """
-    return InformalGroupCrud.delete_item(db, informal_group_id)
+    return InformalGroupCrud.delete_item(db, current_user, informal_group_id)

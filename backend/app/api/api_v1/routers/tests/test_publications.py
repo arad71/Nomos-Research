@@ -36,7 +36,8 @@ def test_delete_publication(client, test_publication, test_db, superuser_token_h
         headers=superuser_token_headers,
     )
     assert response.status_code == status.HTTP_200_OK
-    assert test_db.query(Publication).all() == []
+    assert response.json()["deleted"] is True
+    assert test_db.query(Publication).all() == [test_publication]
 
 
 def test_delete_publication_not_found(client, superuser_token_headers):

@@ -29,7 +29,8 @@ def test_delete_vernacular(client, test_vernacular, test_db, superuser_token_hea
         headers=superuser_token_headers,
     )
     assert response.status_code == status.HTTP_200_OK
-    assert test_db.query(Vernacular).all() == []
+    assert response.json()["deleted"] is True
+    assert test_db.query(Vernacular).all() == [test_vernacular]
 
 
 def test_delete_vernacular_not_found(client, superuser_token_headers):

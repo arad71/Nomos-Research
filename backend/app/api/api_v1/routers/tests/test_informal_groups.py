@@ -31,7 +31,8 @@ def test_delete_informal_group(
         headers=superuser_token_headers,
     )
     assert response.status_code == status.HTTP_200_OK
-    assert test_db.query(InformalGroup).all() == []
+    assert response.json()["deleted"] is True
+    assert test_db.query(InformalGroup).all() == [test_informal_group]
 
 
 def test_delete_informal_group_not_found(client, superuser_token_headers):

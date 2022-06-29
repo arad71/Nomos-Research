@@ -97,7 +97,7 @@ async def user_role_edit(
     """
     Update existing user_role
     """
-    return UserRoleCrud.edit_item(db, user_role_id, user_role, current_user.user_id)
+    return UserRoleCrud.edit_item(db, current_user, user_role_id, user_role)
 
 
 @user_roles_router.delete(
@@ -114,11 +114,12 @@ async def user_role_edit(
 async def user_role_delete(
     user_role_id: int,
     db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Delete existing user_role
     """
-    return UserRoleCrud.delete_item(db, user_role_id)
+    return UserRoleCrud.delete_item(db, current_user, user_role_id)
 
 
 @user_roles_router.post(

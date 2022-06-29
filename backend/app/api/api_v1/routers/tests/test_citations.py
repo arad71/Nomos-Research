@@ -30,7 +30,8 @@ def test_delete_citation(client, test_citation, test_db, superuser_token_headers
         headers=superuser_token_headers,
     )
     assert response.status_code == status.HTTP_200_OK
-    assert test_db.query(Citation).all() == []
+    assert response.json()["deleted"] is True
+    assert test_db.query(Citation).all() == [test_citation]
 
 
 def test_delete_citation_not_found(client, superuser_token_headers):

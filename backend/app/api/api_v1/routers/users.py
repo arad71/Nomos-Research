@@ -113,9 +113,9 @@ async def user_edit(
     """
     return UserCrud.edit_item(
         db,
+        current_user,
         user_id,
         user,
-        current_user=current_user.user_id,
     )
 
 
@@ -133,8 +133,9 @@ async def user_edit(
 async def user_delete(
     user_id: int,
     db=Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Delete existing user
     """
-    return UserCrud.delete_item(db, user_id)
+    return UserCrud.delete_item(db, current_user, user_id)

@@ -101,7 +101,7 @@ async def taxon_rank_edit(
     """
     Update existing taxon_rank
     """
-    return TaxonRankCrud.edit_item(db, taxon_rank_id, taxon_rank, current_user.user_id)
+    return TaxonRankCrud.edit_item(db, current_user, taxon_rank_id, taxon_rank)
 
 
 @r.delete(
@@ -118,8 +118,9 @@ async def taxon_rank_edit(
 async def taxon_rank_delete(
     taxon_rank_id: int,
     db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Delete existing taxon_rank
     """
-    return TaxonRankCrud.delete_item(db, taxon_rank_id)
+    return TaxonRankCrud.delete_item(db, current_user, taxon_rank_id)

@@ -33,7 +33,8 @@ def test_delete_classification_system(
         headers=superuser_token_headers,
     )
     assert response.status_code == status.HTTP_200_OK
-    assert test_db.query(ClassificationSystem).all() == []
+    assert response.json()["deleted"] is True
+    assert test_db.query(ClassificationSystem).all() == [test_classification_system]
 
 
 def test_delete_classification_system_not_found(client, superuser_token_headers):

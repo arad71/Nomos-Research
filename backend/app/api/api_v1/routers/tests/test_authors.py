@@ -30,7 +30,8 @@ def test_delete_author(client, test_author, test_db, superuser_token_headers):
         headers=superuser_token_headers,
     )
     assert response.status_code == status.HTTP_200_OK
-    assert test_db.query(Author).all() == []
+    assert response.json()["deleted"] is True
+    assert test_db.query(Author).all() == [test_author]
 
 
 def test_delete_author_not_found(client, superuser_token_headers):

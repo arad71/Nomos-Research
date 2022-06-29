@@ -106,9 +106,7 @@ async def publication_edit(
     """
     Update existing publication
     """
-    return PublicationCrud.edit_item(
-        db, publication_id, publication, current_user=current_user.user_id
-    )
+    return PublicationCrud.edit_item(db, current_user, publication_id, publication)
 
 
 @r.delete(
@@ -125,8 +123,9 @@ async def publication_edit(
 async def publication_delete(
     publication_id: int,
     db=Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Delete existing publication
     """
-    return PublicationCrud.delete_item(db, publication_id)
+    return PublicationCrud.delete_item(db, current_user, publication_id)

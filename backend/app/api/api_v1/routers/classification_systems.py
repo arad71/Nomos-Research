@@ -112,7 +112,7 @@ async def classification_system_edit(
     Update existing classification_system
     """
     return ClassificationSystemCrud.edit_item(
-        db, classification_system_id, classification_system, current_user.user_id
+        db, current_user, classification_system_id, classification_system
     )
 
 
@@ -130,8 +130,11 @@ async def classification_system_edit(
 async def classification_system_delete(
     classification_system_id: int,
     db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Delete existing classification_system
     """
-    return ClassificationSystemCrud.delete_item(db, classification_system_id)
+    return ClassificationSystemCrud.delete_item(
+        db, current_user, classification_system_id
+    )

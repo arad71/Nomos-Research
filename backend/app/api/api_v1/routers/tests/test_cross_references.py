@@ -36,7 +36,8 @@ def test_delete_cross_reference(
         headers=superuser_token_headers,
     )
     assert response.status_code == status.HTTP_200_OK
-    assert test_db.query(CrossReference).all() == []
+    assert response.json()["deleted"] is True
+    assert test_db.query(CrossReference).all() == [test_cross_reference]
 
 
 def test_delete_cross_reference_not_found(client, superuser_token_headers):

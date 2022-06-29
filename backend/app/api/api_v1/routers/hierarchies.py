@@ -102,7 +102,7 @@ async def hierarchy_edit(
     """
     Update existing hierarchy
     """
-    return HierarchyCrud.edit_item(db, hierarchy_id, hierarchy, current_user.user_id)
+    return HierarchyCrud.edit_item(db, current_user, hierarchy_id, hierarchy)
 
 
 @r.delete(
@@ -119,8 +119,9 @@ async def hierarchy_edit(
 async def hierarchy_delete(
     hierarchy_id: int,
     db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Delete existing hierarchy
     """
-    return HierarchyCrud.delete_item(db, hierarchy_id)
+    return HierarchyCrud.delete_item(db, current_user, hierarchy_id)

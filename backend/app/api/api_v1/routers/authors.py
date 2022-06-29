@@ -104,7 +104,7 @@ async def author_edit(
     """
     Update existing author
     """
-    return AuthorCrud.edit_item(db, author_id, author, current_user.user_id)
+    return AuthorCrud.edit_item(db, current_user, author_id, author)
 
 
 @r.delete(
@@ -121,8 +121,9 @@ async def author_edit(
 async def author_delete(
     author_id: int,
     db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Delete existing author
     """
-    return AuthorCrud.delete_item(db, author_id)
+    return AuthorCrud.delete_item(db, current_user, author_id)

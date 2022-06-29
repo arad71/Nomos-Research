@@ -152,9 +152,9 @@ class Crud:
 
     @classmethod
     def edit_item(
-        cls, db: Session, id: int, values: object, current_user: int
+        cls, db: Session, current_user: User, id: int, values: object
     ) -> object:
-        db_item = cls.get_item(db, id)
+        db_item = cls.get_item(db, current_user, id)
         if not db_item:
             raise HTTPException(
                 status.HTTP_404_NOT_FOUND, detail=cls.name + " not found"
@@ -164,19 +164,20 @@ class Crud:
         for key, value in update_data.items():
             setattr(db_item, key, value)
 
-        setattr(db_item, "updated_by", current_user)
+        setattr(db_item, "updated_by", current_user.user_id)
         db.add(db_item)
         db.commit()
         db.refresh(db_item)
         return db_item
 
     @classmethod
-    def delete_item(cls, db: Session, id: int):
-        item = cls.get_item(db, id)
+    def delete_item(cls, db: Session, current_user: User, id: int):
+        item = cls.get_item(db, current_user, id)
         if not item:
             raise HTTPException(
                 status.HTTP_404_NOT_FOUND, detail=cls.name + " not found"
             )
         item.deleted = True
         db.commit()
-        return {cls.id_key: id}
+        db.refresh(item)
+        return item

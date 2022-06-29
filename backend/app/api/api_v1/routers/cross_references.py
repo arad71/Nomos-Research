@@ -109,7 +109,7 @@ async def cross_reference_edit(
     Update existing cross_reference
     """
     return CrossReferenceCrud.edit_item(
-        db, cross_reference_id, cross_reference, current_user.user_id
+        db, current_user, cross_reference_id, cross_reference
     )
 
 
@@ -127,8 +127,9 @@ async def cross_reference_edit(
 async def cross_reference_delete(
     cross_reference_id: int,
     db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Delete existing cross_reference
     """
-    return CrossReferenceCrud.delete_item(db, cross_reference_id)
+    return CrossReferenceCrud.delete_item(db, current_user, cross_reference_id)

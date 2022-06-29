@@ -104,7 +104,7 @@ async def citation_edit(
     """
     Update existing citation
     """
-    return CitationCrud.edit_item(db, citation_id, citation, current_user.user_id)
+    return CitationCrud.edit_item(db, current_user, citation_id, citation)
 
 
 @r.delete(
@@ -121,8 +121,9 @@ async def citation_edit(
 async def citation_delete(
     citation_id: int,
     db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Delete existing citation
     """
-    return CitationCrud.delete_item(db, citation_id)
+    return CitationCrud.delete_item(db, current_user, citation_id)

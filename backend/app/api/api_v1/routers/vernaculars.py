@@ -104,7 +104,7 @@ async def vernacular_edit(
     """
     Update existing vernacular
     """
-    return VernacularCrud.edit_item(db, vernacular_id, vernacular, current_user.user_id)
+    return VernacularCrud.edit_item(db, current_user, vernacular_id, vernacular)
 
 
 @r.delete(
@@ -121,8 +121,9 @@ async def vernacular_edit(
 async def vernacular_delete(
     vernacular_id: int,
     db=Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Delete existing vernacular
     """
-    return VernacularCrud.delete_item(db, vernacular_id)
+    return VernacularCrud.delete_item(db, current_user, vernacular_id)

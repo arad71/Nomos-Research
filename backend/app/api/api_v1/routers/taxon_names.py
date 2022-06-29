@@ -106,7 +106,7 @@ async def taxon_name_edit(
     """
     Update existing taxon_name
     """
-    return TaxonNameCrud.edit_item(db, taxon_name_id, taxon_name, current_user.user_id)
+    return TaxonNameCrud.edit_item(db, current_user, taxon_name_id, taxon_name)
 
 
 @r.delete(
@@ -123,8 +123,9 @@ async def taxon_name_edit(
 async def taxon_name_delete(
     taxon_name_id: int,
     db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Delete existing taxon_name
     """
-    return TaxonNameCrud.delete_item(db, taxon_name_id)
+    return TaxonNameCrud.delete_item(db, current_user, taxon_name_id)
