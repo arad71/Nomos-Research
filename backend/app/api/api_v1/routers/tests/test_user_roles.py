@@ -144,15 +144,10 @@ def test_app_support_permissions(
         headers=app_support_token_headers,
     )
     assert response.status_code == status.HTTP_200_OK
-    response = client.delete(
-        f"/api/v1/user_roles/{test_user_role.user_role_id}",
-        headers=app_support_token_headers,
-    )
-    assert response.status_code == status.HTTP_200_OK
 
     json = {
         "user_id": test_user.user_id,
-        "role_id": test_role.role_id,
+        "role_id": test_role2.role_id,
     }
     response = client.post(
         "/api/v1/user_roles", headers=app_support_token_headers, json=json
@@ -168,6 +163,12 @@ def test_app_support_permissions(
     )
     assert response.status_code == status.HTTP_200_OK
 
+    response = client.delete(
+        f"/api/v1/user_roles/{test_user_role.user_role_id}",
+        headers=app_support_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
+
 
 def test_super_admin_permissions(
     client, test_role, superuser_token_headers, test_user_role, test_role2, test_user
@@ -179,15 +180,10 @@ def test_super_admin_permissions(
         headers=superuser_token_headers,
     )
     assert response.status_code == status.HTTP_200_OK
-    response = client.delete(
-        f"/api/v1/user_roles/{test_user_role.user_role_id}",
-        headers=superuser_token_headers,
-    )
-    assert response.status_code == status.HTTP_200_OK
 
     json = {
         "user_id": test_user.user_id,
-        "role_id": test_role.role_id,
+        "role_id": test_role2.role_id,
     }
     response = client.post(
         "/api/v1/user_roles", headers=superuser_token_headers, json=json
@@ -198,5 +194,11 @@ def test_super_admin_permissions(
     json = {"user_id": test_user.user_id, "role_id": test_role2.role_id}
     response = client.put(
         f"/api/v1/user_roles/{user_role_id}", headers=superuser_token_headers, json=json
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+    response = client.delete(
+        f"/api/v1/user_roles/{test_user_role.user_role_id}",
+        headers=superuser_token_headers,
     )
     assert response.status_code == status.HTTP_200_OK
