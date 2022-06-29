@@ -136,10 +136,8 @@ async def hierarchy_delete(
         )
     ],
 )
-async def hierarchy_rebuild(
-    db=Depends(get_db),
-):
+async def hierarchy_rebuild():
     """
     Rebuild hierarchical indexes
     """
-    return HierarchyCrud.rebuild(db)
+    return HierarchyCrud.rebuild()
