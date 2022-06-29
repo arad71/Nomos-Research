@@ -20,4 +20,5 @@ class VernacularCrud(crud.Crud):
         vernacular = super().delete_item(db, current_user, item)
         trigger_taxon_name_calculated_fields(db, vernacular)
         db.commit()
+        db.refresh(vernacular)
         return vernacular

@@ -106,4 +106,5 @@ export const TaxonNameFilters = [
   >
     <AutocompleteArrayInput optionText="full_name" />
   </ReferenceArrayInput>,
+  <BooleanInput label="Soft deleted?" source="deleted" />,
 ];

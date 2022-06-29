@@ -16,12 +16,14 @@ class ImportPublication(DataImportBase):
             "created_by",
             "updated_by",
             "updated_on",
+            "deleted",
         )
 
     def import_row(self, row):
         self.values.append(
             {
                 "bad_publication": self.map_y_n_to_bool(row["BAD_PUBLICATION"]),
+                "deleted": self.map_y_n_to_bool(row["BAD_PUBLICATION"]),
                 "abbreviated_title": row["PUBLICATION"],
                 "title": row["PUBLICATION_NAME"],
                 "legacy_id": row["PUB_ID"],
