@@ -1,17 +1,13 @@
-from sqlalchemy.orm import Session
-
 import app.db.crud as crud
-from app.db.hierarchy.model import Hierarchy
-from app.db.models import BaseModel
+from app.model import *
 
 
 class HierarchyCrud(crud.Crud):
     model = Hierarchy
     id_key = "hierarchy_id"
     name = "Hierarchy"
+    search_fields = ["parent_name___scientific_name", "taxon_name___scientific_name"]
 
     @classmethod
-    def rebuild(cls, db: Session, user_id: int):
-        BaseModel.set_session(db)
-        ret = cls.model.rebuild_hierarchy_paths()
-        return ret
+    def rebuild(cls):
+        return cls.model.rebuild_hierarchy_paths()

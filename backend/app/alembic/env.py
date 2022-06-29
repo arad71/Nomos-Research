@@ -4,7 +4,8 @@ from logging.config import fileConfig
 from sqlalchemy import engine_from_config, pool
 
 from alembic import context
-from app.db.session import Base
+from app.db.models import BaseModel
+from app.db.session import Base, get_db
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -69,6 +70,7 @@ def run_migrations_online():
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
+    BaseModel.set_session(get_db().__next__())
 
     with connectable.connect() as connection:
         context.configure(
