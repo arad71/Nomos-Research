@@ -116,6 +116,7 @@ async def curation_checklist(
         )
     if current is not None:
         statement = statement.filter(original_name.is_current == current)
+    statement = statement.filter(original_name.deleted == False)  # noqa
     count_query = statement.with_only_columns(func.count(original_name.taxon_name_id))
     count = db.execute(count_query).scalar_one()
     response.headers["Content-Range"] = f"{offset}-{limit - 1 + offset}/{count}"

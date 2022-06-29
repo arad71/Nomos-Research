@@ -14,3 +14,10 @@ class VernacularCrud(crud.Crud):
         trigger_taxon_name_calculated_fields(db, vernacular)
         db.commit()
         return vernacular
+
+    @classmethod
+    def delete_item(cls, db, current_user, item):
+        vernacular = super().delete_item(db, current_user, item)
+        trigger_taxon_name_calculated_fields(db, vernacular)
+        db.commit()
+        return vernacular
