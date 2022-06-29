@@ -10,18 +10,22 @@ import Aside from '../shared/Aside';
 
 export const HierarchyShow: FC = (props) => {
   return (
-    <Show aside={<Aside />} {...props}>
+    <Show aside={<Aside />} title="Hierarchy" {...props}>
       <SimpleShowLayout>
-        <ReferenceField source="taxon_name_id" reference="taxon_names">
-          <RichTextField source="formatted_scientific_name" />
-        </ReferenceField>
         <ReferenceField
           source="classification_system_id"
           reference="classification_systems"
         >
           <TextField source="class_desc" />
         </ReferenceField>
-        <ReferenceField source="parent_nid" reference="taxon_names">
+        <ReferenceField
+          source="parent_nid"
+          reference="taxon_names"
+          label="Parent name"
+        >
+          <RichTextField source="formatted_scientific_name" />
+        </ReferenceField>
+        <ReferenceField source="taxon_name_id" reference="taxon_names">
           <RichTextField source="formatted_scientific_name" />
         </ReferenceField>
       </SimpleShowLayout>

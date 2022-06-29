@@ -7,9 +7,11 @@ from fastapi import HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
+from sqlalchemy.sql import expression
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 from sqlalchemy_mixins.smartquery import smart_query
 from sqlalchemy_utils import Ltree
+from sqlalchemy_utils.types.ltree import LQUERY, LTXTQUERY
 
 from app.core.config import settings
 from app.db.session import Base
@@ -20,7 +22,7 @@ class Crud:
     model: Base = None
     name: str = None
     id_key: str = None
-    PATH_PATTERN = "(\\w+)__(ancestor_of|descendant_of)"
+    PATH_PATTERN = "(\\w+)__(ancestor_of|descendant_of|ltxtquery|lquery__(.+))"
 
     @classmethod
     def create_item(cls, db: Session, item: BaseModel, current_user: int = None):
@@ -101,7 +103,17 @@ class Crud:
                     #  hierarchy rather than just the first one
                     if isinstance(filter_value, list):
                         filter_value = filter_value.pop()
-                    query = query.where(search_attr(Ltree(filter_value)))
+                    filter_value = str(filter_value)
+                    cast = None
+                    if search == "ltxtquery":
+                        cast = LTXTQUERY
+                    elif search == "lquery":
+                        cast = LQUERY
+                    if cast:
+                        filter_value = expression.cast(str(filter_value), cast)
+                    else:
+                        filter_value = Ltree(filter_value)
+                    query = query.where(search_attr(filter_value))
                 else:
                     if hasattr(cls.model, column) and isinstance(
                         getattr(cls.model, column).type, TIMESTAMP
