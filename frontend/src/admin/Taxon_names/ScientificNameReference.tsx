@@ -26,5 +26,5 @@ export function ScientificNameReference(props: {
 
 ScientificNameReference.defaultProps = {
   perPage: 500,
-  sort: { field: 'scientific_name', order: 'ASC' },
+  sort: { field: 'canonical_name,author', order: 'ASC,ASC' },
 };
