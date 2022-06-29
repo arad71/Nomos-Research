@@ -23,7 +23,7 @@ class ImportPublication(DataImportBase):
         self.values.append(
             {
                 "bad_publication": self.map_y_n_to_bool(row["BAD_PUBLICATION"]),
-                "deleted": self.map_y_n_to_bool(row["BAD_PUBLICATION"]),
+                "deleted": self.map_y_n_to_bool(row["BAD_PUBLICATION"]) or False,
                 "abbreviated_title": row["PUBLICATION"],
                 "title": row["PUBLICATION_NAME"],
                 "legacy_id": row["PUB_ID"],
