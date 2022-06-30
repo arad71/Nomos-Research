@@ -123,7 +123,7 @@ def test_user(test_db) -> User:
     user = User(
         email="fake@email.com",
         hashed_password=get_password_hash(),
-        is_active=True,
+        deleted=False,
     )
     test_db.add(user)
     test_db.commit()
@@ -163,7 +163,6 @@ def create_user_with_role(role, test_db) -> User:
     user = User(
         email=f"{role_name}@email.com",
         hashed_password=get_password_hash(),
-        is_active=True,
         created_by=None,
         updated_by=None,
     )

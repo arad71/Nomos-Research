@@ -36,7 +36,7 @@ class UserCrud(crud.Crud):
             first_name=user.first_name,
             last_name=user.last_name,
             email=user.email,
-            is_active=user.is_active,
+            deleted=user.deleted,
             hashed_password=hashed_password,
             created_by=current_user,
             updated_by=current_user,

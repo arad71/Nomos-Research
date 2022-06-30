@@ -23,4 +23,6 @@ def upgrade():
 
 
 def downgrade():
-    pass
+    op.execute("UPDATE cross_reference SET active = FALSE WHERE deleted = TRUE")
+    op.execute("UPDATE publication SET  bad_publication = TRUE WHERE deleted = TRUE")
+    op.execute('UPDATE "user" SET is_active = FALSE WHERE deleted = TRUE')

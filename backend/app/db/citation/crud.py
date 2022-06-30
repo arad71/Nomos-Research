@@ -15,7 +15,7 @@ class CitationCrud(crud.Crud):
     def delete_item(cls, db: Session, current_user: User, citation_id: int):
         citation = cls.get_item(db, current_user, citation_id)
         taxon_name_id = citation.taxon_name_id
-        id_dict = super().delete_item(db, current_user, citation_id)
+        super().delete_item(db, current_user, citation_id)
         trigger_taxon_name_calculated_fields(db, taxon_name_id)
         db.commit()
         db.refresh(citation)

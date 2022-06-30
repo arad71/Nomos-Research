@@ -18,7 +18,7 @@ def test_get_users(client, test_superuser, test_user, superuser_token_headers):
     assert response_list[0] == {
         "user_id": test_superuser.user_id,
         "email": test_superuser.email,
-        "is_active": test_superuser.is_active,
+        "deleted": test_superuser.deleted,
         "full_name": test_superuser.email,
     }
 
@@ -31,12 +31,12 @@ def test_filter_users(
     )
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     response = client.get(
-        '/api/v1/users?filter={"is_active":true}', headers=superuser_token_headers
+        '/api/v1/users?filter={"deleted":false}', headers=superuser_token_headers
     )
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 2
     response = client.get(
-        '/api/v1/users?filter={"is_active":false}', headers=superuser_token_headers
+        '/api/v1/users?filter={"deleted":true}', headers=superuser_token_headers
     )
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 0
@@ -74,7 +74,7 @@ def test_delete_user_not_found(client, superuser_token_headers):
 def test_edit_user(client, test_user, test_superuser, superuser_token_headers):
     new_user = {
         "email": "newemail@email.com",
-        "is_active": False,
+        "deleted": True,
         "first_name": "Joe",
         "last_name": "Smith",
         "password": "new_password",
@@ -103,7 +103,7 @@ def test_edit_user(client, test_user, test_superuser, superuser_token_headers):
 def test_edit_user_not_found(client, test_db, superuser_token_headers):
     new_user = {
         "email": "newemail@email.com",
-        "is_active": False,
+        "deleted": True,
         "password": "new_password",
     }
     response = client.put(
@@ -127,7 +127,7 @@ def test_get_user(
     assert response_json == {
         "user_id": test_user.user_id,
         "email": test_user.email,
-        "is_active": bool(test_user.is_active),
+        "deleted": bool(test_user.deleted),
         "full_name": test_user.email,
         "user_role": [],
         "role_ids": [],
@@ -161,7 +161,7 @@ def test_unauthenticated_routes(client):
 def test_unauthorized_routes(client, user_token_headers):
     new_user = {
         "email": "newemail@email.com",
-        "is_active": False,
+        "deleted": True,
         "first_name": "Joe",
         "last_name": "Smith",
         "password": "new_password",

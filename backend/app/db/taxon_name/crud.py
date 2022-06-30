@@ -1,5 +1,5 @@
 from fastapi import HTTPException, status
-from sqlalchemy.orm import Session, undefer
+from sqlalchemy.orm import Session
 
 import app.db.crud as crud
 from app.db.taxon_name.model import TaxonName
@@ -28,9 +28,6 @@ class TaxonNameCrud(crud.Crud):
             raise HTTPException(
                 status.HTTP_404_NOT_FOUND, detail=cls.name + " not found"
             )
-        # db.query(TaxonName).filter(TaxonName.taxon_name_id == id).options(
-        #     undefer("canonical_name_without_rank")
-        # ).delete()
         item.deleted = True
         item.updated_by = current_user.user_id
         db.commit()
