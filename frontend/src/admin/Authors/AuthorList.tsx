@@ -7,14 +7,15 @@ import {
   ExportButton,
   FilterButton,
   ReferenceField,
-  SearchInput,
   TextField,
   TopToolbar,
 } from 'react-admin';
 import { List, WithPermissions } from '@react-admin/ra-rbac';
-import { DefaultPagination, useCanBulkDelete } from '../shared';
-
-const authorFilters = [<SearchInput source="q" alwaysOn />];
+import {
+  DefaultPagination,
+  selectableFilters,
+  useCanBulkDelete,
+} from '../shared';
 
 const Actions = () => (
   <TopToolbar>
@@ -32,7 +33,7 @@ export const AuthorList: FC = (props) => (
   <List
     {...props}
     sort={{ field: 'abbreviation', order: 'ASC' }}
-    filters={authorFilters}
+    filters={selectableFilters}
     actions={<Actions />}
     perPage={100}
     pagination={<DefaultPagination />}

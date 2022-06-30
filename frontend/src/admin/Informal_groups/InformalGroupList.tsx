@@ -9,7 +9,11 @@ import {
   TextField,
 } from 'react-admin';
 import { List, WithPermissions } from '@react-admin/ra-rbac';
-import { DefaultPagination, useCanBulkDelete } from '../shared';
+import {
+  DefaultPagination,
+  selectableFilters,
+  useCanBulkDelete,
+} from '../shared';
 
 export const InformalGroupList: FC = (props) => (
   <List
@@ -17,6 +21,7 @@ export const InformalGroupList: FC = (props) => (
     sort={{ field: 'informal_group_id' }}
     perPage={100}
     pagination={<DefaultPagination />}
+    filters={selectableFilters}
     bulkActionButtons={useCanBulkDelete()}
   >
     <Datagrid rowClick="show">

@@ -7,14 +7,15 @@ import {
   EditButton,
   ExportButton,
   ReferenceField,
-  SearchInput,
   TextField,
   TopToolbar,
 } from 'react-admin';
 import { List, WithPermissions } from '@react-admin/ra-rbac';
-import { DefaultPagination, useCanBulkDelete } from '../shared';
-
-const publicationFilters = [<SearchInput source="q" alwaysOn />];
+import {
+  DefaultPagination,
+  selectableFilters,
+  useCanBulkDelete,
+} from '../shared';
 
 const Actions = () => (
   <TopToolbar>
@@ -31,11 +32,11 @@ export const PublicationList: FC = (props) => (
   <List
     {...props}
     sort={{ field: 'title', order: 'ASC' }}
-    filters={publicationFilters}
     actions={<Actions />}
     perPage={100}
     pagination={<DefaultPagination />}
     bulkActionButtons={useCanBulkDelete()}
+    filters={selectableFilters}
   >
     <Datagrid rowClick="show">
       <TextField source="title" />

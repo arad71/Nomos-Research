@@ -9,7 +9,11 @@ import {
   TextField,
 } from 'react-admin';
 import { List, WithPermissions } from '@react-admin/ra-rbac';
-import { DefaultPagination, useCanBulkDelete } from '../shared';
+import {
+  DefaultPagination,
+  selectableFilters,
+  useCanBulkDelete,
+} from '../shared';
 
 export const HierarchyList: FC = (props) => (
   <List
@@ -17,6 +21,7 @@ export const HierarchyList: FC = (props) => (
     sort={{ field: 'parent___scientific_name' }}
     perPage={100}
     pagination={<DefaultPagination />}
+    filters={selectableFilters}
     bulkActionButtons={useCanBulkDelete()}
   >
     <Datagrid rowClick="show">
