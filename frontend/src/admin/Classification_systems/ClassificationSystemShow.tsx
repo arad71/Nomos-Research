@@ -6,6 +6,7 @@ import { Box, Typography } from '@material-ui/core';
 import Aside from '../shared/Aside';
 import ClassificationType from './ClassificationType';
 import { GlobalTheme } from '../../GlobalTheme';
+import { ClassificationDescription } from './ClassificationDescription';
 
 const useStyles = makeStyles((theme) => ({
   showPad: {
@@ -17,7 +18,7 @@ export const ClassificationSystemShow: FC = (props) => {
   const classes = useStyles();
   const globalClasses = GlobalTheme();
   return (
-    <Show aside={<Aside />} {...props}>
+    <Show aside={<Aside />} {...props} title={<ClassificationDescription />}>
       <Box className={classes.showPad}>
         <Typography variant="h5" className={globalClasses.bold} gutterBottom>
           Classification system

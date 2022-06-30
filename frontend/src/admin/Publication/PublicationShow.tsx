@@ -15,6 +15,7 @@ import Aside from '../shared/Aside';
 import { Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { GlobalTheme } from '../../GlobalTheme';
+import { DisplayTitle } from './DisplayTitle';
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -39,7 +40,7 @@ export const PublicationShow: FC = (props) => {
   const classes = useStyles();
   const globalClasses = GlobalTheme();
   return (
-    <Show aside={<Aside />} {...props}>
+    <Show aside={<Aside />} {...props} title={<DisplayTitle />}>
       <>
         <Box className={classes.titlePos}>
           <Box>
