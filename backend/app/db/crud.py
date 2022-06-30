@@ -74,7 +74,10 @@ class Crud:
         list_filter: str = None,
     ) -> (t.List[Base], str):
         limit, skip, range_str = cls.get_skip_and_limit(range)
-        query = db.query(cls.model)
+        if not current_user.is_super_admin() and hasattr(cls.model, "deleted"):
+            query = db.query(cls.model).filter(getattr(cls.model, "deleted") == False)
+        else:
+            query = db.query(cls.model)
         # See https://bit.ly/388m5sY for details on how sorting and filtering is
         # implemented using the smart_query from sqlalchemy_mixins
 
@@ -116,19 +119,13 @@ class Crud:
             raise HTTPException(
                 status.HTTP_422_UNPROCESSABLE_ENTITY, detail=err.__repr__()
             )
+        if not current_user.is_super_admin() and hasattr(cls.model, "deleted"):
+            query = query.filter(getattr(cls.model, "deleted") == False)  # noqa
         # Number of filtered results without offset or limit
         total = query.count()
         content_range = f"{range_str}/{total}"
         # Results with limit and offset
-        if not current_user.is_super_admin() and hasattr(cls.model, "deleted"):
-            results = (
-                query.filter(getattr(cls.model, "deleted") == False)  # noqa
-                .offset(skip)
-                .limit(limit)
-                .all()
-            )
-        else:
-            results = query.offset(skip).limit(limit).all()
+        results = query.offset(skip).limit(limit).all()
         return results, content_range
 
     @classmethod
