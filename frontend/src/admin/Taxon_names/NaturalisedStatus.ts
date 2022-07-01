@@ -1,7 +1,7 @@
 const NaturalisedStatus = [
-  { id: 'a', name: 'A' },
-  { id: 'n', name: 'N' },
-  { id: 'm', name: 'M' },
-  { id: 'u', name: 'U' },
+  { id: 'alien', name: 'Alien' },
+  { id: 'native', name: 'Native' },
+  { id: 'mixed', name: 'Mixed' },
+  { id: 'uncertain', name: 'Uncertain' },
 ];
 export default NaturalisedStatus;
