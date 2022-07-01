@@ -20,7 +20,6 @@ export const InformalGroupList: FC = (props) => (
     bulkActionButtons={useCanBulkDelete()}
   >
     <Datagrid rowClick="show">
-      <NumberField source="id" />
       <ReferenceField
         source="classification_system_id"
         reference="classification_systems"
@@ -35,10 +34,6 @@ export const InformalGroupList: FC = (props) => (
       >
         <RichTextField source="formatted_scientific_name" />
       </ReferenceField>
-      <ReferenceField source="created_by" reference="users" sortBy="">
-        <TextField source="full_name" />
-      </ReferenceField>
-      <DateField source="created_on" />
       <ReferenceField source="updated_by" reference="users">
         <TextField source="full_name" />
       </ReferenceField>

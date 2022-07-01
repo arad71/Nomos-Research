@@ -46,7 +46,6 @@ export const TaxonNameFilters = [
   <TextInput source="species__contains" label="Species" />,
   <TextInput source="subspecies__contains" label="Subspecies" />,
   <TextInput source="uninomial__contains" label="Uninomial" />,
-  <TextInput source="specific_epithet__contains" label="Specific epithet" />,
   <TextInput
     source="infraspecific_epithet__contains"
     label="Infraspecific epithet"

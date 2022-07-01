@@ -52,13 +52,6 @@ const Menu = () => {
           className={classes.noMargin}
         />
         <MenuItem
-          name="Informal Groups"
-          label="Informal Groups"
-          to="/informal_groups"
-          icon={<LinkIcon />}
-          className={classes.noMargin}
-        />
-        <MenuItem
           name="Hierarchies"
           label="Hierarchies"
           to="/hierarchies"
@@ -68,17 +61,10 @@ const Menu = () => {
       </MenuItem>
       <MenuItem name="Admin" label="Admin">
         <MenuItem
-          name="Kingdoms"
-          label="Kingdoms"
+          name="Citations"
+          label="Citations"
           icon={<FiberManualRecordIcon />}
-          to="/kingdoms"
-          className={classes.noMargin}
-        />
-        <MenuItem
-          name="Taxon Ranks"
-          label="Taxon Ranks"
-          to="/taxon_ranks"
-          icon={<GroupWorkIcon />}
+          to="/citations"
           className={classes.noMargin}
         />
         <MenuItem
@@ -89,10 +75,45 @@ const Menu = () => {
           className={classes.noMargin}
         />
         <MenuItem
+          name="Informal Groups"
+          label="Informal Groups"
+          to="/informal_groups"
+          icon={<LinkIcon />}
+          className={classes.noMargin}
+        />
+        <MenuItem
+          name="Kingdoms"
+          label="Kingdoms"
+          icon={<FiberManualRecordIcon />}
+          to="/kingdoms"
+          className={classes.noMargin}
+        />
+        <MenuItem
+          name="Cross References"
+          label="Cross References"
+          icon={<FiberManualRecordIcon />}
+          to="/cross_references"
+          className={classes.noMargin}
+        />
+        <MenuItem
+          name="Taxon Ranks"
+          label="Taxon Ranks"
+          to="/taxon_ranks"
+          icon={<GroupWorkIcon />}
+          className={classes.noMargin}
+        />
+        <MenuItem
           name="Users"
           label="Users"
           icon={<PeopleIcon />}
           to="/users"
+          className={classes.noMargin}
+        />
+        <MenuItem
+          name="Vernaculars"
+          label="Vernaculars"
+          to="/vernaculars"
+          icon={<GroupWorkIcon />}
           className={classes.noMargin}
         />
       </MenuItem>

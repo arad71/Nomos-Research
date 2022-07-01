@@ -2,10 +2,10 @@ from enum import Enum
 
 
 class NaturalisedStatus(str, Enum):
-    a = "a"
-    n = "n"
-    m = "m"
-    u = "u"
+    alien = "alien"
+    native = "native"
+    mixed = "mixed"
+    uncertain = "uncertain"
 
 
 class PublicationStatus(str, Enum):
