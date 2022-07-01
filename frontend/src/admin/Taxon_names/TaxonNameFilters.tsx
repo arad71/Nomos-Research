@@ -22,12 +22,7 @@ export const TaxonNameFilters = [
     min={0}
     validate={validateNumber}
   />,
-  <NumberInput
-    source="legacy_id"
-    label="Legacy ID"
-    min={0}
-    validate={validateNumber}
-  />,
+  <TextInput source="legacy_id__contains" label="Legacy ID" />,
   <TextInput source="scientific_name__contains" label="Scientific name" />,
   <TextInput source="author__contains" label="Author" />,
   <NumberInput
@@ -41,7 +36,7 @@ export const TaxonNameFilters = [
     source="volume_information__contains"
     label="Volume information"
   />,
-  <TextInput source="vernaculars___vernacular__contains" label="Vernacular" />,
+  <TextInput source="all_vernaculars__contains" label="Vernacular" />,
   <TextInput source="phylum__contains" label="Phylum" />,
   <TextInput source="taxon_class__contains" label="Class" />,
   <TextInput source="order__contains" label="Order" />,
@@ -51,7 +46,6 @@ export const TaxonNameFilters = [
   <TextInput source="species__contains" label="Species" />,
   <TextInput source="subspecies__contains" label="Subspecies" />,
   <TextInput source="uninomial__contains" label="Uninomial" />,
-  <TextInput source="specific_epithet__contains" label="Specific epithet" />,
   <TextInput
     source="infraspecific_epithet__contains"
     label="Infraspecific epithet"

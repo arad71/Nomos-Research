@@ -5,7 +5,12 @@ import { CitationCreateEdit } from './CitationCreateEdit';
 
 export const CitationEdit: FC = (props) => {
   return (
-    <Edit mutationMode="pessimistic" {...props} aside={<Aside />}>
+    <Edit
+      mutationMode="pessimistic"
+      {...props}
+      aside={<Aside />}
+      title="Citation"
+    >
       <CitationCreateEdit />
     </Edit>
   );

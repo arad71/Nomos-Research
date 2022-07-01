@@ -14,6 +14,7 @@ import RankAbbreviation from './RankAbbreviation';
 import { GlobalTheme } from '../../GlobalTheme';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, Typography } from '@material-ui/core';
+import { RankName } from './RankName';
 
 const useStyles = makeStyles((theme) => ({
   showPad: {
@@ -25,7 +26,7 @@ export const TaxonRankShow: FC = (props) => {
   const classes = useStyles();
   const globalClasses = GlobalTheme();
   return (
-    <Show aside={<Aside />} {...props}>
+    <Show aside={<Aside />} {...props} title={<RankName />}>
       <Box className={classes.showPad}>
         <Typography variant="h5" className={globalClasses.bold} gutterBottom>
           Classification system

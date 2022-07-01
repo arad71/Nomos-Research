@@ -5,7 +5,12 @@ import { InformalGroupCreateEdit } from './InformalGroupCreateEdit';
 
 export const InformalGroupEdit: FC = (props) => {
   return (
-    <Edit mutationMode="pessimistic" {...props} aside={<Aside />}>
+    <Edit
+      mutationMode="pessimistic"
+      {...props}
+      aside={<Aside />}
+      title="Informal group"
+    >
       <InformalGroupCreateEdit />
     </Edit>
   );
