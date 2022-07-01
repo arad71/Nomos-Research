@@ -17,22 +17,10 @@ import {
   useCanBulkDelete,
 } from '../shared';
 
-const Actions = () => (
-  <TopToolbar>
-    <WithPermissions resource="publications" action="create">
-      <CreateButton />
-    </WithPermissions>
-    <WithPermissions resource="publications" action="export">
-      <ExportButton maxResults={100000} />
-    </WithPermissions>
-  </TopToolbar>
-);
-
 export const PublicationList: FC = (props) => (
   <List
     {...props}
     sort={{ field: 'title', order: 'ASC' }}
-    actions={<Actions />}
     perPage={100}
     pagination={<DefaultPagination />}
     bulkActionButtons={useCanBulkDelete()}
