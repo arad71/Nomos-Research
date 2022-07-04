@@ -17,6 +17,11 @@ import {
   TextInput,
   number,
   minValue,
+  SelectArrayInput,
+  ReferenceArrayInput,
+  ReferenceArrayField,
+  ChipField,
+  SingleFieldList,
 } from 'react-admin';
 import { EditableDatagrid } from '@react-admin/ra-editable-datagrid';
 import React, { FC, PropsWithChildren } from 'react';
@@ -294,6 +299,56 @@ export const TaxonNameCreateEdit: FC = ({
               className={gridClasses.EightCol1to5span}
             />
           </Box>
+          <Box
+            /* eslint-disable-next-line max-len */
+            className={`${globalClasses.mainGrid} ${globalClasses.sectionMargin}`}
+          >
+            <Typography
+              variant="h5"
+              /* eslint-disable-next-line max-len */
+              className={`${gridClasses.EightCol1to3span} ${globalClasses.bold}`}
+              gutterBottom
+            >
+              Informal Groups
+            </Typography>
+            <ReferenceArrayField
+              reference="informal_groups"
+              source="taxon_name_id"
+            >
+              <ReferenceArrayInput
+                source="classification_system_id"
+                reference="classification_systems"
+              >
+                <SelectArrayInput optionText="class_desc" />
+              </ReferenceArrayInput>
+            </ReferenceArrayField>
+          </Box>
+          {/*<ReferenceArrayInput*/}
+          {/*  source="classification_system_id"*/}
+          {/*  reference="informal_groups"*/}
+          {/*>*/}
+          {/*  <ReferenceManyField*/}
+          {/*    reference="informal_groups"*/}
+          {/*    target="taxon_name_id"*/}
+          {/*  >*/}
+          {/*    <SelectArrayInput optionText="class_desc" label="test" />*/}
+          {/*  </ReferenceManyField>*/}
+          {/*</ReferenceArrayInput>*/}
+          <ReferenceManyField
+            reference="informal_groups"
+            target="taxon_name_id"
+          >
+            <SingleFieldList>
+              <ReferenceField
+                source="classification_system_id"
+                reference="classification_systems"
+                link="show"
+                allowEmpty
+              >
+                <ChipField source="class_desc" />
+              </ReferenceField>
+            </SingleFieldList>
+          </ReferenceManyField>
         </FormTab>
         <FormTab label="Hierarchy" className={globalClasses.bold}></FormTab>
         <FormTab label="Related Names" className={globalClasses.bold}>
