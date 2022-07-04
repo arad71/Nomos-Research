@@ -70,7 +70,7 @@ export const CrossReferenceShowLayout: FC = (props) => {
           </Box>
           <Box className={globalClasses.fieldMargin}>
             <Labeled label="Comments">
-              <TextField source="comments" />
+              <TextField source="reference_comments" />
             </Labeled>
           </Box>
           <Box className={globalClasses.fieldMargin}>
