@@ -15,6 +15,6 @@ export const CrossReferenceRowForm = (props: {
       validate={required()}
     />
     <ScientificNameReference source={props.source} validate={required()} />
-    <TextInput multiline source="comments" />
+    <TextInput multiline source="reference_comments" />
   </RowForm>
 );
