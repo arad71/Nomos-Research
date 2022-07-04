@@ -46,6 +46,9 @@ const useStyles = makeStyles({
   bottomMargin: {
     marginBottom: '2em',
   },
+  redTypography: {
+    color: '#ff0000',
+  },
 });
 
 export const TaxonNameCreateEdit: FC = ({
@@ -70,6 +73,14 @@ export const TaxonNameCreateEdit: FC = ({
             /* eslint-disable-next-line max-len */
             className={`${globalClasses.mainGrid} ${globalClasses.sectionMargin}`}
           >
+            <Typography
+              variant="h5"
+              /* eslint-disable-next-line max-len */
+              className={`${gridClasses.EightCol1to3span} ${globalClasses.bold}`}
+              gutterBottom
+            >
+              Taxon Name
+            </Typography>
             <ReferenceInput
               source="kingdom_id"
               reference="kingdoms"
@@ -142,12 +153,17 @@ export const TaxonNameCreateEdit: FC = ({
               /* eslint-disable-next-line max-len */
               className={`${gridClasses.EightCol1to5span} ${globalClasses.sectionMargin}`}
             >
+              <Typography variant="h5" className={globalClasses.bold}>
+                Authors
+              </Typography>
               <Typography
-                variant="h5"
-                className={globalClasses.bold}
+                variant="subtitle2"
+                className={classes.redTypography}
                 gutterBottom
               >
-                Authors
+                {/* eslint-disable-next-line max-len */}
+                Ensure to save within datagrid on create/edit or data could be
+                lost
               </Typography>
             </Box>
             <Box className={gridClasses.EightCol1to9span}>
@@ -211,12 +227,17 @@ export const TaxonNameCreateEdit: FC = ({
               /* eslint-disable-next-line max-len */
               className={`${gridClasses.EightCol1to5span} ${globalClasses.sectionMargin}`}
             >
+              <Typography variant="h5" className={globalClasses.bold}>
+                Vernacular names
+              </Typography>
               <Typography
-                variant="h5"
-                className={globalClasses.bold}
+                variant="subtitle2"
+                className={classes.redTypography}
                 gutterBottom
               >
-                Vernacular names
+                {/* eslint-disable-next-line max-len */}
+                Ensure to save within datagrid on create/edit or data could be
+                lost
               </Typography>
             </Box>
             <Box className={gridClasses.EightCol1to9span}>
@@ -295,12 +316,43 @@ export const TaxonNameCreateEdit: FC = ({
             />
           </Box>
         </FormTab>
-        <FormTab label="Hierarchy" className={globalClasses.bold}></FormTab>
+        <FormTab label="Hierarchy" className={globalClasses.bold}>
+          <Box
+            /* eslint-disable-next-line max-len */
+            className={`${globalClasses.mainGrid} ${globalClasses.sectionMargin}`}
+          >
+            <Typography
+              variant="h5"
+              /* eslint-disable-next-line max-len */
+              className={`${gridClasses.EightCol1to5span} ${globalClasses.bold}`}
+              gutterBottom
+            >
+              Taxon Name - Heirarchy
+            </Typography>
+          </Box>
+        </FormTab>
         <FormTab label="Related Names" className={globalClasses.bold}>
           <Box
             /* eslint-disable-next-line max-len */
             className={`${globalClasses.mainGrid} ${globalClasses.sectionMargin}`}
           >
+            <Typography
+              variant="h5"
+              /* eslint-disable-next-line max-len */
+              className={`${gridClasses.EightCol1to5span} ${globalClasses.bold}`}
+            >
+              Taxon Name - Related Names
+            </Typography>
+            <Typography
+              variant="subtitle2"
+              /* eslint-disable-next-line max-len */
+              className={`${gridClasses.EightCol1to5span} ${classes.redTypography}`}
+              gutterBottom
+            >
+              {/* eslint-disable-next-line max-len */}
+              Ensure to save within datagrid on create/edit or data could be
+              lost
+            </Typography>
             <Box className={gridClasses.EightCol1to9span}>
               <Labeled label="Previous names">
                 {(props.record?.id && (
@@ -410,6 +462,14 @@ export const TaxonNameCreateEdit: FC = ({
             /* eslint-disable-next-line max-len */
             className={`${globalClasses.mainGrid} ${globalClasses.sectionMargin}`}
           >
+            <Typography
+              variant="h5"
+              /* eslint-disable-next-line max-len */
+              className={`${gridClasses.EightCol1to5span} ${globalClasses.bold}`}
+              gutterBottom
+            >
+              Taxon Name - Notes
+            </Typography>
             <TextInput
               source="comments"
               className={gridClasses.EightCol1to9span}
