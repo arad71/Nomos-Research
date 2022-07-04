@@ -311,29 +311,14 @@ export const TaxonNameCreateEdit: FC = ({
             >
               Informal Groups
             </Typography>
-            <ReferenceArrayField
-              reference="informal_groups"
-              source="taxon_name_id"
+            <ReferenceArrayInput
+              source="classification_system_ids"
+              reference="classification_systems"
+              fullWidth
             >
-              <ReferenceArrayInput
-                source="classification_system_id"
-                reference="classification_systems"
-              >
-                <SelectArrayInput optionText="class_desc" />
-              </ReferenceArrayInput>
-            </ReferenceArrayField>
+              <SelectArrayInput optionText="class_desc" fullWidth />
+            </ReferenceArrayInput>
           </Box>
-          {/*<ReferenceArrayInput*/}
-          {/*  source="classification_system_id"*/}
-          {/*  reference="informal_groups"*/}
-          {/*>*/}
-          {/*  <ReferenceManyField*/}
-          {/*    reference="informal_groups"*/}
-          {/*    target="taxon_name_id"*/}
-          {/*  >*/}
-          {/*    <SelectArrayInput optionText="class_desc" label="test" />*/}
-          {/*  </ReferenceManyField>*/}
-          {/*</ReferenceArrayInput>*/}
           <ReferenceManyField
             reference="informal_groups"
             target="taxon_name_id"

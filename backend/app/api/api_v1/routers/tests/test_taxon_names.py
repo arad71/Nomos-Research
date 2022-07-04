@@ -289,6 +289,7 @@ def test_super_admin_permissions(
         "canonical_name": test_taxon_name.canonical_name,
         "created_by": test_manager.user_id,
         "created_on": test_taxon_name.created_on.isoformat(),
+        "classification_system_ids": [],
     }
     response = client.post(
         "/api/v1/taxon_names", headers=superuser_token_headers, json=taxon_json
@@ -342,6 +343,7 @@ def test_manager_permissions(
         "canonical_name": test_taxon_name.canonical_name,
         "created_by": test_manager.user_id,
         "created_on": test_taxon_name.created_on.isoformat(),
+        "classification_system_ids": [],
     }
     response = client.post(
         "/api/v1/taxon_names", headers=manager_token_headers, json=taxon_json
@@ -395,6 +397,7 @@ def test_officer_permissions(
         "canonical_name": test_taxon_name.canonical_name,
         "created_by": test_manager.user_id,
         "created_on": test_taxon_name.created_on.isoformat(),
+        "classification_system_ids": [],
     }
     response = client.post(
         "/api/v1/taxon_names", headers=officer_token_headers, json=taxon_json

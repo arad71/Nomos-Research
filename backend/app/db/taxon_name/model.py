@@ -9,6 +9,7 @@ from sqlalchemy import (
     event,
     func,
 )
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import backref, column_property, relationship
 from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy.types import Enum
@@ -177,6 +178,13 @@ class TaxonName(BaseModel, TableMixin):
         deferred=True,
     )
     admin_comment = Column(String)
+
+    @hybrid_property
+    def classification_system_ids(self):
+        return [
+            informl_group.classification_system.classification_system_id
+            for informl_group in self.informl_groups
+        ]
 
 
 event.listen(TaxonName, "before_insert", calculate_fields)
