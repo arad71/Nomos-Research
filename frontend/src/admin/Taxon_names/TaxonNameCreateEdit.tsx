@@ -19,6 +19,7 @@ import {
   minValue,
   SelectArrayInput,
   ReferenceArrayInput,
+  FunctionField,
   ReferenceArrayField,
   ChipField,
   SingleFieldList,
@@ -316,24 +317,13 @@ export const TaxonNameCreateEdit: FC = ({
               reference="classification_systems"
               fullWidth
             >
-              <SelectArrayInput optionText="class_desc" fullWidth />
+              <SelectArrayInput
+                optionText="class_desc"
+                fullWidth
+                className={gridClasses.EightCol1to3span}
+              />
             </ReferenceArrayInput>
           </Box>
-          <ReferenceManyField
-            reference="informal_groups"
-            target="taxon_name_id"
-          >
-            <SingleFieldList>
-              <ReferenceField
-                source="classification_system_id"
-                reference="classification_systems"
-                link="show"
-                allowEmpty
-              >
-                <ChipField source="class_desc" />
-              </ReferenceField>
-            </SingleFieldList>
-          </ReferenceManyField>
         </FormTab>
         <FormTab label="Hierarchy" className={globalClasses.bold}></FormTab>
         <FormTab label="Related Names" className={globalClasses.bold}>

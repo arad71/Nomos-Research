@@ -182,8 +182,8 @@ class TaxonName(BaseModel, TableMixin):
     @hybrid_property
     def classification_system_ids(self):
         return [
-            informl_group.classification_system.classification_system_id
-            for informl_group in self.informl_groups
+            informal_group.classification_system.classification_system_id
+            for informal_group in self.informal_groups
         ]
 
 
