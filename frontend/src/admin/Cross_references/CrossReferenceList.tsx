@@ -40,7 +40,7 @@ export const CrossReferenceList: FC = (props) => (
       <SelectField source="cross_reference_type" choices={CrossRefType} />
       <BooleanField source="active" />
       <TextField source="authorised_by" />
-      <TextField source="comments" />
+      <TextField source="reference_comments" />
       <TextField source="notes" />
       <ReferenceField source="updated_by" reference="users">
         <TextField source="full_name" />

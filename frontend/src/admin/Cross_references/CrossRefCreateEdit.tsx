@@ -43,7 +43,7 @@ export const CrossRefCreateEdit: FC = (props) => {
           validate={required()}
         />
         <TextInput source="authorised_by" />
-        <TextInput multiline source="comments" />
+        <TextInput multiline source="reference_comments" />
         <TextInput multiline source="notes" />
         <BooleanInput
           label="Active"
