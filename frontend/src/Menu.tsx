@@ -7,6 +7,9 @@ import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 import FiberManualRecordOutlinedIcon from '@material-ui/icons/FiberManualRecordOutlined';
 import PeopleIcon from '@material-ui/icons/People';
 import SubjectIcon from '@material-ui/icons/Subject';
+import CompareArrowsIcon from '@material-ui/icons/CompareArrows';
+import CallSplitIcon from '@material-ui/icons/CallSplit';
+import MenuBookIcon from '@material-ui/icons/MenuBook';
 import ChangeHistoryIcon from '@material-ui/icons/ChangeHistory';
 import SupervisedUserCircleIcon from '@material-ui/icons/SupervisedUserCircle';
 import GroupWorkIcon from '@material-ui/icons/GroupWork';
@@ -63,7 +66,7 @@ const Menu = () => {
         <MenuItem
           name="Citations"
           label="Citations"
-          icon={<FiberManualRecordIcon />}
+          icon={<MenuBookIcon />}
           to="/citations"
           className={classes.noMargin}
         />
@@ -91,7 +94,7 @@ const Menu = () => {
         <MenuItem
           name="Cross References"
           label="Cross References"
-          icon={<FiberManualRecordIcon />}
+          icon={<CompareArrowsIcon />}
           to="/cross_references"
           className={classes.noMargin}
         />
@@ -113,7 +116,7 @@ const Menu = () => {
           name="Vernaculars"
           label="Vernaculars"
           to="/vernaculars"
-          icon={<GroupWorkIcon />}
+          icon={<CallSplitIcon />}
           className={classes.noMargin}
         />
       </MenuItem>
