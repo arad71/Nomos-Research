@@ -65,6 +65,6 @@ class CrossReference(BaseModel, TableMixin):
     authorised_mn = Column(Integer, index=True, comment="The month of authorisation")
     authorised_dy = Column(Integer, index=True, comment="The day of authorisation")
     authorised_by = Column(String(60), comment=AUTHORISED_BY, doc=AUTHORISED_BY)
-    comments = Column(String(1000), comment=COMMENTS, doc=COMMENTS)
+    reference_comments = Column(String(1000), comment=COMMENTS, doc=COMMENTS)
     notes = Column(String(3000))
     legacy_id = Column(Integer)

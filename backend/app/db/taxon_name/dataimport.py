@@ -89,7 +89,9 @@ class ImportTaxonName(DataImportBase):
             "family_code": row["FAMILY_CODE"] or None,
             "vernacular": row["VERNACULAR"] or None,
             "editor": row["EDITOR"] or None,
-            "naturalised_status": self.map_enum_base(row["NATURALISED_STATUS"]),
+            "naturalised_status": self.map_naturalised_status(
+                row["NATURALISED_STATUS"].lower()
+            ),
             "naturalised_certainty": self.map_y_n_to_bool(row["NATURALISED_CERTAINTY"]),
             "is_eradicated": row["IS_ERADICATED"] or None,
             "naturalised_comments": row["NATURALISED_COMMENTS"] or None,
@@ -123,6 +125,22 @@ class ImportTaxonName(DataImportBase):
             return "phrase_name"
 
         raise DataImportError(f'Unable to map publication status: "{val}"')
+
+    @classmethod
+    def map_naturalised_status(cls, val):
+        if val == "a":
+            return "alien"
+
+        if val == "n":
+            return "native"
+
+        if val == "m":
+            return "mixed"
+
+        if val == "u":
+            return "uncertain"
+
+        return None
 
 
 class ImportTaxonNameFamilyNid(ImportTaxonName):

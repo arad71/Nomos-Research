@@ -1,6 +1,12 @@
 import { createTheme } from '@material-ui/core/styles';
+import { defaultTheme } from 'react-admin';
 
 const theme = createTheme({
+  ...defaultTheme,
+  sidebar: {
+    width: 220, // The default value is 240
+    closedWidth: 60, // The default value is 55
+  },
   typography: {
     fontFamily: [
       'Helvetica Neue',
@@ -22,6 +28,13 @@ const theme = createTheme({
     },
     secondary: {
       main: '#ffcc80', // Another orange-ish color
+    },
+  },
+  overrides: {
+    RaMenuItem: {
+      nestedList: {
+        paddingLeft: '0px',
+      },
     },
   },
 });

@@ -25,13 +25,8 @@ export const KingdomList: FC = (props) => {
       bulkActionButtons={useCanBulkDelete()}
     >
       <Datagrid rowClick="show">
-        <NumberField source="id" />
         <TextField source="kingdom_name" />
-        <TextField source="kingdom_desc" />
-        <ReferenceField source="created_by" reference="users">
-          <TextField source="full_name" />
-        </ReferenceField>
-        <DateField source="created_on" />
+        <TextField source="kingdom_desc" label="Description" />
         <ReferenceField source="updated_by" reference="users">
           <TextField source="full_name" />
         </ReferenceField>
