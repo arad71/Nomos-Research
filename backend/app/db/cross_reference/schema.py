@@ -28,7 +28,7 @@ class CrossReferenceBase(BaseModel):
     authorised_mn: Optional[int]
     authorised_dy: Optional[int]
     authorised_by: Optional[str] = Field(description=AUTHORISED_BY)
-    comments: Optional[str] = Field(description=COMMENTS)
+    reference_comments: Optional[str] = Field(description=COMMENTS)
     notes: Optional[str]
     legacy_id: Optional[int]
 

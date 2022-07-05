@@ -423,7 +423,7 @@ export const TaxonNameCreateEdit: FC = ({
                       >
                         <FormattedScientificNameWithStatus />
                       </ReferenceField>
-                      <TextField source="comments" />
+                      <TextField source="reference_comments" />
                     </EditableDatagrid>
                   </ReferenceManyField>
                 )) || (
@@ -474,7 +474,7 @@ export const TaxonNameCreateEdit: FC = ({
                       >
                         <FormattedScientificNameWithStatus />
                       </ReferenceField>
-                      <TextField source="comments" />
+                      <TextField source="reference_comments" />
                     </EditableDatagrid>
                   </ReferenceManyField>
                 )) || (

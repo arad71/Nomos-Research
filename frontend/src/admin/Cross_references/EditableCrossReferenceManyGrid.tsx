@@ -50,7 +50,7 @@ export const EditableCrossReferenceManyGrid = (props: {
         >
           <FormattedScientificNameWithStatus />
         </ReferenceField>
-        <TextField source="comments" />
+        <TextField source="reference_comments" />
       </EditableDatagrid>
     </ReferenceManyField>
   );
