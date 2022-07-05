@@ -23,6 +23,7 @@ class TaxonNameCrud(crud.Crud):
         "cross_referenced_old_name___new_name___scientific_name",
     ]
 
+    @classmethod
     def create_item(
         cls,
         db: Session,
@@ -52,9 +53,9 @@ class TaxonNameCrud(crud.Crud):
     def edit_item(
         cls,
         db: Session,
+        current_user: int,
         taxon_name_id: int,
         taxon_name: schema.TaxonNameEdit,
-        current_user: int = None,
         **kwargs,
     ) -> TaxonName:
         update_data = taxon_name.dict(exclude_unset=True)
@@ -85,9 +86,7 @@ class TaxonNameCrud(crud.Crud):
                 db.add(informal_group)
             db.commit()
             delattr(taxon_name, "classification_system_ids")
-        db_taxon_name = super().edit_item(
-            db, taxon_name_id, taxon_name, current_user=current_user
-        )
+        db_taxon_name = super().edit_item(db, current_user, taxon_name_id, taxon_name)
         return db_taxon_name
 
     @classmethod
