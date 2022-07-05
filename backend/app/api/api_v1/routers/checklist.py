@@ -58,7 +58,6 @@ async def curation_checklist(
             CrossReference.updated_on.label("cross_reference_updated_on").label(
                 "crossReferenceUpdated"
             ),
-            CrossReference.active.label("crossReferenceActive"),
             accepted_name.scientific_name.label("acceptedNameUsage"),
             accepted_name.author.label("acceptedNameAuthor"),
             accepted_name.is_current.label("acceptedNameCurrent"),
@@ -84,7 +83,6 @@ async def curation_checklist(
                 accepted_name.is_current, accepted_name.is_current == None  # noqa: E711
             )
         )
-        .filter(or_(CrossReference.active, CrossReference.active == None))  # noqa: E711
     )
     if validated:
         statement = statement.filter(

@@ -14,7 +14,6 @@ def test_get_vernaculars(client, test_vernacular, superuser_token_headers):
             "taxon_name": response.json()[0]["taxon_name"],
             "vernacular": test_vernacular.vernacular,
             "language": test_vernacular.language.value,
-            "enabled": test_vernacular.enabled,
             "updated_by": test_vernacular.updated_by,
             "updated_on": test_vernacular.updated_on.isoformat(),
             "created_by": test_vernacular.created_by,
@@ -47,7 +46,6 @@ def test_edit_vernacular(
         "taxon_name_id": test_vernacular.taxon_name_id,
         "vernacular": "Vernacular 2",
         "language": "english",
-        "enabled": True,
         "updated_by": test_superuser.user_id,
         "updated_on": test_vernacular.updated_on.isoformat(),
         "created_by": test_superuser.user_id,
@@ -73,7 +71,6 @@ def test_edit_vernacular_not_found(
         "taxon_name_id": test_vernacular.taxon_name_id,
         "vernacular": "Vernacular 2",
         "language": "english",
-        "enabled": True,
         "updated_by": test_superuser.user_id,
         "updated_on": test_vernacular.updated_on.isoformat(),
         "created_by": test_superuser.user_id,
@@ -101,7 +98,6 @@ def test_get_vernacular(
         "taxon_name": response.json()["taxon_name"],
         "vernacular": test_vernacular.vernacular,
         "language": test_vernacular.language.value,
-        "enabled": test_vernacular.enabled,
         "updated_by": test_vernacular.updated_by,
         "updated_on": test_vernacular.updated_on.isoformat(),
         "created_by": test_vernacular.created_by,
@@ -147,7 +143,6 @@ def test_super_admin_permissions(
         "taxon_name_id": test_taxon_name_canonical_name_3.taxon_name_id,
         "vernacular": "Vernacular 1",
         "language": "english",
-        "enabled": True,
         "created_by": test_superuser.user_id,
     }
     response = client.post(
@@ -202,7 +197,6 @@ def test_manager_permissions(
         "taxon_name_id": test_taxon_name_canonical_name_3.taxon_name_id,
         "vernacular": "Vernacular 1",
         "language": "english",
-        "enabled": True,
         "created_by": test_manager.user_id,
     }
     response = client.post(
@@ -257,7 +251,6 @@ def test_officer_permissions(
         "taxon_name_id": test_taxon_name_canonical_name_3.taxon_name_id,
         "vernacular": "Vernacular 1",
         "language": "english",
-        "enabled": True,
         "created_by": test_officer.user_id,
     }
     response = client.post(

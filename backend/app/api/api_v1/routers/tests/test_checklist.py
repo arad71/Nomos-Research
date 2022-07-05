@@ -23,7 +23,6 @@ def test_checklist(client, test_cross_reference, test_taxon_name, checklist_api_
             "crossReferenceId": 1,
             "crossReferenceCreated": test_cross_reference.created_on.isoformat(),
             "crossReferenceUpdated": test_cross_reference.updated_on.isoformat(),
-            "crossReferenceActive": True,
             "acceptedNameUsage": None,
             "acceptedNameAuthor": None,
             "acceptedNameCurrent": True,

@@ -1,11 +1,10 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy.types import Enum
 
 from app.db.cross_reference import enums
 from app.db.cross_reference.constants import (
-    ACTIVE,
     AUTHORISED_BY,
     COMMENTS,
     CROSS_REFERENCE_ID,
@@ -61,12 +60,6 @@ class CrossReference(BaseModel, TableMixin):
         nullable=False,
         comment=CROSS_REFERENCE_TYPE,
         doc=CROSS_REFERENCE_TYPE,
-    )
-    active = Column(
-        Boolean,
-        nullable=False,
-        comment=ACTIVE,
-        doc=ACTIVE,
     )
     authorised_yr = Column(Integer, index=True, comment="The year of authorisation")
     authorised_mn = Column(Integer, index=True, comment="The month of authorisation")

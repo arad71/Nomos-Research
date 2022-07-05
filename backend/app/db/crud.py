@@ -75,7 +75,9 @@ class Crud:
     ) -> (t.List[Base], str):
         limit, skip, range_str = cls.get_skip_and_limit(range)
         if not current_user.is_super_admin() and hasattr(cls.model, "deleted"):
-            query = db.query(cls.model).filter(getattr(cls.model, "deleted") == False)
+            query = db.query(cls.model)
+            filters = {"deleted": False}
+            query = smart_query(query, filters=filters)
         else:
             query = db.query(cls.model)
         # See https://bit.ly/388m5sY for details on how sorting and filtering is

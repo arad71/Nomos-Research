@@ -4,7 +4,6 @@ from pydantic import BaseModel, Field
 
 from app.db.cross_reference import enums
 from app.db.cross_reference.constants import (
-    ACTIVE,
     AUTHORISED_BY,
     COMMENTS,
     CROSS_REFERENCE_ID,
@@ -23,7 +22,6 @@ class CrossReferenceBase(BaseModel):
     cross_reference_type: enums.CrossReferenceType = Field(
         description=CROSS_REFERENCE_TYPE
     )
-    active: bool = Field(description=ACTIVE)
     authorised_yr: Optional[int]
     authorised_mn: Optional[int]
     authorised_dy: Optional[int]

@@ -308,7 +308,6 @@ export const TaxonNameCreateEdit: FC = ({
                     fullWidth
                     reference="cross_references"
                     target="new_name_id"
-                    filter={{ active: true }}
                     {...props}
                   >
                     <EditableDatagrid
@@ -359,7 +358,6 @@ export const TaxonNameCreateEdit: FC = ({
                     fullWidth
                     reference="cross_references"
                     target="old_name_id"
-                    filter={{ active: true }}
                     {...props}
                   >
                     <EditableDatagrid

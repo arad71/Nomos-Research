@@ -3,16 +3,11 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 from app.db.author.schema import Author
-from app.db.publication.constants import (
-    BAD_PUBLICATION,
-    PUBLICATION_ID,
-    TABLE_DESCRIPTION,
-)
+from app.db.publication.constants import PUBLICATION_ID, TABLE_DESCRIPTION
 from app.db.schemas import TableBase
 
 
 class PublicationBase(BaseModel):
-    bad_publication: Optional[bool] = Field(description=BAD_PUBLICATION)
     doi: Optional[str]
     title: Optional[str]
     display_title: Optional[str]

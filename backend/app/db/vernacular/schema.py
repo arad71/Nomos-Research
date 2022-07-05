@@ -23,7 +23,6 @@ class VernacularBase(BaseModel):
     lang_pref: Optional[bool] = Field(description=LANG_PREF)
     preferred: Optional[bool] = Field(description=PREFERRED)
     source: Optional[str] = Field(description=SOURCE)
-    enabled: bool
     sort_order: Optional[int]
 
 
