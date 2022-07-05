@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import {
   BooleanField,
-  FunctionField,
+  Datagrid,
   Labeled,
   NumberField,
   ReferenceField,
