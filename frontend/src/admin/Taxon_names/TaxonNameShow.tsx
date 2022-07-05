@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import {
   BooleanField,
-  Datagrid,
+  FunctionField,
   Labeled,
   NumberField,
   ReferenceField,
@@ -10,6 +10,9 @@ import {
   Tab,
   TabbedShowLayout,
   TextField,
+  SingleFieldList,
+  ChipField,
+  useRecordContext,
 } from 'react-admin';
 import { Show } from '@react-admin/ra-rbac';
 import Aside from '../shared/Aside';
@@ -24,13 +27,24 @@ import { VernacularReferenceManyGrid } from '../Vernaculars';
 // eslint-disable-next-line max-len
 import { FormattedScientificNameWithStatus } from './FormattedScientificNameWithStatus';
 import { NamePageSummary } from './NamePageSummary';
-import AuthorType from '../Citations/AuthorType';
 
 const useStyles = makeStyles((theme) => ({
   bottomPadding: {
     paddingBottom: '1.5em',
   },
 }));
+
+const Empty = () => {
+  const record = useRecordContext();
+  if (record.classification_system_ids.length != 0) return null;
+  return (
+    <Box>
+      <Typography variant="body1">
+        Not yet related to any Informal Groups
+      </Typography>
+    </Box>
+  );
+};
 
 export const TaxonNameShow: FC = (props) => {
   const classes = useStyles();
@@ -46,6 +60,13 @@ export const TaxonNameShow: FC = (props) => {
         <TabbedShowLayout>
           <Tab label="Name" className={globalClasses.bold}>
             <Box className={globalClasses.sectionMargin}>
+              <Typography
+                variant="h5"
+                className={globalClasses.bold}
+                gutterBottom
+              >
+                Taxon Name
+              </Typography>
               <Box className={globalClasses.fieldMargin}>
                 <ReferenceField source="kingdom_id" reference="kingdoms">
                   <Labeled label="Kingdom">
@@ -170,15 +191,13 @@ export const TaxonNameShow: FC = (props) => {
           </Tab>
           <Tab label="Details" className={globalClasses.bold}>
             <Box className={globalClasses.sectionMargin}>
-              <Box className={globalClasses.sectionMargin}>
-                <Typography
-                  variant="h5"
-                  className={globalClasses.bold}
-                  gutterBottom
-                >
-                  Naturalised Status
-                </Typography>
-              </Box>
+              <Typography
+                variant="h5"
+                className={globalClasses.bold}
+                gutterBottom
+              >
+                Naturalised Status
+              </Typography>
             </Box>
             <Box className={globalClasses.formRow}>
               <Box className={globalClasses.fieldMargin}>
@@ -202,10 +221,59 @@ export const TaxonNameShow: FC = (props) => {
                 </Labeled>
               </Box>
             </Box>
+            <Box className={globalClasses.sectionMargin}>
+              <Typography
+                variant="h5"
+                className={globalClasses.bold}
+                gutterBottom
+              >
+                Informal Groups
+              </Typography>
+            </Box>
+            <Box className={globalClasses.formRow}>
+              <Box className={globalClasses.fieldMargin}>
+                <Empty />
+                <ReferenceManyField
+                  reference="informal_groups"
+                  target="taxon_name_id"
+                >
+                  <SingleFieldList>
+                    <ReferenceField
+                      source="classification_system_id"
+                      reference="classification_systems"
+                      link="show"
+                      allowEmpty
+                    >
+                      <ChipField
+                        source="class_desc"
+                        emptyText="Not yet associated with any Informal Groups"
+                      />
+                    </ReferenceField>
+                  </SingleFieldList>
+                </ReferenceManyField>
+              </Box>
+            </Box>
           </Tab>
-          <Tab label="Hierarchy" className={globalClasses.bold}></Tab>
+          <Tab label="Hierarchy" className={globalClasses.bold}>
+            <Box className={globalClasses.sectionMargin}>
+              <Typography
+                variant="h5"
+                className={globalClasses.bold}
+                gutterBottom
+              >
+                Taxon name - Heirarchy
+              </Typography>
+            </Box>
+          </Tab>
           <Tab label="Related names" className={globalClasses.bold}>
             <Box className={globalClasses.sectionMargin}>
+              <Typography
+                variant="h5"
+                className={globalClasses.bold}
+                gutterBottom
+              >
+                Taxon name - Related Names
+              </Typography>
               <Labeled label="Previous names">
                 <CrossReferenceManyGrid
                   props={props}
@@ -228,6 +296,13 @@ export const TaxonNameShow: FC = (props) => {
           </Tab>
           <Tab label="Notes" className={globalClasses.bold}>
             <Box className={globalClasses.sectionMargin}>
+              <Typography
+                variant="h5"
+                className={globalClasses.bold}
+                gutterBottom
+              >
+                Taxon name - Notes
+              </Typography>
               <Labeled label="Notes">
                 <TextField source="comments" />
               </Labeled>
