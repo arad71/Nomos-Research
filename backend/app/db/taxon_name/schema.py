@@ -80,6 +80,7 @@ class TaxonNameBase(BaseModel):
     authorised_on: Optional[datetime]
     legacy_id: Optional[str]
     admin_comment: Optional[str]
+    classification_system_ids: Optional[list[int]]
 
 
 class TaxonNameCreate(TaxonNameBase):

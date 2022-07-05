@@ -17,6 +17,12 @@ import {
   TextInput,
   number,
   minValue,
+  SelectArrayInput,
+  ReferenceArrayInput,
+  FunctionField,
+  ReferenceArrayField,
+  ChipField,
+  SingleFieldList,
 } from 'react-admin';
 import { EditableDatagrid } from '@react-admin/ra-editable-datagrid';
 import React, { FC, PropsWithChildren } from 'react';
@@ -293,6 +299,30 @@ export const TaxonNameCreateEdit: FC = ({
               source="naturalised_comments"
               className={gridClasses.EightCol1to5span}
             />
+          </Box>
+          <Box
+            /* eslint-disable-next-line max-len */
+            className={`${globalClasses.mainGrid} ${globalClasses.sectionMargin}`}
+          >
+            <Typography
+              variant="h5"
+              /* eslint-disable-next-line max-len */
+              className={`${gridClasses.EightCol1to3span} ${globalClasses.bold}`}
+              gutterBottom
+            >
+              Informal Groups
+            </Typography>
+            <ReferenceArrayInput
+              source="classification_system_ids"
+              reference="classification_systems"
+              fullWidth
+            >
+              <SelectArrayInput
+                optionText="class_desc"
+                fullWidth
+                className={gridClasses.EightCol1to3span}
+              />
+            </ReferenceArrayInput>
           </Box>
         </FormTab>
         <FormTab label="Hierarchy" className={globalClasses.bold}></FormTab>
