@@ -37,7 +37,13 @@ const useStyles = makeStyles((theme) => ({
 const Empty = () => {
   const record = useRecordContext();
   if (record.classification_system_ids.length != 0) return null;
-  return <span>Not yet associated with any Informal Groups</span>;
+  return (
+    <Box>
+      <Typography variant="body1">
+        Not yet related to any Informal Groups
+      </Typography>
+    </Box>
+  );
 };
 
 export const TaxonNameShow: FC = (props) => {
