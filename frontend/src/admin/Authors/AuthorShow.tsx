@@ -45,7 +45,7 @@ export const AuthorShow: FC = (props) => {
           </Box>
         </Box>
         <Box className={globalClasses.fieldMargin}>
-          <Labeled label="ORCID ID">
+          <Labeled label="ORC ID">
             <TextField source="orc_id" />
           </Labeled>
         </Box>

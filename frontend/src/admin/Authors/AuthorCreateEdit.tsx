@@ -42,7 +42,7 @@ export const AuthorCreateEdit: FC = (props) => {
           <TextInput source="abbreviation" fullWidth validate={[required()]} />
         </Box>
         <Box className={classes.orcRow}>
-          <TextInput source="orc_id" fullWidth />
+          <TextInput source="orc_id" label="ORC ID" fullWidth />
         </Box>
       </Box>
     </SimpleForm>
