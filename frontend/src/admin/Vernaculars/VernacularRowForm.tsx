@@ -8,17 +8,28 @@ import {
 } from 'react-admin';
 import LanguageType from './LanguageType';
 import React from 'react';
+import { makeStyles } from '@material-ui/core/styles';
 
-export const VernacularRowForm = (props: RowFormProps) => (
-  <RowForm {...props}>
-    <TextInput source="vernacular" validate={required()} />
-    <SelectInput
-      source="language"
-      validate={required()}
-      choices={LanguageType}
-    />
-    <BooleanInput source="lang_pref" />
-    <BooleanInput source="preferred" />
-    <NumberInput source="sort_order" validate={required()} initialValue={0} />
-  </RowForm>
-);
+const useStyles = makeStyles({
+  langWidth: {
+    width: '150px',
+  },
+});
+
+export const VernacularRowForm = (props: RowFormProps) => {
+  const classes = useStyles();
+  return (
+    <RowForm {...props}>
+      <TextInput source="vernacular" validate={required()} />
+      <SelectInput
+        source="language"
+        validate={required()}
+        choices={LanguageType}
+        className={classes.langWidth}
+      />
+      <BooleanInput source="lang_pref" />
+      <BooleanInput source="preferred" />
+      <NumberInput source="sort_order" validate={required()} initialValue={0} />
+    </RowForm>
+  );
+};

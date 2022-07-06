@@ -261,7 +261,7 @@ export const TaxonNameShow: FC = (props) => {
                 className={globalClasses.bold}
                 gutterBottom
               >
-                Taxon name - Heirarchy
+                Taxon name - Hierarchy
               </Typography>
             </Box>
           </Tab>

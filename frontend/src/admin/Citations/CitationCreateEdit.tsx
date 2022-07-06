@@ -26,7 +26,7 @@ export const CitationCreateEdit: FC = (props) => {
     <SimpleForm {...props} warnWhenUnsavedChanges>
       <Box>
         <Typography variant="h5" className={globalClasses.bold} gutterBottom>
-          Citation
+          Hierarchy
         </Typography>
       </Box>
       <Box className={classes.mainGrid}>
@@ -56,6 +56,7 @@ export const CitationCreateEdit: FC = (props) => {
             source="author_order"
             validate={required()}
             initialValue={0}
+            fullWidth
           />
         </Box>
       </Box>
