@@ -24,7 +24,7 @@ export const VernacularShowLayout = () => {
   return (
     <Box className={classes.showPad}>
       <Typography variant="h5" className={globalClasses.bold} gutterBottom>
-        Vernacular
+        Vernacular Name
       </Typography>
       <Box className={globalClasses.formRow}>
         <Box className={globalClasses.fieldMargin}>
