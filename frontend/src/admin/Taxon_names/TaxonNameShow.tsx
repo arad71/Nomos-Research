@@ -1,7 +1,6 @@
 import React, { FC } from 'react';
 import {
   BooleanField,
-  Datagrid,
   Labeled,
   NumberField,
   ReferenceField,
@@ -19,7 +18,7 @@ import Aside from '../shared/Aside';
 import NaturalisedStatus from './NaturalisedStatus';
 import PublicationStatus from './PublicationStatus';
 import { makeStyles } from '@material-ui/core/styles';
-import { Box, Typography } from '@material-ui/core';
+import { Box, Typography, Button } from '@material-ui/core';
 import { GlobalTheme } from '../../GlobalTheme';
 import { CrossReferenceManyGrid } from '../Cross_references';
 import { AuthorReferenceManyGrid } from '../Authors';
@@ -27,6 +26,7 @@ import { VernacularReferenceManyGrid } from '../Vernaculars';
 // eslint-disable-next-line max-len
 import { FormattedScientificNameWithStatus } from './FormattedScientificNameWithStatus';
 import { NamePageSummary } from './NamePageSummary';
+import PostShowActions from '../shared/PostShowActions';
 
 const useStyles = makeStyles((theme) => ({
   bottomPadding: {
@@ -51,6 +51,7 @@ export const TaxonNameShow: FC = (props) => {
   const globalClasses = GlobalTheme();
   return (
     <Show
+      actions={<PostShowActions />}
       title={<FormattedScientificNameWithStatus />}
       aside={<Aside />}
       {...props}
