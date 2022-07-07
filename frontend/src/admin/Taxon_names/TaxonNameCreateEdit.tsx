@@ -187,6 +187,8 @@ export const TaxonNameCreateEdit: FC = ({
                 >
                   <EditableDatagrid
                     undoable
+                    /* eslint-disable-next-line max-len */
+                    className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
                     createForm={
                       <CitationRowForm
                         initialValues={citationInitialValues}
@@ -260,7 +262,8 @@ export const TaxonNameCreateEdit: FC = ({
                   {...props}
                 >
                   <EditableDatagrid
-                    className={classes.bottomMargin}
+                    /* eslint-disable-next-line max-len */
+                    className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
                     undoable
                     createForm={
                       <VernacularRowForm
@@ -357,7 +360,7 @@ export const TaxonNameCreateEdit: FC = ({
               className={`${gridClasses.EightCol1to5span} ${globalClasses.bold}`}
               gutterBottom
             >
-              Taxon Name - Heirarchy
+              Taxon Name - Hierarchy
             </Typography>
           </Box>
         </FormTab>
@@ -395,6 +398,8 @@ export const TaxonNameCreateEdit: FC = ({
                   >
                     <EditableDatagrid
                       undoable
+                      /* eslint-disable-next-line max-len */
+                      className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
                       createForm={
                         <CrossReferenceRowForm
                           source="old_name_id"
@@ -446,6 +451,8 @@ export const TaxonNameCreateEdit: FC = ({
                   >
                     <EditableDatagrid
                       undoable
+                      /* eslint-disable-next-line max-len */
+                      className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
                       createForm={
                         <CrossReferenceRowForm
                           source="new_name_id"

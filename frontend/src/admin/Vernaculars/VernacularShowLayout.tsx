@@ -3,24 +3,79 @@ import {
   NumberField,
   ReferenceField,
   RichTextField,
-  SimpleShowLayout,
+  Labeled,
   SelectField,
   TextField,
   BooleanField,
 } from 'react-admin';
 import LanguageType from './LanguageType';
+import { GlobalTheme } from '../../GlobalTheme';
+import { Box, Typography, makeStyles } from '@material-ui/core';
 
-export const VernacularShowLayout = () => (
-  <SimpleShowLayout>
-    <TextField source="vernacular" />
-    <ReferenceField source="taxon_name_id" reference="taxon_names">
-      <RichTextField source="formatted_scientific_name" />
-    </ReferenceField>
-    <SelectField source="language" choices={LanguageType} />
-    <TextField source="lang_pref" />
-    <BooleanField source="preferred" />
-    <TextField source="source" />
-    <TextField source="enabled" />
-    <NumberField source="sort_order" />
-  </SimpleShowLayout>
-);
+const useStyles = makeStyles((theme) => ({
+  showPad: {
+    padding: '8px 16px',
+  },
+}));
+
+export const VernacularShowLayout = () => {
+  const classes = useStyles();
+  const globalClasses = GlobalTheme();
+  return (
+    <Box className={classes.showPad}>
+      <Typography variant="h5" className={globalClasses.bold} gutterBottom>
+        Vernacular
+      </Typography>
+      <Box className={globalClasses.formRow}>
+        <Box className={globalClasses.fieldMargin}>
+          <Labeled label="Vernacular">
+            <TextField source="vernacular" />
+          </Labeled>
+        </Box>
+        <Box className={globalClasses.fieldMargin}>
+          <Labeled label="Taxon name">
+            <ReferenceField source="taxon_name_id" reference="taxon_names">
+              <RichTextField source="formatted_scientific_name" />
+            </ReferenceField>
+          </Labeled>
+        </Box>
+      </Box>
+      <Box className={globalClasses.formRow}>
+        <Box className={globalClasses.fieldMargin}>
+          <Labeled label="Language">
+            <SelectField source="language" choices={LanguageType} />
+          </Labeled>
+        </Box>
+        <Box className={globalClasses.fieldMargin}>
+          <Labeled label="Preferred language">
+            <BooleanField source="lang_pref" />
+          </Labeled>
+        </Box>
+      </Box>
+      <Box className={globalClasses.formRow}>
+        <Box className={globalClasses.fieldMargin}>
+          <Labeled label="Source">
+            <TextField source="source" />
+          </Labeled>
+        </Box>
+        <Box className={globalClasses.fieldMargin}>
+          <Labeled label="Sort order">
+            <NumberField source="sort_order" />
+          </Labeled>
+        </Box>
+      </Box>
+      <Box className={globalClasses.formRow}>
+        <Box className={globalClasses.fieldMargin}>
+          <Labeled label="Preferred">
+            <BooleanField source="preferred" />
+          </Labeled>
+        </Box>
+        <Box className={globalClasses.fieldMargin}>
+          <Labeled label="Enabled">
+            <BooleanField source="enabled" />
+          </Labeled>
+        </Box>
+      </Box>
+    </Box>
+  );
+};
