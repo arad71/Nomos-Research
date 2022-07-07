@@ -27,7 +27,7 @@ export const CrossReferenceShowLayout: FC = (props) => {
   return (
     <Box className={classes.showPad}>
       <Typography variant="h5" className={globalClasses.bold} gutterBottom>
-        Cross Reference
+        Related name
       </Typography>
       <Box className={globalClasses.formRow}>
         <Box className={globalClasses.fieldMargin}>

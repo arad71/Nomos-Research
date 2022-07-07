@@ -28,7 +28,7 @@ export const VernacularCreateEdit: FC = (props) => {
     <SimpleForm {...props} warnWhenUnsavedChanges>
       <Box>
         <Typography variant="h5" className={globalClasses.bold} gutterBottom>
-          Cross reference
+          Vernacular Name
         </Typography>
       </Box>
       <Box className={classes.mainGrid}>

@@ -84,8 +84,8 @@ const Menu = () => {
           to="/kingdoms"
         />
         <MenuItem
-          name="Cross References"
-          label="Cross References"
+          name="Related Names"
+          label="Related Names"
           icon={<CompareArrowsIcon />}
           to="/cross_references"
         />
@@ -102,8 +102,8 @@ const Menu = () => {
           to="/users"
         />
         <MenuItem
-          name="Vernaculars"
-          label="Vernaculars"
+          name="Vernacular Names"
+          label="Vernacular Names"
           to="/vernaculars"
           icon={<CallSplitIcon />}
         />

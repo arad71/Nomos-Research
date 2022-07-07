@@ -27,7 +27,7 @@ export const CrossRefCreateEdit: FC = (props) => {
     <SimpleForm {...props} warnWhenUnsavedChanges>
       <Box>
         <Typography variant="h5" className={globalClasses.bold} gutterBottom>
-          Cross reference
+          Related name
         </Typography>
       </Box>
       <Box className={classes.mainGrid}>
