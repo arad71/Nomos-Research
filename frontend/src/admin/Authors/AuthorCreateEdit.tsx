@@ -1,8 +1,17 @@
-import { required, SimpleForm, TextInput } from 'react-admin';
+import {
+  required,
+  SimpleForm,
+  TextInput,
+  SaveButton,
+  DeleteButton,
+  Toolbar,
+} from 'react-admin';
+import { WithPermissions } from '@react-admin/ra-rbac';
 import React, { FC } from 'react';
 import { Box, Typography } from '@material-ui/core';
 import { GlobalTheme } from '../../GlobalTheme';
 import { makeStyles } from '@material-ui/core';
+import EditToolbar from '../shared/EditToolbar';
 
 const useStyles = makeStyles((theme) => ({
   mainGrid: {
@@ -22,7 +31,11 @@ export const AuthorCreateEdit: FC = (props) => {
   const globalClasses = GlobalTheme();
   const classes = useStyles();
   return (
-    <SimpleForm {...props} warnWhenUnsavedChanges>
+    <SimpleForm
+      {...props}
+      toolbar={<EditToolbar resource="authors" />}
+      warnWhenUnsavedChanges
+    >
       <Box>
         <Typography variant="h5" className={globalClasses.bold} gutterBottom>
           Author

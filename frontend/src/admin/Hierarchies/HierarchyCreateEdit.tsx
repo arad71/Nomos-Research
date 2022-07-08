@@ -2,6 +2,7 @@ import { ReferenceInput, required, SelectInput, SimpleForm } from 'react-admin';
 import React, { FC } from 'react';
 import { GlobalTheme } from '../../GlobalTheme';
 import { Box, Typography, makeStyles } from '@material-ui/core';
+import EditToolbar from '../shared/EditToolbar';
 
 const useStyles = makeStyles((theme) => ({
   mainGrid: {
@@ -16,7 +17,11 @@ export const HierarchyCreateEdit: FC = (props) => {
   const globalClasses = GlobalTheme();
   const classes = useStyles();
   return (
-    <SimpleForm {...props} warnWhenUnsavedChanges>
+    <SimpleForm
+      {...props}
+      toolbar={<EditToolbar resource="hierarchies" />}
+      warnWhenUnsavedChanges
+    >
       <Box>
         <Typography variant="h5" className={globalClasses.bold} gutterBottom>
           Citation

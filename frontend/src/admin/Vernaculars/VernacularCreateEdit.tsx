@@ -11,6 +11,7 @@ import React, { FC } from 'react';
 import LanguageType from './LanguageType';
 import { Box, Typography, makeStyles } from '@material-ui/core';
 import { GlobalTheme } from '../../GlobalTheme';
+import EditToolbar from '../shared/EditToolbar';
 
 const useStyles = makeStyles((theme) => ({
   mainGrid: {
@@ -25,7 +26,11 @@ export const VernacularCreateEdit: FC = (props) => {
   const globalClasses = GlobalTheme();
   const classes = useStyles();
   return (
-    <SimpleForm {...props} warnWhenUnsavedChanges>
+    <SimpleForm
+      {...props}
+      toolbar={<EditToolbar resource="vernaculars" />}
+      warnWhenUnsavedChanges
+    >
       <Box>
         <Typography variant="h5" className={globalClasses.bold} gutterBottom>
           Vernacular Name

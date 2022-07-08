@@ -42,6 +42,7 @@ import CrossRefType from '../Cross_references/CrossRefType';
 import { FormattedScientificNameWithStatus } from '../Taxon_names';
 // eslint-disable-next-line max-len
 import { CrossReferenceRowForm } from '../Cross_references/CrossReferenceRowForm';
+import EditToolbar from '../shared/EditToolbar';
 
 const validateNumber = [number(), minValue(0)];
 
@@ -73,7 +74,11 @@ export const TaxonNameCreateEdit: FC = ({
   return (
     <>
       <NamePageSummary />
-      <TabbedForm {...props} warnWhenUnsavedChanges>
+      <TabbedForm
+        {...props}
+        toolbar={<EditToolbar resource="taxon_names" />}
+        warnWhenUnsavedChanges
+      >
         <FormTab label="Name" className={globalClasses.bold}>
           <Box
             /* eslint-disable-next-line max-len */

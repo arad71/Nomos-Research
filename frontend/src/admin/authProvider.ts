@@ -120,54 +120,59 @@ const authProvider = {
     permissions[Role.OFFICER] = [
       { action: ['show', 'list', 'export'], resource: '*' },
       { action: 'delete', resource: '*', type: 'deny' },
-      { action: ['create', 'edit', 'clone'], resource: 'authors' },
-      { action: ['create', 'edit', 'clone'], resource: 'citations' },
-      { action: ['create', 'edit', 'clone'], resource: 'hierarchies' },
-      { action: ['create', 'edit', 'clone'], resource: 'informal_groups' },
-      { action: ['create', 'edit', 'clone'], resource: 'publications' },
-      { action: ['create', 'edit', 'clone'], resource: 'publication_authors' },
-      { action: ['create', 'edit', 'clone'], resource: 'taxon_names' },
-      { action: ['create', 'edit', 'clone'], resource: 'vernaculars' },
+      { action: ['create', 'edit'], resource: 'authors' },
+      { action: ['create', 'edit'], resource: 'citations' },
+      { action: ['create', 'edit'], resource: 'cross_references' },
+      { action: ['create', 'edit'], resource: 'publications' },
+      { action: ['create', 'edit'], resource: 'publication_authors' },
+      { action: ['create', 'edit'], resource: 'taxon_names' },
+      { action: ['create', 'edit'], resource: 'vernaculars' },
     ];
     permissions[Role.MANAGER] = [
       { action: ['show', 'list', 'export'], resource: '*' },
-      { action: ['create', 'edit', 'clone', 'delete'], resource: 'authors' },
-      { action: ['create', 'edit', 'clone', 'delete'], resource: 'citations' },
+      { action: ['create', 'edit'], resource: 'authors' },
+      { action: ['create', 'edit'], resource: 'citations' },
+      { action: ['create', 'edit'], resource: 'cross_references' },
       {
-        action: ['create', 'edit', 'clone', 'delete'],
+        action: ['create', 'edit'],
         resource: 'hierarchies',
       },
       {
-        action: ['create', 'edit', 'clone', 'delete'],
+        action: ['create', 'edit'],
         resource: 'informal_groups',
       },
       {
-        action: ['create', 'edit', 'clone', 'delete'],
+        action: ['create', 'edit'],
         resource: 'publications',
       },
       {
-        action: ['create', 'edit', 'clone', 'delete'],
+        action: ['create', 'edit'],
         resource: 'publication_authors',
       },
       {
-        action: ['create', 'edit', 'clone', 'delete'],
+        action: ['create', 'edit'],
         resource: 'taxon_names',
       },
       {
-        action: ['create', 'edit', 'clone', 'delete'],
+        action: ['create', 'edit'],
         resource: 'vernaculars',
       },
     ];
 
     permissions[Role.APPLICATION_SUPPORT] = [
-      { action: ['show', 'list', 'export', 'bulkdelete'], resource: '*' },
+      { action: ['show', 'list', 'export'], resource: '*' },
       { action: '*', resource: 'users' },
       { action: '*', resource: 'user_roles' },
       { action: '*', resource: 'kingdoms' },
       { action: '*', resource: 'taxon_ranks' },
       { action: '*', resource: 'classification_systems' },
     ];
-    permissions[Role.SUPER_ADMIN] = [{ action: '*', resource: '*' }];
+    permissions[Role.SUPER_ADMIN] = [
+      {
+        action: ['show', 'list', 'export', 'create', 'edit', 'delete'],
+        resource: '*',
+      },
+    ];
     return Promise.resolve(permissions);
   },
 };
