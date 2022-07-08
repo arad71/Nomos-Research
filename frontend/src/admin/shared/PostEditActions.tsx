@@ -9,7 +9,6 @@ const PostEditActions: FC = () => {
   const viewSwitch = () => {
     let path = history.location.pathname;
     let tabPos = path.lastIndexOf('/');
-    console.log(path);
     if (path.split('/').length - 1 == 2) {
       return path.concat('/show');
     } else {
