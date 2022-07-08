@@ -162,7 +162,7 @@ export const TaxonNameCreateEdit: FC = ({
             />
             <Box
               /* eslint-disable-next-line max-len */
-              className={`${gridClasses.EightCol1to5span} ${globalClasses.sectionMargin}`}
+              className={`${gridClasses.EightCol1to9span} ${globalClasses.sectionMargin}`}
             >
               <Typography variant="h5" className={globalClasses.bold}>
                 Authors
@@ -174,7 +174,8 @@ export const TaxonNameCreateEdit: FC = ({
               >
                 {/* eslint-disable-next-line max-len */}
                 Ensure to save within datagrid on create/edit or data could be
-                lost
+                lost. Taxon name header will not reflect updated author details
+                until page is refreshed
               </Typography>
             </Box>
             <Box className={gridClasses.EightCol1to9span}>
