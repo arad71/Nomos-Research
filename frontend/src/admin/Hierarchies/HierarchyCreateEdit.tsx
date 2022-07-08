@@ -19,7 +19,7 @@ export const HierarchyCreateEdit: FC = (props) => {
     <SimpleForm {...props} warnWhenUnsavedChanges>
       <Box>
         <Typography variant="h5" className={globalClasses.bold} gutterBottom>
-          Citation
+          Hierarchy
         </Typography>
       </Box>
       <Box className={classes.mainGrid}>
