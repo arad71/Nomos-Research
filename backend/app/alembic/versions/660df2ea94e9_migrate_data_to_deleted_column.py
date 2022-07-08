@@ -27,7 +27,9 @@ def upgrade():
 
 
 def downgrade():
-    op.add_column("cross_reference", sa.Column("active", sa.Boolean, nullable=False))
+    op.add_column(
+        "cross_reference", sa.Column("active", sa.Boolean, default=True, nullable=False)
+    )
     op.execute("UPDATE cross_reference SET active = FALSE WHERE deleted = TRUE")
     op.add_column(
         "publication", sa.Column("bad_publication", sa.Boolean, nullable=True)
