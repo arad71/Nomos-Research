@@ -15,10 +15,10 @@ export const HierarchyShow: FC = (props) => {
   const classes = useStyles();
   const globalClasses = GlobalTheme();
   return (
-    <Show aside={<Aside />} {...props}>
+    <Show aside={<Aside />} title="Hierarchy" {...props}>
       <Box className={classes.showPad}>
         <Typography variant="h5" className={globalClasses.bold} gutterBottom>
-          Classification system
+          Hierarchy
         </Typography>
         <Box className={globalClasses.formRow}>
           <Box className={globalClasses.fieldMargin}>

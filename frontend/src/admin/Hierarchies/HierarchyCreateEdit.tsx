@@ -24,7 +24,7 @@ export const HierarchyCreateEdit: FC = (props) => {
     >
       <Box>
         <Typography variant="h5" className={globalClasses.bold} gutterBottom>
-          Citation
+          Hierarchy
         </Typography>
       </Box>
       <Box className={classes.mainGrid}>

@@ -31,7 +31,7 @@ export const CitationCreateEdit: FC = (props) => {
     >
       <Box>
         <Typography variant="h5" className={globalClasses.bold} gutterBottom>
-          Hierarchy
+          Citation
         </Typography>
       </Box>
       <Box className={classes.mainGrid}>
