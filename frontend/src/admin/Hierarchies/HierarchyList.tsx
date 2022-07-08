@@ -20,7 +20,6 @@ export const HierarchyList: FC = (props) => (
     bulkActionButtons={useCanBulkDelete()}
   >
     <Datagrid rowClick="show">
-      <NumberField source="id" />
       <ReferenceField
         source="taxon_name_id"
         reference="taxon_names"

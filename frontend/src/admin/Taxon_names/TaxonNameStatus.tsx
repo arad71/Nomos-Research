@@ -7,7 +7,10 @@ export const TaxonNameStatus = () => {
   const record = useRecordContext();
   return record && record.is_current ? (
     <Tooltip title="This name is current">
-      <CheckCircleIcon style={{ color: '#334e32' }} />
+      <CheckCircleIcon
+        style={{ color: '#334e32', marginLeft: '5px' }}
+        fontSize="small"
+      />
     </Tooltip>
   ) : null;
 };

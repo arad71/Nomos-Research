@@ -9,7 +9,7 @@ export const CrossReferenceEdit: FC = (props) => {
       mutationMode="pessimistic"
       {...props}
       aside={<Aside />}
-      title="Cross reference"
+      title="Related name"
     >
       <CrossRefCreateEdit />
     </Edit>

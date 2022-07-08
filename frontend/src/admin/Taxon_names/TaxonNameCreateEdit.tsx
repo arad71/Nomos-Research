@@ -42,6 +42,7 @@ import CrossRefType from '../Cross_references/CrossRefType';
 import { FormattedScientificNameWithStatus } from '../Taxon_names';
 // eslint-disable-next-line max-len
 import { CrossReferenceRowForm } from '../Cross_references/CrossReferenceRowForm';
+import EditToolbar from '../shared/EditToolbar';
 
 const validateNumber = [number(), minValue(0)];
 
@@ -73,7 +74,11 @@ export const TaxonNameCreateEdit: FC = ({
   return (
     <>
       <NamePageSummary />
-      <TabbedForm {...props} warnWhenUnsavedChanges>
+      <TabbedForm
+        {...props}
+        toolbar={<EditToolbar resource="taxon_names" />}
+        warnWhenUnsavedChanges
+      >
         <FormTab label="Name" className={globalClasses.bold}>
           <Box
             /* eslint-disable-next-line max-len */
@@ -157,7 +162,7 @@ export const TaxonNameCreateEdit: FC = ({
             />
             <Box
               /* eslint-disable-next-line max-len */
-              className={`${gridClasses.EightCol1to5span} ${globalClasses.sectionMargin}`}
+              className={`${gridClasses.EightCol1to9span} ${globalClasses.sectionMargin}`}
             >
               <Typography variant="h5" className={globalClasses.bold}>
                 Authors
@@ -169,7 +174,8 @@ export const TaxonNameCreateEdit: FC = ({
               >
                 {/* eslint-disable-next-line max-len */}
                 Ensure to save within datagrid on create/edit or data could be
-                lost
+                lost. Taxon name header will not reflect updated author details
+                until page is refreshed
               </Typography>
             </Box>
             <Box className={gridClasses.EightCol1to9span}>
@@ -187,6 +193,8 @@ export const TaxonNameCreateEdit: FC = ({
                 >
                   <EditableDatagrid
                     undoable
+                    /* eslint-disable-next-line max-len */
+                    className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
                     createForm={
                       <CitationRowForm
                         initialValues={citationInitialValues}
@@ -260,7 +268,8 @@ export const TaxonNameCreateEdit: FC = ({
                   {...props}
                 >
                   <EditableDatagrid
-                    className={classes.bottomMargin}
+                    /* eslint-disable-next-line max-len */
+                    className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
                     undoable
                     createForm={
                       <VernacularRowForm
@@ -357,7 +366,7 @@ export const TaxonNameCreateEdit: FC = ({
               className={`${gridClasses.EightCol1to5span} ${globalClasses.bold}`}
               gutterBottom
             >
-              Taxon Name - Heirarchy
+              Taxon Name - Hierarchy
             </Typography>
           </Box>
         </FormTab>
@@ -395,6 +404,8 @@ export const TaxonNameCreateEdit: FC = ({
                   >
                     <EditableDatagrid
                       undoable
+                      /* eslint-disable-next-line max-len */
+                      className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
                       createForm={
                         <CrossReferenceRowForm
                           source="old_name_id"
@@ -446,6 +457,8 @@ export const TaxonNameCreateEdit: FC = ({
                   >
                     <EditableDatagrid
                       undoable
+                      /* eslint-disable-next-line max-len */
+                      className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
                       createForm={
                         <CrossReferenceRowForm
                           source="new_name_id"
