@@ -28,7 +28,6 @@ import ResetPreferenceButton from '../shared/ResetPreferenceButton';
 import { DefaultPagination, useCanBulkDelete } from '../shared';
 
 const postListColumns = {
-  id: <TextField source="id" />,
   rank_id: (
     <ReferenceField
       source="rank_id"
