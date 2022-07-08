@@ -27,14 +27,16 @@ def upgrade():
 
 
 def downgrade():
-    op.add_column(
-        "cross_reference", sa.Column("active", sa.Boolean, default=True, nullable=False)
-    )
+    op.add_column("cross_reference", sa.Column("active", sa.Boolean, nullable=True))
     op.execute("UPDATE cross_reference SET active = FALSE WHERE deleted = TRUE")
+    op.execute("UPDATE cross_reference SET active = TRUE WHERE active IS NULL")
+    op.alter_column("cross_reference", "active", nullable=False)
     op.add_column(
         "publication", sa.Column("bad_publication", sa.Boolean, nullable=True)
     )
     op.execute("UPDATE publication SET bad_publication = TRUE WHERE deleted = TRUE")
-    op.add_column("vernacular", sa.Column("enabled", sa.Boolean, nullable=False))
+    op.add_column("vernacular", sa.Column("enabled", sa.Boolean, nullable=True))
     op.execute("UPDATE vernacular SET enabled = FALSE WHERE deleted = TRUE")
+    op.execute("UPDATE vernacular SET enabled = TRUE WHERE enabled IS NULL")
+    op.alter_column("vernacular", "enabled", nullable=False)
     op.execute('UPDATE "user" SET is_active = FALSE WHERE deleted = TRUE')
