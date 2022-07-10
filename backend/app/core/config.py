@@ -1,4 +1,5 @@
 from functools import lru_cache
+from importlib import metadata
 from typing import Any, Dict, Literal, Optional
 
 from pydantic import AnyUrl, BaseSettings, PostgresDsn, validator
@@ -6,6 +7,7 @@ from pydantic import AnyUrl, BaseSettings, PostgresDsn, validator
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "Nomos - Taxonomic Names Management Tool"
+    PROJECT_VERSION: str = f'v{metadata.version("Nomos")}'
     ENVIRONMENT: str
     DEFAULT_PAGE_SIZE: int = 100
 

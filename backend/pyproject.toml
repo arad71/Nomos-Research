@@ -1,6 +1,52 @@
+[tool.poetry]
+name = "Nomos"
+version = "1.0.0"
+description = "Nomos - Taxonomic Names Management Tool"
+authors = [
+    "test",
+]
+packages = [
+    { include = "app" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+alembic = "1.8.0"
+Authlib = "1.0.1"
+fastapi = "0.78.0"
+fastapi-key-auth = "0.7.5"
+httpx = "0.23.0"
+ipython = "8.4.0"
+itsdangerous = "2.1.2"
+Jinja2 = "3.1.2"
+loguru = "0.6.0"
+psycopg2 = "2.9.3"
+pytest = "7.1.2"
+requests = "2.28.0"
+SQLAlchemy = "1.4.39"
+uvicorn = "0.18.2"
+passlib = "1.7.4"
+pandas = "1.4.3"
+openpyxl = "3.0.10"
+bcrypt = "3.2.2"
+sqlalchemy-utils = "0.38.2"
+sqlalchemy_mixins = "1.5.3"
+python-dateutil = "2.8.2"
+python-multipart = "0.0.5"
+pyjwt = "2.4.0"
+mypy = "0.961"
+autoflake = "1.4"
+flake8 = "4.0.1"
+black = "22.3.0"
+isort = "5.10.1"
+
 [tool.black]
 preview = 1
 
 [tool.isort]
 profile = "black"
 src_paths = ["app"]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
