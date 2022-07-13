@@ -53,7 +53,7 @@ export const VernacularCreateEdit: FC = (props) => {
           defaultValue={false}
         />
         <TextInput source="source" />
-        <NumberInput source="sort_order" />
+        <NumberInput source="sort_order" min={0} />
         <BooleanInput
           label="preferred"
           source="preferred"
