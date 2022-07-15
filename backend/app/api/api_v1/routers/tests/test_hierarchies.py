@@ -6,8 +6,9 @@ from app.db.hierarchy.model import Hierarchy
 from app.db.taxon_name.model import TaxonName
 
 
-def test_get_hierarchies(client, test_hierarchy, test_taxon_name: TaxonName,
-                         superuser_token_headers):
+def test_get_hierarchies(
+    client, test_hierarchy, test_taxon_name: TaxonName, superuser_token_headers
+):
     logger.debug(test_hierarchy)
     logger.debug(test_taxon_name.to_dict())
     response = client.get("/api/v1/hierarchies", headers=superuser_token_headers)
@@ -94,12 +95,14 @@ def test_hierarchies_with_data(
     json = response.json()
     new_path = json["path"]["path"]
 
-    expected_path = "{}.{}.{}.{}.{}.{}".format(test_classification_system.classification_system_id,
-                                   test_chordata.taxon_name_id,
-                                   test_reptilia.taxon_name_id,
-                                   test_carnivora.taxon_name_id,
-                                   test_panthera.taxon_name_id,
-                                   test_panthera_leo.taxon_name_id, )
+    expected_path = "{}.{}.{}.{}.{}.{}".format(
+        test_classification_system.classification_system_id,
+        test_chordata.taxon_name_id,
+        test_reptilia.taxon_name_id,
+        test_carnivora.taxon_name_id,
+        test_panthera.taxon_name_id,
+        test_panthera_leo.taxon_name_id,
+    )
     assert new_path == expected_path
     hierarchy_id = json["hierarchy_id"]
     response = client.get(
@@ -109,7 +112,6 @@ def test_hierarchies_with_data(
     new_path = response.json()["path"]["path"]
     assert test_panthera_leo.path[0] == expected_path
     assert new_path == expected_path
-
 
 
 def test_delete_hierarchy(client, test_hierarchy, test_db, superuser_token_headers):
