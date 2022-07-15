@@ -41,7 +41,6 @@ async def login(
     x_last_name: str = Header(default=None),
     x_logout_url: str = Header(default=None),
 ):
-
     if not x_email:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
