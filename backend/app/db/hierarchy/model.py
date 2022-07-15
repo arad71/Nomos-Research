@@ -137,27 +137,30 @@ class Hierarchy(BaseModel, TableMixin):
         return parent_path
 
     def calculate_path(self, parent: "Hierarchy" = None):
+        logger.debug(self.path)
         new_path = self.get_path()
-        if new_path != self.path or True:
+        logger.debug(new_path)
+        if parent:
+            self.path = new_path
+            if parent:
+                self.updated_by = parent.updated_by
+                self.updated_on = parent.updated_on
+            self.save()
+        else:
             session: Session = self.session
             values = {"path": new_path}
             set_committed_value(self, "path", new_path)
-            if parent:
-                values.update(
-                    updated_by=parent.updated_by, updated_on=parent.updated_on
-                )
             session.execute(
                 self.__table__.update()
                 .values(values)
                 .where(Hierarchy.hierarchy_id == self.hierarchy_id)
             )
 
-            self.calculate_path_for_children()
-
     def calculate_path_for_children(self):
         child: Hierarchy
         for child in self.direct_children:
             child.calculate_path(parent=self)
+            child.calculate_path_for_children()
 
     def find_root_parent(self: "Hierarchy") -> "Hierarchy":
         parent = self.direct_parent
@@ -174,8 +177,8 @@ class Hierarchy(BaseModel, TableMixin):
             root = hierarchy.find_root_parent()
             if root not in done:
                 logger.debug("Rebuilding hierarchy for {} and descendants.", root)
-                root.path = None
-                root.save()
+                root.calculate_path()
+                root.calculate_path_for_children()
                 done.add(root)
         return done
 
@@ -188,3 +191,12 @@ def calculate_fields(
     hierarchy: Hierarchy,
 ):
     hierarchy.calculate_path()
+
+
+def rebuild_hierarchy_for_children(hierarchy_id: int):
+    hierarchy: Hierarchy = Hierarchy.find(hierarchy_id)
+    logger.debug(hierarchy)
+    hierarchy.calculate_path_for_children()
+    logger.debug(hierarchy.path)
+    hierarchy.session.flush()
+    hierarchy.session.commit()

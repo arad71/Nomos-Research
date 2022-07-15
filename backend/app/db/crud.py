@@ -102,7 +102,10 @@ class Crud:
                     # TODO: Support multiple hierarchies here by filtering by each
                     #  hierarchy rather than just the first one
                     if isinstance(filter_value, list):
-                        filter_value = filter_value.pop()
+                        if len(filter_value) < 1:
+                            filter_value = "no_filter"
+                        else:
+                            filter_value = filter_value.pop()
                     filter_value = str(filter_value)
                     cast = None
                     if search == "ltxtquery":

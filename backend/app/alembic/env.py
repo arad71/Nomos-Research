@@ -70,7 +70,6 @@ def run_migrations_online():
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
-    BaseModel.set_session(get_db().__next__())
 
     with connectable.connect() as connection:
         context.configure(

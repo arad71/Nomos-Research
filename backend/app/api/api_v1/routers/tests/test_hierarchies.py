@@ -1,10 +1,15 @@
 import pytest
+from loguru import logger
 from starlette import status
 
 from app.db.hierarchy.model import Hierarchy
+from app.db.taxon_name.model import TaxonName
 
 
-def test_get_hierarchies(client, test_hierarchy, superuser_token_headers):
+def test_get_hierarchies(client, test_hierarchy, test_taxon_name: TaxonName,
+                         superuser_token_headers):
+    logger.debug(test_hierarchy)
+    logger.debug(test_taxon_name.to_dict())
     response = client.get("/api/v1/hierarchies", headers=superuser_token_headers)
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == [
@@ -15,13 +20,96 @@ def test_get_hierarchies(client, test_hierarchy, superuser_token_headers):
             "classification_system_id": test_hierarchy.classification_system_id,
             "classification_system": response.json()[0]["classification_system"],
             "parent_nid": test_hierarchy.parent_nid,
-            "parent": response.json()[0]["parent"],
+            # "parent": response.json()[0]["parent"],
             "updated_by": test_hierarchy.updated_by,
             "updated_on": test_hierarchy.updated_on.isoformat(),
             "created_by": test_hierarchy.created_by,
             "created_on": test_hierarchy.created_on.isoformat(),
         }
     ]
+
+
+def test_hierarchies_with_data(
+    client,
+    test_hierarchies,
+    superuser_token_headers,
+    test_chordata,
+    test_mammalia,
+    test_reptilia,
+    test_carnivora,
+    test_panthera,
+    test_panthera_leo,
+    test_classification_system,
+):
+    response = client.get("/api/v1/hierarchies", headers=superuser_token_headers)
+    assert response.status_code == status.HTTP_200_OK
+    new_hierarchy = {
+        "parent_nid": test_reptilia.taxon_name_id,
+        "taxon_name_id": test_carnivora.taxon_name_id,
+        "classification_system_id": test_classification_system.classification_system_id,
+    }
+    carnivore = test_hierarchies["carnivore"]
+    existing_path = carnivore.path
+
+    response = client.put(
+        f"/api/v1/hierarchies/{carnivore.hierarchy_id}",
+        json=new_hierarchy,
+        headers=superuser_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
+    logger.debug(response.json())
+    new_path = response.json()["path"]["path"]
+    assert new_path != existing_path
+    assert new_path == "{}.{}.{}.{}".format(
+        test_classification_system.classification_system_id,
+        test_chordata.taxon_name_id,
+        test_reptilia.taxon_name_id,
+        test_carnivora.taxon_name_id,
+    )
+    panther = test_hierarchies["panther"]
+    response = client.get(
+        f"/api/v1/hierarchies/{panther.hierarchy_id}",
+        headers=superuser_token_headers,
+    )
+    new_path = response.json()["path"]["path"]
+    assert new_path == "{}.{}.{}.{}.{}".format(
+        test_classification_system.classification_system_id,
+        test_chordata.taxon_name_id,
+        test_reptilia.taxon_name_id,
+        test_carnivora.taxon_name_id,
+        test_panthera.taxon_name_id,
+    )
+    logger.debug(new_path)
+
+    new_hierarchy = {
+        "parent_nid": test_panthera.taxon_name_id,
+        "taxon_name_id": test_panthera_leo.taxon_name_id,
+        "classification_system_id": test_classification_system.classification_system_id,
+    }
+    response = client.post(
+        f"/api/v1/hierarchies",
+        json=new_hierarchy,
+        headers=superuser_token_headers,
+    )
+    json = response.json()
+    new_path = json["path"]["path"]
+
+    expected_path = "{}.{}.{}.{}.{}.{}".format(test_classification_system.classification_system_id,
+                                   test_chordata.taxon_name_id,
+                                   test_reptilia.taxon_name_id,
+                                   test_carnivora.taxon_name_id,
+                                   test_panthera.taxon_name_id,
+                                   test_panthera_leo.taxon_name_id, )
+    assert new_path == expected_path
+    hierarchy_id = json["hierarchy_id"]
+    response = client.get(
+        f"/api/v1/hierarchies/{hierarchy_id}",
+        headers=superuser_token_headers,
+    )
+    new_path = response.json()["path"]["path"]
+    assert test_panthera_leo.path[0] == expected_path
+    assert new_path == expected_path
+
 
 
 def test_delete_hierarchy(client, test_hierarchy, test_db, superuser_token_headers):

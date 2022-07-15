@@ -1,10 +1,12 @@
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, Response
+from starlette.background import BackgroundTasks
 
 from app.api.dependencies.range_query import RangeQueryParameter
 from app.core.auth import authorize, get_current_active_user
 from app.db.hierarchy.crud import HierarchyCrud
+from app.db.hierarchy.model import rebuild_hierarchy_for_children
 from app.db.hierarchy.schema import Hierarchy, HierarchyCreate, HierarchyEdit
 from app.db.role.constants import Role
 from app.db.session import get_db
@@ -93,13 +95,16 @@ async def hierarchy_create(
 async def hierarchy_edit(
     hierarchy_id: int,
     hierarchy: HierarchyEdit,
+    background_tasks: BackgroundTasks,
     db=Depends(get_db),
     current_user=Depends(get_current_active_user),
 ):
     """
     Update existing hierarchy
     """
-    return HierarchyCrud.edit_item(db, hierarchy_id, hierarchy, current_user.user_id)
+    ret = HierarchyCrud.edit_item(db, hierarchy_id, hierarchy, current_user.user_id)
+    background_tasks.add_task(rebuild_hierarchy_for_children, hierarchy_id)
+    return ret
 
 
 @r.delete(
@@ -125,8 +130,7 @@ async def hierarchy_delete(
 
 @r.post(
     "/rebuild",
-    response_model=List[Hierarchy],
-    response_model_exclude_none=True,
+    status_code=201,
     dependencies=[
         authorize(
             scopes=[
@@ -136,8 +140,11 @@ async def hierarchy_delete(
         )
     ],
 )
-async def hierarchy_rebuild():
+async def hierarchy_rebuild(
+    background_tasks: BackgroundTasks,
+):
     """
     Rebuild hierarchical indexes
     """
-    return HierarchyCrud.rebuild()
+    background_tasks.add_task(HierarchyCrud.rebuild)
+    return background_tasks.tasks

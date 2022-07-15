@@ -99,7 +99,7 @@ class TaxonName(TaxonNameBase, TableBase):
     scientific_name: Optional[str]
     formatted_scientific_name: Optional[str]
     canonical_name_without_rank: Optional[str]
-    path: List[str]
+    path: Optional[List[str]]
 
     class Config:
         orm_mode = True

@@ -17,7 +17,6 @@ class HierarchyBase(BaseModel):
     taxon_name_id: int = Field(description=TAXON_NAME_ID)
     classification_system_id: int = Field(description=CLASSIFICATION_SYSTEM_ID)
     parent_nid: int = Field(description=PARENT_NAME_ID)
-    pass
 
 
 class HierarchyCreate(HierarchyBase):
@@ -36,7 +35,7 @@ class Hierarchy(HierarchyBase, TableBase):
     formatted_scientific_name: str
     scientific_name: str
     rank_name: str
-    path: typing.Any
+    path: typing.Optional[typing.Any]
 
     class Config:
         orm_mode = True
