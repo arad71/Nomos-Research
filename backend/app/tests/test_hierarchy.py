@@ -2,28 +2,13 @@ from sqlalchemy.sql import expression
 from sqlalchemy_utils import Ltree
 from sqlalchemy_utils.types.ltree import LTXTQUERY
 
-from app.db.classification_system.model import ClassificationSystem
-from app.db.hierarchy.model import Hierarchy
-from app.db.taxon_name.model import TaxonName
-
-
-def create_hierarchy(
-    name: TaxonName,
-    parent: TaxonName,
-    test_classification_system: ClassificationSystem,
-) -> Hierarchy:
-    hierarchy = Hierarchy(
-        parent_nid=parent.taxon_name_id,
-        classification_system_id=test_classification_system.classification_system_id,
-        taxon_name_id=name.taxon_name_id,
-    )
-    hierarchy.save()
-    return hierarchy
+from app.db.hierarchy.model import Hierarchy, rebuild_hierarchy_for_children
 
 
 def test_hierarchy_children(
     test_db,
     test_kingdom,
+    test_hierarchies,
     test_classification_system,
     #  1
     test_animalia,
@@ -40,31 +25,11 @@ def test_hierarchy_children(
     test_superuser,
 ):
 
-    chordate = create_hierarchy(
-        test_chordata,
-        test_animalia,
-        test_classification_system,
-    )
-    mammal = create_hierarchy(
-        test_mammalia,
-        test_chordata,
-        test_classification_system,
-    )
-    reptile = create_hierarchy(
-        test_reptilia,
-        test_chordata,
-        test_classification_system,
-    )
-    carnivore = create_hierarchy(
-        test_carnivora,
-        test_mammalia,
-        test_classification_system,
-    )
-    panther = create_hierarchy(
-        test_panthera,
-        test_carnivora,
-        test_classification_system,
-    )
+    chordate = test_hierarchies["chordate"]
+    mammal = test_hierarchies["mammal"]
+    reptile = test_hierarchies["reptile"]
+    carnivore = test_hierarchies["carnivore"]
+    panther = test_hierarchies["panther"]
     assert carnivore.direct_parent == mammal
     assert mammal.direct_children == [carnivore]
     assert mammal.parent_name == test_chordata
@@ -101,6 +66,7 @@ def test_hierarchy_children(
     )
     carnivore.parent_nid = reptile.taxon_name_id
     carnivore.save()
+    carnivore.calculate_path_for_children()
     test_db.refresh(carnivore)
     assert carnivore.path == Ltree(
         "{}.{}.{}.{}".format(
@@ -127,11 +93,25 @@ def test_hierarchy_children(
             expression.cast(str(carnivore.taxon_name_id), LTXTQUERY)
         )
     ).all()
+
     assert carnivore in match
     assert panther in match
     assert chordate not in match
-    assert test_panthera.genus == "Panthera"
-    assert test_panthera.genus == "Panthera"
+
+    test_db.execute("UPDATE hierarchy SET PATH = null WHERE path IS NOT NULL")
+    chordate.calculate_path()
+    rebuild_hierarchy_for_children(chordate.hierarchy_id)
+    test_db.refresh(panther)
+    assert panther.path == Ltree(
+        "{}.{}.{}.{}.{}".format(
+            test_classification_system.classification_system_id,
+            chordate.taxon_name_id,
+            reptile.taxon_name_id,
+            carnivore.taxon_name_id,
+            panther.taxon_name_id,
+        )
+    )
     assert test_panthera.phylum == "Chordata"
     assert test_panthera.taxon_class == "Reptilia"
+    assert test_panthera.genus == "Panthera"
     assert test_reptilia.phylum == "Chordata"

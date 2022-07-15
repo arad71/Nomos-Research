@@ -327,7 +327,67 @@ def test_hierarchy(
     )
     test_db.add(hierarchy)
     test_db.commit()
+    test_db.refresh(hierarchy)
     return hierarchy
+
+
+def create_hierarchy(
+    name: TaxonName,
+    parent: TaxonName,
+    test_classification_system: ClassificationSystem,
+    user,
+) -> Hierarchy:
+    hierarchy = Hierarchy(
+        parent_nid=parent.taxon_name_id,
+        classification_system_id=test_classification_system.classification_system_id,
+        taxon_name_id=name.taxon_name_id,
+        created_by=user.user_id,
+        updated_by=user.user_id,
+    )
+    hierarchy.save()
+    return hierarchy
+
+
+@pytest.fixture
+def test_hierarchies(
+    test_chordata,
+    test_animalia,
+    test_classification_system,
+    test_mammalia,
+    test_reptilia,
+    test_carnivora,
+    test_panthera,
+    test_superuser,
+):
+    return {
+        "chordate": create_hierarchy(
+            test_chordata, test_animalia, test_classification_system, test_superuser
+        ),
+        "mammal": create_hierarchy(
+            test_mammalia,
+            test_chordata,
+            test_classification_system,
+            test_superuser,
+        ),
+        "reptile": create_hierarchy(
+            test_reptilia,
+            test_chordata,
+            test_classification_system,
+            test_superuser,
+        ),
+        "carnivore": create_hierarchy(
+            test_carnivora,
+            test_mammalia,
+            test_classification_system,
+            test_superuser,
+        ),
+        "panther": create_hierarchy(
+            test_panthera,
+            test_carnivora,
+            test_classification_system,
+            test_superuser,
+        ),
+    }
 
 
 @pytest.fixture
@@ -410,7 +470,7 @@ def test_taxon_name(
         rank_id=test_taxon_rank.taxon_rank_id,
         is_current=True,
         validated=True,
-        canonical_name="",
+        uninomial="Testuninomial",
         updated_by=test_superuser.user_id,
         updated_on=now,
         created_by=test_superuser.user_id,
@@ -418,6 +478,7 @@ def test_taxon_name(
     )
     test_db.add(taxon_name)
     test_db.commit()
+    test_db.refresh(taxon_name)
     return taxon_name
 
 
@@ -499,21 +560,40 @@ def test_panthera(
     )
 
 
-def create_taxon_name(name, now, test_db, test_kingdom, test_superuser, rank):
+@pytest.fixture
+def test_panthera_leo(
+    test_db, test_kingdom, test_publication, test_superuser, test_rank_species
+) -> TaxonName:
+    """
+    Taxon Name for testing
+    """
+    now = datetime.datetime.utcnow()
+    return create_taxon_name(
+        "Panthera",
+        now,
+        test_db,
+        test_kingdom,
+        test_superuser,
+        test_rank_species,
+        specific_epithet="leo",
+    )
+
+
+def create_taxon_name(
+    name, now, test_db, test_kingdom, test_superuser, rank, specific_epithet=None
+):
     taxon_name = TaxonName.create(
         kingdom_id=test_kingdom.kingdom_id,
         rank_id=rank.taxon_rank_id,
         is_current=True,
         validated=True,
         uninomial=name,
+        specific_epithet=specific_epithet,
         updated_by=test_superuser.user_id,
         updated_on=now,
         created_by=test_superuser.user_id,
         created_on=now,
     )
-    # taxon_name.
-    # test_db.add(taxon_name)
-    # test_db.commit()
     return taxon_name
 
 
@@ -531,7 +611,7 @@ def test_taxon_name_2(
         rank_id=test_taxon_rank.taxon_rank_id,
         is_current=True,
         validated=True,
-        canonical_name="",
+        uninomial="Testuninomial2",
         updated_by=test_superuser.user_id,
         updated_on=now,
         created_by=test_superuser.user_id,
@@ -727,6 +807,19 @@ def test_rank_genus(
     """
 
     return create_rank(test_rank_family, "Genus", test_db, test_kingdom, test_superuser)
+
+
+@pytest.fixture
+def test_rank_species(
+    test_db, test_kingdom, test_superuser, test_rank_genus
+) -> TaxonRank:
+    """
+    Taxon Rank for testing
+    """
+
+    return create_rank(
+        test_rank_genus, "Species", test_db, test_kingdom, test_superuser
+    )
 
 
 def create_rank(parent, rank_name, test_db, test_kingdom, test_superuser):
