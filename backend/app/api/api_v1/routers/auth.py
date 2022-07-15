@@ -33,7 +33,7 @@ async def login(db=Depends(get_db), form_data: OAuth2PasswordRequestForm = Depen
 
 
 @r.post("/auth2token")
-async def login(
+async def auth2login(
     db=Depends(get_db),
     use_auth2=Depends(use_auth2),
     x_email: str = Header(default=None),
