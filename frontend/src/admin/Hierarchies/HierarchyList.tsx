@@ -14,7 +14,7 @@ import { HierarchyFilters } from './HierarchyFilters';
 export const HierarchyList: FC = (props) => (
   <List
     {...props}
-    sort={{ field: 'path' }}
+    sort={{ field: 'path', order: 'ASC' }}
     perPage={100}
     pagination={<DefaultPagination />}
     bulkActionButtons={useCanBulkDelete()}

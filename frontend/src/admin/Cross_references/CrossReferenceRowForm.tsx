@@ -1,8 +1,8 @@
 import { RowForm } from '@react-admin/ra-editable-datagrid';
 import { required, SelectInput, TextInput } from 'react-admin';
 import React from 'react';
-import { ScientificNameReference } from '../Taxon_names';
 import CrossRefType from './CrossRefType';
+import ScientificNameReference from '../Taxon_names/ScientificNameReference';
 
 export const CrossReferenceRowForm = (props: {
   source: string;

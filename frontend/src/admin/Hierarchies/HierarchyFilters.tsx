@@ -1,13 +1,11 @@
 import React from 'react';
 import {
-  AutocompleteInput,
-  ReferenceInput,
   ReferenceArrayInput,
   SearchInput,
   SelectArrayInput,
 } from 'react-admin';
 import TaxonRank from '../Taxon_names/TaxonRank';
-import { ScientificNameReference } from '../Taxon_names';
+import ScientificNameReference from '../Taxon_names/ScientificNameReference';
 
 export const HierarchyFilters = [
   <SearchInput source="q" alwaysOn />,
@@ -16,6 +14,8 @@ export const HierarchyFilters = [
     source="path__ltxtquery"
     label="Higher classification"
   />,
+  <ScientificNameReference source="parent_nid" label="Parent name" />,
+  <ScientificNameReference source="taxon_name_id" label="Taxon name" />,
   <SelectArrayInput
     source="parent_name___taxon_rank___rank_name"
     label="Parent rank"

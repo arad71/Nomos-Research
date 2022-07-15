@@ -36,6 +36,8 @@ import CrossRefType from '../Cross_references/CrossRefType';
 import { FormattedScientificNameWithStatus } from '../Taxon_names';
 // eslint-disable-next-line max-len
 import { CrossReferenceRowForm } from '../Cross_references/CrossReferenceRowForm';
+import { HierarchyRowForm } from '../Hierarchies';
+import ScientificNameReference from './ScientificNameReference';
 
 const validateNumber = [number(), minValue(0)];
 
@@ -55,6 +57,7 @@ export const TaxonNameCreateEdit: FC = ({
   const globalClasses = GlobalTheme();
   const gridClasses = GlobalGridTheme();
   const citationInitialValues = { taxon_name_id: props.record?.id };
+  const hierarchyInitialValues = { taxon_name_id: props.record?.id };
   const vernacularInitialValues = {
     taxon_name_id: props.record?.id,
     enabled: true,
@@ -295,7 +298,56 @@ export const TaxonNameCreateEdit: FC = ({
             />
           </Box>
         </FormTab>
-        <FormTab label="Hierarchy" className={globalClasses.bold}></FormTab>
+        <FormTab label="Hierarchy" className={globalClasses.bold}>
+          <Box className={gridClasses.EightCol1to9span}>
+            {(props.record?.id && (
+              <ReferenceManyField
+                fullWidth
+                label="Hierarchical classification"
+                reference="hierarchies"
+                target="taxon_name_id"
+                sort={{
+                  field: 'path',
+                  order: 'ASC',
+                }}
+                {...props}
+              >
+                <EditableDatagrid
+                  warnWhenUnsavedChanges
+                  createForm={
+                    <HierarchyRowForm
+                      initialValues={hierarchyInitialValues}
+                      {...props}
+                    />
+                  }
+                  editForm={<HierarchyRowForm {...props} />}
+                  hasCreate
+                >
+                  <ReferenceInput
+                    source="classification_system_id"
+                    reference="classification_systems"
+                    filter={{ class_type: 'hierarchical' }}
+                  >
+                    <SelectInput
+                      optionText="class_desc"
+                      validate={required()}
+                    />
+                  </ReferenceInput>
+                  <ScientificNameReference
+                    source="parent_nid"
+                    label="Parent name"
+                    validate={required()}
+                  />
+                </EditableDatagrid>
+              </ReferenceManyField>
+            )) || (
+              <Typography>
+                You need to save the record before you can add any authors /
+                citations.
+              </Typography>
+            )}
+          </Box>
+        </FormTab>
         <FormTab label="Related Names" className={globalClasses.bold}>
           <Box
             /* eslint-disable-next-line max-len */

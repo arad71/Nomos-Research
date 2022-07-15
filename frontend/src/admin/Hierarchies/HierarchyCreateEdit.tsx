@@ -1,6 +1,12 @@
-import { ReferenceInput, required, SelectInput, SimpleForm } from 'react-admin';
+import {
+  ReferenceInput,
+  required,
+  SelectInput,
+  SimpleForm,
+  TextField,
+} from 'react-admin';
 import React, { FC } from 'react';
-import { ScientificNameReference } from '../Taxon_names';
+import ScientificNameReference from '../Taxon_names/ScientificNameReference';
 
 export const HierarchyCreateEdit: FC = (props) => (
   <SimpleForm {...props} warnWhenUnsavedChanges>
@@ -21,5 +27,6 @@ export const HierarchyCreateEdit: FC = (props) => (
       label="Taxon name"
       validate={required()}
     />
+    <TextField source="path.path" />
   </SimpleForm>
 );
