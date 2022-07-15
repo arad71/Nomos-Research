@@ -15,10 +15,10 @@ RUN \
   apt-get install -y postgresql-client wait-for-it && \
   chown -R app:app ./ && \
   chown -R app:app /legacy_data && \
-  pip install --no-cache-dir --upgrade pip
-RUN pip install poetry
-RUN poetry config virtualenvs.create false
-RUN poetry install --no-dev
+  pip install --no-cache-dir --upgrade pip && \
+  pip install poetry && \
+  poetry config virtualenvs.create false  && \
+  poetry install --no-dev
 
 USER app
 COPY . .
