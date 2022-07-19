@@ -134,7 +134,7 @@ class DataImportBase:
     @staticmethod
     def get_datetime(value: str, current_format: str):
         if not value:
-            return None
+            return datetime.datetime.now()
 
         return datetime.datetime.strptime(value, current_format)
 

@@ -55,6 +55,7 @@ class ImportTaxonName(DataImportBase):
         )
 
     def row_mapping(self, row):
+        timestamp = row["UPDATED_ON"] or datetime.datetime.now()
         return {
             "kingdom_id": self.map_row_by_unique_key(
                 Kingdom, "legacy_id", row["KINGDOM_ID"], "kingdom_id"
@@ -106,8 +107,8 @@ class ImportTaxonName(DataImportBase):
             "legacy_id": self.legacy_id_prefix + row["NAME_ID"],
             "created_by": self.current_user,
             "updated_by": self.map_user_or_default(row["UPDATED_BY"]),
-            "updated_on": row["UPDATED_ON"] or datetime.datetime.now(),
-            "created_on": row["UPDATED_ON"] or datetime.datetime.now(),
+            "updated_on": timestamp,
+            "created_on": timestamp,
         }
 
     def import_row(self, row):
