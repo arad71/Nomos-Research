@@ -3,7 +3,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, Response
 from fastapi_key_auth import AuthorizerDependency
-from sqlalchemy import and_, func, or_, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.orm import aliased
 
 from app.db.cross_reference.model import CrossReference
@@ -24,7 +24,7 @@ authorizer = AuthorizerDependency(key_pattern="API_KEY_")
 )
 async def curation_checklist(
     response: Response,
-    validated: bool,
+    validated: Optional[bool] = None,
     limit: Optional[int] = 10,
     offset: Optional[int] = 0,
     current: Optional[bool] = None,
@@ -86,20 +86,6 @@ async def curation_checklist(
         )
         .filter(or_(CrossReference.active, CrossReference.active == None))  # noqa: E711
     )
-    if validated:
-        statement = statement.filter(
-            and_(
-                original_name.validated == validated,
-                accepted_name.validated == validated,
-            )
-        )
-    else:
-        statement = statement.filter(
-            or_(
-                original_name.validated == validated,
-                accepted_name.validated == validated,
-            )
-        )
     if updated:
         statement = statement.filter(original_name.updated_on >= updated)
     if crossReferenceUpdated:
@@ -116,6 +102,8 @@ async def curation_checklist(
         )
     if current is not None:
         statement = statement.filter(original_name.is_current == current)
+    if validated is not None:
+        statement = statement.filter(original_name.validated == validated)
     count_query = statement.with_only_columns(func.count(original_name.taxon_name_id))
     count = db.execute(count_query).scalar_one()
     response.headers["Content-Range"] = f"{offset}-{limit - 1 + offset}/{count}"

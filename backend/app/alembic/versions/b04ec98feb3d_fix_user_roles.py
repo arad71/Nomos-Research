@@ -18,7 +18,6 @@ depends_on = None
 
 
 def upgrade():
-
     admin_email = settings.FIRST_SUPER_ADMIN_EMAIL
     user_select = f"SELECT user_id FROM \"user\" WHERE email = '{admin_email}'"
     op.execute(
@@ -36,5 +35,4 @@ def upgrade():
 
 
 def downgrade():
-
     pass
