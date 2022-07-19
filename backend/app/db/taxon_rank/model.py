@@ -22,9 +22,7 @@ class TaxonRank(BaseModel, TableMixin):
         UniqueConstraint(
             "legacy_id", "kingdom_id", name=f"uc_{ __tablename__}_legacy_id"
         ),
-        UniqueConstraint(
-            "kingdom_id", "rank_name", name=f"unique_rank_name_in_kingdom"
-        ),
+        UniqueConstraint("kingdom_id", "rank_name", name="unique_rank_name_in_kingdom"),
         {"comment": TABLE_DESCRIPTION},
     )
 
