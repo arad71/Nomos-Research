@@ -122,18 +122,26 @@ def create_citations(test_db, authors, taxon_name, user_id):
 
 
 def create_taxon_rank(test_db, row, kingdom_id, user_id):
-    taxon_rank = TaxonRank(
-        kingdom_id=kingdom_id,
-        rank_name=row["rank_name"],
-        rank_abbrev=row["rank_abbrev"] or None,
-        uninomial=False,
-        updated_by=None,
-        updated_on=None,
-        created_by=user_id,
-        created_on=NOW,
+    taxon_rank = (
+        test_db.query(TaxonRank)
+        .filter(
+            TaxonRank.kingdom_id == kingdom_id, TaxonRank.rank_name == row["rank_name"]
+        )
+        .one_or_none()
     )
-    test_db.add(taxon_rank)
-    test_db.commit()
+    if not taxon_rank:
+        taxon_rank = TaxonRank(
+            kingdom_id=kingdom_id,
+            rank_name=row["rank_name"],
+            rank_abbrev=row["rank_abbrev"] or None,
+            uninomial=False,
+            updated_by=None,
+            updated_on=None,
+            created_by=user_id,
+            created_on=NOW,
+        )
+        test_db.add(taxon_rank)
+        test_db.commit()
     return taxon_rank
 
 
