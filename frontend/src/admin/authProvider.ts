@@ -49,10 +49,12 @@ function getAuthToken(params: RequestInit = { method: 'POST' }) {
       }
       return response.json();
     })
-    .then(({ access_token: accessToken }) => {
+    .then(({ access_token: accessToken, id, full_name }) => {
       const { logout_url, scopes }: any = decodeJwt(accessToken);
       localStorage.setItem('token', accessToken);
       localStorage.setItem('scopes', scopes);
+      localStorage.setItem('id', id);
+      localStorage.setItem('fullName', full_name);
       if (logout_url) {
         localStorage.setItem('logout_url', logout_url);
       }
@@ -80,7 +82,10 @@ const authProvider = {
     return Promise.resolve();
   },
   getIdentity: () => {
-    return localStorage.getItem('username');
+    return {
+      id: localStorage.getItem('id'),
+      fullName: localStorage.getItem('fullName'),
+    };
   },
   checkError: (error: { status: number }) => {
     const status = error.status;
@@ -99,6 +104,8 @@ const authProvider = {
       return Promise.reject();
     }
     const decoded: JwtPayload = decodeJwt(token);
+    console.log(decoded.exp);
+    console.log(Date.now() / 1000);
     if (decoded && decoded.exp && decoded.exp > Date.now() / 1000) {
       return Promise.resolve();
     }

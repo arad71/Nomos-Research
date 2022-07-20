@@ -29,7 +29,12 @@ async def login(db=Depends(get_db), form_data: OAuth2PasswordRequestForm = Depen
         expires_delta=access_token_expires,
     )
 
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "id": user.user_id,
+        "full_name": f"{user.first_name} {user.last_name}",
+    }
 
 
 @r.post("/auth2token")
@@ -64,4 +69,9 @@ async def auth2login(
         expires_delta=access_token_expires,
     )
 
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "id": user.user_id,
+        "full_name": f"{x_first_name} {x_last_name}"
+    }
