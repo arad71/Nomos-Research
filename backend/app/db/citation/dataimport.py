@@ -1,3 +1,5 @@
+import datetime
+
 from app.db.author.model import Author
 from app.db.citation.model import Citation as CitationModel
 from app.db.dataimport import DataImportBase
@@ -22,6 +24,15 @@ class ImportCitation(DataImportBase):
         )
 
     def import_row(self, row):
+        timestamp = (
+            self.normalise_datetime(
+                self.get_datetime(
+                    value=row["UPDATED_ON"], current_format="%Y-%m-%dT%H:%M:%S%z"
+                )
+            )
+            if row["UPDATED_ON"]
+            else datetime.datetime.now()
+        )
         self.values.append(
             {
                 "taxon_name_id": self.map_row_by_unique_key(
@@ -40,10 +51,7 @@ class ImportCitation(DataImportBase):
                 "updated_by": self.map_row_by_unique_key(
                     UserModel, "legacy_id_name", row["UPDATED_BY"], "user_id"
                 ),
-                "updated_on": self.normalise_datetime(
-                    self.get_datetime(
-                        value=row["UPDATED_ON"], current_format="%Y-%m-%dT%H:%M:%S%z"
-                    )
-                ),
+                "updated_on": timestamp,
+                "created_on": timestamp,
             }
         )

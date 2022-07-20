@@ -1,3 +1,5 @@
+import datetime
+
 from app.db.classification_system.model import (
     ClassificationSystem as ClassificationSystemModel,
 )
@@ -35,6 +37,7 @@ class ImportClassificationSystem(DataImportBase):
                 "updated_by": self.map_row_by_unique_key(
                     UserModel, "legacy_id_name", row["UPDATED_BY"], "user_id"
                 ),
-                "updated_on": row["UPDATED_ON"],
+                "updated_on": row["UPDATED_ON"] or datetime.datetime.now(),
+                "created_on": row["UPDATED_ON"] or datetime.datetime.now(),
             }
         )
