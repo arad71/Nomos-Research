@@ -38,6 +38,7 @@ mypy = "0.961"
 autoflake = "1.4"
 flake8 = "4.0.1"
 black = "22.3.0"
+colorama = "0.4.5"
 isort = "5.10.1"
 
 [tool.black]
