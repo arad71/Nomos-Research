@@ -6,6 +6,7 @@ import {
   SimpleForm,
   TextInput,
   BooleanInput,
+  minValue,
 } from 'react-admin';
 import React, { FC } from 'react';
 import LanguageType from './LanguageType';
@@ -53,7 +54,7 @@ export const VernacularCreateEdit: FC = (props) => {
           defaultValue={false}
         />
         <TextInput source="source" />
-        <NumberInput source="sort_order" min={0} />
+        <NumberInput source="sort_order" validate={minValue(0)} min={0} />
         <BooleanInput
           label="preferred"
           source="preferred"
