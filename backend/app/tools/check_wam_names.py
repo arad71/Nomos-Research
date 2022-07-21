@@ -9,6 +9,7 @@ from numpy import NaN
 from pandas import Series
 
 EXPORT_SUFFIX = "GNParsed.csv"
+SMALL_SUFFIX = "GNParsedSmall.csv"
 SOURCE_FILE = "/app/WAMChecklistNameLookupJUNE.csv"
 GNPARSER_URL = "https://parser.globalnames.org/api/v1/"
 
@@ -28,9 +29,6 @@ def check_wam_names(source_file: str = SOURCE_FILE):
         return ret
 
     logger.info("Extracting data from: {}", source_file)
-    export_file = os.path.splitext(source_file)[0]
-    export_file = export_file + EXPORT_SUFFIX
-    logger.debug("Will export to: {}.", export_file)
     source = pd.read_csv(
         source_file, chunksize=1000, encoding="cp65001", encoding_errors="ignore"
     )
@@ -86,8 +84,27 @@ def check_wam_names(source_file: str = SOURCE_FILE):
         logger.debug("Extracted data:")
         logger.debug(combined)
         out = pd.concat([out, combined], axis=0, ignore_index=True)
-    out.to_csv(export_file)
+    export_file = os.path.splitext(source_file)[0]
+    export_file_name = export_file + EXPORT_SUFFIX
+    out.to_csv(export_file_name)
+    columns = [
+        "NameID",
+        "File_NameID",
+        "Kingdom",
+        "Rank",
+        "canonical_name_without_rank",
+        "author",
+        "year_published",
+        "parenthetical",
+        "is_current",
+        "validated",
+        "import_to_nomos",
+        "qualityWarnings",
+    ]
     logger.info("Exported data file to {}", export_file)
+    small_file_name = export_file + SMALL_SUFFIX
+    out[columns].to_csv(small_file_name)
+    logger.info("Exported data file to {}", small_file_name)
 
 
 if __name__ == "__main__":
