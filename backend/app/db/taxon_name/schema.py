@@ -80,6 +80,7 @@ class TaxonNameBase(BaseModel):
     authorised_on: Optional[datetime]
     legacy_id: Optional[str]
     admin_comment: Optional[str]
+    classification_system_ids: Optional[list[int]]
 
 
 class TaxonNameCreate(TaxonNameBase):
@@ -99,7 +100,6 @@ class TaxonName(TaxonNameBase, TableBase):
     scientific_name: Optional[str]
     formatted_scientific_name: Optional[str]
     canonical_name_without_rank: Optional[str]
-    classification_system_ids: Optional[list[int]]
 
     class Config:
         orm_mode = True
