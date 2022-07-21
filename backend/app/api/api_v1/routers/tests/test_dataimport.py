@@ -2,9 +2,9 @@ import os
 
 from starlette import status
 
-from app.api.api_v1.routers.dataimport import MappingType
 from app.dataimport.csv import import_taxon_names
 from app.db.dataimport import LEGACY_DATA_DIRECTORY
+from app.db.taxon_name.enums import MappingType
 from app.db.taxon_name.model import TaxonName
 
 LOG_ENDPOINT = "/api/v1/dataimport"

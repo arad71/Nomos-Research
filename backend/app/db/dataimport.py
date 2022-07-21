@@ -62,7 +62,7 @@ class DataImportBase:
             else:
                 self.success_count += 1
             self.line_count += 1
-            if self.line_count % 10000 == 0:
+            if self.line_count % 1000 == 0:
                 logger.debug(
                     f"{self.import_name}: "
                     f"{self.success_count}/{self.line_count}/{self.total_rows}. ("
@@ -149,11 +149,7 @@ class DataImportBase:
         if not result:
             if error:
                 raise DataImportError(
-                    "Unable to map row with "
-                    + unique_key_field
-                    + ": '"
-                    + unique_key
-                    + "'"
+                    f"Unable to map {model} row with {unique_key_field}: {unique_key}"
                 )
             else:
                 return None
