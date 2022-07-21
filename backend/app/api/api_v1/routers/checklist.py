@@ -3,7 +3,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, Response
 from fastapi_key_auth import AuthorizerDependency
-from sqlalchemy import func, or_, select
+from sqlalchemy import and_, func, or_, select
 from sqlalchemy.orm import aliased
 
 from app.db.cross_reference.model import CrossReference
@@ -66,6 +66,16 @@ async def curation_checklist(
             accepted_name.created_on.label("acceptedNameCreated"),
             accepted_name.updated_on.label("acceptedNameUpdated"),
             accepted_name.taxon_name_id.label("acceptedNameUsageId"),
+            select(func.count(CrossReference.cross_reference_id))
+            .where(
+                and_(
+                    CrossReference.old_name_id == original_name.taxon_name_id,
+                    CrossReference.active,
+                    original_name.is_current,
+                )
+            )
+            .correlate_except(CrossReference)
+            .scalar_subquery().label("relatedNamesCount"),
         )
         .join(
             CrossReference,
