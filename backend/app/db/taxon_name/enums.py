@@ -12,3 +12,8 @@ class PublicationStatus(str, Enum):
     published = "published"
     manuscript_name = "manuscript_name"
     phrase_name = "phrase_name"
+
+
+class MappingType(Enum):
+    vanilla = "Vanilla"
+    curation_data_extract = "Curation Data Extract"

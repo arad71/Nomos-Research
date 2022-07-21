@@ -17,6 +17,13 @@ LEGACY_DATA_DIRECTORY = "/legacy_data"
 
 
 class DataImportBase:
+    skip_count: int = 0
+    validation_count: int = 0
+    success_count: int = 0
+    line_count: int = 0
+    error_count: int = 0
+    total_rows: int = 0
+
     def __init__(self, db, current_user):
         self.db = db
         self.current_user = current_user
@@ -24,9 +31,7 @@ class DataImportBase:
         self.values = []
         self.upsert_constraint = None
         self.update_cols = []
-        self.line_count = 0
-        self.success_count = 0
-        self.total_rows = 0
+
         self.legacy_id_prefix = "WACENSUS:"
         self.import_name = type(self).__name__
         logger.info(f"----- Processing {self.import_name} -----")
@@ -40,9 +45,15 @@ class DataImportBase:
             except ValidationError as e:
                 logger.error("Validation Error: {}", str(e))
                 logger.error(row)
+                self.validation_count += 1
+            except DataSkipError as e:
+                logger.debug("Skipping row: {}", str(e))
+                logger.debug(row)
+                self.skip_count += 1
             except DataImportError as e:
                 logger.error("Data Import Error: {}", str(e))
                 logger.error(row)
+                self.error_count += 1
             except Exception as e:
                 logger.critical("Exception: {}", str(e))
                 logger.error(row)
@@ -51,10 +62,11 @@ class DataImportBase:
             else:
                 self.success_count += 1
             self.line_count += 1
-            if self.line_count % 10000 == 0:
+            if self.line_count % 1000 == 0:
                 logger.debug(
                     f"{self.import_name}: "
-                    f"{self.success_count}/{self.line_count}/{self.total_rows}."
+                    f"{self.success_count}/{self.line_count}/{self.total_rows}. ("
+                    f"{self.skip_count} skipped)"
                 )
 
     def ingest(self, import_file: str):
@@ -68,11 +80,20 @@ class DataImportBase:
             self._process_rows(data)
             if self.values:
                 self.bulk_insert()
-            logger.info(
-                f"Completed {self.import_name}: "
-                f"{self.success_count}/{self.line_count}/{self.total_rows}."
-            )
+            self.report_complete()
         return True
+
+    def report_complete(self):
+        logger.info(
+            {
+                "Completed": self.import_name,
+                "rows": self.total_rows,
+                "success": self.success_count,
+                "validation": self.validation_count,
+                "errors": self.error_count,
+                "skipped": self.skip_count,
+            }
+        )
 
     def import_row(self, row):
         raise Exception(f"function import_data not implemented for {self.__name__}")
@@ -115,6 +136,7 @@ class DataImportBase:
         unique_key_field: str,
         unique_key: [int, str],
         return_key_field: str,
+        error: bool = True,
     ):
         if not unique_key:
             return None
@@ -125,9 +147,12 @@ class DataImportBase:
             .one_or_none()
         )
         if not result:
-            raise DataImportError(
-                "Unable to map row with " + unique_key_field + ": '" + unique_key + "'"
-            )
+            if error:
+                raise DataImportError(
+                    f"Unable to map {model} row with {unique_key_field}: {unique_key}"
+                )
+            else:
+                return None
 
         return getattr(result, return_key_field)
 
@@ -192,4 +217,8 @@ class DataImportBase:
 
 
 class DataImportError(Exception):
+    pass
+
+
+class DataSkipError(DataImportError):
     pass
