@@ -13,7 +13,7 @@ SOURCE_FILE = "/app/WAMChecklistNameLookupJUNE.csv"
 GNPARSER_URL = "https://parser.globalnames.org/api/v1/"
 
 
-def check_wam_names(source_file:str = SOURCE_FILE):
+def check_wam_names(source_file: str = SOURCE_FILE):
     def extract_values(row: Series, container, field):
         extracted_value = None
         extract = row.get(container, {})
@@ -21,11 +21,12 @@ def check_wam_names(source_file:str = SOURCE_FILE):
             extracted_value = extract.get(field, None)
         return extracted_value
 
-    def calculate_import_to_nomos(row:Series):
+    def calculate_import_to_nomos(row: Series):
         ret = bool(row["parsed"])
-        if row["quality"] >=3:
+        if row["quality"] >= 3:
             ret = False
         return ret
+
     logger.info("Extracting data from: {}", source_file)
     export_file = os.path.splitext(source_file)[0]
     export_file = export_file + EXPORT_SUFFIX
@@ -75,9 +76,9 @@ def check_wam_names(source_file:str = SOURCE_FILE):
         combined = pd.concat([df, result_df], axis=1)
         logger.debug(combined)
         # Set Rank to Subspecies if cardinality = 3
-        combined.loc[(combined["cardinality"] == 3), "Rank"]="Subspecies"
+        combined.loc[(combined["cardinality"] == 3), "Rank"] = "Subspecies"
 
-        combined["is_current"] =  combined["lookupStatus"] != "SYNONYM"
+        combined["is_current"] = combined["lookupStatus"] != "SYNONYM"
         combined["validated"] = combined["lookupStatus"] != "SYNONYM"
         combined["import_to_nomos"] = combined.apply(
             calculate_import_to_nomos, axis="columns"
