@@ -75,7 +75,8 @@ async def curation_checklist(
                 )
             )
             .correlate_except(CrossReference)
-            .scalar_subquery().label("relatedNamesCount"),
+            .scalar_subquery()
+            .label("relatedNamesCount"),
         )
         .join(
             CrossReference,
