@@ -58,7 +58,7 @@ const Dashboard = () => {
           <Button
             href="/#/publications"
             variant="contained"
-            color="primary"
+            color="secondary"
             className={classes.cardbutton}
           >
             View Publications
