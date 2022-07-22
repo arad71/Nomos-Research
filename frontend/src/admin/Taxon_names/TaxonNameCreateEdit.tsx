@@ -111,6 +111,7 @@ export const TaxonNameCreateEdit: FC = ({
             <TextInput
               source="uninomial"
               className={gridClasses.EightCol1to3span}
+              validate={required()}
             />
             <TextInput
               source="specific_epithet"
