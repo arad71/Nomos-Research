@@ -95,7 +95,7 @@ export const PublicationShow: FC = (props) => {
               </Box>
               <Box className={globalClasses.fieldMargin}>
                 <Labeled label="Year">
-                  <TextField source="publication_month" />
+                  <TextField source="publication_year" />
                 </Labeled>
               </Box>
               <Box className={globalClasses.fieldMargin}>
