@@ -44,7 +44,7 @@ export const AuthorList: FC = (props) => (
       <TextField source="surname" />
       <TextField source="first_names" />
       <TextField source="initials" />
-      <TextField source="orc_id" />
+      <TextField source="orc_id" label="ORC ID" />
       <ReferenceField source="updated_by" reference="users">
         <TextField source="full_name" />
       </ReferenceField>

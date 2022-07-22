@@ -29,7 +29,7 @@ export const TaxonRankShow: FC = (props) => {
     <Show aside={<Aside />} {...props} title={<RankName />}>
       <Box className={classes.showPad}>
         <Typography variant="h5" className={globalClasses.bold} gutterBottom>
-          Classification system
+          Taxon Rank
         </Typography>
         <Box className={globalClasses.formRow}>
           <Box className={globalClasses.fieldMargin}>

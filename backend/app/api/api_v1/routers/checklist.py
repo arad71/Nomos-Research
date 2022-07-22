@@ -24,7 +24,7 @@ authorizer = AuthorizerDependency(key_pattern="API_KEY_")
 )
 async def curation_checklist(
     response: Response,
-    validated: bool,
+    validated: Optional[bool] = None,
     limit: Optional[int] = 10,
     offset: Optional[int] = 0,
     current: Optional[bool] = None,
@@ -65,6 +65,17 @@ async def curation_checklist(
             accepted_name.created_on.label("acceptedNameCreated"),
             accepted_name.updated_on.label("acceptedNameUpdated"),
             accepted_name.taxon_name_id.label("acceptedNameUsageId"),
+            select(func.count(CrossReference.cross_reference_id))
+            .where(
+                and_(
+                    CrossReference.old_name_id == original_name.taxon_name_id,
+                    CrossReference.active,
+                    original_name.is_current,
+                )
+            )
+            .correlate_except(CrossReference)
+            .scalar_subquery()
+            .label("relatedNamesCount"),
         )
         .join(
             CrossReference,
@@ -84,20 +95,6 @@ async def curation_checklist(
             )
         )
     )
-    if validated:
-        statement = statement.filter(
-            and_(
-                original_name.validated == validated,
-                accepted_name.validated == validated,
-            )
-        )
-    else:
-        statement = statement.filter(
-            or_(
-                original_name.validated == validated,
-                accepted_name.validated == validated,
-            )
-        )
     if updated:
         statement = statement.filter(original_name.updated_on >= updated)
     if crossReferenceUpdated:
@@ -115,6 +112,8 @@ async def curation_checklist(
     if current is not None:
         statement = statement.filter(original_name.is_current == current)
     statement = statement.filter(original_name.deleted == False)  # noqa
+    if validated is not None:
+        statement = statement.filter(original_name.validated == validated)
     count_query = statement.with_only_columns(func.count(original_name.taxon_name_id))
     count = db.execute(count_query).scalar_one()
     response.headers["Content-Range"] = f"{offset}-{limit - 1 + offset}/{count}"

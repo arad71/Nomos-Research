@@ -21,6 +21,7 @@ export const CrossReferenceList: FC = (props) => (
     perPage={100}
     pagination={<DefaultPagination />}
     bulkActionButtons={useCanBulkDelete()}
+    title="Related names"
   >
     <Datagrid rowClick="show">
       <ReferenceField
@@ -45,7 +46,7 @@ export const CrossReferenceList: FC = (props) => (
       <ReferenceField source="updated_by" reference="users">
         <TextField source="full_name" />
       </ReferenceField>
-      <DateField source="updated_on" showTime />
+      <DateField source="updated_on" />
       <WithPermissions resource="cross_references" action="edit">
         <EditButton />
       </WithPermissions>
