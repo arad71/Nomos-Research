@@ -3,8 +3,8 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, Response
 from fastapi_key_auth import AuthorizerDependency
-from sqlalchemy import and_, func, or_, select
-from sqlalchemy.orm import aliased
+from sqlalchemy import func, or_, select
+from sqlalchemy.orm import Session, aliased
 
 from app.db.cross_reference.model import CrossReference
 from app.db.kingdom.model import Kingdom
@@ -32,11 +32,23 @@ async def curation_checklist(
     updated: Optional[datetime] = None,
     crossReferenceUpdated: Optional[datetime] = None,
     acceptedNameUpdated: Optional[datetime] = None,
-    db=Depends(get_db),
+    db: Session = Depends(get_db),
 ):
     original_name = aliased(TaxonName)
     accepted_name = aliased(TaxonName)
     kingdom = aliased(Kingdom)
+
+    cross_reference_counts = (
+        select(
+            CrossReference.old_name_id.label("old_name_id"),
+            func.count(CrossReference.new_name_id).label("count"),
+        )
+        .group_by(CrossReference.old_name_id)
+        .filter(
+            CrossReference.active,
+        )
+        .subquery()
+    )
     statement = (
         select(
             kingdom.kingdom_name.label("nomenclaturalCode"),
@@ -46,7 +58,7 @@ async def curation_checklist(
             original_name.canonical_name_without_rank.label("canonicalNameWithoutRank"),
             original_name.is_current.label("isCurrent"),
             TaxonRank.rank_name.label("taxonRank"),
-            original_name.validated,
+            original_name.validated.label("validated"),
             original_name.created_on.label("created"),
             original_name.updated_on.label("updated"),
             original_name.taxon_name_id.label("scientificNameId"),
@@ -65,17 +77,7 @@ async def curation_checklist(
             accepted_name.created_on.label("acceptedNameCreated"),
             accepted_name.updated_on.label("acceptedNameUpdated"),
             accepted_name.taxon_name_id.label("acceptedNameUsageId"),
-            select(func.count(CrossReference.cross_reference_id))
-            .where(
-                and_(
-                    CrossReference.old_name_id == original_name.taxon_name_id,
-                    CrossReference.active,
-                    original_name.is_current,
-                )
-            )
-            .correlate_except(CrossReference)
-            .scalar_subquery()
-            .label("relatedNamesCount"),
+            cross_reference_counts.c.count.label("relatedNamesCount"),
         )
         .join(
             CrossReference,
@@ -86,6 +88,11 @@ async def curation_checklist(
             accepted_name,
             onclause=CrossReference.new_name_id == accepted_name.taxon_name_id,
             isouter=True,
+        )
+        .outerjoin(
+            cross_reference_counts,
+            onclause=cross_reference_counts.c.old_name_id
+            == original_name.taxon_name_id,
         )
         .join(kingdom, onclause=kingdom.kingdom_id == original_name.kingdom_id)
         .join(TaxonRank, onclause=TaxonRank.taxon_rank_id == original_name.rank_id)
