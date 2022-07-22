@@ -30,8 +30,7 @@ class TaxonNameCrud(crud.Crud):
         current_user: int = None,
     ) -> TaxonName:
         create_data = taxon_name.dict(exclude_unset=True)
-        if "classification_system_ids" in create_data:
-            delattr(taxon_name, "classification_system_ids")
+        delattr(taxon_name, "classification_system_ids")
         db_taxon_name = super().create_item(db, taxon_name, current_user=current_user)
         if (
             "classification_system_ids" in create_data
