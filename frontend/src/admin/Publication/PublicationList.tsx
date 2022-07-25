@@ -32,7 +32,7 @@ const Actions = () => (
 export const PublicationList: FC = (props) => (
   <List
     {...props}
-    sort={{ field: 'title', order: 'ASC' }}
+    sort={{ field: 'display_title', order: 'ASC' }}
     filters={publicationFilters}
     actions={<Actions />}
     perPage={100}
@@ -40,7 +40,7 @@ export const PublicationList: FC = (props) => (
     bulkActionButtons={useCanBulkDelete()}
   >
     <Datagrid rowClick="show">
-      <TextField source="title" />
+      <TextField source="display_title" />
       <TextField source="author_name" />
       <TextField source="publication_year" />
       <BooleanField
@@ -50,7 +50,8 @@ export const PublicationList: FC = (props) => (
         //Is here while a decision is made on how to deal with blank values.
         looseValue
       />
-      <TextField source="display_title" />
+      <TextField source="abbreviated_title" />
+      <TextField source="title" />
       <BooleanField source="bad_publication" />
       <ReferenceField source="updated_by" reference="users">
         <TextField source="full_name" />
