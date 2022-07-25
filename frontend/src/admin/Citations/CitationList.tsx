@@ -11,15 +11,20 @@ import {
 } from 'react-admin';
 import AuthorType from './AuthorType';
 import { WithPermissions, List } from '@react-admin/ra-rbac';
-import { DefaultPagination, useCanBulkDelete } from '../shared';
+import {
+  DefaultPagination,
+  selectableFilters,
+  useCanBulkDelete,
+} from '../shared';
 
 export const CitationList: FC = (props) => (
   <List
     {...props}
-    sort={{ field: 'taxon_name___scientific_name' }}
+    sort={{ field: 'updated_on', order: 'DESC' }}
     perPage={100}
     pagination={<DefaultPagination />}
     bulkActionButtons={useCanBulkDelete()}
+    filters={selectableFilters()}
   >
     <Datagrid rowClick="show">
       <ReferenceField

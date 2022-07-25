@@ -70,11 +70,6 @@ export const VernacularShowLayout = () => {
             <BooleanField source="preferred" />
           </Labeled>
         </Box>
-        <Box className={globalClasses.fieldMargin}>
-          <Labeled label="Enabled">
-            <BooleanField source="enabled" />
-          </Labeled>
-        </Box>
       </Box>
     </Box>
   );

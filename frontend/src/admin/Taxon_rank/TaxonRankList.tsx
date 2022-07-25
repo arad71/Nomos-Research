@@ -20,10 +20,10 @@ import {
 export const TaxonRankList: FC = (props) => (
   <List
     {...props}
-    sort={{ field: 'rank_name' }}
+    sort={{ field: 'rank_name', order: 'ASC' }}
     perPage={100}
     pagination={<DefaultPagination />}
-    filters={selectableFilters}
+    filters={selectableFilters()}
     bulkActionButtons={useCanBulkDelete()}
   >
     <Datagrid rowClick="show">

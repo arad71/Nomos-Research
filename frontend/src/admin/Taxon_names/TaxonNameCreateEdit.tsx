@@ -64,13 +64,18 @@ export const TaxonNameCreateEdit: FC = ({
   const classes = useStyles();
   const globalClasses = GlobalTheme();
   const gridClasses = GlobalGridTheme();
-  const citationInitialValues = { taxon_name_id: props.record?.id };
+  const citationInitialValues = {
+    taxon_name_id: props.record?.id,
+  };
   const vernacularInitialValues = {
     taxon_name_id: props.record?.id,
-    enabled: true,
   };
-  const oldNameInitialValues = { new_name_id: props.record?.id, active: true };
-  const newNameInitialValues = { old_name_id: props.record?.id, active: true };
+  const oldNameInitialValues = {
+    new_name_id: props.record?.id,
+  };
+  const newNameInitialValues = {
+    old_name_id: props.record?.id,
+  };
   const role: any = localStorage.getItem('scopes');
   let deleted_column = null;
   if (role == 'SUPER_ADMIN') {

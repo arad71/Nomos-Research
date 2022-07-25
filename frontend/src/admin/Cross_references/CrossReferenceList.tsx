@@ -12,16 +12,21 @@ import {
 } from 'react-admin';
 import CrossRefType from './CrossRefType';
 import { WithPermissions, List } from '@react-admin/ra-rbac';
-import { DefaultPagination, useCanBulkDelete } from '../shared';
+import {
+  DefaultPagination,
+  selectableFilters,
+  useCanBulkDelete,
+} from '../shared';
 
 export const CrossReferenceList: FC = (props) => (
   <List
     {...props}
-    sort={{ field: 'old_name___scientific_name' }}
+    sort={{ field: 'updated_on', order: 'DESC' }}
     perPage={100}
     pagination={<DefaultPagination />}
     bulkActionButtons={useCanBulkDelete()}
     title="Related names"
+    filters={selectableFilters()}
   >
     <Datagrid rowClick="show">
       <ReferenceField
@@ -39,7 +44,6 @@ export const CrossReferenceList: FC = (props) => (
         <RichTextField source="formatted_scientific_name" />
       </ReferenceField>
       <SelectField source="cross_reference_type" choices={CrossRefType} />
-      <BooleanField source="active" />
       <TextField source="authorised_by" />
       <TextField source="reference_comments" />
       <TextField source="notes" />

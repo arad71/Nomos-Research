@@ -26,7 +26,6 @@ export const EditableCrossReferenceManyGrid = (props: {
     <ReferenceManyField
       reference="cross_references"
       target={props.target}
-      filter={{ active: true }}
       {...props.props}
     >
       <EditableDatagrid

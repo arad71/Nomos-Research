@@ -42,7 +42,7 @@ export const UserList: FC = (props) => {
             <ChipField source="name" />
           </SingleFieldList>
         </ReferenceArrayField>
-        <BooleanField source="is_active" />
+        <BooleanField source="deleted" label="Deleted?" />
         <ReferenceField source="updated_by" reference="users">
           <TextField source="full_name" />
         </ReferenceField>

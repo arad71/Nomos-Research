@@ -18,10 +18,10 @@ import {
 export const InformalGroupList: FC = (props) => (
   <List
     {...props}
-    sort={{ field: 'informal_group_id' }}
+    sort={{ field: 'updated_on', order: 'DESC' }}
     perPage={100}
     pagination={<DefaultPagination />}
-    filters={selectableFilters}
+    filters={selectableFilters()}
     bulkActionButtons={useCanBulkDelete()}
   >
     <Datagrid rowClick="show">

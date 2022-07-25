@@ -33,7 +33,7 @@ export const AuthorList: FC = (props) => (
   <List
     {...props}
     sort={{ field: 'abbreviation', order: 'ASC' }}
-    filters={selectableFilters}
+    filters={selectableFilters()}
     actions={<Actions />}
     perPage={100}
     pagination={<DefaultPagination />}

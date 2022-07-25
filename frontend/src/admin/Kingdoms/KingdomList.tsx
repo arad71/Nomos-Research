@@ -21,7 +21,7 @@ export const KingdomList: FC = (props) => {
       sort={{ field: 'kingdom_name', order: 'DESC' }}
       perPage={100}
       pagination={<DefaultPagination />}
-      filters={selectableFilters}
+      filters={selectableFilters()}
       bulkActionButtons={useCanBulkDelete()}
     >
       <Datagrid rowClick="show">

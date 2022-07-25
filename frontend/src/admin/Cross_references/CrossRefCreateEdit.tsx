@@ -50,12 +50,6 @@ export const CrossRefCreateEdit: FC = (props) => {
         <TextInput source="authorised_by" />
         <TextInput multiline source="reference_comments" />
         <TextInput multiline source="notes" />
-        <BooleanInput
-          label="Active"
-          source="active"
-          validate={required()}
-          defaultValue={false}
-        />
       </Box>
     </SimpleForm>
   );

@@ -21,7 +21,7 @@ export const PublicationList: FC = (props) => (
     perPage={100}
     pagination={<DefaultPagination />}
     bulkActionButtons={useCanBulkDelete()}
-    filters={selectableFilters}
+    filters={selectableFilters()}
   >
     <Datagrid rowClick="show">
       <TextField source="title" />
@@ -29,7 +29,6 @@ export const PublicationList: FC = (props) => (
       <TextField source="publication_year" />
       <TextField source="published" />
       <TextField source="display_title" />
-      <BooleanField source="bad_publication" />
       <ReferenceField source="updated_by" reference="users">
         <TextField source="full_name" />
       </ReferenceField>

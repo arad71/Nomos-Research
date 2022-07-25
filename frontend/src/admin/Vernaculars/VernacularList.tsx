@@ -12,7 +12,11 @@ import {
 } from 'react-admin';
 import LanguageType from './LanguageType';
 import { List, WithPermissions } from '@react-admin/ra-rbac';
-import { DefaultPagination, useCanBulkDelete } from '../shared';
+import {
+  DefaultPagination,
+  selectableFilters,
+  useCanBulkDelete,
+} from '../shared';
 
 export const VernacularList: FC = (props) => (
   <List
@@ -21,6 +25,7 @@ export const VernacularList: FC = (props) => (
     perPage={100}
     pagination={<DefaultPagination />}
     bulkActionButtons={useCanBulkDelete()}
+    filters={selectableFilters()}
   >
     <Datagrid rowClick="show">
       <ReferenceField
@@ -35,7 +40,6 @@ export const VernacularList: FC = (props) => (
       <BooleanField source="lang_pref" />
       <BooleanField source="preferred" />
       <TextField source="source" />
-      <BooleanField source="enabled" />
       <NumberField source="sort_order" />
       <ReferenceField source="updated_by" reference="users">
         <TextField source="full_name" />

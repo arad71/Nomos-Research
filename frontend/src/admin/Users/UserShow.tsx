@@ -67,13 +67,6 @@ export const UserShow: FC = (props) => {
               </Labeled>
             </Box>
           </Box>
-          <Box className={globalClasses.formRow}>
-            <Box className={globalClasses.fieldMargin}>
-              <Labeled label="Soft deleted">
-                <BooleanField source="deleted" />
-              </Labeled>
-            </Box>
-          </Box>
         </Box>
       </Box>
     </Show>
