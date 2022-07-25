@@ -32,6 +32,7 @@ def test_checklist(client, test_cross_reference, test_taxon_name, checklist_api_
             "acceptedNameUsageId": test_taxon_name.taxon_name_id,
             "canonicalName": test_taxon_name.canonical_name,
             "canonicalNameWithoutRank": test_taxon_name.canonical_name_without_rank,
+            "relatedNamesCount": 1,
         }
     ]
 

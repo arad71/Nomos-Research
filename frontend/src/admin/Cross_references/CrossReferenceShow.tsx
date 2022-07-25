@@ -5,7 +5,7 @@ import { CrossReferenceShowLayout } from './CrossReferenceShowLayout';
 
 export const CrossReferenceShow: FC = (props) => {
   return (
-    <Show {...props} aside={<Aside />} title="Cross reference">
+    <Show {...props} aside={<Aside />} title="Related name">
       <CrossReferenceShowLayout />
     </Show>
   );

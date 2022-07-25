@@ -17,6 +17,7 @@ import React, { FC } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, Typography } from '@material-ui/core';
 import { GlobalTheme, GlobalGridTheme } from '../../GlobalTheme';
+import EditToolbar from '../shared/EditToolbar';
 
 const useStyles = makeStyles({
   mainGrid: {
@@ -42,7 +43,11 @@ export const PublicationCreateEdit: FC = (props) => {
           className={globalClasses.subtitle}
         />
       </Box>
-      <TabbedForm {...props} warnWhenUnsavedChanges>
+      <TabbedForm
+        {...props}
+        toolbar={<EditToolbar resource="publications" />}
+        warnWhenUnsavedChanges
+      >
         <FormTab label="Publication" className={globalClasses.bold}>
           <Box className={`${classes.mainGrid} ${globalClasses.sectionMargin}`}>
             <Box>

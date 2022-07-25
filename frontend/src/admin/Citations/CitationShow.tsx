@@ -24,10 +24,10 @@ export const CitationShow: FC = (props) => {
   const classes = useStyles();
   const globalClasses = GlobalTheme();
   return (
-    <Show aside={<Aside />} {...props}>
+    <Show aside={<Aside />} title="Citation" {...props}>
       <Box className={classes.showPad}>
         <Typography variant="h5" className={globalClasses.bold} gutterBottom>
-          Classification system
+          Citation
         </Typography>
         <Box className={globalClasses.formRow}>
           <Box className={globalClasses.fieldMargin}>

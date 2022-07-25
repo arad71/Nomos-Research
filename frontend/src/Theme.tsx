@@ -36,6 +36,21 @@ const theme = createTheme({
         paddingLeft: '0px',
       },
     },
+    RaSelectArrayInput: {
+      root: {
+        minWidth: '150px',
+      },
+    },
+    RaSelectInput: {
+      input: {
+        minWidth: '100%',
+      },
+    },
+    RaNullableBooleanInput: {
+      input: {
+        minWidth: '100%',
+      },
+    },
   },
 });
 

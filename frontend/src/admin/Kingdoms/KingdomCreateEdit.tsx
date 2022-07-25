@@ -1,9 +1,36 @@
 import { SimpleForm, TextInput } from 'react-admin';
 import React, { FC } from 'react';
+import { GlobalTheme } from '../../GlobalTheme';
+import { Box, Typography, makeStyles } from '@material-ui/core';
+import EditToolbar from '../shared/EditToolbar';
 
-export const KingdomCreateEdit: FC = (props) => (
-  <SimpleForm {...props} warnWhenUnsavedChanges>
-    <TextInput source="kingdom_name" />
-    <TextInput multiline source="kingdom_desc" />
-  </SimpleForm>
-);
+const useStyles = makeStyles((theme) => ({
+  mainGrid: {
+    display: 'grid',
+    gridTemplateColumns: '1fr',
+    width: '50%',
+    gridColumnGap: '1.5em',
+  },
+}));
+
+export const KingdomCreateEdit: FC = (props) => {
+  const globalClasses = GlobalTheme();
+  const classes = useStyles();
+  return (
+    <SimpleForm
+      {...props}
+      toolbar={<EditToolbar resource="kingdoms" />}
+      warnWhenUnsavedChanges
+    >
+      <Box>
+        <Typography variant="h5" className={globalClasses.bold} gutterBottom>
+          Kingdom
+        </Typography>
+      </Box>
+      <Box className={classes.mainGrid}>
+        <TextInput source="kingdom_name" />
+        <TextInput multiline source="kingdom_desc" />
+      </Box>
+    </SimpleForm>
+  );
+};

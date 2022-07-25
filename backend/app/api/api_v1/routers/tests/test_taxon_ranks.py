@@ -152,7 +152,7 @@ def test_app_support_permissions(
 
     json = {
         "kingdom_id": test_kingdom.kingdom_id,
-        "rank_name": "Rank Name 1",
+        "rank_name": "Rank Name 9",
         "rank_abbrev": "subvar",
         "uninomial": False,
         "created_by": test_app_support.user_id,
@@ -197,7 +197,7 @@ def test_super_admin_permissions(
 
     json = {
         "kingdom_id": test_kingdom.kingdom_id,
-        "rank_name": "Rank Name 1",
+        "rank_name": "Rank Name 9",
         "rank_abbrev": "subvar",
         "uninomial": False,
         "created_by": test_superuser.user_id,
@@ -210,7 +210,7 @@ def test_super_admin_permissions(
     assert response.status_code == status.HTTP_200_OK
 
     taxon_rank_id = response.json()["taxon_rank_id"]
-    json.update({"rank_name": "Rank Name 1", "updated_by": test_superuser.user_id})
+    json.update({"rank_name": "Rank Name 91", "updated_by": test_superuser.user_id})
 
     response = client.put(
         f"/api/v1/taxon_ranks/{taxon_rank_id}",

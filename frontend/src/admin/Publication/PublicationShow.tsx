@@ -16,6 +16,7 @@ import { Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { GlobalTheme } from '../../GlobalTheme';
 import { DisplayTitle } from './DisplayTitle';
+import PostShowActions from '../shared/PostShowActions';
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -40,7 +41,12 @@ export const PublicationShow: FC = (props) => {
   const classes = useStyles();
   const globalClasses = GlobalTheme();
   return (
-    <Show aside={<Aside />} {...props} title={<DisplayTitle />}>
+    <Show
+      actions={<PostShowActions />}
+      aside={<Aside />}
+      {...props}
+      title={<DisplayTitle />}
+    >
       <>
         <Box className={classes.titlePos}>
           <Box>
@@ -89,7 +95,7 @@ export const PublicationShow: FC = (props) => {
               </Box>
               <Box className={globalClasses.fieldMargin}>
                 <Labeled label="Year">
-                  <TextField source="publication_month" />
+                  <TextField source="publication_year" />
                 </Labeled>
               </Box>
               <Box className={globalClasses.fieldMargin}>

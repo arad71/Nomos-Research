@@ -10,6 +10,7 @@ import React, { FC } from 'react';
 import CrossRefType from './CrossRefType';
 import { GlobalTheme } from '../../GlobalTheme';
 import { Box, Typography, makeStyles } from '@material-ui/core';
+import EditToolbar from '../shared/EditToolbar';
 
 const useStyles = makeStyles((theme) => ({
   mainGrid: {
@@ -24,10 +25,14 @@ export const CrossRefCreateEdit: FC = (props) => {
   const globalClasses = GlobalTheme();
   const classes = useStyles();
   return (
-    <SimpleForm {...props} warnWhenUnsavedChanges>
+    <SimpleForm
+      {...props}
+      toolbar={<EditToolbar resource="cross_references" />}
+      warnWhenUnsavedChanges
+    >
       <Box>
         <Typography variant="h5" className={globalClasses.bold} gutterBottom>
-          Cross reference
+          Related name
         </Typography>
       </Box>
       <Box className={classes.mainGrid}>

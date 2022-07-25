@@ -1,6 +1,7 @@
+import os.path
 import zipfile
-from enum import Enum
 from pathlib import Path
+from shutil import rmtree
 
 from fastapi import APIRouter, Depends, UploadFile
 from fastapi.responses import FileResponse
@@ -10,6 +11,7 @@ from starlette.background import BackgroundTasks
 from app.dataimport.csv import import_taxon_names
 from app.dataimport.wacensus import import_data
 from app.db.dataimport import LEGACY_DATA_DIRECTORY
+from app.db.taxon_name.enums import MappingType
 
 data_import_router = r = APIRouter(prefix="/dataimport")
 authorizer = AuthorizerDependency(key_pattern="IMPORT_API_KEY_")
@@ -37,11 +39,6 @@ def import_wacensus_data(background_tasks: BackgroundTasks):
     return background_tasks.tasks
 
 
-class MappingType(Enum):
-    vanilla = "Vanilla"
-    curation_data_extract = "Curation Data Extract"
-
-
 @r.post(
     "/csvupload",
     status_code=201,
@@ -56,10 +53,14 @@ def import_csvupload_data(
 ):
     contents = upload_file.file.read()
     file_path = "/legacy_data/" + upload_file.filename
+    if os.path.exists(file_path):
+        os.remove(file_path)
     with open(file_path, "wb+") as uploaded_file:
         uploaded_file.write(contents)
     if file_path.endswith(".zip"):
         extracted_folder = file_path + "_extracted/"
+        if os.path.exists(extracted_folder):
+            rmtree(extracted_folder)
         Path(extracted_folder).mkdir(parents=True)
         with zipfile.ZipFile(file_path, "r") as uploaded_file:
             uploaded_file.extractall(extracted_folder)

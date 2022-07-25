@@ -12,7 +12,6 @@ import {
   DateField,
 } from 'react-admin';
 import { WithPermissions, List } from '@react-admin/ra-rbac';
-import { makeStyles } from '@material-ui/core';
 import { FilterSidebar } from './FilterSidebar';
 import { UserListActions } from './UserListActions';
 import { UserPagination } from './UserPagination';
@@ -30,7 +29,6 @@ export const UserList: FC = (props) => {
       {...props}
     >
       <Datagrid rowClick="show">
-        <TextField source="id" />
         <EmailField source="email" />
         <TextField source="first_name" />
         <TextField source="last_name" />
