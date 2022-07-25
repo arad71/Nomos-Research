@@ -191,14 +191,14 @@ export const TaxonNameShow: FC = (props) => {
             </Box>
           </Tab>
           <Tab label="Details" className={globalClasses.bold}>
-            <Typography
-              variant="h5"
-              className={`${globalClasses.bold} ${globalClasses.sectionMargin}`}
-              gutterBottom
-            >
-              Taxon name - Details
-            </Typography>
-            <Box>
+            <Box className={globalClasses.sectionMargin}>
+              <Typography
+                variant="h5"
+                className={globalClasses.bold}
+                gutterBottom
+              >
+                Taxon name - Details
+              </Typography>
               <Typography
                 variant="h5"
                 className={globalClasses.bold}
