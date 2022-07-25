@@ -5,6 +5,7 @@ import {
   SelectInput,
   BooleanInput,
   TextInput,
+  minValue,
 } from 'react-admin';
 import LanguageType from './LanguageType';
 import React from 'react';
@@ -17,6 +18,7 @@ const useStyles = makeStyles({
 });
 
 export const VernacularRowForm = (props: RowFormProps) => {
+  const sortOrderValidation = [required(), minValue(0)];
   const classes = useStyles();
   return (
     <RowForm {...props}>
@@ -29,7 +31,12 @@ export const VernacularRowForm = (props: RowFormProps) => {
       />
       <BooleanInput source="lang_pref" />
       <BooleanInput source="preferred" />
-      <NumberInput source="sort_order" validate={required()} initialValue={0} />
+      <NumberInput
+        source="sort_order"
+        validate={sortOrderValidation}
+        initialValue={0}
+        min={0}
+      />
     </RowForm>
   );
 };
