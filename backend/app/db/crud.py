@@ -100,6 +100,9 @@ class Crud:
                         for search_field in cls.search_fields:
                             conditions[f"{search_field}__contains"] = filter_value
                         filters[or_] = conditions
+                else if column == "deleted" and  current_user.is_super_admin():
+                    # Let super admin override the filter
+                    filters[column] = filter_value
                 else:
                     if hasattr(cls.model, column) and isinstance(
                         getattr(cls.model, column).type, TIMESTAMP
@@ -116,8 +119,6 @@ class Crud:
             raise HTTPException(
                 status.HTTP_422_UNPROCESSABLE_ENTITY, detail=err.__repr__()
             )
-        if not current_user.is_super_admin() and hasattr(cls.model, "deleted"):
-            query = query.filter(getattr(cls.model, "deleted") == False)  # noqa
         # Number of filtered results without offset or limit
         total = query.count()
         content_range = f"{range_str}/{total}"
