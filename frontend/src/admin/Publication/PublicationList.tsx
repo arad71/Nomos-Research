@@ -13,8 +13,6 @@ import {
 } from 'react-admin';
 import { List, WithPermissions } from '@react-admin/ra-rbac';
 import { DefaultPagination, useCanBulkDelete } from '../shared';
-import CloseIcon from '@material-ui/icons/Close';
-import CheckIcon from '@material-ui/icons/Check';
 
 const publicationFilters = [<SearchInput source="q" alwaysOn />];
 
@@ -45,8 +43,6 @@ export const PublicationList: FC = (props) => (
       <TextField source="publication_year" />
       <BooleanField
         source="published"
-        FalseIcon={CloseIcon}
-        TrueIcon={CheckIcon}
         //Is here while a decision is made on how to deal with blank values.
         looseValue
       />
