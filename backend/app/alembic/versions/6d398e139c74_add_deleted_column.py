@@ -17,128 +17,26 @@ depends_on = None
 
 
 def upgrade():
-    op.add_column(
-        "author",
-        sa.Column(
-            "deleted",
-            sa.Boolean(),
-            nullable=False,
-            comment="If this record is soft deleted",
-        ),
-    )
-    op.add_column(
-        "citation",
-        sa.Column(
-            "deleted",
-            sa.Boolean(),
-            nullable=False,
-            comment="If this record is soft deleted",
-        ),
-    )
-    op.add_column(
-        "classification_system",
-        sa.Column(
-            "deleted",
-            sa.Boolean(),
-            nullable=False,
-            comment="If this record is soft deleted",
-        ),
-    )
-    op.add_column(
-        "cross_reference",
-        sa.Column(
-            "deleted",
-            sa.Boolean(),
-            nullable=False,
-            comment="If this record is soft deleted",
-        ),
-    )
-    op.add_column(
-        "hierarchy",
-        sa.Column(
-            "deleted",
-            sa.Boolean(),
-            nullable=False,
-            comment="If this record is soft deleted",
-        ),
-    )
-    op.add_column(
-        "informal_group",
-        sa.Column(
-            "deleted",
-            sa.Boolean(),
-            nullable=False,
-            comment="If this record is soft deleted",
-        ),
-    )
-    op.add_column(
-        "kingdom",
-        sa.Column(
-            "deleted",
-            sa.Boolean(),
-            nullable=False,
-            comment="If this record is soft deleted",
-        ),
-    )
-    op.add_column(
-        "publication",
-        sa.Column(
-            "deleted",
-            sa.Boolean(),
-            nullable=False,
-            comment="If this record is soft deleted",
-        ),
-    )
+    for table in ("author", "citation","classification_system", "cross_reference",
+                  "hierarchy", "informal_group", "kingdom", "publication",
+                  "taxon_name", "taxon_rank", "user", "user_role", "vernacular"):
+        op.add_column(
+            table,
+            sa.Column(
+                "deleted",
+                sa.Boolean(),
+                nullable=True,
+                comment="If this record is soft deleted",
+            ),
+        )
+        op.execute(f'UPDATE "{table}" SET deleted = FALSE WHERE deleted IS NULL')
+        op.alter_column(table, "deleted", nullable=False)
+
     op.drop_constraint(
         "uc_publication_abbreviated_title", "publication", type_="unique"
     )
-    op.add_column(
-        "taxon_name",
-        sa.Column(
-            "deleted",
-            sa.Boolean(),
-            nullable=False,
-            comment="If this record is soft deleted",
-        ),
-    )
     op.create_index(
         op.f("ix_taxon_name_uninomial"), "taxon_name", ["uninomial"], unique=False
-    )
-    op.add_column(
-        "taxon_rank",
-        sa.Column(
-            "deleted",
-            sa.Boolean(),
-            nullable=False,
-            comment="If this record is soft deleted",
-        ),
-    )
-    op.add_column(
-        "user",
-        sa.Column(
-            "deleted",
-            sa.Boolean(),
-            nullable=False,
-            comment="If this record is soft deleted",
-        ),
-    )
-    op.add_column(
-        "user_role",
-        sa.Column(
-            "deleted",
-            sa.Boolean(),
-            nullable=False,
-            comment="If this record is soft deleted",
-        ),
-    )
-    op.add_column(
-        "vernacular",
-        sa.Column(
-            "deleted",
-            sa.Boolean(),
-            nullable=False,
-            comment="If this record is soft deleted",
-        ),
     )
 
 
