@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  BooleanField,
   Datagrid,
   NumberField,
   ReferenceField,
@@ -25,6 +26,12 @@ export const AuthorReferenceManyGrid = (props: {
   props: React.PropsWithChildren<{}>;
 }) => {
   const globalClasses = GlobalTheme();
+  const role: any = localStorage.getItem('scopes');
+  console.log(role);
+  let deleted = null;
+  if (role == 'SUPER_ADMIN') {
+    deleted = <BooleanField source="deleted" />;
+  }
   return (
     <ReferenceManyField
       fullWidth
@@ -43,6 +50,7 @@ export const AuthorReferenceManyGrid = (props: {
         </ReferenceField>
         <SelectField source="author_type" choices={AuthorType} />
         <NumberField source="author_order" />
+        {deleted}
       </Datagrid>
     </ReferenceManyField>
   );

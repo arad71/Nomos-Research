@@ -71,6 +71,11 @@ export const TaxonNameCreateEdit: FC = ({
   };
   const oldNameInitialValues = { new_name_id: props.record?.id, active: true };
   const newNameInitialValues = { old_name_id: props.record?.id, active: true };
+  const role: any = localStorage.getItem('scopes');
+  let deleted_column = null;
+  if (role == 'SUPER_ADMIN') {
+    deleted_column = <BooleanField source="deleted" />;
+  }
   return (
     <>
       <NamePageSummary />
@@ -210,6 +215,7 @@ export const TaxonNameCreateEdit: FC = ({
                     </ReferenceField>
                     <SelectField source="author_type" choices={AuthorType} />
                     <NumberField source="author_order" />
+                    {deleted_column}
                   </EditableDatagrid>
                 </ReferenceManyField>
               )) || (
