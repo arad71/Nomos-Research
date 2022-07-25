@@ -88,7 +88,7 @@ class Crud:
                 sort_value = f"{direction}{sort_field}"
                 sort_attrs.append(sort_value)
         # if hasattr(cls.model, "deleted"):
-        filters =  {"deleted": False} if hasattr(cls.model, "deleted") else {}
+        filters = {"deleted": False} if hasattr(cls.model, "deleted") else {}
         if list_filter:
             filter_items = json.loads(list_filter)
             column: str
@@ -100,7 +100,7 @@ class Crud:
                         for search_field in cls.search_fields:
                             conditions[f"{search_field}__contains"] = filter_value
                         filters[or_] = conditions
-                else if column == "deleted" and  current_user.is_super_admin():
+                elif column == "deleted" and current_user.is_super_admin():
                     # Let super admin override the filter
                     filters[column] = filter_value
                 else:
