@@ -17,9 +17,21 @@ depends_on = None
 
 
 def upgrade():
-    for table in ("author", "citation","classification_system", "cross_reference",
-                  "hierarchy", "informal_group", "kingdom", "publication",
-                  "taxon_name", "taxon_rank", "user", "user_role", "vernacular"):
+    for table in (
+        "author",
+        "citation",
+        "classification_system",
+        "cross_reference",
+        "hierarchy",
+        "informal_group",
+        "kingdom",
+        "publication",
+        "taxon_name",
+        "taxon_rank",
+        "user",
+        "user_role",
+        "vernacular",
+    ):
         op.add_column(
             table,
             sa.Column(

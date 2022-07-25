@@ -103,7 +103,8 @@ async def curation_checklist(
         )
         .filter(
             or_(
-                accepted_name.deleted == False, accepted_name.deleted == None  # noqa: E711
+                accepted_name.deleted == False,
+                accepted_name.deleted == None,  # noqa: E711
             )
         )
     )
