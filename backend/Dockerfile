@@ -17,7 +17,7 @@ RUN \
   pip install --no-cache-dir --upgrade pip && \
   pip install poetry && \
   poetry config virtualenvs.create false  && \
-  poetry install --no-dev
+  poetry install --no-dev --no-root
 
 USER app
 COPY . .
