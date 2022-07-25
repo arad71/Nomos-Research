@@ -176,7 +176,7 @@ class Crud:
         item.updated_by = current_user.user_id
         db.commit()
         db.refresh(item)
-        return {cls.id_key: id}
+        return item
 
     @classmethod
     def undelete_item(cls, db: Session, current_user: User, id: int):
