@@ -7,7 +7,6 @@ ARG GROUP_ID=1000
 RUN mkdir /app /legacy_data
 WORKDIR /app
 COPY poetry.lock pyproject.toml ./
-COPY ./ /app
 RUN \
   addgroup --gid $GROUP_ID app && \
   adduser --disabled-password --gecos '' --uid $USER_ID --gid $GROUP_ID app && \
