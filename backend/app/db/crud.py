@@ -74,12 +74,7 @@ class Crud:
         list_filter: str = None,
     ) -> (t.List[Base], str):
         limit, skip, range_str = cls.get_skip_and_limit(range)
-        if not current_user.is_super_admin() and hasattr(cls.model, "deleted"):
-            query = db.query(cls.model)
-            filters = {"deleted": False}
-            query = smart_query(query, filters=filters)
-        else:
-            query = db.query(cls.model)
+        query = db.query(cls.model)
         # See https://bit.ly/388m5sY for details on how sorting and filtering is
         # implemented using the smart_query from sqlalchemy_mixins
 
@@ -92,8 +87,8 @@ class Crud:
                 direction = "-" if sort_dir and sort_dir[i] == "DESC" else ""
                 sort_value = f"{direction}{sort_field}"
                 sort_attrs.append(sort_value)
-
-        filters = {}
+        # if hasattr(cls.model, "deleted"):
+        filters =  {"deleted": False} if hasattr(cls.model, "deleted") else {}
         if list_filter:
             filter_items = json.loads(list_filter)
             column: str
@@ -180,7 +175,7 @@ class Crud:
         item.updated_by = current_user.user_id
         db.commit()
         db.refresh(item)
-        return item
+        return {cls.id_key: id}
 
     @classmethod
     def undelete_item(cls, db: Session, current_user: User, id: int):
