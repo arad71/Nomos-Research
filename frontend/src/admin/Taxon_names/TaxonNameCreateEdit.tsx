@@ -308,6 +308,13 @@ export const TaxonNameCreateEdit: FC = ({
           >
             <Typography
               variant="h5"
+              className={globalClasses.bold}
+              gutterBottom
+            >
+              Taxon name - Details
+            </Typography>
+            <Typography
+              variant="h5"
               /* eslint-disable-next-line max-len */
               className={`${gridClasses.EightCol1to3span} ${globalClasses.bold}`}
               gutterBottom
