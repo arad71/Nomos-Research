@@ -41,7 +41,11 @@ export const PublicationList: FC = (props) => (
       <TextField source="display_title" />
       <TextField source="author_name" />
       <TextField source="publication_year" />
-      <TextField source="published" />
+      <BooleanField
+        source="published"
+        //Is here while a decision is made on how to deal with blank values.
+        looseValue
+      />
       <TextField source="abbreviated_title" />
       <TextField source="title" />
       <BooleanField source="bad_publication" />
