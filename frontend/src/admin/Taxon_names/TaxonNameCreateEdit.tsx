@@ -313,9 +313,16 @@ export const TaxonNameCreateEdit: FC = ({
           </Box>
         </FormTab>
         <FormTab label="Details" className={globalClasses.bold}>
+          <Typography
+            variant="h5"
+            className={`${globalClasses.bold} ${globalClasses.sectionMargin}`}
+            gutterBottom
+          >
+            Taxon name - Details
+          </Typography>
           <Box
             /* eslint-disable-next-line max-len */
-            className={`${globalClasses.mainGrid} ${globalClasses.sectionMargin}`}
+            className={globalClasses.mainGrid}
           >
             <Typography
               variant="h5"

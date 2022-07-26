@@ -20,6 +20,7 @@ def test_get_citations(client, test_citation, superuser_token_headers):
             "updated_on": test_citation.updated_on.isoformat(),
             "created_by": test_citation.created_by,
             "created_on": test_citation.created_on.isoformat(),
+            "deleted": False,
         }
     ]
 
@@ -56,6 +57,7 @@ def test_edit_citation(
         "updated_on": test_citation.updated_on.isoformat(),
         "created_by": test_superuser.user_id,
         "created_on": test_citation.created_on.isoformat(),
+        "deleted": False,
     }
 
     response = client.put(
@@ -83,6 +85,7 @@ def test_edit_citation_not_found(
         "updated_on": test_citation.updated_on.isoformat(),
         "created_by": test_superuser.user_id,
         "created_on": test_citation.created_on.isoformat(),
+        "deleted": False,
     }
     response = client.put(
         "/api/v1/citations/1234", json=new_citation, headers=superuser_token_headers
@@ -111,6 +114,7 @@ def test_get_citation(
         "updated_on": test_citation.updated_on.isoformat(),
         "created_by": test_citation.created_by,
         "created_on": test_citation.created_on.isoformat(),
+        "deleted": False,
     }
 
 
@@ -134,6 +138,7 @@ NEW_CITATION = {
     "author_order": 0,
     "updated_by": None,
     "updated_on": None,
+    "deleted": False,
 }
 
 
