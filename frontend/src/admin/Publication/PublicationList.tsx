@@ -1,11 +1,14 @@
 import React, { FC } from 'react';
 import {
   BooleanField,
+  CreateButton,
   Datagrid,
   DateField,
   EditButton,
+  ExportButton,
   ReferenceField,
   TextField,
+  TopToolbar,
 } from 'react-admin';
 import { List, WithPermissions } from '@react-admin/ra-rbac';
 import {
@@ -13,6 +16,17 @@ import {
   selectableFilters,
   useCanBulkDelete,
 } from '../shared';
+
+const Actions = () => (
+  <TopToolbar>
+    <WithPermissions resource="publications" action="create">
+      <CreateButton />
+    </WithPermissions>
+    <WithPermissions resource="publications" action="export">
+      <ExportButton maxResults={100000} />
+    </WithPermissions>
+  </TopToolbar>
+);
 
 export const PublicationList: FC = (props) => (
   <List
@@ -28,8 +42,6 @@ export const PublicationList: FC = (props) => (
       <TextField source="display_title" />
       <TextField source="author_name" />
       <TextField source="publication_year" />
-      <TextField source="published" />
-      <TextField source="display_title" />
       <BooleanField
         source="published"
         //Is here while a decision is made on how to deal with blank values.
