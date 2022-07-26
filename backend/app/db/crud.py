@@ -87,7 +87,7 @@ class Crud:
                 direction = "-" if sort_dir and sort_dir[i] == "DESC" else ""
                 sort_value = f"{direction}{sort_field}"
                 sort_attrs.append(sort_value)
-        filters =  {"deleted": False} if hasattr(cls.model, "deleted") else {}
+        filters = {"deleted": False} if hasattr(cls.model, "deleted") else {}
         if list_filter:
             filter_items = json.loads(list_filter)
             column: str
