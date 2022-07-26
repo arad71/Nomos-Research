@@ -93,7 +93,7 @@ export const ClassificationSystemList = (props: ListProps) => {
       sort={{ field: 'class_desc', order: 'ASC' }}
       actions={<Actions />}
       perPage={100}
-      filters={ClassificationSystemFilters}
+      filters={ClassificationSystemFilters()}
       pagination={<DefaultPagination />}
       bulkActionButtons={useCanBulkDelete()}
     >

@@ -176,7 +176,7 @@ export const TaxonNameList = (props: ListProps) => {
       sort={{ field: 'updated_on', order: 'DESC' }}
       actions={<Actions />}
       perPage={100}
-      filters={TaxonNameFilters}
+      filters={TaxonNameFilters()}
       pagination={<DefaultPagination />}
       bulkActionButtons={useCanBulkDelete()}
       {...props}
