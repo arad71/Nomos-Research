@@ -87,7 +87,6 @@ class Crud:
                 direction = "-" if sort_dir and sort_dir[i] == "DESC" else ""
                 sort_value = f"{direction}{sort_field}"
                 sort_attrs.append(sort_value)
-        # if hasattr(cls.model, "deleted"):
         filters =  {"deleted": False} if hasattr(cls.model, "deleted") else {}
         if list_filter:
             filter_items = json.loads(list_filter)
@@ -100,9 +99,10 @@ class Crud:
                         for search_field in cls.search_fields:
                             conditions[f"{search_field}__contains"] = filter_value
                         filters[or_] = conditions
-                else if column == "deleted" and  current_user.is_super_admin():
+                elif column == "deleted":
                     # Let super admin override the filter
-                    filters[column] = filter_value
+                    if current_user.is_super_admin():
+                        filters[column] = filter_value
                 else:
                     if hasattr(cls.model, column) and isinstance(
                         getattr(cls.model, column).type, TIMESTAMP
@@ -112,7 +112,6 @@ class Crud:
                     elif isinstance(filter_value, list):
                         column = f"{column}__in"
                     filters[column] = filter_value
-
         try:
             query = smart_query(query, filters=filters, sort_attrs=sort_attrs or None)
         except KeyError as err:
