@@ -18,7 +18,6 @@ export const PublicationList: FC = (props) => (
   <List
     {...props}
     sort={{ field: 'display_title', order: 'ASC' }}
-    filters={publicationFilters}
     actions={<Actions />}
     perPage={100}
     pagination={<DefaultPagination />}
