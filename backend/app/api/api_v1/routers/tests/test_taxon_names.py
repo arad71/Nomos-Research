@@ -1,6 +1,7 @@
 import pytest
 from starlette import status
 
+from app.db.taxon_name.crud import TaxonNameCrud
 from app.db.taxon_name.model import TaxonName
 
 
@@ -30,7 +31,9 @@ def test_get_taxon_names(
     ]
 
 
-def test_delete_taxon_name(client, test_taxon_name, test_db, superuser_token_headers):
+def test_delete_taxon_name(
+    client, test_taxon_name, test_db, superuser_token_headers, test_superuser
+):
     response = client.delete(
         f"/api/v1/taxon_names/{test_taxon_name.taxon_name_id}",
         headers=superuser_token_headers,
@@ -38,6 +41,10 @@ def test_delete_taxon_name(client, test_taxon_name, test_db, superuser_token_hea
     assert response.status_code == status.HTTP_200_OK
     assert response.json()["deleted"] is True
     assert test_db.query(TaxonName).all() == [test_taxon_name]
+    assert TaxonNameCrud.get_items(test_db, test_superuser)[0] == []
+    assert TaxonNameCrud.get_items(
+        test_db, test_superuser, list_filter='{"deleted": true}'
+    )[0] == [test_taxon_name]
 
 
 def test_delete_taxon_name_not_found(client, superuser_token_headers):
