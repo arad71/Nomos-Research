@@ -354,6 +354,7 @@ export const TaxonNameCreateEdit: FC = ({
               source="classification_system_ids"
               reference="classification_systems"
               fullWidth
+              filter={{ class_type: ['informal'] }}
             >
               <SelectArrayInput
                 optionText="class_desc"
