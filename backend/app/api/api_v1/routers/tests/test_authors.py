@@ -34,6 +34,18 @@ def test_delete_author(client, test_author, test_db, superuser_token_headers):
     assert test_db.query(Author).all() == [test_author]
 
 
+def test_hard_delete_author(
+    client, test_author, test_db, superuser_token_headers, test_superuser
+):
+    response = client.delete(
+        f"/api/v1/authors/{test_author.author_id}/hard",
+        headers=superuser_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {"author_id": test_author.author_id}
+    assert test_db.query(Author).all() == []
+
+
 def test_delete_author_not_found(client, superuser_token_headers):
     response = client.delete("/api/v1/authors/4321", headers=superuser_token_headers)
     assert response.status_code == status.HTTP_404_NOT_FOUND

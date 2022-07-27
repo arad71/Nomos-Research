@@ -32,6 +32,18 @@ def test_delete_vernacular(client, test_vernacular, test_db, superuser_token_hea
     assert test_db.query(Vernacular).all() == [test_vernacular]
 
 
+def test_hard_delete_vernacular(
+    client, test_vernacular, test_db, superuser_token_headers, test_superuser
+):
+    response = client.delete(
+        f"/api/v1/vernaculars/{test_vernacular.vernacular_id}/hard",
+        headers=superuser_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {"vernacular_id": test_vernacular.vernacular_id}
+    assert test_db.query(Vernacular).all() == []
+
+
 def test_delete_vernacular_not_found(client, superuser_token_headers):
     response = client.delete(
         "/api/v1/vernaculars/4321", headers=superuser_token_headers

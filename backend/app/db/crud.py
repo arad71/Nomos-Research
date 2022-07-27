@@ -165,12 +165,17 @@ class Crud:
         return db_item
 
     @classmethod
-    def delete_item(cls, db: Session, current_user: User, id: int):
+    def delete_item(cls, db: Session, current_user: User, id: int, hard: bool = False):
         item = cls.get_item(db, current_user, id)
         if not item:
             raise HTTPException(
                 status.HTTP_404_NOT_FOUND, detail=cls.name + " not found"
             )
+        if hard:
+            item_id = getattr(item, cls.id_key)
+            db.delete(item)
+            db.commit()
+            return {cls.id_key: item_id}
         item.deleted = True
         item.updated_by = current_user.user_id
         db.commit()
@@ -189,14 +194,3 @@ class Crud:
         db.commit()
         db.refresh(item)
         return item
-
-    @classmethod
-    def remove_item(cls, db: Session, current_user: User, id: int):
-        item = cls.get_item(db, current_user, id)
-        if not item:
-            raise HTTPException(
-                status.HTTP_404_NOT_FOUND, detail=cls.name + " not found"
-            )
-        db.delete(item)
-        db.commit()
-        return {cls.id_key: id}

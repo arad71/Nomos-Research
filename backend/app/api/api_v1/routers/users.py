@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, overload
 
 from fastapi import APIRouter, Depends, Response
 
@@ -119,6 +119,7 @@ async def user_edit(
     )
 
 
+@overload
 @r.delete(
     "/{user_id}",
     dependencies=[
@@ -139,3 +140,24 @@ async def user_delete(
     Delete existing user
     """
     return UserCrud.delete_item(db, current_user, user_id)
+
+
+@r.delete(
+    "/{user_id}/hard",
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
+async def user_delete(
+    user_id: int,
+    db=Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+):  # noqa: F811
+    """
+    Delete existing user
+    """
+    return UserCrud.delete_item(db, current_user, user_id, True)

@@ -34,6 +34,18 @@ def test_delete_hierarchy(client, test_hierarchy, test_db, superuser_token_heade
     assert test_db.query(Hierarchy).all() == [test_hierarchy]
 
 
+def test_hard_delete_hierarchy(
+    client, test_hierarchy, test_db, superuser_token_headers, test_superuser
+):
+    response = client.delete(
+        f"/api/v1/hierarchies/{test_hierarchy.hierarchy_id}/hard",
+        headers=superuser_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {"hierarchy_id": test_hierarchy.hierarchy_id}
+    assert test_db.query(Hierarchy).all() == []
+
+
 def test_delete_hierarchy_not_found(client, superuser_token_headers):
     response = client.delete(
         "/api/v1/hierarchies/4321", headers=superuser_token_headers

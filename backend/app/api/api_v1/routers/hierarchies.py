@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, overload
 
 from fastapi import APIRouter, Depends, Response
 
@@ -105,6 +105,7 @@ async def hierarchy_edit(
     return HierarchyCrud.edit_item(db, current_user, hierarchy_id, hierarchy)
 
 
+@overload
 @r.delete(
     "/{hierarchy_id}",
     dependencies=[
@@ -125,3 +126,24 @@ async def hierarchy_delete(
     Delete existing hierarchy
     """
     return HierarchyCrud.delete_item(db, current_user, hierarchy_id)
+
+
+@r.delete(
+    "/{hierarchy_id}/hard",
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
+async def hierarchy_delete(
+    hierarchy_id: int,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
+):
+    """
+    Delete existing hierarchy
+    """
+    return HierarchyCrud.delete_item(db, current_user, hierarchy_id, True)

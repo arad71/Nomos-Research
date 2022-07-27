@@ -35,6 +35,18 @@ def test_delete_citation(client, test_citation, test_db, superuser_token_headers
     assert test_db.query(Citation).all() == [test_citation]
 
 
+def test_hard_delete_citation(
+    client, test_citation, test_db, superuser_token_headers, test_superuser
+):
+    response = client.delete(
+        f"/api/v1/citations/{test_citation.citation_id}/hard",
+        headers=superuser_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {"citation_id": test_citation.citation_id}
+    assert test_db.query(Citation).all() == []
+
+
 def test_delete_citation_not_found(client, superuser_token_headers):
     response = client.delete("/api/v1/citations/4321", headers=superuser_token_headers)
     assert response.status_code == status.HTTP_404_NOT_FOUND

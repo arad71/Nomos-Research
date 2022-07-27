@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, overload
 
 from fastapi import APIRouter, Depends, Response
 
@@ -116,6 +116,7 @@ async def classification_system_edit(
     )
 
 
+@overload
 @r.delete(
     "/{classification_system_id}",
     dependencies=[
@@ -137,4 +138,27 @@ async def classification_system_delete(
     """
     return ClassificationSystemCrud.delete_item(
         db, current_user, classification_system_id
+    )
+
+
+@r.delete(
+    "/{classification_system_id}/hard",
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
+async def classification_system_delete(
+    classification_system_id: int,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
+):
+    """
+    Delete existing classification_system
+    """
+    return ClassificationSystemCrud.delete_item(
+        db, current_user, classification_system_id, True
     )

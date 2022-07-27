@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, overload
 
 from fastapi import APIRouter, Depends, Response
 
@@ -109,6 +109,7 @@ async def taxon_name_edit(
     return TaxonNameCrud.edit_item(db, current_user, taxon_name_id, taxon_name)
 
 
+@overload
 @r.delete(
     "/{taxon_name_id}",
     dependencies=[
@@ -129,3 +130,24 @@ async def taxon_name_delete(
     Delete existing taxon_name
     """
     return TaxonNameCrud.delete_item(db, current_user, taxon_name_id)
+
+
+@r.delete(
+    "/{taxon_name_id}/hard",
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
+async def taxon_name_delete(
+    taxon_name_id: int,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
+):
+    """
+    Delete existing taxon_name
+    """
+    return TaxonNameCrud.delete_item(db, current_user, taxon_name_id, True)

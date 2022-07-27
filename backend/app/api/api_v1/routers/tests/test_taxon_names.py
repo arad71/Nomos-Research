@@ -47,6 +47,18 @@ def test_delete_taxon_name(
     )[0] == [test_taxon_name]
 
 
+def test_hard_delete_taxon_name(
+    client, test_taxon_name, test_db, superuser_token_headers, test_superuser
+):
+    response = client.delete(
+        f"/api/v1/taxon_names/{test_taxon_name.taxon_name_id}/hard",
+        headers=superuser_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {"taxon_name_id": test_taxon_name.taxon_name_id}
+    assert test_db.query(TaxonName).all() == []
+
+
 def test_delete_taxon_name_not_found(client, superuser_token_headers):
     response = client.delete(
         "/api/v1/taxon_names/4321", headers=superuser_token_headers

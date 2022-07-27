@@ -39,6 +39,20 @@ def test_delete_cross_reference(
     assert test_db.query(CrossReference).all() == [test_cross_reference]
 
 
+def test_hard_delete_cross_reference(
+    client, test_cross_reference, test_db, superuser_token_headers, test_superuser
+):
+    response = client.delete(
+        f"/api/v1/cross_references/{test_cross_reference.cross_reference_id}/hard",
+        headers=superuser_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {
+        "cross_reference_id": test_cross_reference.cross_reference_id
+    }
+    assert test_db.query(CrossReference).all() == []
+
+
 def test_delete_cross_reference_not_found(client, superuser_token_headers):
     response = client.delete(
         "/api/v1/cross_references/4321", headers=superuser_token_headers
