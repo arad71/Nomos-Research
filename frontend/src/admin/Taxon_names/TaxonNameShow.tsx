@@ -83,11 +83,6 @@ export const TaxonNameShow: FC = (props) => {
             </Box>
             <Box className={globalClasses.formRow}>
               <Box className={globalClasses.fieldMargin}>
-                <Labeled label="genus">
-                  <TextField source="genus" />
-                </Labeled>
-              </Box>
-              <Box className={globalClasses.fieldMargin}>
                 <Labeled label="Uninomial">
                   <TextField source="uninomial" />
                 </Labeled>
@@ -192,6 +187,13 @@ export const TaxonNameShow: FC = (props) => {
           </Tab>
           <Tab label="Details" className={globalClasses.bold}>
             <Box className={globalClasses.sectionMargin}>
+              <Typography
+                variant="h5"
+                className={globalClasses.bold}
+                gutterBottom
+              >
+                Taxon name - Details
+              </Typography>
               <Typography
                 variant="h5"
                 className={globalClasses.bold}

@@ -27,5 +27,7 @@ class InformalGroup(BaseModel, TableMixin):
         doc=CLASSIFICATION_SYSTEM_ID,
     )
     classification_system = relationship("ClassificationSystem", backref=name_plural)
-    taxon_name_id = Column(Integer, ForeignKey("taxon_name.taxon_name_id"))
+    taxon_name_id = Column(
+        Integer, ForeignKey("taxon_name.taxon_name_id"), nullable=False
+    )
     taxon_name = relationship("TaxonName", backref=name_plural)
