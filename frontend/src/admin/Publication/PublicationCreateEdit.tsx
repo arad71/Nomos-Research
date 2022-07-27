@@ -128,6 +128,7 @@ export const PublicationCreateEdit: FC = (props) => {
                 reference="publications"
                 sort={{ field: 'abbreviated_title', order: 'ASC' }}
                 fullWidth
+                perPage={5000}
               >
                 <AutocompleteInput optionText="abbreviated_title" />
               </ReferenceInput>
