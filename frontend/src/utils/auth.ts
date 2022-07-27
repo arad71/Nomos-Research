@@ -1,5 +1,6 @@
 import decodeJwt from 'jwt-decode';
 import { BASE_URL } from '../config';
+import { clearLocalStorage } from '../admin';
 
 export const isAuthenticated = () => {
   const permissions = localStorage.getItem('permissions');
@@ -114,6 +115,5 @@ export const signUp = async (
 };
 
 export const logout = () => {
-  localStorage.removeItem('token');
-  localStorage.removeItem('permissions');
+  clearLocalStorage();
 };
