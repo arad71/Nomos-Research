@@ -60,6 +60,7 @@ def extract_sample_data_file(db: Session = None, delete=False):
         User,
         Role,
         UserRole,
+        InformalGroup,
     )
 
     db.begin()
