@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, overload
 
 from fastapi import APIRouter, Depends, Response
 
@@ -113,6 +113,7 @@ async def cross_reference_edit(
     )
 
 
+@overload
 @r.delete(
     "/{cross_reference_id}",
     dependencies=[
@@ -133,3 +134,24 @@ async def cross_reference_delete(
     Delete existing cross_reference
     """
     return CrossReferenceCrud.delete_item(db, current_user, cross_reference_id)
+
+
+@r.delete(
+    "/{cross_reference_id}/hard",
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
+async def cross_reference_delete(
+    cross_reference_id: int,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
+):
+    """
+    Delete existing cross_reference
+    """
+    return CrossReferenceCrud.delete_item(db, current_user, cross_reference_id, True)

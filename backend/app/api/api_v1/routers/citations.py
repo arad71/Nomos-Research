@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, overload
 
 from fastapi import APIRouter, Depends, Response
 
@@ -107,6 +107,7 @@ async def citation_edit(
     return CitationCrud.edit_item(db, current_user, citation_id, citation)
 
 
+@overload
 @r.delete(
     "/{citation_id}",
     dependencies=[
@@ -127,3 +128,24 @@ async def citation_delete(
     Delete existing citation
     """
     return CitationCrud.delete_item(db, current_user, citation_id)
+
+
+@r.delete(
+    "/{citation_id}/hard",
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
+async def citation_delete(
+    citation_id: int,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
+):
+    """
+    Delete existing citation
+    """
+    return CitationCrud.delete_item(db, current_user, citation_id, True)

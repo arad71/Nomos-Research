@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, overload
 
 from fastapi import APIRouter, Depends, Response
 
@@ -111,6 +111,7 @@ async def informal_group_edit(
     )
 
 
+@overload
 @r.delete(
     "/{informal_group_id}",
     dependencies=[
@@ -131,3 +132,24 @@ async def informal_group_delete(
     Delete existing informal_group
     """
     return InformalGroupCrud.delete_item(db, current_user, informal_group_id)
+
+
+@r.delete(
+    "/{informal_group_id}/hard",
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
+async def informal_group_delete(
+    informal_group_id: int,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
+):
+    """
+    Delete existing informal_group
+    """
+    return InformalGroupCrud.delete_item(db, current_user, informal_group_id, True)

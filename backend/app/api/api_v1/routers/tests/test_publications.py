@@ -39,6 +39,18 @@ def test_delete_publication(client, test_publication, test_db, superuser_token_h
     assert test_db.query(Publication).all() == [test_publication]
 
 
+def test_hard_delete_publication(
+    client, test_publication, test_db, superuser_token_headers, test_superuser
+):
+    response = client.delete(
+        f"/api/v1/publications/{test_publication.publication_id}/hard",
+        headers=superuser_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {"publication_id": test_publication.publication_id}
+    assert test_db.query(Publication).all() == []
+
+
 def test_delete_publication_not_found(client, superuser_token_headers):
     response = client.delete(
         "/api/v1/publications/4321", headers=superuser_token_headers

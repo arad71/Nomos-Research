@@ -30,6 +30,18 @@ def test_delete_kingdom(client, test_kingdom, test_db, superuser_token_headers):
     assert test_db.query(Kingdom).all() == [test_kingdom]
 
 
+def test_hard_delete_kingdom(
+    client, test_kingdom, test_db, superuser_token_headers, test_superuser
+):
+    response = client.delete(
+        f"/api/v1/kingdoms/{test_kingdom.kingdom_id}/hard",
+        headers=superuser_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {"kingdom_id": test_kingdom.kingdom_id}
+    assert test_db.query(Kingdom).all() == []
+
+
 def test_delete_kingdom_not_found(client, superuser_token_headers):
     response = client.delete("/api/v1/kingdoms/4321", headers=superuser_token_headers)
     assert response.status_code == status.HTTP_404_NOT_FOUND

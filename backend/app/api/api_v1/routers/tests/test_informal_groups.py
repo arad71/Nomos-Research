@@ -35,6 +35,20 @@ def test_delete_informal_group(
     assert test_db.query(InformalGroup).all() == [test_informal_group]
 
 
+def test_hard_delete_informal_group(
+    client, test_informal_group, test_db, superuser_token_headers, test_superuser
+):
+    response = client.delete(
+        f"/api/v1/informal_groups/{test_informal_group.informal_group_id}/hard",
+        headers=superuser_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {
+        "informal_group_id": test_informal_group.informal_group_id
+    }
+    assert test_db.query(InformalGroup).all() == []
+
+
 def test_delete_informal_group_not_found(client, superuser_token_headers):
     response = client.delete(
         "/api/v1/informal_groups/4321", headers=superuser_token_headers

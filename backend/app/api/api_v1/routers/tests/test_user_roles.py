@@ -1,6 +1,8 @@
 import pytest
 from starlette import status
 
+from app.db.user_role.model import UserRole
+
 
 def test_get_user_roles(
     client,
@@ -61,6 +63,23 @@ def test_delete_user_role(client, app_support_token_headers, test_user_role):
         headers=app_support_token_headers,
     )
     assert response.status_code == status.HTTP_200_OK
+
+
+def test_hard_delete_user_role(
+    client, test_user_role, test_db, superuser_token_headers, test_superuser
+):
+    response = client.delete(
+        f"/api/v1/user_roles/{test_user_role.user_role_id}/hard",
+        headers=superuser_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {"user_role_id": test_user_role.user_role_id}
+    assert (
+        test_db.query(UserRole)
+        .filter(UserRole.user_role_id == test_user_role.user_role_id)
+        .all()
+        == []
+    )
 
 
 def test_unauthenticated_routes(client):

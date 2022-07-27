@@ -45,7 +45,7 @@ async def curation_checklist(
         )
         .group_by(CrossReference.old_name_id)
         .filter(
-            CrossReference.deleted == False,
+            CrossReference.deleted == False,  # noqa: E712
         )
         .subquery()
     )
@@ -103,7 +103,7 @@ async def curation_checklist(
         )
         .filter(
             or_(
-                accepted_name.deleted == False,
+                accepted_name.deleted == False,  # noqa: E712
                 accepted_name.deleted == None,  # noqa: E711
             )
         )

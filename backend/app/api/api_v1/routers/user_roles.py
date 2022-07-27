@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, overload
 
 from fastapi import APIRouter, Depends, Response
 from sqlalchemy.orm import Session
@@ -100,6 +100,7 @@ async def user_role_edit(
     return UserRoleCrud.edit_item(db, current_user, user_role_id, user_role)
 
 
+@overload
 @user_roles_router.delete(
     "/{user_role_id}",
     dependencies=[
@@ -120,6 +121,27 @@ async def user_role_delete(
     Delete existing user_role
     """
     return UserRoleCrud.delete_item(db, current_user, user_role_id)
+
+
+@user_roles_router.delete(
+    "/{user_role_id}/hard",
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
+async def user_role_delete(
+    user_role_id: int,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
+):
+    """
+    Delete existing user_role
+    """
+    return UserRoleCrud.delete_item(db, current_user, user_role_id, True)
 
 
 @user_roles_router.post(

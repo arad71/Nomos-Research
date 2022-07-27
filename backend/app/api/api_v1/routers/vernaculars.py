@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, overload
 
 from fastapi import APIRouter, Depends, Response
 
@@ -107,6 +107,7 @@ async def vernacular_edit(
     return VernacularCrud.edit_item(db, current_user, vernacular_id, vernacular)
 
 
+@overload
 @r.delete(
     "/{vernacular_id}",
     dependencies=[
@@ -127,3 +128,24 @@ async def vernacular_delete(
     Delete existing vernacular
     """
     return VernacularCrud.delete_item(db, current_user, vernacular_id)
+
+
+@r.delete(
+    "/{vernacular_id}/hard",
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
+async def vernacular_delete(
+    vernacular_id: int,
+    db=Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+):
+    """
+    Delete existing vernacular
+    """
+    return VernacularCrud.delete_item(db, current_user, vernacular_id, True)

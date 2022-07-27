@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, overload
 
 from fastapi import APIRouter, Depends, Response
 
@@ -109,6 +109,7 @@ async def taxon_name_edit(
     return TaxonNameCrud.edit_item(db, current_user, taxon_name_id, taxon_name)
 
 
+@overload
 @r.delete(
     "/{taxon_name_id}",
     dependencies=[

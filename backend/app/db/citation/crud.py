@@ -12,12 +12,16 @@ class CitationCrud(crud.Crud):
     name = "Citation"
 
     @classmethod
-    def delete_item(cls, db: Session, current_user: User, citation_id: int):
+    def delete_item(
+        cls, db: Session, current_user: User, citation_id: int, hard: bool = False
+    ):
         citation = cls.get_item(db, current_user, citation_id)
         taxon_name_id = citation.taxon_name_id
-        super().delete_item(db, current_user, citation_id)
+        super().delete_item(db, current_user, citation_id, hard)
         trigger_taxon_name_calculated_fields(db, taxon_name_id)
         db.commit()
+        if hard:
+            return {cls.id_key: citation_id}
         db.refresh(citation)
         return citation
 

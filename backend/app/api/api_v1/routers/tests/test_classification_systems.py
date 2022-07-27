@@ -37,6 +37,20 @@ def test_delete_classification_system(
     assert test_db.query(ClassificationSystem).all() == [test_classification_system]
 
 
+def test_hard_delete_classification_system(
+    client, test_classification_system, test_db, superuser_token_headers, test_superuser
+):
+    response = client.delete(
+        f"/api/v1/classification_systems/{test_classification_system.classification_system_id}/hard",
+        headers=superuser_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {
+        "classification_system_id": test_classification_system.classification_system_id
+    }
+    assert test_db.query(ClassificationSystem).all() == []
+
+
 def test_delete_classification_system_not_found(client, superuser_token_headers):
     response = client.delete(
         "/api/v1/classification_systems/4321", headers=superuser_token_headers

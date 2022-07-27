@@ -1,7 +1,7 @@
 import pytest
 from starlette import status
 
-from app.db.user import model
+from app.db.user.model import User
 
 
 def test_get_users(client, test_superuser, test_user, superuser_token_headers):
@@ -64,6 +64,18 @@ def test_delete_user(client, test_superuser, test_db, superuser_token_headers):
     )
     assert response.status_code == status.HTTP_200_OK
     assert response.json()["deleted"] is True
+
+
+def test_hard_delete_user(
+    client, test_user, test_db, superuser_token_headers, test_superuser
+):
+    response = client.delete(
+        f"/api/v1/users/{test_user.user_id}/hard",
+        headers=superuser_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {"user_id": test_user.user_id}
+    assert test_db.query(User).filter(User.user_id == test_user.user_id).all() == []
 
 
 def test_delete_user_not_found(client, superuser_token_headers):
