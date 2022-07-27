@@ -111,6 +111,7 @@ export const TaxonNameCreateEdit: FC = ({
             <TextInput
               source="uninomial"
               className={gridClasses.EightCol1to3span}
+              validate={required()}
             />
             <TextInput
               source="specific_epithet"
@@ -301,9 +302,16 @@ export const TaxonNameCreateEdit: FC = ({
           </Box>
         </FormTab>
         <FormTab label="Details" className={globalClasses.bold}>
+          <Typography
+            variant="h5"
+            className={`${globalClasses.bold} ${globalClasses.sectionMargin}`}
+            gutterBottom
+          >
+            Taxon name - Details
+          </Typography>
           <Box
             /* eslint-disable-next-line max-len */
-            className={`${globalClasses.mainGrid} ${globalClasses.sectionMargin}`}
+            className={globalClasses.mainGrid}
           >
             <Typography
               variant="h5"
@@ -346,6 +354,7 @@ export const TaxonNameCreateEdit: FC = ({
               source="classification_system_ids"
               reference="classification_systems"
               fullWidth
+              filter={{ class_type: ['informal'] }}
             >
               <SelectArrayInput
                 optionText="class_desc"

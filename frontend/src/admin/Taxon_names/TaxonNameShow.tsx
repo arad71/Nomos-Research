@@ -197,6 +197,13 @@ export const TaxonNameShow: FC = (props) => {
                 className={globalClasses.bold}
                 gutterBottom
               >
+                Taxon name - Details
+              </Typography>
+              <Typography
+                variant="h5"
+                className={globalClasses.bold}
+                gutterBottom
+              >
                 Naturalised Status
               </Typography>
             </Box>
