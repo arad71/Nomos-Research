@@ -29,10 +29,12 @@ interface Permissions {
   [key: string]: Permission[];
 }
 
-function clearLocalStorage() {
+export function clearLocalStorage() {
   localStorage.removeItem('token');
   localStorage.removeItem('scopes');
   localStorage.removeItem('username');
+  localStorage.removeItem('fullName');
+  localStorage.removeItem('id');
   localStorage.removeItem('logout_url');
 }
 function useAuth2() {
@@ -74,12 +76,10 @@ const authProvider = {
     return getAuthToken(params);
   },
   logout: () => {
-    const logoutUrl = localStorage.getItem('logout_url');
+    const logout_url = localStorage.getItem('logout_url');
     clearLocalStorage();
-    if (logoutUrl) {
-      window.location.href = logoutUrl;
-    }
-    return Promise.resolve();
+    // React admin will redirect to the logout url if it's defined.
+    return Promise.resolve(logout_url);
   },
   getIdentity: () => {
     return {
@@ -89,9 +89,13 @@ const authProvider = {
   },
   checkError: (error: { status: number }) => {
     const status = error.status;
-    if (status === 401 || status === 403) {
-      clearLocalStorage();
-      return Promise.reject();
+    if (status === 401) {
+      // Need to login, so we try to login.
+      return getAuthToken();
+    } else if (status === 403) {
+      return Promise.reject(
+        'Forbidden - you do not have access to the resource'
+      );
     }
     return Promise.resolve();
   },
@@ -104,12 +108,12 @@ const authProvider = {
       return Promise.reject();
     }
     const decoded: JwtPayload = decodeJwt(token);
-    console.log(decoded.exp);
-    console.log(Date.now() / 1000);
     if (decoded && decoded.exp && decoded.exp > Date.now() / 1000) {
+      // Token has not expired so we just keep using it.
       return Promise.resolve();
     }
-    return Promise.reject();
+    // Refresh the auth token
+    return getAuthToken();
   },
   getPermissions: () =>
     // See https://marmelab.com/ra-enterprise/modules/ra-rbac#resource

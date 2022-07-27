@@ -33,7 +33,7 @@ async def login(db=Depends(get_db), form_data: OAuth2PasswordRequestForm = Depen
         "access_token": access_token,
         "token_type": "bearer",
         "id": user.user_id,
-        "full_name": f"{user.first_name} {user.last_name}",
+        "full_name": user.full_name,
     }
 
 
@@ -73,5 +73,5 @@ async def auth2login(
         "access_token": access_token,
         "token_type": "bearer",
         "id": user.user_id,
-        "full_name": f"{x_first_name} {x_last_name}"
+        "full_name": user.full_name,
     }
