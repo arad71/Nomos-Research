@@ -194,14 +194,3 @@ class Crud:
         db.commit()
         db.refresh(item)
         return item
-
-    @classmethod
-    def remove_item(cls, db: Session, current_user: User, id: int):
-        item = cls.get_item(db, current_user, id)
-        if not item:
-            raise HTTPException(
-                status.HTTP_404_NOT_FOUND, detail=cls.name + " not found"
-            )
-        db.delete(item)
-        db.commit()
-        return {cls.id_key: id}
