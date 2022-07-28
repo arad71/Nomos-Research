@@ -5,7 +5,6 @@ import {
   NumberInput,
   ReferenceInput,
   required,
-  SelectInput,
   TextField,
   TextInput,
   ReferenceArrayInput,
@@ -130,7 +129,7 @@ export const PublicationCreateEdit: FC = (props) => {
                 fullWidth
                 perPage={5000}
               >
-                <AutocompleteInput optionText="abbreviated_title" />
+                <AutocompleteInput optionText="display_title" resettable />
               </ReferenceInput>
             </Box>
             <TextInput
