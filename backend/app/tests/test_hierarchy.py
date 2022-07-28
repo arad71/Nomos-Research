@@ -24,7 +24,6 @@ def test_hierarchy_children(
     test_panthera,
     test_superuser,
 ):
-
     chordate = test_hierarchies["chordate"]
     mammal = test_hierarchies["mammal"]
     reptile = test_hierarchies["reptile"]
