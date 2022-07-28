@@ -4,6 +4,7 @@ import {
   Labeled,
   NumberField,
   Pagination,
+  Datagrid,
   ReferenceField,
   ReferenceManyField,
   RichTextField,
