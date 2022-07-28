@@ -50,7 +50,7 @@ export const CrossReferenceManyGrid = (props: {
         >
           <FormattedScientificNameWithStatus />
         </ReferenceField>
-        <TextField source="comments" />
+        <TextField source="reference_comments" />
       </Datagrid>
     </ReferenceManyField>
   );

@@ -46,7 +46,6 @@ export const TaxonNameFilters = [
   <TextInput source="species__contains" label="Species" />,
   <TextInput source="subspecies__contains" label="Subspecies" />,
   <TextInput source="uninomial__contains" label="Uninomial" />,
-  <TextInput source="specific_epithet__contains" label="Specific epithet" />,
   <TextInput
     source="infraspecific_epithet__contains"
     label="Infraspecific epithet"
@@ -75,7 +74,7 @@ export const TaxonNameFilters = [
     filter={{ class_type: 'informal' }}
     sort={{ field: 'class_desc', order: 'ASC' }}
   >
-    <SelectArrayInput optionText="class_desc" />
+    <SelectArrayInput optionText="class_desc" resettable={true} />
   </ReferenceArrayInput>,
   <BooleanInput label="Is current?" source="is_current" />,
   <BooleanInput label="Is validated?" source="validated" />,

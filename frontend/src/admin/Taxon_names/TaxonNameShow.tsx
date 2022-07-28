@@ -1,7 +1,6 @@
 import React, { FC } from 'react';
 import {
   BooleanField,
-  Datagrid,
   Labeled,
   NumberField,
   Pagination,
@@ -12,13 +11,16 @@ import {
   Tab,
   TabbedShowLayout,
   TextField,
+  SingleFieldList,
+  ChipField,
+  useRecordContext,
 } from 'react-admin';
 import { Show } from '@react-admin/ra-rbac';
 import Aside from '../shared/Aside';
 import NaturalisedStatus from './NaturalisedStatus';
 import PublicationStatus from './PublicationStatus';
 import { makeStyles } from '@material-ui/core/styles';
-import { Box, Typography } from '@material-ui/core';
+import { Box, Typography, Button } from '@material-ui/core';
 import { GlobalTheme } from '../../GlobalTheme';
 import { CrossReferenceManyGrid } from '../Cross_references';
 import { AuthorReferenceManyGrid } from '../Authors';
@@ -28,6 +30,7 @@ import { FormattedScientificNameWithStatus } from './FormattedScientificNameWith
 import { NamePageSummary } from './NamePageSummary';
 import AuthorType from '../Citations/AuthorType';
 import { hierarchyRowClick } from './HierarchyRowClick';
+import PostShowActions from '../shared/PostShowActions';
 
 const useStyles = makeStyles((theme) => ({
   bottomPadding: {
@@ -35,12 +38,25 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const Empty = () => {
+  const record = useRecordContext();
+  if (record.classification_system_ids.length != 0) return null;
+  return (
+    <Box>
+      <Typography variant="body1">
+        Not yet related to any Informal Groups
+      </Typography>
+    </Box>
+  );
+};
+
 export const TaxonNameShow: FC = (props) => {
   const classes = useStyles();
   const globalClasses = GlobalTheme();
 
   return (
     <Show
+      actions={<PostShowActions />}
       title={<FormattedScientificNameWithStatus />}
       aside={<Aside />}
       {...props}
@@ -50,6 +66,13 @@ export const TaxonNameShow: FC = (props) => {
         <TabbedShowLayout>
           <Tab label="Name" className={globalClasses.bold}>
             <Box className={globalClasses.sectionMargin}>
+              <Typography
+                variant="h5"
+                className={globalClasses.bold}
+                gutterBottom
+              >
+                Taxon Name
+              </Typography>
               <Box className={globalClasses.fieldMargin}>
                 <ReferenceField source="kingdom_id" reference="kingdoms">
                   <Labeled label="Kingdom">
@@ -174,15 +197,20 @@ export const TaxonNameShow: FC = (props) => {
           </Tab>
           <Tab label="Details" path="details" className={globalClasses.bold}>
             <Box className={globalClasses.sectionMargin}>
-              <Box className={globalClasses.sectionMargin}>
-                <Typography
-                  variant="h5"
-                  className={globalClasses.bold}
-                  gutterBottom
-                >
-                  Naturalised Status
-                </Typography>
-              </Box>
+              <Typography
+                variant="h5"
+                className={globalClasses.bold}
+                gutterBottom
+              >
+                Taxon name - Details
+              </Typography>
+              <Typography
+                variant="h5"
+                className={globalClasses.bold}
+                gutterBottom
+              >
+                Naturalised Status
+              </Typography>
             </Box>
             <Box className={globalClasses.formRow}>
               <Box className={globalClasses.fieldMargin}>
@@ -206,76 +234,117 @@ export const TaxonNameShow: FC = (props) => {
                 </Labeled>
               </Box>
             </Box>
+            <Box className={globalClasses.sectionMargin}>
+              <Typography
+                variant="h5"
+                className={globalClasses.bold}
+                gutterBottom
+              >
+                Informal Groups
+              </Typography>
+            </Box>
+            <Box className={globalClasses.formRow}>
+              <Box className={globalClasses.fieldMargin}>
+                <Empty />
+                <ReferenceManyField
+                  reference="informal_groups"
+                  target="taxon_name_id"
+                >
+                  <SingleFieldList>
+                    <ReferenceField
+                      source="classification_system_id"
+                      reference="classification_systems"
+                      link="show"
+                      allowEmpty
+                    >
+                      <ChipField
+                        source="class_desc"
+                        emptyText="Not yet associated with any Informal Groups"
+                      />
+                    </ReferenceField>
+                  </SingleFieldList>
+                </ReferenceManyField>
+              </Box>
+            </Box>
           </Tab>
           <Tab
             label="Hierarchy"
             path="hierarchy"
             className={globalClasses.bold}
           >
-            <ReferenceManyField
-              perPage={100}
-              pagination={<Pagination rowsPerPageOptions={[]} />}
-              reference="hierarchies"
-              target="path__descendant_of"
-              label="Child taxon names"
-              source="path"
-              sort={{ field: 'path', order: 'ASC' }}
-              filter={{ taxon_name___scientific_name__gt: '' }}
-            >
-              <Datagrid
-                rowClick={hierarchyRowClick}
-                className={globalClasses.equalColumnWidth}
+            <Box className={globalClasses.sectionMargin}>
+              <Typography
+                variant="h5"
+                className={globalClasses.bold}
+                gutterBottom
               >
-                <TextField
-                  source="rank_name"
-                  sortBy="taxon_name___taxon_rank___rank_name"
-                  label="Rank"
-                />
-                <ReferenceField
-                  source="taxon_name_id"
-                  reference="taxon_names"
-                  link={false}
+                Taxon name - Hierarchy
+              </Typography>
+              <ReferenceManyField
+                perPage={100}
+                pagination={<Pagination rowsPerPageOptions={[]} />}
+                reference="hierarchies"
+                target="path__descendant_of"
+                label="Child taxon names"
+                source="path"
+                sort={{ field: 'path', order: 'ASC' }}
+                filter={{ taxon_name___scientific_name__gt: '' }}
+              >
+                <Datagrid
+                  rowClick={hierarchyRowClick}
+                  className={globalClasses.equalColumnWidth}
                 >
-                  <RichTextField source="formatted_scientific_name" />
-                </ReferenceField>
-                <ReferenceField
-                  source="taxon_name_id"
-                  reference="taxon_names"
-                  label="Author"
-                  sortBy="taxon_name___author"
-                  link={false}
-                >
-                  <RichTextField source="author" />
-                </ReferenceField>
-                <ReferenceField
-                  source="taxon_name_id"
-                  reference="taxon_names"
-                  label="Year"
-                  sortBy="taxon_name___form_desc_yr"
-                  link={false}
-                >
-                  <RichTextField source="form_desc_yr" />
-                </ReferenceField>
-                <ReferenceField
-                  source="taxon_name_id"
-                  reference="taxon_names"
-                  label="Is current"
-                  sortBy="taxon_name___is_current"
-                  link={false}
-                >
-                  <BooleanField source="is_current" />
-                </ReferenceField>
-                <ReferenceField
-                  source="taxon_name_id"
-                  reference="taxon_names"
-                  link={false}
-                  label="Vernaculars"
-                  sortBy="taxon_name___all_vernaculars"
-                >
-                  <TextField source="all_vernaculars" />
-                </ReferenceField>
-              </Datagrid>
-            </ReferenceManyField>
+                  <TextField
+                    source="rank_name"
+                    sortBy="taxon_name___taxon_rank___rank_name"
+                    label="Rank"
+                  />
+                  <ReferenceField
+                    source="taxon_name_id"
+                    reference="taxon_names"
+                    link={false}
+                  >
+                    <RichTextField source="formatted_scientific_name" />
+                  </ReferenceField>
+                  <ReferenceField
+                    source="taxon_name_id"
+                    reference="taxon_names"
+                    label="Author"
+                    sortBy="taxon_name___author"
+                    link={false}
+                  >
+                    <RichTextField source="author" />
+                  </ReferenceField>
+                  <ReferenceField
+                    source="taxon_name_id"
+                    reference="taxon_names"
+                    label="Year"
+                    sortBy="taxon_name___form_desc_yr"
+                    link={false}
+                  >
+                    <RichTextField source="form_desc_yr" />
+                  </ReferenceField>
+                  <ReferenceField
+                    source="taxon_name_id"
+                    reference="taxon_names"
+                    label="Is current"
+                    sortBy="taxon_name___is_current"
+                    link={false}
+                  >
+                    <BooleanField source="is_current" />
+                  </ReferenceField>
+                  <ReferenceField
+                    source="taxon_name_id"
+                    reference="taxon_names"
+                    link={false}
+                    label="Vernaculars"
+                    sortBy="taxon_name___all_vernaculars"
+                  >
+                    <TextField source="all_vernaculars" />
+                  </ReferenceField>
+                </Datagrid>
+              </ReferenceManyField>
+            </Box>
           </Tab>
           <Tab
             label="Related names"
@@ -283,6 +352,13 @@ export const TaxonNameShow: FC = (props) => {
             className={globalClasses.bold}
           >
             <Box className={globalClasses.sectionMargin}>
+              <Typography
+                variant="h5"
+                className={globalClasses.bold}
+                gutterBottom
+              >
+                Taxon name - Related Names
+              </Typography>
               <Labeled label="Previous names">
                 <CrossReferenceManyGrid
                   props={props}
@@ -305,6 +381,13 @@ export const TaxonNameShow: FC = (props) => {
           </Tab>
           <Tab label="Notes" path="notes" className={globalClasses.bold}>
             <Box className={globalClasses.sectionMargin}>
+              <Typography
+                variant="h5"
+                className={globalClasses.bold}
+                gutterBottom
+              >
+                Taxon name - Notes
+              </Typography>
               <Labeled label="Notes">
                 <TextField source="comments" />
               </Labeled>

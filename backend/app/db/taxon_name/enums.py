@@ -2,13 +2,18 @@ from enum import Enum
 
 
 class NaturalisedStatus(str, Enum):
-    a = "a"
-    n = "n"
-    m = "m"
-    u = "u"
+    alien = "alien"
+    native = "native"
+    mixed = "mixed"
+    uncertain = "uncertain"
 
 
 class PublicationStatus(str, Enum):
     published = "published"
     manuscript_name = "manuscript_name"
     phrase_name = "phrase_name"
+
+
+class MappingType(Enum):
+    vanilla = "Vanilla"
+    curation_data_extract = "Curation Data Extract"

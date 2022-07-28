@@ -1,12 +1,12 @@
 import csv
 import datetime
 import os
+from ast import literal_eval
 
-from loguru import logger
-
-from app.db.dataimport import DataImportBase, DataImportError
+from app.db.dataimport import DataImportBase, DataImportError, DataSkipError
 from app.db.kingdom.model import Kingdom
 from app.db.publication.model import Publication
+from app.db.taxon_name.enums import MappingType
 from app.db.taxon_name.model import TaxonName as TaxonNameModel
 
 
@@ -55,6 +55,7 @@ class ImportTaxonName(DataImportBase):
         )
 
     def row_mapping(self, row):
+        timestamp = row["UPDATED_ON"] or datetime.datetime.now()
         return {
             "kingdom_id": self.map_row_by_unique_key(
                 Kingdom, "legacy_id", row["KINGDOM_ID"], "kingdom_id"
@@ -89,7 +90,9 @@ class ImportTaxonName(DataImportBase):
             "family_code": row["FAMILY_CODE"] or None,
             "vernacular": row["VERNACULAR"] or None,
             "editor": row["EDITOR"] or None,
-            "naturalised_status": self.map_enum_base(row["NATURALISED_STATUS"]),
+            "naturalised_status": self.map_naturalised_status(
+                row["NATURALISED_STATUS"].lower()
+            ),
             "naturalised_certainty": self.map_y_n_to_bool(row["NATURALISED_CERTAINTY"]),
             "is_eradicated": row["IS_ERADICATED"] or None,
             "naturalised_comments": row["NATURALISED_COMMENTS"] or None,
@@ -104,8 +107,8 @@ class ImportTaxonName(DataImportBase):
             "legacy_id": self.legacy_id_prefix + row["NAME_ID"],
             "created_by": self.current_user,
             "updated_by": self.map_user_or_default(row["UPDATED_BY"]),
-            "updated_on": row["UPDATED_ON"] or datetime.datetime.now(),
-            "created_on": row["UPDATED_ON"] or datetime.datetime.now(),
+            "updated_on": timestamp,
+            "created_on": timestamp,
         }
 
     def import_row(self, row):
@@ -123,6 +126,22 @@ class ImportTaxonName(DataImportBase):
             return "phrase_name"
 
         raise DataImportError(f'Unable to map publication status: "{val}"')
+
+    @classmethod
+    def map_naturalised_status(cls, val):
+        if val == "a":
+            return "alien"
+
+        if val == "n":
+            return "native"
+
+        if val == "m":
+            return "mixed"
+
+        if val == "u":
+            return "uncertain"
+
+        return None
 
 
 class ImportTaxonNameFamilyNid(ImportTaxonName):
@@ -180,29 +199,38 @@ class ImportTaxonNameUpload(ImportTaxonName):
 
     def row_mapping_curation_data_extract(self, row):
         if not row["Kingdom"]:
-            return None
+            raise DataSkipError("No Kingdom defined")
+        if not literal_eval(row["import_to_nomos"]):
+            raise DataSkipError("import_to_nomos: False")
         kingdom_id = self.map_row_by_unique_key(
             Kingdom, "kingdom_name", row["Kingdom"], "kingdom_id"
         )
         rank_id = self.map_taxon_rank_by_name(kingdom_id, row["Rank"])
         uninomial, specific_epithet, infraspecific_epithet = self._get_split_names(
-            *row["lookupCanonicalName"].split()
+            *row["canonical_name_without_rank"].split()
         )
+        if not uninomial:
+            raise DataSkipError(f"No uninomial defined")
+        admin_comment = [
+            f"Created by import script {__name__}",
+            f" from source csv {self.legacy_id_prefix[:-1]}",
+            f" on {datetime.date.today()}",
+            f" File_NameID: {row['File_NameID']}",
+        ]
+        if row["qualityWarnings"]:
+            admin_comment.append(f"Quality warnings: {row['qualityWarnings']}")
+
         return {
             "kingdom_id": kingdom_id,
             "rank_id": rank_id,
-            "uninomial": uninomial,
-            "specific_epithet": specific_epithet,
-            "infraspecific_epithet": infraspecific_epithet,
-            "legacy_id": self.legacy_id_prefix + row["NameID"],
-            "is_current": True,
-            "validated": False,
-            "admin_comment": (
-                f"Created by import script {__name__}"
-                f" from source csv {self.legacy_id_prefix[:-1]}"
-                f" on {datetime.date.today()}"
-                f" File_NameID: {row['File_NameID']}"
-            ),
+            "uninomial": uninomial or None,
+            "specific_epithet": specific_epithet or None,
+            "infraspecific_epithet": infraspecific_epithet or None,
+            "legacy_id": (self.legacy_id_prefix + row["NameID"]) or None,
+            "form_desc_yr": row["year_published"] or None,
+            "is_current": literal_eval(row["is_current"]),
+            "validated": literal_eval(row["validated"]),
+            "admin_comment": admin_comment,
             "created_by": self.current_user,
             "updated_by": self.current_user,
         }
@@ -230,18 +258,16 @@ class ImportTaxonNameUpload(ImportTaxonName):
         )
         if result:
             message = (
-                "Unable to map row with canonical_name_without_rank: '"
-                + canonical_name_without_rank
-                + "'"
+                "Value already exists for canonical_name_without_rank: '"
+                f"{canonical_name_without_rank}'. Skipping row."
             )
-            logger.info(message)
-            raise DataImportError(message)
+            raise DataSkipError(message)
 
     def import_row(self, row):
         item = None
-        if self.mapping_type.value == "Vanilla":
+        if self.mapping_type == MappingType.vanilla:
             item = self.row_mapping_vanilla(row)
-        elif self.mapping_type.value == "Curation Data Extract":
+        elif self.mapping_type == MappingType.curation_data_extract:
             item = self.row_mapping_curation_data_extract(row)
         if item:
             self.check_canonical_name_without_rank_exists(item)
@@ -255,8 +281,5 @@ class ImportTaxonNameUpload(ImportTaxonName):
             self._process_rows(data)
             if self.values:
                 self.bulk_insert()
-            logger.info(
-                f"Completed {self.import_name}:"
-                f" {self.success_count}/{self.line_count}/{self.total_rows}."
-            )
+            self.report_complete()
         return True

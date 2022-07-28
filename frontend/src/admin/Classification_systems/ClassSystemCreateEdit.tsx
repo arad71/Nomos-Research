@@ -10,6 +10,7 @@ import React, { FC } from 'react';
 import ClassificationType from './ClassificationType';
 import { GlobalTheme } from '../../GlobalTheme';
 import { Box, Typography, makeStyles } from '@material-ui/core';
+import EditToolbar from '../shared/EditToolbar';
 
 const useStyles = makeStyles((theme) => ({
   mainGrid: {
@@ -24,7 +25,11 @@ export const ClassSystemCreateEdit: FC = (props) => {
   const globalClasses = GlobalTheme();
   const classes = useStyles();
   return (
-    <SimpleForm {...props} warnWhenUnsavedChanges>
+    <SimpleForm
+      {...props}
+      toolbar={<EditToolbar resource="classification_systems" />}
+      warnWhenUnsavedChanges
+    >
       <Box>
         <Typography variant="h5" className={globalClasses.bold} gutterBottom>
           Classification system

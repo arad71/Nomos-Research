@@ -186,6 +186,13 @@ class TaxonName(BaseModel, TableMixin):
     def path(self):
         return [hierarchy.path.path for hierarchy in self.hierarchies]
 
+    @hybrid_property
+    def classification_system_ids(self):
+        return [
+            informal_group.classification_system.classification_system_id
+            for informal_group in self.informal_groups
+        ]
+
 
 event.listen(TaxonName, "before_insert", calculate_fields)
 event.listen(TaxonName, "before_update", calculate_fields)

@@ -23,7 +23,6 @@ export const VernacularList: FC = (props) => (
     bulkActionButtons={useCanBulkDelete()}
   >
     <Datagrid rowClick="show">
-      <NumberField source="id" />
       <ReferenceField
         source="taxon_name_id"
         reference="taxon_names"
@@ -38,14 +37,10 @@ export const VernacularList: FC = (props) => (
       <TextField source="source" />
       <BooleanField source="enabled" />
       <NumberField source="sort_order" />
-      <ReferenceField source="created_by" reference="users">
-        <TextField source="full_name" />
-      </ReferenceField>
-      <DateField source="created_on" showTime />
       <ReferenceField source="updated_by" reference="users">
         <TextField source="full_name" />
       </ReferenceField>
-      <DateField source="updated_on" showTime />
+      <DateField source="updated_on" />
       <WithPermissions resource="vernaculars" action="edit">
         <EditButton />
       </WithPermissions>

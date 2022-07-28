@@ -26,16 +26,18 @@ import { ClassificationSystemFilters } from './ClassificationSystemFilters';
 
 const postListColumns = {
   id: <TextField source="id" />,
-  class_desc: <TextField source="class_desc" />,
-  class_type: <SelectField source="class_type" choices={ClassificationType} />,
+  class_desc: (
+    <TextField source="class_desc" label="Classification Description" />
+  ),
+  class_type: (
+    <SelectField
+      source="class_type"
+      label="Classification Type"
+      choices={ClassificationType}
+    />
+  ),
   preferred: <BooleanField source="preferred" />,
   sort_order: <TextField source="sort_order" />,
-  created_by: (
-    <ReferenceField source="created_by" reference="users">
-      <TextField source="full_name" />
-    </ReferenceField>
-  ),
-  created_on: <DateField source="created_on" />,
   updated_by: (
     <ReferenceField source="updated_by" reference="users">
       <TextField source="full_name" />

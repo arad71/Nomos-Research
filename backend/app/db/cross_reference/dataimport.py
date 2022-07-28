@@ -1,3 +1,5 @@
+import datetime
+
 from app.db.cross_reference.model import CrossReference as CrossReferenceModel
 from app.db.dataimport import DataImportBase
 from app.db.taxon_name.model import TaxonName
@@ -17,7 +19,7 @@ class ImportCrossReference(DataImportBase):
             "authorised_mn",
             "authorised_dy",
             "authorised_by",
-            "comments",
+            "reference_comments",
             "notes",
             "legacy_id",
             "created_by",
@@ -53,13 +55,15 @@ class ImportCrossReference(DataImportBase):
                 "authorised_mn": row["AUTHORISED_MN"] or None,
                 "authorised_dy": row["AUTHORISED_DY"] or None,
                 "authorised_by": row["AUTHORISED_BY"],
-                "comments": row["COMMENTS"],
+                "reference_comments": row["COMMENTS"],
                 "notes": row["NOTES"],
                 "legacy_id": row["XREF_ID"],
                 "created_by": self.map_user_or_default(row["ADDED_BY"]),
-                "created_on": row["ADDED_ON"] or None,
+                "created_on": row["ADDED_ON"]
+                or row["UPDATED_ON"]
+                or datetime.datetime.now(),
                 "updated_by": self.map_user_or_default(row["UPDATED_BY"]),
-                "updated_on": row["UPDATED_ON"] or None,
+                "updated_on": row["UPDATED_ON"] or datetime.datetime.now(),
             }
         )
 

@@ -17,6 +17,12 @@ import {
   TextInput,
   number,
   minValue,
+  SelectArrayInput,
+  ReferenceArrayInput,
+  FunctionField,
+  ReferenceArrayField,
+  ChipField,
+  SingleFieldList,
 } from 'react-admin';
 import { EditableDatagrid } from '@react-admin/ra-editable-datagrid';
 import React, { FC, PropsWithChildren } from 'react';
@@ -38,6 +44,7 @@ import { FormattedScientificNameWithStatus } from '../Taxon_names';
 import { CrossReferenceRowForm } from '../Cross_references/CrossReferenceRowForm';
 import { HierarchyRowForm } from '../Hierarchies';
 import ScientificNameReference from './ScientificNameReference';
+import EditToolbar from '../shared/EditToolbar';
 
 const validateNumber = [number(), minValue(0)];
 
@@ -47,6 +54,9 @@ const useStyles = makeStyles({
   },
   bottomMargin: {
     marginBottom: '2em',
+  },
+  redTypography: {
+    color: '#ff0000',
   },
 });
 
@@ -67,12 +77,24 @@ export const TaxonNameCreateEdit: FC = ({
   return (
     <>
       <NamePageSummary />
-      <TabbedForm {...props} warnWhenUnsavedChanges>
+      <TabbedForm
+        {...props}
+        toolbar={<EditToolbar resource="taxon_names" />}
+        warnWhenUnsavedChanges
+      >
         <FormTab label="Name" className={globalClasses.bold}>
           <Box
             /* eslint-disable-next-line max-len */
             className={`${globalClasses.mainGrid} ${globalClasses.sectionMargin}`}
           >
+            <Typography
+              variant="h5"
+              /* eslint-disable-next-line max-len */
+              className={`${gridClasses.EightCol1to3span} ${globalClasses.bold}`}
+              gutterBottom
+            >
+              Taxon Name
+            </Typography>
             <ReferenceInput
               source="kingdom_id"
               reference="kingdoms"
@@ -92,6 +114,7 @@ export const TaxonNameCreateEdit: FC = ({
             <TextInput
               source="uninomial"
               className={gridClasses.EightCol1to3span}
+              validate={required()}
             />
             <TextInput
               source="specific_epithet"
@@ -143,14 +166,20 @@ export const TaxonNameCreateEdit: FC = ({
             />
             <Box
               /* eslint-disable-next-line max-len */
-              className={`${gridClasses.EightCol1to5span} ${globalClasses.sectionMargin}`}
+              className={`${gridClasses.EightCol1to9span} ${globalClasses.sectionMargin}`}
             >
+              <Typography variant="h5" className={globalClasses.bold}>
+                Authors
+              </Typography>
               <Typography
-                variant="h5"
-                className={globalClasses.bold}
+                variant="subtitle2"
+                className={classes.redTypography}
                 gutterBottom
               >
-                Authors
+                {/* eslint-disable-next-line max-len */}
+                Ensure to save within datagrid on create/edit or data could be
+                lost. Taxon name header will not reflect updated author details
+                until page is refreshed
               </Typography>
             </Box>
             <Box className={gridClasses.EightCol1to9span}>
@@ -168,6 +197,8 @@ export const TaxonNameCreateEdit: FC = ({
                 >
                   <EditableDatagrid
                     undoable
+                    /* eslint-disable-next-line max-len */
+                    className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
                     createForm={
                       <CitationRowForm
                         initialValues={citationInitialValues}
@@ -214,12 +245,17 @@ export const TaxonNameCreateEdit: FC = ({
               /* eslint-disable-next-line max-len */
               className={`${gridClasses.EightCol1to5span} ${globalClasses.sectionMargin}`}
             >
+              <Typography variant="h5" className={globalClasses.bold}>
+                Vernacular names
+              </Typography>
               <Typography
-                variant="h5"
-                className={globalClasses.bold}
+                variant="subtitle2"
+                className={classes.redTypography}
                 gutterBottom
               >
-                Vernacular names
+                {/* eslint-disable-next-line max-len */}
+                Ensure to save within datagrid on create/edit or data could be
+                lost
               </Typography>
             </Box>
             <Box className={gridClasses.EightCol1to9span}>
@@ -236,7 +272,8 @@ export const TaxonNameCreateEdit: FC = ({
                   {...props}
                 >
                   <EditableDatagrid
-                    className={classes.bottomMargin}
+                    /* eslint-disable-next-line max-len */
+                    className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
                     undoable
                     createForm={
                       <VernacularRowForm
@@ -268,9 +305,16 @@ export const TaxonNameCreateEdit: FC = ({
           </Box>
         </FormTab>
         <FormTab label="Details" className={globalClasses.bold}>
+          <Typography
+            variant="h5"
+            className={`${globalClasses.bold} ${globalClasses.sectionMargin}`}
+            gutterBottom
+          >
+            Taxon name - Details
+          </Typography>
           <Box
             /* eslint-disable-next-line max-len */
-            className={`${globalClasses.mainGrid} ${globalClasses.sectionMargin}`}
+            className={globalClasses.mainGrid}
           >
             <Typography
               variant="h5"
@@ -296,6 +340,46 @@ export const TaxonNameCreateEdit: FC = ({
               source="naturalised_comments"
               className={gridClasses.EightCol1to5span}
             />
+          </Box>
+          <Box
+            /* eslint-disable-next-line max-len */
+            className={`${globalClasses.mainGrid} ${globalClasses.sectionMargin}`}
+          >
+            <Typography
+              variant="h5"
+              /* eslint-disable-next-line max-len */
+              className={`${gridClasses.EightCol1to3span} ${globalClasses.bold}`}
+              gutterBottom
+            >
+              Informal Groups
+            </Typography>
+            <ReferenceArrayInput
+              source="classification_system_ids"
+              reference="classification_systems"
+              fullWidth
+              filter={{ class_type: ['informal'] }}
+            >
+              <SelectArrayInput
+                optionText="class_desc"
+                fullWidth
+                className={gridClasses.EightCol1to3span}
+              />
+            </ReferenceArrayInput>
+          </Box>
+        </FormTab>
+        <FormTab label="Hierarchy" className={globalClasses.bold}>
+          <Box
+            /* eslint-disable-next-line max-len */
+            className={`${globalClasses.mainGrid} ${globalClasses.sectionMargin}`}
+          >
+            <Typography
+              variant="h5"
+              /* eslint-disable-next-line max-len */
+              className={`${gridClasses.EightCol1to5span} ${globalClasses.bold}`}
+              gutterBottom
+            >
+              Taxon Name - Hierarchy
+            </Typography>
           </Box>
         </FormTab>
         <FormTab label="Hierarchy" className={globalClasses.bold}>
@@ -353,6 +437,23 @@ export const TaxonNameCreateEdit: FC = ({
             /* eslint-disable-next-line max-len */
             className={`${globalClasses.mainGrid} ${globalClasses.sectionMargin}`}
           >
+            <Typography
+              variant="h5"
+              /* eslint-disable-next-line max-len */
+              className={`${gridClasses.EightCol1to5span} ${globalClasses.bold}`}
+            >
+              Taxon Name - Related Names
+            </Typography>
+            <Typography
+              variant="subtitle2"
+              /* eslint-disable-next-line max-len */
+              className={`${gridClasses.EightCol1to5span} ${classes.redTypography}`}
+              gutterBottom
+            >
+              {/* eslint-disable-next-line max-len */}
+              Ensure to save within datagrid on create/edit or data could be
+              lost
+            </Typography>
             <Box className={gridClasses.EightCol1to9span}>
               <Labeled label="Previous names">
                 {(props.record?.id && (
@@ -365,6 +466,8 @@ export const TaxonNameCreateEdit: FC = ({
                   >
                     <EditableDatagrid
                       undoable
+                      /* eslint-disable-next-line max-len */
+                      className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
                       createForm={
                         <CrossReferenceRowForm
                           source="old_name_id"
@@ -393,7 +496,7 @@ export const TaxonNameCreateEdit: FC = ({
                       >
                         <FormattedScientificNameWithStatus />
                       </ReferenceField>
-                      <TextField source="comments" />
+                      <TextField source="reference_comments" />
                     </EditableDatagrid>
                   </ReferenceManyField>
                 )) || (
@@ -416,6 +519,8 @@ export const TaxonNameCreateEdit: FC = ({
                   >
                     <EditableDatagrid
                       undoable
+                      /* eslint-disable-next-line max-len */
+                      className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
                       createForm={
                         <CrossReferenceRowForm
                           source="new_name_id"
@@ -444,7 +549,7 @@ export const TaxonNameCreateEdit: FC = ({
                       >
                         <FormattedScientificNameWithStatus />
                       </ReferenceField>
-                      <TextField source="comments" />
+                      <TextField source="reference_comments" />
                     </EditableDatagrid>
                   </ReferenceManyField>
                 )) || (
@@ -462,6 +567,14 @@ export const TaxonNameCreateEdit: FC = ({
             /* eslint-disable-next-line max-len */
             className={`${globalClasses.mainGrid} ${globalClasses.sectionMargin}`}
           >
+            <Typography
+              variant="h5"
+              /* eslint-disable-next-line max-len */
+              className={`${gridClasses.EightCol1to5span} ${globalClasses.bold}`}
+              gutterBottom
+            >
+              Taxon Name - Notes
+            </Typography>
             <TextInput
               source="comments"
               className={gridClasses.EightCol1to9span}

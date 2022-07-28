@@ -6,27 +6,62 @@ import {
   TextField,
 } from 'react-admin';
 import React, { FC } from 'react';
-import ScientificNameReference from '../Taxon_names/ScientificNameReference';
+import { GlobalTheme } from '../../GlobalTheme';
+import { Box, Typography, makeStyles } from '@material-ui/core';
+import EditToolbar from '../shared/EditToolbar';
+import ScientificNameReference from '../Taxon_names';
 
-export const HierarchyCreateEdit: FC = (props) => (
-  <SimpleForm {...props} warnWhenUnsavedChanges>
-    <ReferenceInput
-      source="classification_system_id"
-      reference="classification_systems"
-      filter={{ class_type: 'hierarchical' }}
+const useStyles = makeStyles((theme) => ({
+  mainGrid: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    width: '70%',
+    gridColumnGap: '1.5em',
+  },
+}));
+
+export const HierarchyCreateEdit: FC = (props) => {
+  const globalClasses = GlobalTheme();
+  const classes = useStyles();
+  return (
+    <SimpleForm
+      {...props}
+      toolbar={<EditToolbar resource="hierarchies" />}
+      warnWhenUnsavedChanges
     >
-      <SelectInput optionText="class_desc" validate={required()} />
-    </ReferenceInput>
-    <ScientificNameReference
-      source="parent_nid"
-      label="Parent name"
-      validate={required()}
-    />
-    <ScientificNameReference
-      source="taxon_name_id"
-      label="Taxon name"
-      validate={required()}
-    />
-    <TextField source="path.path" />
-  </SimpleForm>
-);
+      <Box>
+        <Typography variant="h5" className={globalClasses.bold} gutterBottom>
+          Hierarchy
+        </Typography>
+      </Box>
+      <Box className={classes.mainGrid}>
+        <Box>
+          <ReferenceInput
+            source="classification_system_id"
+            reference="classification_systems"
+            filter={{ class_type: 'hierarchical' }}
+          >
+            <SelectInput optionText="class_desc" validate={required()} />
+          </ReferenceInput>
+        </Box>
+        <Box>
+          <ScientificNameReference
+            source="parent_nid"
+            label="Parent name"
+            validate={required()}
+          />
+        </Box>
+        <Box>
+          <ScientificNameReference
+            source="taxon_name_id"
+            label="Taxon name"
+            validate={required()}
+          />
+        </Box>
+        <Box>
+          <TextField source="path.path" />
+        </Box>
+      </Box>
+    </SimpleForm>
+  );
+};
