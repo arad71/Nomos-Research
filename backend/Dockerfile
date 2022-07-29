@@ -7,6 +7,7 @@ ARG GROUP_ID=1000
 RUN mkdir /app /legacy_data
 
 WORKDIR /app
+COPY poetry.lock pyproject.toml ./
 COPY . .
 
 RUN \
