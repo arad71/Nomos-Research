@@ -26,7 +26,9 @@ import { ClassificationSystemFilters } from './ClassificationSystemFilters';
 
 const postListColumns = {
   id: <TextField source="id" />,
-  class_desc: <TextField source="class_desc" label="Classification System" />,
+  class_desc: (
+    <TextField source="class_desc" label="Classification Description" />
+  ),
   class_type: (
     <SelectField
       source="class_type"

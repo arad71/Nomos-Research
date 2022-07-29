@@ -29,11 +29,16 @@ async def login(db=Depends(get_db), form_data: OAuth2PasswordRequestForm = Depen
         expires_delta=access_token_expires,
     )
 
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "id": user.user_id,
+        "full_name": user.full_name,
+    }
 
 
 @r.post("/auth2token")
-async def login(
+async def auth2login(
     db=Depends(get_db),
     use_auth2=Depends(use_auth2),
     x_email: str = Header(default=None),
@@ -41,7 +46,6 @@ async def login(
     x_last_name: str = Header(default=None),
     x_logout_url: str = Header(default=None),
 ):
-
     if not x_email:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -65,4 +69,9 @@ async def login(
         expires_delta=access_token_expires,
     )
 
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "id": user.user_id,
+        "full_name": user.full_name,
+    }

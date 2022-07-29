@@ -1,3 +1,5 @@
+import datetime
+
 from app.db.dataimport import DataImportBase
 from app.db.kingdom.model import Kingdom as KingdomModel
 from app.db.user.model import User as UserModel
@@ -27,6 +29,7 @@ class ImportKingdom(DataImportBase):
                 "updated_by": self.map_row_by_unique_key(
                     UserModel, "legacy_id_name", row["UPDATED_BY"], "user_id"
                 ),
-                "updated_on": row["UPDATED_ON"],
+                "updated_on": row["UPDATED_ON"] or datetime.datetime.now(),
+                "created_on": row["UPDATED_ON"] or datetime.datetime.now(),
             }
         )

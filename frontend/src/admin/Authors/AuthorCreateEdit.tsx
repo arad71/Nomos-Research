@@ -43,10 +43,10 @@ export const AuthorCreateEdit: FC = (props) => {
       </Box>
       <Box className={classes.mainGrid}>
         <Box>
-          <TextInput source="surname" fullWidth />
+          <TextInput source="first_names" fullWidth />
         </Box>
         <Box>
-          <TextInput source="first_names" fullWidth />
+          <TextInput source="surname" fullWidth />
         </Box>
         <Box>
           <TextInput source="initials" fullWidth />

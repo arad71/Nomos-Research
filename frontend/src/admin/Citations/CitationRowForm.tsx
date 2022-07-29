@@ -1,6 +1,6 @@
 import { RowForm, RowFormProps } from '@react-admin/ra-editable-datagrid';
 import { AuthorAutocomplete } from '../Authors';
-import { NumberInput, required, SelectInput } from 'react-admin';
+import { NumberInput, required, minValue, SelectInput } from 'react-admin';
 import AuthorType from './AuthorType';
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
@@ -13,6 +13,7 @@ const useStyles = makeStyles({
 
 export const CitationRowForm = (props: RowFormProps) => {
   const classes = useStyles();
+  const authorOrderValidation = [required(), minValue(0)];
   return (
     <RowForm {...props}>
       <AuthorAutocomplete />
@@ -24,8 +25,9 @@ export const CitationRowForm = (props: RowFormProps) => {
       />
       <NumberInput
         source="author_order"
-        validate={required()}
+        validate={authorOrderValidation}
         initialValue={0}
+        min={0}
       />
     </RowForm>
   );
