@@ -1,5 +1,5 @@
 from sqlalchemy import Column, ForeignKey, Integer
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import backref, relationship
 from sqlalchemy.schema import UniqueConstraint
 
 from app.db.informal_group.constants import CLASSIFICATION_SYSTEM_ID, TABLE_DESCRIPTION
@@ -30,4 +30,8 @@ class InformalGroup(BaseModel, TableMixin):
     taxon_name_id = Column(
         Integer, ForeignKey("taxon_name.taxon_name_id"), nullable=False
     )
-    taxon_name = relationship("TaxonName", backref=name_plural)
+    taxon_name = relationship(
+        "TaxonName",
+        foreign_keys=[taxon_name_id],
+        backref=backref(name_plural, cascade="all, delete-orphan"),
+    )
