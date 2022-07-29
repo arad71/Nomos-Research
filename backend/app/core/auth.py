@@ -152,4 +152,8 @@ def auth2_authenticate_user(
                 password=password,
             ),
         )
+        user.created_by = user.user_id
+        user.updated_by = user.user_id
+        db.add(user)
+        db.commit()
     return user
