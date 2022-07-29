@@ -5,7 +5,8 @@ Revises: 07b9b3d96e16
 Create Date: 2022-07-29 15:14:41.417853+08:00
 
 """
-import os
+from os import getenv
+
 import sqlalchemy as sa
 
 from alembic import op
@@ -18,14 +19,10 @@ depends_on = None
 
 
 def upgrade():
-    admin_email = os.getenv("ADMIN_EMAIL")
-    user_id = f'SELECT user_id FROM "user" WHERE email = \'{admin_email}\''
-    op.execute(
-        f'UPDATE "user" SET created_by = ({user_id}) WHERE created_by IS NULL'
-    )
-    op.execute(
-        f'UPDATE "user" SET updated_by = ({user_id}) WHERE updated_by IS NULL'
-    )
+    admin_email = getenv("ADMIN_EMAIL")
+    user_id = f"SELECT user_id FROM \"user\" WHERE email = '{admin_email}'"
+    op.execute(f'UPDATE "user" SET created_by = ({user_id}) WHERE created_by IS NULL')
+    op.execute(f'UPDATE "user" SET updated_by = ({user_id}) WHERE updated_by IS NULL')
 
 
 def downgrade():

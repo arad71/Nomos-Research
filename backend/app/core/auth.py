@@ -1,8 +1,8 @@
+from os import getenv
 from typing import Any, Callable, Optional, Sequence, Union
 from uuid import uuid4
 
 import jwt
-from os import getenv
 from fastapi import Depends, HTTPException, Security, status
 from fastapi.security import SecurityScopes
 from jwt import PyJWTError
