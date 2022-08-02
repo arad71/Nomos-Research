@@ -1,3 +1,4 @@
+from os import getenv
 from typing import Any, Callable, Optional, Sequence, Union
 from uuid import uuid4
 
@@ -152,4 +153,11 @@ def auth2_authenticate_user(
                 password=password,
             ),
         )
+        admin_email = getenv("ADMIN_EMAIL")
+        admin = UserCrud.get_user_by_email(db=db, email=admin_email)
+        admin_user_id = admin.user_id
+        user.created_by = admin_user_id
+        user.updated_by = admin_user_id
+        db.add(user)
+        db.commit()
     return user

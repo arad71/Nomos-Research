@@ -31,11 +31,13 @@ export const PublicationCreateEdit: FC = (props) => {
   const classes = useStyles();
   const globalClasses = GlobalTheme();
   const gridClasses = GlobalGridTheme();
+  // eslint-disable-next-line max-len
+  const titleClasses = `${globalClasses.title} ${globalClasses.titleTruncation}`;
   return (
     <>
       <Box className={globalClasses.titlePos}>
         <Box>
-          <TextField className={globalClasses.title} source="display_title" />
+          <TextField className={titleClasses} source="display_title" />
         </Box>
         <TextField
           source="verbatim_author"
