@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
 import {
+  BooleanField,
   CreateButton,
   Datagrid,
   DateField,
@@ -15,6 +16,7 @@ import {
   DefaultPagination,
   selectableFilters,
   useCanBulkDelete,
+  IsSuperAdmin,
 } from '../shared';
 
 const Actions = () => (
@@ -28,7 +30,7 @@ const Actions = () => (
     </WithPermissions>
   </TopToolbar>
 );
-
+const deleted: any = IsSuperAdmin ? <BooleanField source="deleted" /> : null;
 export const AuthorList: FC = (props) => (
   <List
     {...props}
@@ -49,6 +51,7 @@ export const AuthorList: FC = (props) => (
         <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" />
+      {deleted}
       <WithPermissions action="edit" resource="authors">
         <EditButton />
       </WithPermissions>
