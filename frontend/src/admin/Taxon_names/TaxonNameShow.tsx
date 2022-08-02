@@ -89,11 +89,6 @@ export const TaxonNameShow: FC = (props) => {
             </Box>
             <Box className={globalClasses.formRow}>
               <Box className={globalClasses.fieldMargin}>
-                <Labeled label="genus">
-                  <TextField source="genus" />
-                </Labeled>
-              </Box>
-              <Box className={globalClasses.fieldMargin}>
                 <Labeled label="Uninomial">
                   <TextField source="uninomial" />
                 </Labeled>

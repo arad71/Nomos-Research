@@ -196,7 +196,6 @@ export const TaxonNameCreateEdit: FC = ({
                   {...props}
                 >
                   <EditableDatagrid
-                    undoable
                     /* eslint-disable-next-line max-len */
                     className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
                     createForm={
@@ -274,7 +273,6 @@ export const TaxonNameCreateEdit: FC = ({
                   <EditableDatagrid
                     /* eslint-disable-next-line max-len */
                     className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
-                    undoable
                     createForm={
                       <VernacularRowForm
                         initialValues={vernacularInitialValues}
@@ -465,7 +463,6 @@ export const TaxonNameCreateEdit: FC = ({
                     {...props}
                   >
                     <EditableDatagrid
-                      undoable
                       /* eslint-disable-next-line max-len */
                       className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
                       createForm={
@@ -518,7 +515,6 @@ export const TaxonNameCreateEdit: FC = ({
                     {...props}
                   >
                     <EditableDatagrid
-                      undoable
                       /* eslint-disable-next-line max-len */
                       className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
                       createForm={

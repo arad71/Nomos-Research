@@ -39,7 +39,7 @@ export const PublicationList: FC = (props) => (
   >
     <Datagrid rowClick="show">
       <TextField source="display_title" />
-      <TextField source="author_name" />
+      <TextField source="author_name" sortable={false} />
       <TextField source="publication_year" />
       <BooleanField
         source="published"

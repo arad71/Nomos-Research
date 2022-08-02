@@ -6,3 +6,4 @@ class ClassificationSystemCrud(crud.Crud):
     model = ClassificationSystem
     id_key = "classification_system_id"
     name = "Classification System"
+    search_fields = ["class_desc"]
