@@ -50,7 +50,10 @@ export const PublicationShow: FC = (props) => {
       <>
         <Box className={classes.titlePos}>
           <Box>
-            <RichTextField className={classes.title} source="display_title" />
+            <RichTextField
+              className={`${classes.title} ${globalClasses.titleTruncation}`}
+              source="display_title"
+            />
           </Box>
           <TextField source="author_name" />
         </Box>
