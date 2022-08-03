@@ -19,6 +19,7 @@ def test_get_informal_groups(
             "updated_on": test_informal_group.updated_on.isoformat(),
             "created_by": test_informal_group.created_by,
             "created_on": test_informal_group.created_on.isoformat(),
+            "deleted": False,
         }
     ]
 
@@ -79,6 +80,7 @@ def test_edit_informal_group(
     new_informal_group["classification_system"] = response.json()[
         "classification_system"
     ]
+    new_informal_group["deleted"] = False
     assert response.json() == new_informal_group
 
 
@@ -126,6 +128,7 @@ def test_get_informal_group(
         "updated_on": test_informal_group.updated_on.isoformat(),
         "created_by": test_informal_group.created_by,
         "created_on": test_informal_group.created_on.isoformat(),
+        "deleted": False,
     }
 
 

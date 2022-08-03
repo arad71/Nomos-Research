@@ -16,9 +16,8 @@ import {
   DefaultPagination,
   selectableFilters,
   useCanBulkDelete,
-  IsSuperAdmin,
 } from '../shared';
-
+import DeleteIcon from '@material-ui/icons/Delete';
 const Actions = () => (
   <TopToolbar>
     <FilterButton />
@@ -30,7 +29,7 @@ const Actions = () => (
     </WithPermissions>
   </TopToolbar>
 );
-const deleted: any = IsSuperAdmin ? <BooleanField source="deleted" /> : null;
+
 export const AuthorList: FC = (props) => (
   <List
     {...props}
@@ -51,7 +50,9 @@ export const AuthorList: FC = (props) => (
         <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" />
-      {deleted}
+      <WithPermissions action="harddelete" resource="authors">
+        <BooleanField source="deleted" />
+      </WithPermissions>
       <WithPermissions action="edit" resource="authors">
         <EditButton />
       </WithPermissions>

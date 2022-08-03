@@ -54,6 +54,9 @@ export const PublicationList: FC = (props) => (
         <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" />
+      <WithPermissions resource="publications" action="harddelete">
+        <BooleanField source="deleted" />
+      </WithPermissions>
       <WithPermissions resource="publications" action="edit">
         <EditButton />
       </WithPermissions>

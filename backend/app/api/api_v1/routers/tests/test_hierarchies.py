@@ -20,6 +20,7 @@ def test_get_hierarchies(client, test_hierarchy, superuser_token_headers):
             "updated_on": test_hierarchy.updated_on.isoformat(),
             "created_by": test_hierarchy.created_by,
             "created_on": test_hierarchy.created_on.isoformat(),
+            "deleted": False,
         }
     ]
 
@@ -77,6 +78,7 @@ def test_edit_hierarchy(
     new_hierarchy["taxon_name"] = response.json()["taxon_name"]
     new_hierarchy["classification_system"] = response.json()["classification_system"]
     new_hierarchy["parent"] = response.json()["parent"]
+    new_hierarchy["deleted"] = False
     assert response.json() == new_hierarchy
 
 
@@ -120,6 +122,7 @@ def test_get_hierarchy(
         "updated_on": test_hierarchy.updated_on.isoformat(),
         "created_by": test_hierarchy.created_by,
         "created_on": test_hierarchy.created_on.isoformat(),
+        "deleted": False,
     }
 
 

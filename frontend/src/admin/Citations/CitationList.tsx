@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
 import {
+  BooleanField,
   Datagrid,
   DateField,
   EditButton,
@@ -16,6 +17,7 @@ import {
   selectableFilters,
   useCanBulkDelete,
 } from '../shared';
+import { Label } from '@material-ui/icons';
 
 export const CitationList: FC = (props) => (
   <List
@@ -47,6 +49,9 @@ export const CitationList: FC = (props) => (
         <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" />
+      <WithPermissions resource="citations" action="harddelete">
+        <BooleanField source="deleted" />
+      </WithPermissions>
       <WithPermissions resource="citations" action="edit">
         <EditButton />
       </WithPermissions>

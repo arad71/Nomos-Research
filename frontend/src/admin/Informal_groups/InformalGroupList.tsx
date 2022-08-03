@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
 import {
+  BooleanField,
   Datagrid,
   DateField,
   EditButton,
@@ -43,6 +44,9 @@ export const InformalGroupList: FC = (props) => (
         <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" />
+      <WithPermissions resource="informal_groups" action="harddelete">
+        <BooleanField source="deleted" />
+      </WithPermissions>
       <WithPermissions resource="informal_groups" action="edit">
         <EditButton />
       </WithPermissions>

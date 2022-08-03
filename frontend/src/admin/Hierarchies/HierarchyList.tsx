@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
 import {
+  BooleanField,
   Datagrid,
   DateField,
   EditButton,
@@ -54,6 +55,9 @@ export const HierarchyList: FC = (props) => (
         <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" />
+      <WithPermissions resource="hierarchies" action="harddelete">
+        <BooleanField source="deleted" />
+      </WithPermissions>
       <WithPermissions resource="hierarchies" action="edit">
         <EditButton />
       </WithPermissions>

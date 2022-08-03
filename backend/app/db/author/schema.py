@@ -19,7 +19,6 @@ class AuthorBase(BaseModel):
     first_names: Optional[str] = Field(description=FIRST_NAMES)
     initials: Optional[str] = Field(description=INITIALS)
     orc_id: Optional[str] = Field(description=ORC_ID)
-    deleted: bool
 
 
 class AuthorCreate(AuthorBase):
@@ -34,6 +33,7 @@ class Author(AuthorBase, TableBase):
     author_id: int
     full_name: str
     display_name: str
+    deleted: bool
 
     class Config:
         orm_mode = True

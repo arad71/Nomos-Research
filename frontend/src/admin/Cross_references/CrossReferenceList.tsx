@@ -51,6 +51,9 @@ export const CrossReferenceList: FC = (props) => (
         <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" />
+      <WithPermissions resource="cross_references" action="harddelete">
+        <BooleanField source="deleted" />
+      </WithPermissions>
       <WithPermissions resource="cross_references" action="edit">
         <EditButton />
       </WithPermissions>

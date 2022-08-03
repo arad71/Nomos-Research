@@ -43,6 +43,7 @@ class CrossReference(CrossReferenceBase, TableBase):
     cross_reference_id: int = Field(description=CROSS_REFERENCE_ID)
     old_name: TaxonName
     new_name: Optional[TaxonName]
+    deleted: bool
 
     class Config:
         orm_mode = True

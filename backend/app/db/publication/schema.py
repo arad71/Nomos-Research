@@ -56,6 +56,7 @@ class Publication(PublicationBase, TableBase):
     author_names: Optional[list[str]]
     author_name: Optional[str]
     display_title: Optional[str]
+    deleted: bool
 
     class Config:
         orm_mode = True

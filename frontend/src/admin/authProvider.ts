@@ -17,6 +17,7 @@ type Action =
   | 'write' // for a field in the resource
   | 'delete'
   | 'bulkdelete'
+  | 'harddelete'
   | '*';
 type Actions = Action[] | Action;
 
@@ -169,7 +170,15 @@ const authProvider = {
     ];
     permissions[Role.SUPER_ADMIN] = [
       {
-        action: ['show', 'list', 'export', 'create', 'edit', 'delete'],
+        action: [
+          'show',
+          'list',
+          'export',
+          'create',
+          'edit',
+          'delete',
+          'harddelete',
+        ],
         resource: '*',
       },
     ];

@@ -19,7 +19,6 @@ class CitationBase(BaseModel):
     author_type: enums.AuthorType = Field(description=AUTHOR_TYPE)
     author_order: int = Field(description=AUTHOR_ORDER)
     legacy_id_name: Optional[str]
-    deleted: bool
 
 
 class CitationCreate(CitationBase):
@@ -33,6 +32,7 @@ class CitationEdit(CitationBase):
 class Citation(CitationBase, TableBase):
     citation_id: int
     author: Author
+    deleted: bool
 
     class Config:
         orm_mode = True

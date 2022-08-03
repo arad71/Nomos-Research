@@ -18,6 +18,7 @@ def test_get_vernaculars(client, test_vernacular, superuser_token_headers):
             "updated_on": test_vernacular.updated_on.isoformat(),
             "created_by": test_vernacular.created_by,
             "created_on": test_vernacular.created_on.isoformat(),
+            "deleted": False,
         }
     ]
 
@@ -73,6 +74,7 @@ def test_edit_vernacular(
     new_vernacular["vernacular_id"] = test_vernacular.vernacular_id
     new_vernacular["taxon_name"] = response.json()["taxon_name"]
     new_vernacular["updated_on"] = response.json()["updated_on"]
+    new_vernacular["deleted"] = False
     assert response.json() == new_vernacular
 
 
@@ -114,6 +116,7 @@ def test_get_vernacular(
         "updated_on": test_vernacular.updated_on.isoformat(),
         "created_by": test_vernacular.created_by,
         "created_on": test_vernacular.created_on.isoformat(),
+        "deleted": False,
     }
 
 

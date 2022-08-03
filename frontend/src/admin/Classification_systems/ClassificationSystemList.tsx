@@ -99,6 +99,9 @@ export const ClassificationSystemList = (props: ListProps) => {
     >
       <Datagrid rowClick="show">
         {columns}
+        <WithPermissions resource="classification_systems" action="harddelete">
+          <BooleanField source="deleted" />
+        </WithPermissions>
         <WithPermissions action="edit" resource="classification_systems">
           <EditButton />
         </WithPermissions>
