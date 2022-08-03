@@ -3,7 +3,6 @@ import {
   Datagrid,
   DateField,
   EditButton,
-  NumberField,
   ReferenceField,
   SelectField,
   TextField,
@@ -23,6 +22,7 @@ import {
 } from '@react-admin/ra-preferences';
 import ResetPreferenceButton from '../shared/ResetPreferenceButton';
 import { ClassificationSystemFilters } from './ClassificationSystemFilters';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 const postListColumns = {
   id: <TextField source="id" />,
@@ -100,7 +100,7 @@ export const ClassificationSystemList = (props: ListProps) => {
       <Datagrid rowClick="show">
         {columns}
         <WithPermissions resource="classification_systems" action="harddelete">
-          <BooleanField source="deleted" />
+          <BooleanField source="deleted" TrueIcon={DeleteIcon} />
         </WithPermissions>
         <WithPermissions action="edit" resource="classification_systems">
           <EditButton />

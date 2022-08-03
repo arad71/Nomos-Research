@@ -15,6 +15,7 @@ import {
   selectableFilters,
   useCanBulkDelete,
 } from '../shared';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 export const HierarchyList: FC = (props) => (
   <List
@@ -56,7 +57,7 @@ export const HierarchyList: FC = (props) => (
       </ReferenceField>
       <DateField source="updated_on" />
       <WithPermissions resource="hierarchies" action="harddelete">
-        <BooleanField source="deleted" />
+        <BooleanField source="deleted" TrueIcon={DeleteIcon} />
       </WithPermissions>
       <WithPermissions resource="hierarchies" action="edit">
         <EditButton />

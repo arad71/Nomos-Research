@@ -16,6 +16,7 @@ import {
   selectableFilters,
   useCanBulkDelete,
 } from '../shared';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 const Actions = () => (
   <TopToolbar>
@@ -55,7 +56,7 @@ export const PublicationList: FC = (props) => (
       </ReferenceField>
       <DateField source="updated_on" />
       <WithPermissions resource="publications" action="harddelete">
-        <BooleanField source="deleted" />
+        <BooleanField source="deleted" TrueIcon={DeleteIcon} />
       </WithPermissions>
       <WithPermissions resource="publications" action="edit">
         <EditButton />

@@ -15,6 +15,7 @@ import {
   selectableFilters,
   useCanBulkDelete,
 } from '../shared';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 export const InformalGroupList: FC = (props) => (
   <List
@@ -45,7 +46,7 @@ export const InformalGroupList: FC = (props) => (
       </ReferenceField>
       <DateField source="updated_on" />
       <WithPermissions resource="informal_groups" action="harddelete">
-        <BooleanField source="deleted" />
+        <BooleanField source="deleted" TrueIcon={DeleteIcon} />
       </WithPermissions>
       <WithPermissions resource="informal_groups" action="edit">
         <EditButton />

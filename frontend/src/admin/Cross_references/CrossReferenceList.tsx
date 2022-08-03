@@ -17,6 +17,7 @@ import {
   selectableFilters,
   useCanBulkDelete,
 } from '../shared';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 export const CrossReferenceList: FC = (props) => (
   <List
@@ -52,7 +53,7 @@ export const CrossReferenceList: FC = (props) => (
       </ReferenceField>
       <DateField source="updated_on" />
       <WithPermissions resource="cross_references" action="harddelete">
-        <BooleanField source="deleted" />
+        <BooleanField source="deleted" TrueIcon={DeleteIcon} />
       </WithPermissions>
       <WithPermissions resource="cross_references" action="edit">
         <EditButton />

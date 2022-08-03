@@ -17,7 +17,7 @@ import {
   selectableFilters,
   useCanBulkDelete,
 } from '../shared';
-import { Label } from '@material-ui/icons';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 export const CitationList: FC = (props) => (
   <List
@@ -50,7 +50,7 @@ export const CitationList: FC = (props) => (
       </ReferenceField>
       <DateField source="updated_on" />
       <WithPermissions resource="citations" action="harddelete">
-        <BooleanField source="deleted" />
+        <BooleanField source="deleted" TrueIcon={DeleteIcon} />
       </WithPermissions>
       <WithPermissions resource="citations" action="edit">
         <EditButton />
