@@ -5,6 +5,7 @@ import {
   SimpleForm,
   TextInput,
   BooleanInput,
+  AutocompleteInput,
 } from 'react-admin';
 import React, { FC } from 'react';
 import CrossRefType from './CrossRefType';
@@ -36,11 +37,25 @@ export const CrossRefCreateEdit: FC = (props) => {
         </Typography>
       </Box>
       <Box className={classes.mainGrid}>
-        <ReferenceInput source="old_name_id" reference="taxon_names">
-          <SelectInput optionText="scientific_name" validate={required()} />
+        <ReferenceInput
+          source="old_name_id"
+          reference="taxon_names"
+          sort={{ field: 'scientific_name', order: 'ASC' }}
+          perPage={100}
+        >
+          <AutocompleteInput
+            optionText="scientific_name"
+            validate={required()}
+            resettable
+          />
         </ReferenceInput>
-        <ReferenceInput source="new_name_id" reference="taxon_names">
-          <SelectInput optionText="scientific_name" />
+        <ReferenceInput
+          source="new_name_id"
+          reference="taxon_names"
+          sort={{ field: 'scientific_name', order: 'ASC' }}
+          perPage={100}
+        >
+          <AutocompleteInput optionText="scientific_name" resettable />
         </ReferenceInput>
         <SelectInput
           source="cross_reference_type"

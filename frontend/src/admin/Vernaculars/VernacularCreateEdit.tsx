@@ -7,6 +7,7 @@ import {
   TextInput,
   BooleanInput,
   minValue,
+  AutocompleteInput,
 } from 'react-admin';
 import React, { FC } from 'react';
 import LanguageType from './LanguageType';
@@ -39,8 +40,17 @@ export const VernacularCreateEdit: FC = (props) => {
       </Box>
       <Box className={classes.mainGrid}>
         <TextInput source="vernacular" validate={required()} />
-        <ReferenceInput source="taxon_name_id" reference="taxon_names">
-          <SelectInput optionText="scientific_name" validate={required()} />
+        <ReferenceInput
+          source="taxon_name_id"
+          reference="taxon_names"
+          sort={{ field: 'scientific_name', order: 'ASC' }}
+          perPage={100}
+        >
+          <AutocompleteInput
+            optionText="scientific_name"
+            validate={required()}
+            resettable
+          />
         </ReferenceInput>
         <SelectInput
           source="language"

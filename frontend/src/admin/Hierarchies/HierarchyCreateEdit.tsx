@@ -1,4 +1,10 @@
-import { ReferenceInput, required, SelectInput, SimpleForm } from 'react-admin';
+import {
+  ReferenceInput,
+  required,
+  SelectInput,
+  SimpleForm,
+  AutocompleteInput,
+} from 'react-admin';
 import React, { FC } from 'react';
 import { GlobalTheme } from '../../GlobalTheme';
 import { Box, Typography, makeStyles } from '@material-ui/core';
@@ -29,8 +35,17 @@ export const HierarchyCreateEdit: FC = (props) => {
       </Box>
       <Box className={classes.mainGrid}>
         <Box>
-          <ReferenceInput source="taxon_name_id" reference="taxon_names">
-            <SelectInput optionText="scientific_name" validate={required()} />
+          <ReferenceInput
+            source="taxon_name_id"
+            reference="taxon_names"
+            sort={{ field: 'scientific_name', order: 'ASC' }}
+            perPage={100}
+          >
+            <AutocompleteInput
+              optionText="scientific_name"
+              validate={required()}
+              resettable
+            />
           </ReferenceInput>
         </Box>
         <Box>

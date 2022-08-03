@@ -4,6 +4,7 @@ import {
   required,
   SelectInput,
   SimpleForm,
+  AutocompleteInput,
 } from 'react-admin';
 import React, { FC } from 'react';
 import AuthorType from './AuthorType';
@@ -40,8 +41,10 @@ export const CitationCreateEdit: FC = (props) => {
             source="taxon_name_id"
             reference="taxon_names"
             validate={required()}
+            sort={{ field: 'scientific_name', order: 'ASC' }}
+            perPage={100}
           >
-            <SelectInput optionText="scientific_name" />
+            <AutocompleteInput optionText="scientific_name" resettable />
           </ReferenceInput>
         </Box>
         <Box>
@@ -49,8 +52,10 @@ export const CitationCreateEdit: FC = (props) => {
             source="author_id"
             reference="authors"
             validate={required()}
+            sort={{ field: 'abbreviation', order: 'ASC' }}
+            perPage={100}
           >
-            <SelectInput optionText="abbreviation" />
+            <AutocompleteInput optionText="abbreviation" resettable />
           </ReferenceInput>
         </Box>
         <Box>

@@ -115,8 +115,14 @@ export const PublicationCreateEdit: FC = (props) => {
               source="author_ids"
               reference="authors"
               className={gridClasses.EightCol1to5span}
+              sort={{ field: 'abbreviation', order: 'ASC' }}
+              perPage={100}
             >
-              <SelectArrayInput optionText="abbreviation" fullWidth />
+              <AutocompleteInput
+                optionText="abbreviation"
+                fullWidth
+                resettable
+              />
             </ReferenceArrayInput>
             <TextInput
               source="publisher"
@@ -131,7 +137,7 @@ export const PublicationCreateEdit: FC = (props) => {
                 fullWidth
                 perPage={100}
               >
-                <AutocompleteInput optionText="display_title" resettable />
+                <AutocompleteInput optionText="abbreviated_title" resettable />
               </ReferenceInput>
             </Box>
             <TextInput
