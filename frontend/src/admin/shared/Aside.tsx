@@ -6,6 +6,7 @@ import {
   SimpleShowLayout,
   TextField,
   Labeled,
+  useRecordContext,
 } from 'react-admin';
 import TaxonNameInformalGroups from '../Taxon_names/TaxonNameInformalGroups';
 import TaxonHierarchy from '../Taxon_names/TaxonHierarchy';
@@ -15,7 +16,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
 import grey from '@material-ui/core/colors/grey';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
-
+import DeleteIcon from '@material-ui/icons/Delete';
+import { List, WithPermissions } from '@react-admin/ra-rbac';
 const useStyles = makeStyles((theme) => ({
   mainGrid: {
     display: 'grid',
@@ -23,6 +25,11 @@ const useStyles = makeStyles((theme) => ({
     width: '130%',
     gridColumnGap: '1.5em',
     gridRowGap: '1.5em',
+  },
+  deleted: {
+    color: '#ff0000',
+    verticalAlign: 'middle',
+    display: 'inline-flex',
   },
   asideWidth: {
     width: '30%',
@@ -58,13 +65,33 @@ const Aside = () => {
   const location = useLocation();
   const currPath = location.pathname.split('/')[1];
   const isTaxonNames = currPath == 'taxon_names';
+  const record = useRecordContext();
+  const deleted = record.deleted ? (
+    <Typography variant="subtitle1" className={classes.deleted}>
+      <DeleteIcon />
+      Deleted
+    </Typography>
+  ) : null;
   return (
     <Box className={classes.asideWidth}>
       <Card className={classes.asidePadding}>
         <SimpleShowLayout>
-          <Typography variant="h5" className={globalClasses.bold} gutterBottom>
-            History
-          </Typography>
+          <Box className={classes.mainGrid}>
+            <Box>
+              <Typography
+                variant="h5"
+                className={globalClasses.bold}
+                gutterBottom
+              >
+                History
+              </Typography>
+            </Box>
+            <Box>
+              <WithPermissions resource="informal_groups" action="harddelete">
+                {deleted}
+              </WithPermissions>
+            </Box>
+          </Box>
           <Box className={classes.mainGrid}>
             <Box className={classes.panelSection}>
               <CalendarTodayIcon className={classes.iconStyles} />
