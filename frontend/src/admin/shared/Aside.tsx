@@ -17,7 +17,7 @@ import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
 import grey from '@material-ui/core/colors/grey';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { List, WithPermissions } from '@react-admin/ra-rbac';
+import { WithPermissions } from '@react-admin/ra-rbac';
 const useStyles = makeStyles((theme) => ({
   mainGrid: {
     display: 'grid',
