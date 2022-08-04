@@ -155,7 +155,7 @@ const authProvider = {
         resource: 'taxon_names',
       },
       {
-        action: ['create', 'edit'],
+        action: ['create', 'edit', 'delete'],
         resource: 'vernaculars',
       },
     ];
