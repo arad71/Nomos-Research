@@ -18,6 +18,7 @@ type Action =
   | 'delete'
   | 'bulkdelete'
   | 'harddelete'
+  | 'deletedfilter'
   | '*';
 type Actions = Action[] | Action;
 
@@ -178,6 +179,7 @@ const authProvider = {
           'edit',
           'delete',
           'harddelete',
+          'deletedfilter',
         ],
         resource: '*',
       },
