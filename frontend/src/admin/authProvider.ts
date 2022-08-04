@@ -131,19 +131,19 @@ const authProvider = {
     ];
     permissions[Role.MANAGER] = [
       { action: ['show', 'list', 'export'], resource: '*' },
-      { action: ['create', 'edit'], resource: 'authors' },
-      { action: ['create', 'edit'], resource: 'citations' },
-      { action: ['create', 'edit'], resource: 'cross_references' },
+      { action: ['create', 'edit', 'delete'], resource: 'authors' },
+      { action: ['create', 'edit', 'delete'], resource: 'citations' },
+      { action: ['create', 'edit', 'delete'], resource: 'cross_references' },
       {
-        action: ['create', 'edit'],
+        action: ['create', 'edit', 'delete'],
         resource: 'hierarchies',
       },
       {
-        action: ['create', 'edit'],
+        action: ['create', 'edit', 'delete'],
         resource: 'informal_groups',
       },
       {
-        action: ['create', 'edit'],
+        action: ['create', 'edit', 'delete'],
         resource: 'publications',
       },
       {
@@ -151,7 +151,7 @@ const authProvider = {
         resource: 'publication_authors',
       },
       {
-        action: ['create', 'edit'],
+        action: ['create', 'edit', 'delete'],
         resource: 'taxon_names',
       },
       {
