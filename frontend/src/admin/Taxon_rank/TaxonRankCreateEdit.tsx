@@ -68,7 +68,7 @@ export const TaxonRankCreateEdit: FC = (props) => {
             reference="taxon_ranks"
             fullWidth
           >
-            <AutocompleteInput optionText="rank_name" resetted />
+            <AutocompleteInput optionText="rank_name" resettable />
           </ReferenceInput>
         </Box>
         <Box>
