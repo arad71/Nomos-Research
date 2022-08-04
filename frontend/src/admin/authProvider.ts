@@ -76,10 +76,14 @@ const authProvider = {
     return getAuthToken(params);
   },
   logout: () => {
+    const path = window.location.origin;
     const logout_url = localStorage.getItem('logout_url');
+    const logoutLink = path + logout_url;
     clearLocalStorage();
     // React admin will redirect to the logout url if it's defined.
-    return Promise.resolve(logout_url);
+    console.log(logout_url);
+    console.log(logoutLink);
+    return Promise.resolve(logoutLink);
   },
   getIdentity: () => {
     return {
