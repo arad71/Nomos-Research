@@ -232,16 +232,11 @@ export const TaxonNameCreateEdit: FC = ({
             <ReferenceInput
               source="publication_id"
               reference="publications"
-              sort={{ field: 'title', order: 'ASC' }}
+              sort={{ field: 'abbreviated_title', order: 'ASC' }}
               perPage={100}
               className={gridClasses.EightCol1to5span}
             >
-              <AutocompleteInput
-                optionText="title"
-                className={gridClasses.EightCol1to5span}
-                fullWidth
-                resettable
-              />
+              <AutocompleteInput optionText="title" fullWidth resettable />
             </ReferenceInput>
             <Box
               /* eslint-disable-next-line max-len */
