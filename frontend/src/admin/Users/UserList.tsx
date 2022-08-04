@@ -17,6 +17,7 @@ import { UserListActions } from './UserListActions';
 import { UserPagination } from './UserPagination';
 import { useCanBulkDelete } from '../shared';
 import DeleteIcon from '@material-ui/icons/Delete';
+import VisibilityIcon from '@material-ui/icons/Visibility';
 
 export const UserList: FC = (props) => {
   return (
@@ -49,7 +50,11 @@ export const UserList: FC = (props) => {
         </ReferenceField>
         <DateField source="updated_on" />
         <WithPermissions resource="users" action="harddelete">
-          <BooleanField source="deleted" TrueIcon={DeleteIcon} />
+          <BooleanField
+            source="deleted"
+            TrueIcon={DeleteIcon}
+            FalseIcon={VisibilityIcon}
+          />
         </WithPermissions>
         <WithPermissions action="edit" resource="users">
           <EditButton />

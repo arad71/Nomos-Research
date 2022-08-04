@@ -17,6 +17,7 @@ import {
   useCanBulkDelete,
 } from '../shared';
 import DeleteIcon from '@material-ui/icons/Delete';
+import VisibilityIcon from '@material-ui/icons/Visibility';
 
 const Actions = () => (
   <TopToolbar>
@@ -56,7 +57,11 @@ export const PublicationList: FC = (props) => (
       </ReferenceField>
       <DateField source="updated_on" />
       <WithPermissions resource="publications" action="harddelete">
-        <BooleanField source="deleted" TrueIcon={DeleteIcon} />
+        <BooleanField
+          source="deleted"
+          TrueIcon={DeleteIcon}
+          FalseIcon={VisibilityIcon}
+        />
       </WithPermissions>
       <WithPermissions resource="publications" action="edit">
         <EditButton />

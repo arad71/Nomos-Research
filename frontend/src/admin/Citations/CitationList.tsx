@@ -18,6 +18,7 @@ import {
   useCanBulkDelete,
 } from '../shared';
 import DeleteIcon from '@material-ui/icons/Delete';
+import VisibilityIcon from '@material-ui/icons/Visibility';
 
 export const CitationList: FC = (props) => (
   <List
@@ -50,7 +51,11 @@ export const CitationList: FC = (props) => (
       </ReferenceField>
       <DateField source="updated_on" />
       <WithPermissions resource="citations" action="harddelete">
-        <BooleanField source="deleted" TrueIcon={DeleteIcon} />
+        <BooleanField
+          source="deleted"
+          TrueIcon={DeleteIcon}
+          FalseIcon={VisibilityIcon}
+        />
       </WithPermissions>
       <WithPermissions resource="citations" action="edit">
         <EditButton />

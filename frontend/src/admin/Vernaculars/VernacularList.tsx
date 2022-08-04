@@ -18,6 +18,7 @@ import {
   useCanBulkDelete,
 } from '../shared';
 import DeleteIcon from '@material-ui/icons/Delete';
+import VisibilityIcon from '@material-ui/icons/Visibility';
 
 export const VernacularList: FC = (props) => (
   <List
@@ -47,7 +48,11 @@ export const VernacularList: FC = (props) => (
       </ReferenceField>
       <DateField source="updated_on" />
       <WithPermissions resource="vernaculars" action="harddelete">
-        <BooleanField source="deleted" TrueIcon={DeleteIcon} />
+        <BooleanField
+          source="deleted"
+          TrueIcon={DeleteIcon}
+          FalseIcon={VisibilityIcon}
+        />
       </WithPermissions>
       <WithPermissions resource="vernaculars" action="edit">
         <EditButton />
