@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
 import {
+  BooleanField,
   CreateButton,
   Datagrid,
   DateField,
@@ -16,6 +17,8 @@ import {
   selectableFilters,
   useCanBulkDelete,
 } from '../shared';
+import DeleteIcon from '@material-ui/icons/Delete';
+import VisibilityIcon from '@material-ui/icons/Visibility';
 
 const Actions = () => (
   <TopToolbar>
@@ -49,6 +52,13 @@ export const AuthorList: FC = (props) => (
         <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" />
+      <WithPermissions action="harddelete" resource="authors">
+        <BooleanField
+          source="deleted"
+          TrueIcon={DeleteIcon}
+          FalseIcon={VisibilityIcon}
+        />
+      </WithPermissions>
       <WithPermissions action="edit" resource="authors">
         <EditButton />
       </WithPermissions>

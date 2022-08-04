@@ -17,6 +17,8 @@ import {
 import NaturalisedStatus from './NaturalisedStatus';
 import PublicationStatus from './PublicationStatus';
 import { List, WithPermissions } from '@react-admin/ra-rbac';
+import DeleteIcon from '@material-ui/icons/Delete';
+import VisibilityIcon from '@material-ui/icons/Visibility';
 
 import {
   ListProps,
@@ -183,7 +185,13 @@ export const TaxonNameList = (props: ListProps) => {
     >
       <Datagrid rowClick="show">
         {columns}
-
+        <WithPermissions resource="taxon_names" action="harddelete">
+          <BooleanField
+            source="deleted"
+            TrueIcon={DeleteIcon}
+            FalseIcon={VisibilityIcon}
+          />
+        </WithPermissions>
         <WithPermissions resource="taxon_names" action="edit">
           <EditButton />
         </WithPermissions>

@@ -20,6 +20,7 @@ def test_get_authors(client, test_author, superuser_token_headers):
             "created_by": test_author.created_by,
             "created_on": test_author.created_on.isoformat(),
             "display_name": test_author.display_name,
+            "deleted": False,
         }
     ]
 
@@ -73,6 +74,7 @@ def test_edit_author(client, test_author, test_superuser, superuser_token_header
     new_author["author_id"] = test_author.author_id
     new_author["display_name"] = test_author.display_name
     new_author["updated_on"] = response.json()["updated_on"]
+    new_author["deleted"] = False
     assert response.json() == new_author
 
 
@@ -116,6 +118,7 @@ def test_get_author(
         "created_by": test_author.created_by,
         "created_on": test_author.created_on.isoformat(),
         "display_name": test_author.display_name,
+        "deleted": False,
     }
 
 

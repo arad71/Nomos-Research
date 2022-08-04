@@ -5,7 +5,7 @@ import { useCanAccess } from '@react-admin/ra-rbac';
 export const addDeletedFilterIfApplicable = (filters: JSX.Element[]) => {
   if (
     useCanAccess({
-      action: 'delete',
+      action: 'deletedfilter',
       resource: useResourceContext(),
     }).canAccess
   ) {

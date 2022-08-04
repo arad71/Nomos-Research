@@ -37,6 +37,7 @@ class VernacularEdit(VernacularBase):
 class Vernacular(VernacularBase, TableBase):
     vernacular_id: int
     taxon_name: TaxonName
+    deleted: bool
 
     class Config:
         orm_mode = True

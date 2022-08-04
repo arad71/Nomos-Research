@@ -24,6 +24,7 @@ def test_get_cross_references(
         "updated_on": test_cross_reference.updated_on.isoformat(),
         "created_by": test_cross_reference.created_by,
         "created_on": test_cross_reference.created_on.isoformat(),
+        "deleted": False,
     }
 
 
@@ -86,6 +87,7 @@ def test_edit_cross_reference(
     json = response.json()
     new_cross_reference["updated_on"] = json["updated_on"]
     new_cross_reference["new_name_id"] = test_taxon_name.taxon_name_id
+    new_cross_reference["deleted"] = False
     del json["old_name"]
     del json["new_name"]
     assert json == new_cross_reference
@@ -139,6 +141,7 @@ def test_get_cross_reference(
         "updated_on": test_cross_reference.updated_on.isoformat(),
         "created_by": test_cross_reference.created_by,
         "created_on": test_cross_reference.created_on.isoformat(),
+        "deleted": False,
     }
 
 

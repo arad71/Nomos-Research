@@ -50,6 +50,7 @@ class User(UserBase):
     updated_on: Optional[datetime]
     created_by: Optional[int]
     created_on: Optional[datetime]
+    deleted: bool
 
     class Config:
         orm_mode = True

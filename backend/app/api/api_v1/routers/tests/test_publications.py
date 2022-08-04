@@ -25,6 +25,7 @@ def test_get_publications(client, test_publication, superuser_token_headers):
             "author_ids": [],
             "author_names": [],
             "author_name": "",
+            "deleted": False,
         }
     ]
 
@@ -87,6 +88,7 @@ def test_edit_publication(
     new_publication["author_names"] = []
     new_publication["author_name"] = ""
     new_publication["display_title"] = test_publication.display_title
+    new_publication["deleted"] = False
     assert response.json() == new_publication
 
 
@@ -137,6 +139,7 @@ def test_get_publication(
         "author_ids": [],
         "author_names": [],
         "author_name": "",
+        "deleted": False,
     }
 
 
