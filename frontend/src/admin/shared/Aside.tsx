@@ -7,6 +7,7 @@ import {
   TextField,
   Labeled,
   useRecordContext,
+  useResourceContext,
 } from 'react-admin';
 import TaxonNameInformalGroups from '../Taxon_names/TaxonNameInformalGroups';
 import TaxonHierarchy from '../Taxon_names/TaxonHierarchy';
@@ -66,6 +67,7 @@ const Aside = () => {
   const currPath = location.pathname.split('/')[1];
   const isTaxonNames = currPath == 'taxon_names';
   const record = useRecordContext();
+  const resource = useResourceContext();
   const deleted = record.deleted ? (
     <Typography variant="subtitle1" className={classes.deleted}>
       <DeleteIcon />
@@ -86,11 +88,9 @@ const Aside = () => {
                 History
               </Typography>
             </Box>
-            <Box>
-              <WithPermissions resource="informal_groups" action="harddelete">
-                {deleted}
-              </WithPermissions>
-            </Box>
+            <WithPermissions resource={resource} action="harddelete">
+              <Box>{deleted}</Box>
+            </WithPermissions>
           </Box>
           <Box className={classes.mainGrid}>
             <Box className={classes.panelSection}>
