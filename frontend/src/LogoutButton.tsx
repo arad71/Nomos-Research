@@ -7,10 +7,10 @@ import Button from '@material-ui/core/Button';
 export const LogoutButton: FC = () => {
   // The redirect hook accepts external absolute links but,
   // will only sit in function components. Hence, moving it here.
-  const handleClick = () => redirect(logoutLink);
   const redirect = useRedirect();
   const logoutLink =
     window.location.origin + localStorage.getItem('logout_url');
+  const handleClick = () => redirect(logoutLink);
   clearLocalStorage();
   return (
     <Button onClick={handleClick} startIcon={<PowerSettingsNewIcon />}>
