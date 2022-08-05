@@ -37,7 +37,7 @@ export const CrossRefCreateEdit: FC = (props) => {
       </Box>
       <Box className={classes.mainGrid}>
         <ScientificNameReference source="old_name_id" validate={required()} />
-        <ScientificNameReference source="new_name_id" validate={required()} />
+        <ScientificNameReference source="new_name_id" />
         <SelectInput
           source="cross_reference_type"
           choices={CrossRefType}
