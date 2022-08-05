@@ -61,7 +61,6 @@ class Hierarchy(BaseModel, TableMixin):
         backref=backref("hierarchies", cascade="all, delete-orphan"),
         lazy="joined",
         single_parent=True,
-        post_update=True,
     )
 
     classification_system_id = Column(
