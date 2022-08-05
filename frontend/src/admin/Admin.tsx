@@ -9,6 +9,7 @@ import MyLayout from '../MyLayout';
 import theme from '../Theme';
 import Dashboard from '../Dashboard';
 import BookIcon from '@material-ui/icons/Book';
+import { LogoutButton } from '../LogoutButton';
 
 import { UserList, UserShow, UserEdit, UserCreate } from './Users';
 import {
@@ -124,6 +125,7 @@ export const Admin: FC = () => {
       theme={theme}
       authProvider={authProvider}
       dataProvider={dataProvider}
+      logoutButton={LogoutButton}
     >
       <Resource
         name="users"
