@@ -18,7 +18,6 @@ class ImportTaxonName(DataImportBase):
         self.update_cols = (
             "kingdom_id",
             "uninomial",
-            "subgenus",
             "specific_epithet",
             "infraspecific_epithet",
             "publication_id",
@@ -210,7 +209,7 @@ class ImportTaxonNameUpload(ImportTaxonName):
             *row["canonical_name_without_rank"].split()
         )
         if not uninomial:
-            raise DataSkipError(f"No uninomial defined")
+            raise DataSkipError("No uninomial defined")
         admin_comment = [
             f"Created by import script {__name__}",
             f" from source csv {self.legacy_id_prefix[:-1]}",
