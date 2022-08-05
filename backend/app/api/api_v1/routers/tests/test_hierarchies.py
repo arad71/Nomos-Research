@@ -26,7 +26,8 @@ def test_get_hierarchies(
             "formatted_scientific_name": "<i class='canonical-name'>Testuninomial</i>",
             "path": {
                 "path": "{}.{}".format(
-                    test_hierarchy.classification_system_id, test_hierarchy.taxon_name_id
+                    test_hierarchy.classification_system_id,
+                    test_hierarchy.taxon_name_id,
                 )
             },
             "rank_name": "Rank Name 1",

@@ -26,6 +26,10 @@ def test_get_taxon_names(
             "created_by": test_taxon_name.created_by,
             "created_on": test_taxon_name.created_on.isoformat(),
             "classification_system_ids": [],
+            "path": [],
+            "scientific_name": "Testuninomial",
+            "formatted_scientific_name": "<i class='canonical-name'>Testuninomial</i>",
+            "uninomial": "Testuninomial",
         }
     ]
 
@@ -66,6 +70,10 @@ def test_edit_taxon_name(
         "created_by": test_superuser.user_id,
         "created_on": test_taxon_name.created_on.isoformat(),
         "classification_system_ids": [],
+        "formatted_scientific_name": "<i class='canonical-name'>Testuninomial</i>",
+        "path": [],
+        "scientific_name": "Testuninomial",
+        "uninomial": "Testuninomial",
     }
 
     response = client.put(
@@ -138,6 +146,10 @@ def test_get_taxon_name(
         "created_by": test_taxon_name.created_by,
         "created_on": test_taxon_name.created_on.isoformat(),
         "classification_system_ids": [],
+        "formatted_scientific_name": "<i class='canonical-name'>Testuninomial</i>",
+        "path": [],
+        "scientific_name": "Testuninomial",
+        "uninomial": "Testuninomial",
     }
 
 
@@ -163,7 +175,6 @@ def test_canonical_name_1(
         "taxon_rank": response_json["taxon_rank"],
         "is_current": test_taxon_name_canonical_name_1.is_current,
         "validated": test_taxon_name_canonical_name_1.validated,
-        "genus": test_taxon_name_canonical_name_1.genus,
         "uninomial": test_taxon_name_canonical_name_1.uninomial,
         "canonical_name": test_taxon_name_canonical_name_1.canonical_name,
         "canonical_name_without_rank": test_taxon_name_canonical_name_1.canonical_name_without_rank,
@@ -174,6 +185,7 @@ def test_canonical_name_1(
         "created_by": test_taxon_name_canonical_name_1.created_by,
         "created_on": test_taxon_name_canonical_name_1.created_on.isoformat(),
         "classification_system_ids": [],
+        "path": [],
     }
 
 
@@ -199,7 +211,6 @@ def test_canonical_name_2(
         "taxon_rank": response_json["taxon_rank"],
         "is_current": test_taxon_name_canonical_name_2.is_current,
         "validated": test_taxon_name_canonical_name_2.validated,
-        "genus": test_taxon_name_canonical_name_2.genus,
         "specific_epithet": test_taxon_name_canonical_name_2.specific_epithet,
         "canonical_name": test_taxon_name_canonical_name_2.canonical_name,
         "canonical_name_without_rank": test_taxon_name_canonical_name_2.canonical_name_without_rank,
@@ -210,6 +221,8 @@ def test_canonical_name_2(
         "created_by": test_taxon_name_canonical_name_2.created_by,
         "created_on": test_taxon_name_canonical_name_2.created_on.isoformat(),
         "classification_system_ids": [],
+        "path": [],
+        "uninomial": "Acanthiza",
     }
 
 
@@ -235,7 +248,6 @@ def test_canonical_name_3(
         "taxon_rank": response_json["taxon_rank"],
         "is_current": test_taxon_name_canonical_name_3.is_current,
         "validated": test_taxon_name_canonical_name_3.validated,
-        "genus": test_taxon_name_canonical_name_3.genus,
         "uninomial": test_taxon_name_canonical_name_3.uninomial,
         "specific_epithet": test_taxon_name_canonical_name_3.specific_epithet,
         "infraspecific_epithet": test_taxon_name_canonical_name_3.infraspecific_epithet,
@@ -248,6 +260,7 @@ def test_canonical_name_3(
         "created_by": test_taxon_name_canonical_name_3.created_by,
         "created_on": test_taxon_name_canonical_name_3.created_on.isoformat(),
         "classification_system_ids": [],
+        "path": [],
     }
 
 
