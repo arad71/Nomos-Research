@@ -51,6 +51,16 @@ const theme = createTheme({
         minWidth: '100%',
       },
     },
+    RaAutocompleteInput: {
+      container: {
+        gridColumn: '1/5',
+      },
+    },
+    RaAutocompleteArrayInput: {
+      container: {
+        gridColumn: '1/5',
+      },
+    },
   },
 });
 
