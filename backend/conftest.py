@@ -548,6 +548,19 @@ def test_carnivora(
 
 
 @pytest.fixture
+def test_felidae(
+    test_db, test_kingdom, test_publication, test_superuser, test_rank_class
+) -> TaxonName:
+    """
+    Taxon Name for testing
+    """
+    now = datetime.datetime.utcnow()
+    return create_taxon_name(
+        "Felidae", now, test_db, test_kingdom, test_superuser, test_rank_family
+    )
+
+
+@pytest.fixture
 def test_panthera(
     test_db, test_kingdom, test_publication, test_superuser, test_rank_genus
 ) -> TaxonName:
