@@ -10,8 +10,10 @@ export const LogoutButton: FC = () => {
   const redirect = useRedirect();
   const logoutLink =
     window.location.origin + localStorage.getItem('logout_url');
-  const handleClick = () => redirect(logoutLink);
-  clearLocalStorage();
+  const handleClick = () => {
+    clearLocalStorage();
+    redirect(logoutLink);
+  };
   return (
     <Button onClick={handleClick} startIcon={<PowerSettingsNewIcon />}>
       Logout
