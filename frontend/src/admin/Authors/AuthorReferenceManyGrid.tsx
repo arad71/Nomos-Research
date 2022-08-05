@@ -9,7 +9,7 @@ import {
   TextField,
 } from 'react-admin';
 import { Box, Typography } from '@material-ui/core';
-
+import { WithPermissions } from '@react-admin/ra-rbac';
 import AuthorType from '../Citations/AuthorType';
 import { GlobalTheme } from '../../GlobalTheme';
 
@@ -26,12 +26,6 @@ export const AuthorReferenceManyGrid = (props: {
   props: React.PropsWithChildren<{}>;
 }) => {
   const globalClasses = GlobalTheme();
-  const role: any = localStorage.getItem('scopes');
-  console.log(role);
-  let deleted = null;
-  if (role == 'SUPER_ADMIN') {
-    deleted = <BooleanField source="deleted" />;
-  }
   return (
     <ReferenceManyField
       fullWidth
@@ -50,7 +44,9 @@ export const AuthorReferenceManyGrid = (props: {
         </ReferenceField>
         <SelectField source="author_type" choices={AuthorType} />
         <NumberField source="author_order" />
-        {deleted}
+        <WithPermissions resource="authors" action="harddelete">
+          <BooleanField source="deleted" />
+        </WithPermissions>
       </Datagrid>
     </ReferenceManyField>
   );
