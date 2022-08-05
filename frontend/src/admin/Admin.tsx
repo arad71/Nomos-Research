@@ -183,6 +183,15 @@ export const Admin: FC = () => {
         create={TaxonNameCreate}
         icon={BookIcon}
       />
+      <Resource name="taxon_names_ancestors/Division" />
+      <Resource name="taxon_names_ancestors/Phylum" />
+      <Resource name="taxon_names_ancestors/Order" />
+      <Resource name="taxon_names_ancestors/Class" />
+      <Resource name="taxon_names_ancestors/Family" />
+      <Resource name="taxon_names_ancestors/Genus" />
+      <Resource name="taxon_names_ancestors/Subgenus" />
+      <Resource name="taxon_names_ancestors/Species" />
+      <Resource name="taxon_names_ancestors/Subspecies" />
       <Resource
         name="informal_groups"
         list={InformalGroupList}
