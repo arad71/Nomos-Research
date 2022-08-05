@@ -12,6 +12,7 @@ import { FormattedScientificNameWithStatus } from '../Taxon_names';
 import { GlobalTheme } from '../../GlobalTheme';
 import { CrossReferenceRowForm } from './CrossReferenceRowForm';
 import { EditableDatagrid } from '@react-admin/ra-editable-datagrid';
+import CustomAction from '../shared/CustomAction';
 
 export const EditableCrossReferenceManyGrid = (props: {
   source: string;
@@ -29,6 +30,7 @@ export const EditableCrossReferenceManyGrid = (props: {
       {...props.props}
     >
       <EditableDatagrid
+        actions={<CustomAction />}
         undoable
         createForm={
           <CrossReferenceRowForm

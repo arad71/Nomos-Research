@@ -19,10 +19,6 @@ import {
   minValue,
   SelectArrayInput,
   ReferenceArrayInput,
-  FunctionField,
-  ReferenceArrayField,
-  ChipField,
-  SingleFieldList,
 } from 'react-admin';
 import { EditableDatagrid } from '@react-admin/ra-editable-datagrid';
 import React, { FC, PropsWithChildren } from 'react';
@@ -42,6 +38,7 @@ import CrossRefType from '../Cross_references/CrossRefType';
 import { FormattedScientificNameWithStatus } from '../Taxon_names';
 // eslint-disable-next-line max-len
 import { CrossReferenceRowForm } from '../Cross_references/CrossReferenceRowForm';
+import CustomAction from '../shared/CustomAction';
 import EditToolbar from '../shared/EditToolbar';
 
 const validateNumber = [number(), minValue(0)];
@@ -203,6 +200,7 @@ export const TaxonNameCreateEdit: FC = ({
                   {...props}
                 >
                   <EditableDatagrid
+                    actions={<CustomAction />}
                     undoable
                     /* eslint-disable-next-line max-len */
                     className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
@@ -280,6 +278,7 @@ export const TaxonNameCreateEdit: FC = ({
                   {...props}
                 >
                   <EditableDatagrid
+                    actions={<CustomAction />}
                     /* eslint-disable-next-line max-len */
                     className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
                     undoable
@@ -422,6 +421,7 @@ export const TaxonNameCreateEdit: FC = ({
                     {...props}
                   >
                     <EditableDatagrid
+                      actions={<CustomAction />}
                       undoable
                       /* eslint-disable-next-line max-len */
                       className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
@@ -474,6 +474,7 @@ export const TaxonNameCreateEdit: FC = ({
                     {...props}
                   >
                     <EditableDatagrid
+                      actions={<CustomAction />}
                       undoable
                       /* eslint-disable-next-line max-len */
                       className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
