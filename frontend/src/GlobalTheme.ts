@@ -14,7 +14,7 @@ export const GlobalTheme = makeStyles((theme) => ({
     top: '65px',
   },
   titleTruncation: {
-    width: '27em',
+    maxWidth: '23em',
     display: 'inline-block',
     textOverflow: 'ellipsis',
     overflow: 'hidden',
