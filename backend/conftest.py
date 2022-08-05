@@ -282,6 +282,29 @@ def test_classification_system(test_db, test_superuser) -> ClassificationSystem:
 
 
 @pytest.fixture
+def test_hierarchical_classification_system(
+    test_db, test_superuser
+) -> ClassificationSystem:
+    """
+    Classification System for testing
+    """
+
+    now = datetime.datetime.utcnow()
+    classification_system = ClassificationSystem(
+        class_desc="HIERARCHICAL_CLASS_DESC",
+        class_type="hierarchical",
+        preferred=True,
+        updated_by=test_superuser.user_id,
+        updated_on=now,
+        created_by=test_superuser.user_id,
+        created_on=now,
+    )
+    test_db.add(classification_system)
+    test_db.commit()
+    return classification_system
+
+
+@pytest.fixture
 def test_cross_reference(test_db, test_taxon_name, test_superuser) -> CrossReference:
     """
     Cross Reference for testing
@@ -625,6 +648,31 @@ def test_taxon_name_2(
         is_current=True,
         validated=True,
         uninomial="Testuninomial2",
+        updated_by=test_superuser.user_id,
+        updated_on=now,
+        created_by=test_superuser.user_id,
+        created_on=now,
+    )
+    test_db.add(taxon_name)
+    test_db.commit()
+    return taxon_name
+
+
+@pytest.fixture
+def test_taxon_name_3(
+    test_db, test_kingdom, test_taxon_rank, test_publication, test_superuser
+) -> TaxonName:
+    """
+    Taxon Name 3 for testing
+    """
+
+    now = datetime.datetime.utcnow()
+    taxon_name = TaxonName(
+        kingdom_id=test_kingdom.kingdom_id,
+        rank_id=test_taxon_rank.taxon_rank_id,
+        is_current=True,
+        validated=True,
+        uninomial="Testuninomial3",
         updated_by=test_superuser.user_id,
         updated_on=now,
         created_by=test_superuser.user_id,

@@ -1,5 +1,4 @@
 import pytest
-from loguru import logger
 from starlette import status
 
 from app.db.hierarchy.model import Hierarchy
@@ -9,8 +8,6 @@ from app.db.taxon_name.model import TaxonName
 def test_get_hierarchies(
     client, test_hierarchy, test_taxon_name: TaxonName, superuser_token_headers
 ):
-    logger.debug(test_hierarchy)
-    logger.debug(test_taxon_name.to_dict())
     response = client.get("/api/v1/hierarchies", headers=superuser_token_headers)
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == [
@@ -21,11 +18,19 @@ def test_get_hierarchies(
             "classification_system_id": test_hierarchy.classification_system_id,
             "classification_system": response.json()[0]["classification_system"],
             "parent_nid": test_hierarchy.parent_nid,
-            # "parent": response.json()[0]["parent"],
+            "parent_name": response.json()[0]["parent_name"],
             "updated_by": test_hierarchy.updated_by,
             "updated_on": test_hierarchy.updated_on.isoformat(),
             "created_by": test_hierarchy.created_by,
             "created_on": test_hierarchy.created_on.isoformat(),
+            "formatted_scientific_name": "<i class='canonical-name'>Testuninomial</i>",
+            "path": {
+                "path": "{}.{}".format(
+                    test_hierarchy.classification_system_id, test_hierarchy.taxon_name_id
+                )
+            },
+            "rank_name": "Rank Name 1",
+            "scientific_name": "Testuninomial",
         }
     ]
 
@@ -58,7 +63,6 @@ def test_hierarchies_with_data(
         headers=superuser_token_headers,
     )
     assert response.status_code == status.HTTP_200_OK
-    logger.debug(response.json())
     new_path = response.json()["path"]["path"]
     assert new_path != existing_path
     assert new_path == "{}.{}.{}.{}".format(
@@ -80,7 +84,6 @@ def test_hierarchies_with_data(
         test_carnivora.taxon_name_id,
         test_panthera.taxon_name_id,
     )
-    logger.debug(new_path)
 
     new_hierarchy = {
         "parent_nid": test_panthera.taxon_name_id,
@@ -131,7 +134,7 @@ def test_delete_hierarchy_not_found(client, superuser_token_headers):
 
 
 def test_edit_hierarchy(
-    client, test_hierarchy, test_superuser, superuser_token_headers
+    client, test_hierarchy, test_superuser, superuser_token_headers, test_db
 ):
     new_hierarchy = {
         "taxon_name_id": test_hierarchy.taxon_name_id,
@@ -153,7 +156,18 @@ def test_edit_hierarchy(
     new_hierarchy["updated_on"] = response.json()["updated_on"]
     new_hierarchy["taxon_name"] = response.json()["taxon_name"]
     new_hierarchy["classification_system"] = response.json()["classification_system"]
-    new_hierarchy["parent"] = response.json()["parent"]
+    new_hierarchy["parent_name"] = response.json()["parent_name"]
+    new_hierarchy[
+        "formatted_scientific_name"
+    ] = "<i class='canonical-name'>Testuninomial</i>"
+    new_hierarchy["path"] = {
+        "path": "{}.{}".format(
+            test_hierarchy.classification_system_id, test_hierarchy.taxon_name_id
+        )
+    }
+    new_hierarchy["rank_name"] = "Rank Name 1"
+    new_hierarchy["scientific_name"] = "Testuninomial"
+
     assert response.json() == new_hierarchy
 
 
@@ -192,11 +206,19 @@ def test_get_hierarchy(
         "classification_system_id": test_hierarchy.classification_system_id,
         "classification_system": response.json()["classification_system"],
         "parent_nid": test_hierarchy.parent_nid,
-        "parent": response.json()["parent"],
+        "parent_name": response.json()["parent_name"],
         "updated_by": test_hierarchy.updated_by,
         "updated_on": test_hierarchy.updated_on.isoformat(),
         "created_by": test_hierarchy.created_by,
         "created_on": test_hierarchy.created_on.isoformat(),
+        "formatted_scientific_name": "<i class='canonical-name'>Testuninomial</i>",
+        "path": {
+            "path": "{}.{}".format(
+                test_hierarchy.classification_system_id, test_hierarchy.taxon_name_id
+            )
+        },
+        "rank_name": "Rank Name 1",
+        "scientific_name": "Testuninomial",
     }
 
 
@@ -230,6 +252,7 @@ def test_super_admin_permissions(
     test_classification_system,
     test_taxon_name_2,
     test_taxon_name_canonical_name_1,
+    test_taxon_name_3,
     test_superuser,
 ):
     response = client.get("/api/v1/hierarchies", headers=superuser_token_headers)
@@ -255,16 +278,17 @@ def test_super_admin_permissions(
         json=hierarchy_json,
     )
     assert response.status_code == status.HTTP_200_OK
-
+    hierarchy_json = response.json()
+    hierarchy_id = hierarchy_json["hierarchy_id"]
     hierarchy_json.update(
         {
-            "taxon_name_id": test_taxon_name_2.taxon_name_id,
+            "parent_nid": test_taxon_name_3.taxon_name_id,
             "updated_by": test_superuser.user_id,
             "updated_on": test_hierarchy.updated_on.isoformat(),
         }
     )
     response = client.put(
-        f"/api/v1/hierarchies/{test_hierarchy.hierarchy_id}",
+        f"/api/v1/hierarchies/{hierarchy_id}",
         headers=superuser_token_headers,
         json=hierarchy_json,
     )
@@ -282,10 +306,12 @@ def test_manager_permissions(
     manager_token_headers,
     test_hierarchy,
     test_taxon_name,
-    test_classification_system,
+    test_hierarchical_classification_system,
     test_taxon_name_2,
+    test_taxon_name_3,
     test_taxon_name_canonical_name_1,
     test_manager,
+    test_db,
 ):
     response = client.get("/api/v1/hierarchies", headers=manager_token_headers)
     assert response.status_code == status.HTTP_200_OK
@@ -295,14 +321,11 @@ def test_manager_permissions(
         headers=manager_token_headers,
     )
     assert response.status_code == status.HTTP_200_OK
-
     hierarchy_json = {
         **NEW_HIERARCHY,
         "taxon_name_id": test_taxon_name_canonical_name_1.taxon_name_id,
-        "classification_system_id": test_classification_system.classification_system_id,
+        "classification_system_id": test_hierarchical_classification_system.classification_system_id,
         "parent_nid": test_taxon_name_2.taxon_name_id,
-        "created_by": test_manager.user_id,
-        "created_on": test_hierarchy.created_on.isoformat(),
     }
     response = client.post(
         "/api/v1/hierarchies",
@@ -310,18 +333,17 @@ def test_manager_permissions(
         json=hierarchy_json,
     )
     assert response.status_code == status.HTTP_200_OK
-
-    hierarchy_json.update(
+    saved_hierarchy = response.json()
+    hierarchy_id = saved_hierarchy["hierarchy_id"]
+    saved_hierarchy.update(
         {
-            "taxon_name_id": test_taxon_name_2.taxon_name_id,
-            "updated_by": test_manager.user_id,
-            "updated_on": test_hierarchy.updated_on.isoformat(),
+            "parent_nid": test_taxon_name_3.taxon_name_id,
         }
     )
     response = client.put(
-        f"/api/v1/hierarchies/{test_hierarchy.hierarchy_id}",
+        f"/api/v1/hierarchies/{hierarchy_id}",
         headers=manager_token_headers,
-        json=hierarchy_json,
+        json=saved_hierarchy,
     )
     assert response.status_code == status.HTTP_200_OK
 
