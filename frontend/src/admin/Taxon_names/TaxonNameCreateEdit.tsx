@@ -19,6 +19,7 @@ import {
   minValue,
   SelectArrayInput,
   ReferenceArrayInput,
+  AutocompleteInput,
 } from 'react-admin';
 import { EditableDatagrid } from '@react-admin/ra-editable-datagrid';
 import React, { FC, PropsWithChildren } from 'react';
@@ -112,8 +113,10 @@ export const TaxonNameCreateEdit: FC = ({
               reference="taxon_ranks"
               validate={[required()]}
               className={gridClasses.EightCol3to5span}
+              sort={{ field: 'rank_name', order: 'ASC' }}
+              perPage={100}
             >
-              <SelectInput optionText="rank_name" fullWidth />
+              <AutocompleteInput optionText="rank_name" fullWidth resettable />
             </ReferenceInput>
             <TextInput
               source="uninomial"
@@ -243,9 +246,11 @@ export const TaxonNameCreateEdit: FC = ({
             <ReferenceInput
               source="publication_id"
               reference="publications"
+              sort={{ field: 'abbreviated_title', order: 'ASC' }}
+              perPage={100}
               className={gridClasses.EightCol1to5span}
             >
-              <SelectInput optionText="title" />
+              <AutocompleteInput optionText="title" fullWidth resettable />
             </ReferenceInput>
             <Box
               /* eslint-disable-next-line max-len */
@@ -281,7 +286,6 @@ export const TaxonNameCreateEdit: FC = ({
                     actions={<CustomAction />}
                     /* eslint-disable-next-line max-len */
                     className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
-                    undoable
                     createForm={
                       <VernacularRowForm
                         initialValues={vernacularInitialValues}

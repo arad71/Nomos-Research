@@ -8,9 +8,9 @@ import {
   TextField,
   TextInput,
   ReferenceArrayInput,
-  SelectArrayInput,
   AutocompleteInput,
   Labeled,
+  AutocompleteArrayInput,
 } from 'react-admin';
 import React, { FC } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
@@ -31,11 +31,13 @@ export const PublicationCreateEdit: FC = (props) => {
   const classes = useStyles();
   const globalClasses = GlobalTheme();
   const gridClasses = GlobalGridTheme();
+  // eslint-disable-next-line max-len
+  const titleClasses = `${globalClasses.title} ${globalClasses.titleTruncation}`;
   return (
     <>
       <Box className={globalClasses.titlePos}>
         <Box>
-          <TextField className={globalClasses.title} source="display_title" />
+          <TextField className={titleClasses} source="display_title" />
         </Box>
         <TextField
           source="verbatim_author"
@@ -112,9 +114,10 @@ export const PublicationCreateEdit: FC = (props) => {
             <ReferenceArrayInput
               source="author_ids"
               reference="authors"
-              className={gridClasses.EightCol1to5span}
+              sort={{ field: 'abbreviation', order: 'ASC' }}
+              perPage={100}
             >
-              <SelectArrayInput optionText="abbreviation" fullWidth />
+              <AutocompleteArrayInput optionText="abbreviation" resettable />
             </ReferenceArrayInput>
             <TextInput
               source="publisher"
@@ -129,7 +132,7 @@ export const PublicationCreateEdit: FC = (props) => {
                 fullWidth
                 perPage={100}
               >
-                <AutocompleteInput optionText="display_title" resettable />
+                <AutocompleteInput optionText="abbreviated_title" resettable />
               </ReferenceInput>
             </Box>
             <TextInput

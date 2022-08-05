@@ -13,6 +13,13 @@ export const GlobalTheme = makeStyles((theme) => ({
     position: 'absolute',
     top: '65px',
   },
+  titleTruncation: {
+    width: '27em',
+    display: 'inline-block',
+    textOverflow: 'ellipsis',
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+  },
   bold: {
     fontWeight: 'bold',
   },

@@ -3,6 +3,7 @@ import React, { FC } from 'react';
 import { GlobalTheme } from '../../GlobalTheme';
 import { Box, Typography, makeStyles } from '@material-ui/core';
 import EditToolbar from '../shared/EditToolbar';
+import { ScientificNameReference } from '../Taxon_names';
 
 const useStyles = makeStyles((theme) => ({
   mainGrid: {
@@ -29,9 +30,10 @@ export const HierarchyCreateEdit: FC = (props) => {
       </Box>
       <Box className={classes.mainGrid}>
         <Box>
-          <ReferenceInput source="taxon_name_id" reference="taxon_names">
-            <SelectInput optionText="scientific_name" validate={required()} />
-          </ReferenceInput>
+          <ScientificNameReference
+            source="taxon_name_id"
+            validate={required()}
+          />
         </Box>
         <Box>
           <ReferenceInput
