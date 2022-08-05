@@ -38,15 +38,6 @@ from app.db.taxon_rank.schema import TaxonRank
 class TaxonNameBase(BaseModel):
     kingdom_id: int = Field(description=KINGDOM_ID)
     rank_id: int = Field(description=RANK_ID)
-    phylum: Optional[str]
-    # class is a reserved word, will this workaround be enough?
-    taxon_class: Optional[str]
-    order: Optional[str]
-    family: Optional[str]
-    genus: Optional[str]
-    subgenus: Optional[str]
-    species: Optional[str]
-    subspecies: Optional[str]
     uninomial: Optional[str]
     specific_epithet: Optional[str]
     infraspecific_epithet: Optional[str]
