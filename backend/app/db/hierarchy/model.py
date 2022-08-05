@@ -32,6 +32,14 @@ class Hierarchy(BaseModel, TableMixin):
         viewonly=True,
         post_update=True,
     )
+    ancestors = relationship(
+        "Hierarchy",
+        primaryjoin=foreign(path).bool_op("<@")(remote(path)),
+        viewonly=True,
+        order_by=remote(path),
+        uselist=True,
+        post_update=True,
+    )
     children = relationship(
         "Hierarchy",
         primaryjoin=(foreign(path) == remote(func.subpath(path, 0, -1))),
@@ -137,9 +145,7 @@ class Hierarchy(BaseModel, TableMixin):
         return parent_path
 
     def calculate_path(self, parent: "Hierarchy" = None):
-        logger.debug(self.path)
         new_path = self.get_path()
-        logger.debug(new_path)
         if parent:
             self.path = new_path
             if parent:
@@ -195,8 +201,6 @@ def calculate_fields(
 
 def rebuild_hierarchy_for_children(hierarchy_id: int):
     hierarchy: Hierarchy = Hierarchy.find(hierarchy_id)
-    logger.debug(hierarchy)
     hierarchy.calculate_path_for_children()
-    logger.debug(hierarchy.path)
     hierarchy.session.flush()
     hierarchy.session.commit()
