@@ -5,7 +5,6 @@ import {
   NumberInput,
   ReferenceInput,
   required,
-  SelectInput,
   TextField,
   TextInput,
   ReferenceArrayInput,
@@ -128,8 +127,9 @@ export const PublicationCreateEdit: FC = (props) => {
                 reference="publications"
                 sort={{ field: 'abbreviated_title', order: 'ASC' }}
                 fullWidth
+                perPage={100}
               >
-                <AutocompleteInput optionText="abbreviated_title" />
+                <AutocompleteInput optionText="display_title" resettable />
               </ReferenceInput>
             </Box>
             <TextInput
