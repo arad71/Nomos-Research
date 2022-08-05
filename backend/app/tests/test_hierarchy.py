@@ -110,7 +110,3 @@ def test_hierarchy_children(
             panther.taxon_name_id,
         )
     )
-    assert test_panthera.phylum == "Chordata"
-    assert test_panthera.taxon_class == "Reptilia"
-    assert test_panthera.genus == "Panthera"
-    assert test_reptilia.phylum == "Chordata"
