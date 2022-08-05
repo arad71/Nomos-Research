@@ -56,6 +56,11 @@ const theme = createTheme({
         gridColumn: '1/5',
       },
     },
+    RaAutocompleteArrayInput: {
+      container: {
+        gridColumn: '1/5',
+      },
+    },
   },
 });
 

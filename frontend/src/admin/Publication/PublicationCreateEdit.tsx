@@ -8,9 +8,9 @@ import {
   TextField,
   TextInput,
   ReferenceArrayInput,
-  SelectArrayInput,
   AutocompleteInput,
   Labeled,
+  AutocompleteArrayInput,
 } from 'react-admin';
 import React, { FC } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
@@ -114,15 +114,10 @@ export const PublicationCreateEdit: FC = (props) => {
             <ReferenceArrayInput
               source="author_ids"
               reference="authors"
-              className={gridClasses.EightCol1to5span}
               sort={{ field: 'abbreviation', order: 'ASC' }}
               perPage={100}
             >
-              <AutocompleteInput
-                optionText="abbreviation"
-                fullWidth
-                resettable
-              />
+              <AutocompleteArrayInput optionText="abbreviation" resettable />
             </ReferenceArrayInput>
             <TextInput
               source="publisher"
