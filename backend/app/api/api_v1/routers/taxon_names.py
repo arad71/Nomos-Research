@@ -1,13 +1,19 @@
+import json
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, Response
+from sqlalchemy import and_, func, select
+from sqlalchemy.orm import Session, aliased
 
 from app.api.dependencies.range_query import RangeQueryParameter
 from app.core.auth import authorize, get_current_active_user
+from app.db.hierarchy.model import Hierarchy
 from app.db.role.constants import Role
 from app.db.session import get_db
 from app.db.taxon_name.crud import TaxonNameCrud
+from app.db.taxon_name.model import TaxonName as TaxonNameModel
 from app.db.taxon_name.schema import TaxonName, TaxonNameCreate, TaxonNameEdit
+from app.db.taxon_rank.model import TaxonRank
 from app.db.user.model import User
 
 taxon_names_router = r = APIRouter(prefix="/taxon_names")
@@ -35,6 +41,88 @@ async def taxon_name_list(
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = content_range
     return taxon_names
+
+
+@r.get(
+    "_ancestors/{rank}",
+    dependencies=[authorize()],
+)
+async def taxon_name_ancestors(
+    response: Response,
+    rank: str = None,
+    filter: Optional[str] = None,
+    range: Optional[str] = RangeQueryParameter,
+    db: Session = Depends(get_db),
+):
+    tables = {}
+
+    limit, skip, range_str = TaxonNameCrud.get_skip_and_limit(range)
+    tables["original_name"] = taxon_name = aliased(TaxonNameModel, name="original_name")
+    tables["hierarchy"] = hierarchy = aliased(Hierarchy, name="hierarchy")
+    tables["ancestor"] = ancestor = aliased(Hierarchy, name="ancestor")
+    tables["ancestor_name"] = ancestor_name = aliased(
+        TaxonNameModel, name="ancestor_name"
+    )
+    taxon_rank = aliased(TaxonRank, name="rank")
+    statement = (
+        select(
+            taxon_name.taxon_name_id.label("id"),
+            taxon_rank.rank_name.label("rank__rank_name"),
+            ancestor_name.taxon_name_id.label("ancestor_name__taxon_name_id"),
+            ancestor_name.canonical_name.label("ancestor_name__canonical_name"),
+            ancestor_name.scientific_name.label("ancestor_name__scientific_name"),
+            ancestor_name.formatted_scientific_name.label(
+                "ancestor_name__formatted_scientific_name"
+            ),
+        )
+        .join(
+            hierarchy,
+            onclause=hierarchy.taxon_name_id == taxon_name.taxon_name_id,
+        )
+        .join(
+            ancestor,
+            onclause=hierarchy.path.descendant_of(ancestor.path),
+        )
+        .join(
+            ancestor_name,
+            onclause=ancestor.taxon_name_id == ancestor_name.taxon_name_id,
+        )
+        .join(
+            taxon_rank,
+            onclause=and_(
+                ancestor_name.rank_id == taxon_rank.taxon_rank_id,
+                taxon_rank.rank_name == rank,
+            ),
+        )
+    )
+
+    filter_items = json.loads(filter) if filter else None
+
+    if filter_items:
+        column: str
+        for column in filter_items:
+            if column == "id":
+                field_name = "taxon_name_id"
+                table_name = "original_name"
+            else:
+                table_name, field_name = column.split("__")
+            table = tables.get(table_name)
+            if table:
+                field = getattr(table, field_name)
+                if field:
+                    filter_value = filter_items[column]
+                    if isinstance(filter_value, list):
+                        statement = statement.filter(field.in_(filter_value))
+
+                    else:
+                        statement = statement.filter(field == filter_value)
+
+    count_query = statement.with_only_columns(func.count(taxon_name.taxon_name_id))
+    count = db.execute(count_query).scalar_one()
+    response.headers["Content-Range"] = f"{skip}-{min(limit - 1 + skip, count)}/{count}"
+    statement = statement.limit(limit).offset(skip)
+    result = db.execute(statement)
+    return result.all()
 
 
 @r.get(
