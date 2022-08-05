@@ -11,6 +11,7 @@ import AuthorType from './AuthorType';
 import { GlobalTheme } from '../../GlobalTheme';
 import { Box, Typography, makeStyles } from '@material-ui/core';
 import EditToolbar from '../shared/EditToolbar';
+import { ScientificNameReference } from '../Taxon_names';
 
 const useStyles = makeStyles((theme) => ({
   mainGrid: {
@@ -37,15 +38,10 @@ export const CitationCreateEdit: FC = (props) => {
       </Box>
       <Box className={classes.mainGrid}>
         <Box>
-          <ReferenceInput
+          <ScientificNameReference
             source="taxon_name_id"
-            reference="taxon_names"
             validate={required()}
-            sort={{ field: 'scientific_name', order: 'ASC' }}
-            perPage={100}
-          >
-            <AutocompleteInput optionText="scientific_name" resettable />
-          </ReferenceInput>
+          />
         </Box>
         <Box>
           <ReferenceInput

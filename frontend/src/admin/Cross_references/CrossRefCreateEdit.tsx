@@ -1,17 +1,16 @@
 import {
-  ReferenceInput,
   required,
   SelectInput,
   SimpleForm,
   TextInput,
   BooleanInput,
-  AutocompleteInput,
 } from 'react-admin';
 import React, { FC } from 'react';
 import CrossRefType from './CrossRefType';
 import { GlobalTheme } from '../../GlobalTheme';
 import { Box, Typography, makeStyles } from '@material-ui/core';
 import EditToolbar from '../shared/EditToolbar';
+import { ScientificNameReference } from '../Taxon_names';
 
 const useStyles = makeStyles((theme) => ({
   mainGrid: {
@@ -37,26 +36,8 @@ export const CrossRefCreateEdit: FC = (props) => {
         </Typography>
       </Box>
       <Box className={classes.mainGrid}>
-        <ReferenceInput
-          source="old_name_id"
-          reference="taxon_names"
-          sort={{ field: 'scientific_name', order: 'ASC' }}
-          perPage={100}
-        >
-          <AutocompleteInput
-            optionText="scientific_name"
-            validate={required()}
-            resettable
-          />
-        </ReferenceInput>
-        <ReferenceInput
-          source="new_name_id"
-          reference="taxon_names"
-          sort={{ field: 'scientific_name', order: 'ASC' }}
-          perPage={100}
-        >
-          <AutocompleteInput optionText="scientific_name" resettable />
-        </ReferenceInput>
+        <ScientificNameReference source="old_name_id" validate={required()} />
+        <ScientificNameReference source="new_name_id" validate={required()} />
         <SelectInput
           source="cross_reference_type"
           choices={CrossRefType}

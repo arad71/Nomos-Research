@@ -1,14 +1,9 @@
-import {
-  ReferenceInput,
-  required,
-  SelectInput,
-  SimpleForm,
-  AutocompleteInput,
-} from 'react-admin';
+import { ReferenceInput, required, SelectInput, SimpleForm } from 'react-admin';
 import React, { FC } from 'react';
 import { GlobalTheme } from '../../GlobalTheme';
 import { Box, Typography, makeStyles } from '@material-ui/core';
 import EditToolbar from '../shared/EditToolbar';
+import { ScientificNameReference } from '../Taxon_names';
 
 const useStyles = makeStyles((theme) => ({
   mainGrid: {
@@ -40,18 +35,7 @@ export const InformalGroupCreateEdit: FC = (props) => {
         >
           <SelectInput optionText="class_desc" validate={required()} />
         </ReferenceInput>
-        <ReferenceInput
-          source="taxon_name_id"
-          reference="taxon_names"
-          sort={{ field: 'scientific_name', order: 'ASC' }}
-          perPage={100}
-        >
-          <AutocompleteInput
-            optionText="scientific_name"
-            validate={required()}
-            resettable
-          />
-        </ReferenceInput>
+        <ScientificNameReference source="taxon_name_id" validate={required()} />
       </Box>
     </SimpleForm>
   );

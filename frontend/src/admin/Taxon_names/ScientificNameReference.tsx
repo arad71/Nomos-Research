@@ -14,11 +14,14 @@ export function ScientificNameReference(props: {
       filterToQuery={(searchText: string) => ({
         scientific_name__ilike: `%${searchText}%`,
       })}
+      sort={{ field: 'scientific_name', order: 'ASC' }}
+      perPage={100}
       {...props}
     >
       <AutocompleteInput
         optionText="scientific_name"
         validate={props.validate}
+        resettable
       />
     </ReferenceInput>
   );
