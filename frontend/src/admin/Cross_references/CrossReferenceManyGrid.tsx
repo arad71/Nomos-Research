@@ -30,7 +30,6 @@ export const CrossReferenceManyGrid = (props: {
     <ReferenceManyField
       reference="cross_references"
       target={props.target}
-      filter={{ active: true }}
       {...props.props}
     >
       <Datagrid

@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, overload
 
 from fastapi import APIRouter, Depends, Response
 
@@ -12,6 +12,7 @@ from app.db.cross_reference.schema import (
 )
 from app.db.role.constants import Role
 from app.db.session import get_db
+from app.db.user.schema import User
 
 cross_references_router = r = APIRouter(prefix="/cross_references")
 
@@ -28,12 +29,13 @@ async def cross_reference_list(
     sort: Optional[str] = None,
     filter: Optional[str] = None,
     db=Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Get all cross_references
     """
     cross_references, content_range = CrossReferenceCrud.get_items(
-        db, range=range, sort=sort, list_filter=filter
+        db, current_user, range=range, sort=sort, list_filter=filter
     )
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = content_range
@@ -49,11 +51,12 @@ async def cross_reference_list(
 async def cross_reference_details(
     cross_reference_id: int,
     db=Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Get any cross_reference details
     """
-    cross_reference = CrossReferenceCrud.get_item(db, cross_reference_id)
+    cross_reference = CrossReferenceCrud.get_item(db, current_user, cross_reference_id)
     return cross_reference
 
 
@@ -106,10 +109,11 @@ async def cross_reference_edit(
     Update existing cross_reference
     """
     return CrossReferenceCrud.edit_item(
-        db, cross_reference_id, cross_reference, current_user.user_id
+        db, current_user, cross_reference_id, cross_reference
     )
 
 
+@overload
 @r.delete(
     "/{cross_reference_id}",
     dependencies=[
@@ -124,8 +128,30 @@ async def cross_reference_edit(
 async def cross_reference_delete(
     cross_reference_id: int,
     db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Delete existing cross_reference
     """
-    return CrossReferenceCrud.delete_item(db, cross_reference_id)
+    return CrossReferenceCrud.delete_item(db, current_user, cross_reference_id)
+
+
+@r.delete(
+    "/{cross_reference_id}/hard",
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
+async def cross_reference_delete(
+    cross_reference_id: int,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
+):
+    """
+    Delete existing cross_reference
+    """
+    return CrossReferenceCrud.delete_item(db, current_user, cross_reference_id, True)

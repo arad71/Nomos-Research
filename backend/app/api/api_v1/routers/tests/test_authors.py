@@ -20,6 +20,7 @@ def test_get_authors(client, test_author, superuser_token_headers):
             "created_by": test_author.created_by,
             "created_on": test_author.created_on.isoformat(),
             "display_name": test_author.display_name,
+            "deleted": False,
         }
     ]
 
@@ -30,6 +31,19 @@ def test_delete_author(client, test_author, test_db, superuser_token_headers):
         headers=superuser_token_headers,
     )
     assert response.status_code == status.HTTP_200_OK
+    assert response.json()["deleted"] is True
+    assert test_db.query(Author).all() == [test_author]
+
+
+def test_hard_delete_author(
+    client, test_author, test_db, superuser_token_headers, test_superuser
+):
+    response = client.delete(
+        f"/api/v1/authors/{test_author.author_id}/hard",
+        headers=superuser_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {"author_id": test_author.author_id}
     assert test_db.query(Author).all() == []
 
 
@@ -60,6 +74,7 @@ def test_edit_author(client, test_author, test_superuser, superuser_token_header
     new_author["author_id"] = test_author.author_id
     new_author["display_name"] = test_author.display_name
     new_author["updated_on"] = response.json()["updated_on"]
+    new_author["deleted"] = False
     assert response.json() == new_author
 
 
@@ -103,6 +118,7 @@ def test_get_author(
         "created_by": test_author.created_by,
         "created_on": test_author.created_on.isoformat(),
         "display_name": test_author.display_name,
+        "deleted": False,
     }
 
 

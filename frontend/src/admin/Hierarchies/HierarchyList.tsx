@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
 import {
+  BooleanField,
   Datagrid,
   DateField,
   EditButton,
@@ -9,7 +10,13 @@ import {
   TextField,
 } from 'react-admin';
 import { List, WithPermissions } from '@react-admin/ra-rbac';
-import { DefaultPagination, useCanBulkDelete } from '../shared';
+import {
+  DefaultPagination,
+  selectableFilters,
+  useCanBulkDelete,
+} from '../shared';
+import DeleteIcon from '@material-ui/icons/Delete';
+import VisibilityIcon from '@material-ui/icons/Visibility';
 
 export const HierarchyList: FC = (props) => (
   <List
@@ -17,6 +24,7 @@ export const HierarchyList: FC = (props) => (
     sort={{ field: 'parent___scientific_name' }}
     perPage={100}
     pagination={<DefaultPagination />}
+    filters={selectableFilters()}
     bulkActionButtons={useCanBulkDelete()}
   >
     <Datagrid rowClick="show">
@@ -49,6 +57,13 @@ export const HierarchyList: FC = (props) => (
         <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" />
+      <WithPermissions resource="hierarchies" action="harddelete">
+        <BooleanField
+          source="deleted"
+          TrueIcon={DeleteIcon}
+          FalseIcon={VisibilityIcon}
+        />
+      </WithPermissions>
       <WithPermissions resource="hierarchies" action="edit">
         <EditButton />
       </WithPermissions>

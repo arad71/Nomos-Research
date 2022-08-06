@@ -32,6 +32,7 @@ class CitationEdit(CitationBase):
 class Citation(CitationBase, TableBase):
     citation_id: int
     author: Author
+    deleted: bool
 
     class Config:
         orm_mode = True

@@ -8,7 +8,11 @@ import {
   EditButton,
 } from 'react-admin';
 import { List, WithPermissions } from '@react-admin/ra-rbac';
-import { DefaultPagination, useCanBulkDelete } from '../shared';
+import {
+  DefaultPagination,
+  selectableFilters,
+  useCanBulkDelete,
+} from '../shared';
 
 export const KingdomList: FC = (props) => {
   return (
@@ -17,6 +21,7 @@ export const KingdomList: FC = (props) => {
       sort={{ field: 'kingdom_name', order: 'DESC' }}
       perPage={100}
       pagination={<DefaultPagination />}
+      filters={selectableFilters()}
       bulkActionButtons={useCanBulkDelete()}
     >
       <Datagrid rowClick="show">

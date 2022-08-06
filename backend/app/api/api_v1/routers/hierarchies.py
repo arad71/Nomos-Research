@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, overload
 
 from fastapi import APIRouter, Depends, Response
 
@@ -8,6 +8,7 @@ from app.db.hierarchy.crud import HierarchyCrud
 from app.db.hierarchy.schema import Hierarchy, HierarchyCreate, HierarchyEdit
 from app.db.role.constants import Role
 from app.db.session import get_db
+from app.db.user.schema import User
 
 hierarchies_router = r = APIRouter(prefix="/hierarchies")
 
@@ -24,12 +25,13 @@ async def hierarchy_list(
     sort: Optional[str] = None,
     filter: Optional[str] = None,
     db=Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Get all hierarchies
     """
     hierarchies, content_range = HierarchyCrud.get_items(
-        db, range=range, sort=sort, list_filter=filter
+        db, current_user, range=range, sort=sort, list_filter=filter
     )
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = content_range
@@ -45,11 +47,12 @@ async def hierarchy_list(
 async def hierarchy_details(
     hierarchy_id: int,
     db=Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Get any hierarchy details
     """
-    hierarchy = HierarchyCrud.get_item(db, hierarchy_id)
+    hierarchy = HierarchyCrud.get_item(db, current_user, hierarchy_id)
     return hierarchy
 
 
@@ -99,9 +102,10 @@ async def hierarchy_edit(
     """
     Update existing hierarchy
     """
-    return HierarchyCrud.edit_item(db, hierarchy_id, hierarchy, current_user.user_id)
+    return HierarchyCrud.edit_item(db, current_user, hierarchy_id, hierarchy)
 
 
+@overload
 @r.delete(
     "/{hierarchy_id}",
     dependencies=[
@@ -116,8 +120,30 @@ async def hierarchy_edit(
 async def hierarchy_delete(
     hierarchy_id: int,
     db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Delete existing hierarchy
     """
-    return HierarchyCrud.delete_item(db, hierarchy_id)
+    return HierarchyCrud.delete_item(db, current_user, hierarchy_id)
+
+
+@r.delete(
+    "/{hierarchy_id}/hard",
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
+async def hierarchy_delete(
+    hierarchy_id: int,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
+):
+    """
+    Delete existing hierarchy
+    """
+    return HierarchyCrud.delete_item(db, current_user, hierarchy_id, True)

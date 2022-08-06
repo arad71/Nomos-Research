@@ -123,7 +123,7 @@ def test_user(test_db) -> User:
     user = User(
         email="fake@email.com",
         hashed_password=get_password_hash(),
-        is_active=True,
+        deleted=False,
     )
     test_db.add(user)
     test_db.commit()
@@ -163,7 +163,6 @@ def create_user_with_role(role, test_db) -> User:
     user = User(
         email=f"{role_name}@email.com",
         hashed_password=get_password_hash(),
-        is_active=True,
         created_by=None,
         updated_by=None,
     )
@@ -290,7 +289,6 @@ def test_cross_reference(test_db, test_taxon_name, test_superuser) -> CrossRefer
         old_name_id=test_taxon_name.taxon_name_id,
         cross_reference_type="misapplied_name",
         new_name_id=test_taxon_name.taxon_name_id,
-        active=True,
         updated_by=test_superuser.user_id,
         updated_on=now,
         created_by=test_superuser.user_id,
@@ -378,7 +376,6 @@ def test_publication(test_db, test_superuser) -> Publication:
 
     now = datetime.datetime.utcnow()
     publication = Publication(
-        bad_publication=False,
         abbreviated_title="PUBLICATION",
         title="PUBLICATION_NAME",
         publication_day=23,
@@ -605,7 +602,6 @@ def test_vernacular(test_db, test_taxon_name, test_superuser) -> Vernacular:
         taxon_name_id=test_taxon_name.taxon_name_id,
         vernacular="Vernacular 1",
         language="english",
-        enabled=True,
         updated_by=test_superuser.user_id,
         updated_on=now,
         created_by=test_superuser.user_id,

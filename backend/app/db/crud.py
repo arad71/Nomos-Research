@@ -11,6 +11,7 @@ from sqlalchemy_mixins.smartquery import smart_query
 
 from app.core.config import settings
 from app.db.session import Base
+from app.db.user.model import User
 
 
 class Crud:
@@ -32,8 +33,20 @@ class Crud:
         return db_item
 
     @classmethod
-    def get_item(cls, db: Session, id: int):
-        item = db.query(cls.model).filter(getattr(cls.model, cls.id_key) == id).first()
+    def get_item(cls, db: Session, current_user: User, id: int):
+        if current_user.is_super_admin():
+            item = (
+                db.query(cls.model).filter(getattr(cls.model, cls.id_key) == id).first()
+            )
+        else:
+            item = (
+                db.query(cls.model)
+                .filter(
+                    getattr(cls.model, cls.id_key) == id,
+                    getattr(cls.model, "deleted") == False,  # noqa
+                )
+                .first()
+            )
         if not item:
             raise HTTPException(status_code=404, detail=cls.name + " not found")
         return item
@@ -55,6 +68,7 @@ class Crud:
     def get_items(
         cls,
         db: Session,
+        current_user: User,
         range: str = f"[0,{settings.DEFAULT_PAGE_SIZE}]",
         sort: str = None,
         list_filter: str = None,
@@ -73,8 +87,7 @@ class Crud:
                 direction = "-" if sort_dir and sort_dir[i] == "DESC" else ""
                 sort_value = f"{direction}{sort_field}"
                 sort_attrs.append(sort_value)
-
-        filters = {}
+        filters = {"deleted": False} if hasattr(cls.model, "deleted") else {}
         if list_filter:
             filter_items = json.loads(list_filter)
             column: str
@@ -86,6 +99,10 @@ class Crud:
                         for search_field in cls.search_fields:
                             conditions[f"{search_field}__contains"] = filter_value
                         filters[or_] = conditions
+                elif column == "deleted":
+                    # Let super admin override the filter
+                    if current_user.is_super_admin():
+                        filters[column] = filter_value
                 else:
                     if hasattr(cls.model, column) and isinstance(
                         getattr(cls.model, column).type, TIMESTAMP
@@ -95,7 +112,6 @@ class Crud:
                     elif isinstance(filter_value, list):
                         column = f"{column}__in"
                     filters[column] = filter_value
-
         try:
             query = smart_query(query, filters=filters, sort_attrs=sort_attrs or None)
         except KeyError as err:
@@ -130,9 +146,9 @@ class Crud:
 
     @classmethod
     def edit_item(
-        cls, db: Session, id: int, values: object, current_user: int
+        cls, db: Session, current_user: User, id: int, values: object
     ) -> object:
-        db_item = cls.get_item(db, id)
+        db_item = cls.get_item(db, current_user, id)
         if not db_item:
             raise HTTPException(
                 status.HTTP_404_NOT_FOUND, detail=cls.name + " not found"
@@ -142,19 +158,39 @@ class Crud:
         for key, value in update_data.items():
             setattr(db_item, key, value)
 
-        setattr(db_item, "updated_by", current_user)
+        setattr(db_item, "updated_by", current_user.user_id)
         db.add(db_item)
         db.commit()
         db.refresh(db_item)
         return db_item
 
     @classmethod
-    def delete_item(cls, db: Session, id: int):
-        item = cls.get_item(db, id)
+    def delete_item(cls, db: Session, current_user: User, id: int, hard: bool = False):
+        item = cls.get_item(db, current_user, id)
         if not item:
             raise HTTPException(
                 status.HTTP_404_NOT_FOUND, detail=cls.name + " not found"
             )
-        db.delete(item)
+        if hard:
+            item_id = getattr(item, cls.id_key)
+            db.delete(item)
+            db.commit()
+            return {cls.id_key: item_id}
+        item.deleted = True
+        item.updated_by = current_user.user_id
         db.commit()
-        return {cls.id_key: id}
+        db.refresh(item)
+        return item
+
+    @classmethod
+    def undelete_item(cls, db: Session, current_user: User, id: int):
+        item = cls.get_item(db, current_user, id)
+        if not item:
+            raise HTTPException(
+                status.HTTP_404_NOT_FOUND, detail=cls.name + " not found"
+            )
+        item.deleted = False
+        item.updated_by = current_user.user_id
+        db.commit()
+        db.refresh(item)
+        return item

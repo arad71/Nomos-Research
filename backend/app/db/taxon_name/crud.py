@@ -1,5 +1,4 @@
-from fastapi import HTTPException, status
-from sqlalchemy.orm import Session, undefer
+from sqlalchemy.orm import Session
 
 import app.db.crud as crud
 import app.db.taxon_name.schema as schema
@@ -51,9 +50,9 @@ class TaxonNameCrud(crud.Crud):
     def edit_item(
         cls,
         db: Session,
+        current_user: int,
         taxon_name_id: int,
         taxon_name: schema.TaxonNameEdit,
-        current_user: int = None,
         **kwargs,
     ) -> TaxonName:
         update_data = taxon_name.dict(exclude_unset=True)
@@ -84,20 +83,5 @@ class TaxonNameCrud(crud.Crud):
                 db.add(informal_group)
             db.commit()
             delattr(taxon_name, "classification_system_ids")
-        db_taxon_name = super().edit_item(
-            db, taxon_name_id, taxon_name, current_user=current_user
-        )
+        db_taxon_name = super().edit_item(db, current_user, taxon_name_id, taxon_name)
         return db_taxon_name
-
-    @classmethod
-    def delete_item(cls, db: Session, id: int):
-        item = cls.get_item(db, id)
-        if not item:
-            raise HTTPException(
-                status.HTTP_404_NOT_FOUND, detail=cls.name + " not found"
-            )
-        db.query(TaxonName).filter(TaxonName.taxon_name_id == id).options(
-            undefer("canonical_name_without_rank")
-        ).delete()
-        db.commit()
-        return {cls.id_key: id}

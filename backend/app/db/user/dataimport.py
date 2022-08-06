@@ -16,7 +16,7 @@ class ImportUser(DataImportBase):
         self.upsert_constraint = f"uc_{UserModel.__tablename__}_legacy_id"
         self.update_cols = (
             "email",
-            "is_active",
+            "deleted",
             "first_name",
             "last_name",
             "hashed_password",
@@ -47,7 +47,7 @@ class ImportUser(DataImportBase):
             self.insert(
                 {
                     "email": s + "@stub",
-                    "is_active": False,
+                    "deleted": True,
                     "first_name": None,
                     "last_name": None,
                     "hashed_password": self.generate_password(),
@@ -62,7 +62,7 @@ class ImportUser(DataImportBase):
     def row_mapping(self, row):
         return {
             "email": row["EMAIL"],
-            "is_active": False,
+            "deleted": True,
             "first_name": self.map_first_name(row["FULL_NAME"]),
             "last_name": self.map_last_name(row["FULL_NAME"]),
             "hashed_password": self.generate_password(),

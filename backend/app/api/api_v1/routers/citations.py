@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, overload
 
 from fastapi import APIRouter, Depends, Response
 
@@ -8,6 +8,7 @@ from app.db.citation.crud import CitationCrud
 from app.db.citation.schema import Citation, CitationCreate, CitationEdit
 from app.db.role.constants import Role
 from app.db.session import get_db
+from app.db.user.schema import User
 
 citations_router = r = APIRouter(prefix="/citations")
 
@@ -24,12 +25,13 @@ async def citation_list(
     sort: Optional[str] = None,
     filter: Optional[str] = None,
     db=Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Get all citations
     """
     citations, content_range = CitationCrud.get_items(
-        db, range=range, sort=sort, list_filter=filter
+        db, current_user, range=range, sort=sort, list_filter=filter
     )
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = content_range
@@ -45,11 +47,12 @@ async def citation_list(
 async def citation_details(
     citation_id: int,
     db=Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Get any citation details
     """
-    citation = CitationCrud.get_item(db, citation_id)
+    citation = CitationCrud.get_item(db, current_user, citation_id)
     return citation
 
 
@@ -101,9 +104,10 @@ async def citation_edit(
     """
     Update existing citation
     """
-    return CitationCrud.edit_item(db, citation_id, citation, current_user.user_id)
+    return CitationCrud.edit_item(db, current_user, citation_id, citation)
 
 
+@overload
 @r.delete(
     "/{citation_id}",
     dependencies=[
@@ -118,8 +122,30 @@ async def citation_edit(
 async def citation_delete(
     citation_id: int,
     db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Delete existing citation
     """
-    return CitationCrud.delete_item(db, citation_id)
+    return CitationCrud.delete_item(db, current_user, citation_id)
+
+
+@r.delete(
+    "/{citation_id}/hard",
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
+async def citation_delete(
+    citation_id: int,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
+):
+    """
+    Delete existing citation
+    """
+    return CitationCrud.delete_item(db, current_user, citation_id, True)

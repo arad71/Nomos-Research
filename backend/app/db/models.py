@@ -1,4 +1,4 @@
-from sqlalchemy import TIMESTAMP, Column, ForeignKey, Integer, func
+from sqlalchemy import TIMESTAMP, Boolean, Column, ForeignKey, Integer, func
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy_mixins.repr import ReprMixin
 from sqlalchemy_mixins.smartquery import SmartQueryMixin
@@ -14,6 +14,15 @@ class BaseModel(Base, SmartQueryMixin, ReprMixin):
 
 # See https://docs.sqlalchemy.org/en/13/orm/extensions/declarative/mixins.html
 class TableMixin(object):
+    @declared_attr
+    def deleted(cls):
+        return Column(
+            Boolean,
+            default=False,
+            nullable=False,
+            comment="If this record is soft deleted",
+        )
+
     @declared_attr
     def updated_by(cls):
         return Column(

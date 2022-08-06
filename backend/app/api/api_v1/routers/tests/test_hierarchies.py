@@ -20,6 +20,7 @@ def test_get_hierarchies(client, test_hierarchy, superuser_token_headers):
             "updated_on": test_hierarchy.updated_on.isoformat(),
             "created_by": test_hierarchy.created_by,
             "created_on": test_hierarchy.created_on.isoformat(),
+            "deleted": False,
         }
     ]
 
@@ -30,6 +31,19 @@ def test_delete_hierarchy(client, test_hierarchy, test_db, superuser_token_heade
         headers=superuser_token_headers,
     )
     assert response.status_code == status.HTTP_200_OK
+    assert response.json()["deleted"] is True
+    assert test_db.query(Hierarchy).all() == [test_hierarchy]
+
+
+def test_hard_delete_hierarchy(
+    client, test_hierarchy, test_db, superuser_token_headers, test_superuser
+):
+    response = client.delete(
+        f"/api/v1/hierarchies/{test_hierarchy.hierarchy_id}/hard",
+        headers=superuser_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {"hierarchy_id": test_hierarchy.hierarchy_id}
     assert test_db.query(Hierarchy).all() == []
 
 
@@ -64,6 +78,7 @@ def test_edit_hierarchy(
     new_hierarchy["taxon_name"] = response.json()["taxon_name"]
     new_hierarchy["classification_system"] = response.json()["classification_system"]
     new_hierarchy["parent"] = response.json()["parent"]
+    new_hierarchy["deleted"] = False
     assert response.json() == new_hierarchy
 
 
@@ -107,6 +122,7 @@ def test_get_hierarchy(
         "updated_on": test_hierarchy.updated_on.isoformat(),
         "created_by": test_hierarchy.created_by,
         "created_on": test_hierarchy.created_on.isoformat(),
+        "deleted": False,
     }
 
 

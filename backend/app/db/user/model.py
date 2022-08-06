@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, Integer, String
+from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.schema import UniqueConstraint
 
@@ -36,7 +36,6 @@ class User(BaseModel, TableMixin):
         doc=DEFAULT_CLASS,
     )
     hashed_password = Column(String, nullable=False)
-    is_active = Column(Boolean, default=True, nullable=False)
     legacy_id_name = Column(String())
 
     @hybrid_property
@@ -47,6 +46,9 @@ class User(BaseModel, TableMixin):
 
     def has_role(self, role: dict):
         return any(user_role.role.name == role["name"] for user_role in self.user_role)
+
+    def is_super_admin(self):
+        return any(user_role.role.name == "SUPER_ADMIN" for user_role in self.user_role)
 
     @hybrid_property
     def role_names(self):

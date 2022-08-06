@@ -31,6 +31,7 @@ class Hierarchy(HierarchyBase, TableBase):
     taxon_name: TaxonName
     parent: TaxonName
     classification_system: ClassificationSystem
+    deleted: bool
 
     class Config:
         orm_mode = True

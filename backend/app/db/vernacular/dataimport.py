@@ -18,7 +18,6 @@ class ImportVernacular(DataImportBase):
             "lang_pref",
             "preferred",
             "source",
-            "enabled",
             "sort_order",
             "created_by",
             "updated_by",
@@ -39,7 +38,7 @@ class ImportVernacular(DataImportBase):
                 "lang_pref": self.map_y_n_to_bool(row["LANG_PREF"]),
                 "preferred": self.map_y_n_to_bool(row["PREFERRED"]),
                 "source": row["SOURCE"],
-                "enabled": self.map_y_n_to_bool(row["ENABLED"]),
+                "deleted": self.map_y_n_to_bool(row["ENABLED"]),
                 "sort_order": row["SORT_ORDER"] or None,
                 "created_by": self.current_user,
                 "updated_by": self.map_row_by_unique_key(

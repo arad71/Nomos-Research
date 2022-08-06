@@ -60,7 +60,6 @@ class Vernacular(BaseModel, TableMixin):
         doc=PREFERRED,
     )
     source = Column(String(50), comment=SOURCE, doc=SOURCE)
-    enabled = Column(Boolean, nullable=False)
     sort_order = Column(Integer)
 
 

@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, overload
 
 from fastapi import APIRouter, Depends, Response
 
@@ -25,12 +25,13 @@ async def taxon_name_list(
     sort: Optional[str] = None,
     filter: Optional[str] = None,
     db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Get all taxon_names
     """
     taxon_names, content_range = TaxonNameCrud.get_items(
-        db, range=range, sort=sort, list_filter=filter
+        db, current_user, range=range, sort=sort, list_filter=filter
     )
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = content_range
@@ -48,11 +49,12 @@ async def taxon_name_list(
 async def taxon_name_details(
     taxon_name_id: int,
     db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Get any taxon_name details
     """
-    taxon_name = TaxonNameCrud.get_item(db, taxon_name_id)
+    taxon_name = TaxonNameCrud.get_item(db, current_user, taxon_name_id)
     return taxon_name
 
 
@@ -104,9 +106,10 @@ async def taxon_name_edit(
     """
     Update existing taxon_name
     """
-    return TaxonNameCrud.edit_item(db, taxon_name_id, taxon_name, current_user.user_id)
+    return TaxonNameCrud.edit_item(db, current_user, taxon_name_id, taxon_name)
 
 
+@overload
 @r.delete(
     "/{taxon_name_id}",
     dependencies=[
@@ -121,8 +124,30 @@ async def taxon_name_edit(
 async def taxon_name_delete(
     taxon_name_id: int,
     db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Delete existing taxon_name
     """
-    return TaxonNameCrud.delete_item(db, taxon_name_id)
+    return TaxonNameCrud.delete_item(db, current_user, taxon_name_id)
+
+
+@r.delete(
+    "/{taxon_name_id}/hard",
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
+async def taxon_name_delete(
+    taxon_name_id: int,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
+):
+    """
+    Delete existing taxon_name
+    """
+    return TaxonNameCrud.delete_item(db, current_user, taxon_name_id, True)
