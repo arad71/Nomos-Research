@@ -7,6 +7,7 @@ const ScientificNameReference = (props: {
   sort?: object;
   validate?: any;
   perPage?: number;
+  filter?: object;
 }) => (
   <ReferenceInput
     reference="taxon_names"
@@ -19,6 +20,7 @@ const ScientificNameReference = (props: {
       optionText="scientific_name"
       validate={props.validate}
       resettable
+      filter={props.filter}
     />
   </ReferenceInput>
 );
@@ -26,6 +28,7 @@ const ScientificNameReference = (props: {
 ScientificNameReference.defaultProps = {
   perPage: 500,
   sort: { field: 'canonical_name,author', order: 'ASC,ASC' },
+  filter: {},
 };
 
 export default ScientificNameReference;

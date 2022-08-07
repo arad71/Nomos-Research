@@ -1,5 +1,10 @@
 import { RowForm, RowFormProps } from '@react-admin/ra-editable-datagrid';
-import { ReferenceInput, required, SelectInput } from 'react-admin';
+import {
+  FormDataConsumer,
+  ReferenceInput,
+  required,
+  SelectInput,
+} from 'react-admin';
 import React from 'react';
 import ScientificNameReference from '../Taxon_names/ScientificNameReference';
 
@@ -12,10 +17,19 @@ export const HierarchyRowForm = (props: RowFormProps) => (
     >
       <SelectInput optionText="class_desc" validate={required()} />
     </ReferenceInput>
-    <ScientificNameReference
-      source="parent_nid"
-      label="Parent name"
-      validate={required()}
-    />
+    <FormDataConsumer>
+      {({ formData, ...rest }) => (
+        <ScientificNameReference
+          source="parent_nid"
+          label="Parent name"
+          validate={required()}
+          filter={{
+            hierarchies___classification_system_id:
+              formData.classification_system_id,
+          }}
+          {...rest}
+        />
+      )}
+    </FormDataConsumer>
   </RowForm>
 );
