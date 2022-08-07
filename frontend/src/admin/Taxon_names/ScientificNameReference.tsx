@@ -15,7 +15,11 @@ const ScientificNameReference = (props: {
     })}
     {...props}
   >
-    <AutocompleteInput optionText="scientific_name" validate={props.validate} resettable/>
+    <AutocompleteInput
+      optionText="scientific_name"
+      validate={props.validate}
+      resettable
+    />
   </ReferenceInput>
 );
 
