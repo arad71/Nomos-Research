@@ -58,9 +58,6 @@ export const HierarchyCreateEdit: FC = (props) => {
             validate={required()}
           />
         </Box>
-        <Box>
-          <TextField source="path.path" />
-        </Box>
       </Box>
     </SimpleForm>
   );

@@ -60,11 +60,6 @@ export const HierarchyShowLayout = () => {
               </ReferenceField>
             </Labeled>
           </Box>
-          <Box className={globalClasses.fieldMargin}>
-            <Labeled label="Path">
-              <TextField source="path.path" />
-            </Labeled>
-          </Box>
         </Box>
       </Box>
     </SimpleShowLayout>
