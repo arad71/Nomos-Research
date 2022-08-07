@@ -59,7 +59,13 @@ const useStyles = makeStyles({
     color: '#ff0000',
   },
 });
-
+export interface FormData {
+  kingdom_id: number;
+}
+export interface FormDataProps {
+  formData: FormData;
+  rest: PropsWithChildren<any>;
+}
 export const TaxonNameCreateEdit: FC = ({
   ...props
 }: PropsWithChildren<any>) => {
@@ -114,7 +120,7 @@ export const TaxonNameCreateEdit: FC = ({
               <SelectInput optionText="kingdom_name" fullWidth />
             </ReferenceInput>
             <FormDataConsumer>
-              {({ formData, ...rest }) => (
+              {({ formData, ...rest }: FormDataProps) => (
                 <ReferenceInput
                   source="rank_id"
                   reference="taxon_ranks"

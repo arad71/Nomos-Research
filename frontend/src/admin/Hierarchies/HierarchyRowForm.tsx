@@ -5,9 +5,16 @@ import {
   required,
   SelectInput,
 } from 'react-admin';
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import ScientificNameReference from '../Taxon_names/ScientificNameReference';
 
+export interface FormData {
+  classification_system_id: number;
+}
+export interface FormDataProps {
+  formData: FormData;
+  rest: PropsWithChildren<any>;
+}
 export const HierarchyRowForm = (props: RowFormProps) => (
   <RowForm warnWhenUnsavedChanges {...props}>
     <ReferenceInput
@@ -18,18 +25,20 @@ export const HierarchyRowForm = (props: RowFormProps) => (
       <SelectInput optionText="class_desc" validate={required()} />
     </ReferenceInput>
     <FormDataConsumer>
-      {({ formData, ...rest }) => (
-        <ScientificNameReference
-          source="parent_nid"
-          label="Parent name"
-          validate={required()}
-          filter={{
-            hierarchies___classification_system_id:
-              formData.classification_system_id,
-          }}
-          {...rest}
-        />
-      )}
+      {({ formData, ...rest }: FormDataProps) => {
+        return (
+          <ScientificNameReference
+            source="parent_nid"
+            label="Parent name"
+            validate={required()}
+            filter={{
+              hierarchies___classification_system_id:
+                formData.classification_system_id,
+            }}
+            {...rest}
+          />
+        );
+      }}
     </FormDataConsumer>
   </RowForm>
 );
