@@ -22,9 +22,6 @@ def upgrade():
     op.drop_index("ix_taxon_name_species", table_name="taxon_name")
     op.drop_index("ix_taxon_name_subgenus", table_name="taxon_name")
     op.drop_index("ix_taxon_name_subspecies", table_name="taxon_name")
-    op.create_index(
-        op.f("ix_taxon_name_uninomial"), "taxon_name", ["uninomial"], unique=False
-    )
     op.drop_column("taxon_name", "family")
     op.drop_column("taxon_name", "species")
     op.drop_column("taxon_name", "subspecies")
@@ -68,7 +65,6 @@ def downgrade():
         "taxon_name",
         sa.Column("family", sa.VARCHAR(), autoincrement=False, nullable=True),
     )
-    op.drop_index(op.f("ix_taxon_name_uninomial"), table_name="taxon_name")
     op.create_index(
         "ix_taxon_name_subspecies", "taxon_name", ["subspecies"], unique=False
     )
