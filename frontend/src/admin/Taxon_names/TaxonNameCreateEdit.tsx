@@ -21,6 +21,7 @@ import {
   ReferenceArrayInput,
   AutocompleteInput,
   RichTextField,
+  FormDataConsumer,
 } from 'react-admin';
 import { EditableDatagrid } from '@react-admin/ra-editable-datagrid';
 import React, { FC, PropsWithChildren } from 'react';
@@ -112,16 +113,26 @@ export const TaxonNameCreateEdit: FC = ({
             >
               <SelectInput optionText="kingdom_name" fullWidth />
             </ReferenceInput>
-            <ReferenceInput
-              source="rank_id"
-              reference="taxon_ranks"
-              validate={[required()]}
-              className={gridClasses.EightCol3to5span}
-              sort={{ field: 'rank_name', order: 'ASC' }}
-              perPage={100}
-            >
-              <AutocompleteInput optionText="rank_name" fullWidth resettable />
-            </ReferenceInput>
+            <FormDataConsumer>
+              {({ formData, ...rest }) => (
+                <ReferenceInput
+                  source="rank_id"
+                  reference="taxon_ranks"
+                  validate={[required()]}
+                  className={gridClasses.EightCol3to5span}
+                  filter={{ kingdom_id: formData.kingdom_id }}
+                  {...rest}
+                  sort={{ field: 'rank_name', order: 'ASC' }}
+                  perPage={100}
+                >
+                  <AutocompleteInput
+                    optionText="rank_name"
+                    fullWidth
+                    resettable
+                  />
+                </ReferenceInput>
+              )}
+            </FormDataConsumer>
             <TextInput
               source="uninomial"
               className={gridClasses.EightCol1to3span}
