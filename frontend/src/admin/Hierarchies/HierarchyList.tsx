@@ -9,13 +9,8 @@ import {
   TextField,
 } from 'react-admin';
 import { List, WithPermissions } from '@react-admin/ra-rbac';
-import { DefaultPagination, useCanBulkDelete } from '../shared';
 import { HierarchyFilters } from './HierarchyFilters';
-import {
-  DefaultPagination,
-  selectableFilters,
-  useCanBulkDelete,
-} from '../shared';
+import { DefaultPagination, useCanBulkDelete } from '../shared';
 import DeleteIcon from '@material-ui/icons/Delete';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 
@@ -25,9 +20,8 @@ export const HierarchyList: FC = (props) => (
     sort={{ field: 'path', order: 'ASC' }}
     perPage={100}
     pagination={<DefaultPagination />}
-    filters={selectableFilters()}
     bulkActionButtons={useCanBulkDelete()}
-    filters={HierarchyFilters}
+    filters={HierarchyFilters()}
   >
     <Datagrid rowClick="show">
       <ReferenceField
