@@ -48,7 +48,7 @@ export const UserList: FC = (props) => {
           <TextField source="full_name" />
         </ReferenceField>
         <DateField source="updated_on" />
-        <WithPermissions resource="users" action="harddelete">
+        <WithPermissions resource="users" action="viewdeleted">
           <BooleanField
             source="deleted"
             TrueIcon={DeleteIcon}

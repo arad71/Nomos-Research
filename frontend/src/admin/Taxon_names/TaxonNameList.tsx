@@ -276,7 +276,7 @@ export const TaxonNameList = (props: ListProps) => {
     >
       <Datagrid rowClick="show">
         {columns}
-        <WithPermissions resource="taxon_names" action="harddelete">
+        <WithPermissions resource="taxon_names" action="viewdeleted">
           <BooleanField
             source="deleted"
             TrueIcon={DeleteIcon}

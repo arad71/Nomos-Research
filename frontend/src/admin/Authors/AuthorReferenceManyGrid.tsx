@@ -44,7 +44,7 @@ export const AuthorReferenceManyGrid = (props: {
         </ReferenceField>
         <SelectField source="author_type" choices={AuthorType} />
         <NumberField source="author_order" />
-        <WithPermissions resource="authors" action="harddelete">
+        <WithPermissions resource="authors" action="viewdeleted">
           <BooleanField source="deleted" />
         </WithPermissions>
       </Datagrid>

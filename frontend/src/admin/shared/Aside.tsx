@@ -88,7 +88,7 @@ const Aside = (props: any) => {
                 History
               </Typography>
             </Box>
-            <WithPermissions resource={resource} action="harddelete">
+            <WithPermissions resource={resource} action="viewdeleted">
               <Box>{deleted}</Box>
             </WithPermissions>
           </Box>

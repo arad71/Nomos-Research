@@ -4,7 +4,6 @@ import {
   Datagrid,
   DateField,
   EditButton,
-  NumberField,
   ReferenceField,
   RichTextField,
   SelectField,
@@ -53,7 +52,7 @@ export const CrossReferenceList: FC = (props) => (
         <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" />
-      <WithPermissions resource="cross_references" action="harddelete">
+      <WithPermissions resource="cross_references" action="viewdeleted">
         <BooleanField
           source="deleted"
           TrueIcon={DeleteIcon}

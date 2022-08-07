@@ -17,7 +17,7 @@ type Action =
   | 'write' // for a field in the resource
   | 'delete'
   | 'bulkdelete'
-  | 'harddelete'
+  | 'viewdeleted'
   | 'deletedfilter'
   | '*';
 type Actions = Action[] | Action;
@@ -183,7 +183,7 @@ const authProvider = {
           'create',
           'edit',
           'delete',
-          'harddelete',
+          'viewdeleted',
           'deletedfilter',
         ],
         resource: '*',

@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React from 'react';
 import {
   Datagrid,
   DateField,
@@ -100,7 +100,7 @@ export const ClassificationSystemList = (props: ListProps) => {
     >
       <Datagrid rowClick="show">
         {columns}
-        <WithPermissions resource="classification_systems" action="harddelete">
+        <WithPermissions resource="classification_systems" action="viewdeleted">
           <BooleanField
             source="deleted"
             TrueIcon={DeleteIcon}

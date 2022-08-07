@@ -57,7 +57,7 @@ export const HierarchyList: FC = (props) => (
         <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" />
-      <WithPermissions resource="hierarchies" action="harddelete">
+      <WithPermissions resource="hierarchies" action="viewdeleted">
         <BooleanField
           source="deleted"
           TrueIcon={DeleteIcon}
