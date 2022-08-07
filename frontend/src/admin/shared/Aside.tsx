@@ -68,12 +68,13 @@ const Aside = (props: any) => {
   const isTaxonNames = currPath == 'taxon_names';
   const record = useRecordContext();
   const resource = useResourceContext();
-  const deleted = record.deleted ? (
-    <Typography variant="subtitle1" className={classes.deleted}>
-      <DeleteIcon />
-      Deleted
-    </Typography>
-  ) : null;
+  const deleted =
+    record && record.deleted ? (
+      <Typography variant="subtitle1" className={classes.deleted}>
+        <DeleteIcon />
+        Deleted
+      </Typography>
+    ) : null;
   return (
     <Box className={classes.asideWidth}>
       <Card className={classes.asidePadding}>
