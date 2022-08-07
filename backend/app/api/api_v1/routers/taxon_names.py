@@ -117,6 +117,15 @@ async def taxon_name_ancestors(
 
                     else:
                         statement = statement.filter(field == filter_value)
+    statement = statement.filter(
+        and_(
+            taxon_name.deleted == False,
+            hierarchy.deleted == False,
+            ancestor.deleted == False,
+            ancestor_name.deleted == False,
+            taxon_rank.deleted == False,
+        )
+    )
 
     count_query = statement.with_only_columns(func.count(taxon_name.taxon_name_id))
     count = db.execute(count_query).scalar_one()
