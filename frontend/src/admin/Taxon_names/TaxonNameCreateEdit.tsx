@@ -207,7 +207,6 @@ export const TaxonNameCreateEdit: FC = ({
                 >
                   <EditableDatagrid
                     actions={<CustomAction />}
-                    undoable
                     /* eslint-disable-next-line max-len */
                     className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
                     createForm={
@@ -532,7 +531,6 @@ export const TaxonNameCreateEdit: FC = ({
                   >
                     <EditableDatagrid
                       actions={<CustomAction />}
-                      undoable
                       /* eslint-disable-next-line max-len */
                       className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
                       createForm={

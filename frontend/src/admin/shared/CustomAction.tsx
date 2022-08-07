@@ -12,7 +12,7 @@ const CustomAction = () => (
       <EditRowButton />
     </WithPermissions>
     <WithPermissions action="delete" resource={useResourceContext()}>
-      <DeleteWithConfirmIconButton mutationMode="undoable" />
+      <DeleteWithConfirmIconButton mutationMode="pessimistic" />
     </WithPermissions>
   </>
 );
