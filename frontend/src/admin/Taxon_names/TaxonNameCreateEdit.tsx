@@ -20,6 +20,7 @@ import {
   SelectArrayInput,
   ReferenceArrayInput,
   AutocompleteInput,
+  RichTextField,
 } from 'react-admin';
 import { EditableDatagrid } from '@react-admin/ra-editable-datagrid';
 import React, { FC, PropsWithChildren } from 'react';
@@ -39,7 +40,7 @@ import CrossRefType from '../Cross_references/CrossRefType';
 import { FormattedScientificNameWithStatus } from '../Taxon_names';
 // eslint-disable-next-line max-len
 import { CrossReferenceRowForm } from '../Cross_references/CrossReferenceRowForm';
-import { HierarchyRowForm } from '../Hierarchies';
+import { EmbeddedHierarchyShow, HierarchyRowForm } from '../Hierarchies';
 import ScientificNameReference from './ScientificNameReference';
 import CustomAction from '../shared/CustomAction';
 import EditToolbar from '../shared/EditToolbar';
@@ -317,7 +318,7 @@ export const TaxonNameCreateEdit: FC = ({
             </Box>
           </Box>
         </FormTab>
-        <FormTab label="Details" className={globalClasses.bold}>
+        <FormTab label="Details" path="details" className={globalClasses.bold}>
           <Typography
             variant="h5"
             className={`${globalClasses.bold} ${globalClasses.sectionMargin}`}
@@ -380,9 +381,12 @@ export const TaxonNameCreateEdit: FC = ({
             </ReferenceArrayInput>
           </Box>
         </FormTab>
-        <FormTab label="Hierarchy" className={globalClasses.bold}>
-          <Box
-            /* eslint-disable-next-line max-len */
+        <FormTab
+          label="Hierarchy"
+          path="hierarchy"
+          className={globalClasses.bold}
+        >
+          <Box /* eslint-disable-next-line max-len */
             className={`${globalClasses.mainGrid} ${globalClasses.sectionMargin}`}
           >
             <Typography
@@ -393,59 +397,65 @@ export const TaxonNameCreateEdit: FC = ({
             >
               Taxon Name - Hierarchy
             </Typography>
-          </Box>
-        </FormTab>
-        <FormTab label="Hierarchy" className={globalClasses.bold}>
-          <Box className={gridClasses.EightCol1to9span}>
-            {(props.record?.id && (
-              <ReferenceManyField
-                fullWidth
-                label="Hierarchical classification"
-                reference="hierarchies"
-                target="taxon_name_id"
-                sort={{
-                  field: 'path',
-                  order: 'ASC',
-                }}
-                {...props}
-              >
-                <EditableDatagrid
-                  warnWhenUnsavedChanges
-                  createForm={
-                    <HierarchyRowForm
-                      initialValues={hierarchyInitialValues}
-                      {...props}
-                    />
-                  }
-                  editForm={<HierarchyRowForm {...props} />}
-                  hasCreate
+            <Box className={gridClasses.EightCol1to9span}>
+              {(props.record?.id && (
+                <ReferenceManyField
+                  fullWidth
+                  label="Hierarchical classification"
+                  reference="hierarchies"
+                  target="taxon_name_id"
+                  sort={{
+                    field: 'path',
+                    order: 'ASC',
+                  }}
+                  {...props}
                 >
-                  <ReferenceInput
-                    source="classification_system_id"
-                    reference="classification_systems"
-                    filter={{ class_type: 'hierarchical' }}
+                  <EditableDatagrid
+                    actions={<CustomAction />}
+                    hasCreate
+                    // eslint-disable-next-line max-len
+                    className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
+                    createForm={
+                      <HierarchyRowForm
+                        initialValues={hierarchyInitialValues}
+                        {...props}
+                      />
+                    }
+                    editForm={<HierarchyRowForm {...props} />}
+                    expand={<EmbeddedHierarchyShow />}
                   >
-                    <SelectInput
-                      optionText="class_desc"
-                      validate={required()}
-                    />
-                  </ReferenceInput>
-                  <ScientificNameReference
-                    source="parent_nid"
-                    label="Parent name"
-                    validate={required()}
-                  />
-                </EditableDatagrid>
-              </ReferenceManyField>
-            )) || (
-              <Typography>
-                You need to save the record before you can add any authors /
-                citations.
-              </Typography>
-            )}
+                    <ReferenceField
+                      source="classification_system_id"
+                      reference="classification_systems"
+                      filter={{ class_type: 'hierarchical' }}
+                    >
+                      <TextField source="class_desc" />
+                    </ReferenceField>
+                    <ReferenceField
+                      source="parent_nid"
+                      reference="taxon_names"
+                      label="Parent name"
+                      link="show"
+                      sortBy="taxon_name___scientific_name"
+                    >
+                      <RichTextField source="formatted_scientific_name" />
+                    </ReferenceField>
+                  </EditableDatagrid>
+                </ReferenceManyField>
+              )) || (
+                <Typography>
+                  You need to save the record before you can add any authors /
+                  citations.
+                </Typography>
+              )}
+            </Box>
           </Box>
         </FormTab>
-        <FormTab label="Related Names" className={globalClasses.bold}>
+        <FormTab
+          label="Related Names"
+          path="related_names"
+          className={globalClasses.bold}
+        >
           <Box
             /* eslint-disable-next-line max-len */
             className={`${globalClasses.mainGrid} ${globalClasses.sectionMargin}`}
@@ -574,7 +584,7 @@ export const TaxonNameCreateEdit: FC = ({
             </Box>
           </Box>
         </FormTab>
-        <FormTab label="Notes" className={globalClasses.bold}>
+        <FormTab label="Notes" path="notes" className={globalClasses.bold}>
           <Box
             /* eslint-disable-next-line max-len */
             className={`${globalClasses.mainGrid} ${globalClasses.sectionMargin}`}
