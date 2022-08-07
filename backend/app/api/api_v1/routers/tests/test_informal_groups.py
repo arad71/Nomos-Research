@@ -19,6 +19,7 @@ def test_get_informal_groups(
             "updated_on": test_informal_group.updated_on.isoformat(),
             "created_by": test_informal_group.created_by,
             "created_on": test_informal_group.created_on.isoformat(),
+            "deleted": False,
         }
     ]
 
@@ -31,6 +32,21 @@ def test_delete_informal_group(
         headers=superuser_token_headers,
     )
     assert response.status_code == status.HTTP_200_OK
+    assert response.json()["deleted"] is True
+    assert test_db.query(InformalGroup).all() == [test_informal_group]
+
+
+def test_hard_delete_informal_group(
+    client, test_informal_group, test_db, superuser_token_headers, test_superuser
+):
+    response = client.delete(
+        f"/api/v1/informal_groups/{test_informal_group.informal_group_id}/hard",
+        headers=superuser_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {
+        "informal_group_id": test_informal_group.informal_group_id
+    }
     assert test_db.query(InformalGroup).all() == []
 
 
@@ -64,6 +80,7 @@ def test_edit_informal_group(
     new_informal_group["classification_system"] = response.json()[
         "classification_system"
     ]
+    new_informal_group["deleted"] = False
     assert response.json() == new_informal_group
 
 
@@ -111,6 +128,7 @@ def test_get_informal_group(
         "updated_on": test_informal_group.updated_on.isoformat(),
         "created_by": test_informal_group.created_by,
         "created_on": test_informal_group.created_on.isoformat(),
+        "deleted": False,
     }
 
 

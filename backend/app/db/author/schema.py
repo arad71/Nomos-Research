@@ -33,6 +33,7 @@ class Author(AuthorBase, TableBase):
     author_id: int
     full_name: str
     display_name: str
+    deleted: bool
 
     class Config:
         orm_mode = True

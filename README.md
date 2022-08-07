@@ -271,6 +271,10 @@ Two authentication providers are supported and can be switched between using  th
 | auth2    | Auth2 authentication is based on request headers set by the proxy https://dev.azure.com/BIO-WA/WA-BDR/_wiki/wikis/BDR-WA.wiki/70/Authentication. For local development the user details are set in nginx.conf. |
 
 
+##### Testing other roles
+If you want to test with other roles you can switch your auth provider to 'password' and then log in using one of the
+test role based user accounts.
+
 ### Environments
 In order to deploy to the **staging** environment push code to the `staging` branch via a pull request into **staging**.
 This calls a script (action.bash) which fetches the latest code for that branch and builds the stack.

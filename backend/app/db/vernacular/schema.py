@@ -23,7 +23,6 @@ class VernacularBase(BaseModel):
     lang_pref: Optional[bool] = Field(description=LANG_PREF)
     preferred: Optional[bool] = Field(description=PREFERRED)
     source: Optional[str] = Field(description=SOURCE)
-    enabled: bool
     sort_order: Optional[int]
 
 
@@ -38,6 +37,7 @@ class VernacularEdit(VernacularBase):
 class Vernacular(VernacularBase, TableBase):
     vernacular_id: int
     taxon_name: TaxonName
+    deleted: bool
 
     class Config:
         orm_mode = True

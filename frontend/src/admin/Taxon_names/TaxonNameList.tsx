@@ -17,6 +17,8 @@ import {
 import NaturalisedStatus from './NaturalisedStatus';
 import PublicationStatus from './PublicationStatus';
 import { List, WithPermissions } from '@react-admin/ra-rbac';
+import DeleteIcon from '@material-ui/icons/Delete';
+import VisibilityIcon from '@material-ui/icons/Visibility';
 
 import {
   ListProps,
@@ -267,14 +269,20 @@ export const TaxonNameList = (props: ListProps) => {
       sort={{ field: 'updated_on', order: 'DESC' }}
       actions={<Actions />}
       perPage={100}
-      filters={TaxonNameFilters}
+      filters={TaxonNameFilters()}
       pagination={<DefaultPagination />}
       bulkActionButtons={useCanBulkDelete()}
       {...props}
     >
       <Datagrid rowClick="show">
         {columns}
-
+        <WithPermissions resource="taxon_names" action="harddelete">
+          <BooleanField
+            source="deleted"
+            TrueIcon={DeleteIcon}
+            FalseIcon={VisibilityIcon}
+          />
+        </WithPermissions>
         <WithPermissions resource="taxon_names" action="edit">
           <EditButton />
         </WithPermissions>

@@ -35,7 +35,7 @@ def get_admin_id(db: SessionLocal):
     if not admin:
         admin = UserCrud.create_item(
             db,
-            UserCreate(email=admin_email, is_active=False, password=str(uuid4())),
+            UserCreate(email=admin_email, deleted=True, password=str(uuid4())),
         )
     return admin.user_id
 

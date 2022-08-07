@@ -7,14 +7,17 @@ import {
   EditButton,
   ExportButton,
   ReferenceField,
-  SearchInput,
   TextField,
   TopToolbar,
 } from 'react-admin';
 import { List, WithPermissions } from '@react-admin/ra-rbac';
-import { DefaultPagination, useCanBulkDelete } from '../shared';
-
-const publicationFilters = [<SearchInput source="q" alwaysOn />];
+import {
+  DefaultPagination,
+  selectableFilters,
+  useCanBulkDelete,
+} from '../shared';
+import DeleteIcon from '@material-ui/icons/Delete';
+import VisibilityIcon from '@material-ui/icons/Visibility';
 
 const Actions = () => (
   <TopToolbar>
@@ -31,11 +34,11 @@ export const PublicationList: FC = (props) => (
   <List
     {...props}
     sort={{ field: 'display_title', order: 'ASC' }}
-    filters={publicationFilters}
     actions={<Actions />}
     perPage={100}
     pagination={<DefaultPagination />}
     bulkActionButtons={useCanBulkDelete()}
+    filters={selectableFilters()}
   >
     <Datagrid rowClick="show">
       <TextField source="display_title" />
@@ -53,6 +56,13 @@ export const PublicationList: FC = (props) => (
         <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" />
+      <WithPermissions resource="publications" action="harddelete">
+        <BooleanField
+          source="deleted"
+          TrueIcon={DeleteIcon}
+          FalseIcon={VisibilityIcon}
+        />
+      </WithPermissions>
       <WithPermissions resource="publications" action="edit">
         <EditButton />
       </WithPermissions>

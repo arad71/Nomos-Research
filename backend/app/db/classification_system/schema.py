@@ -32,6 +32,7 @@ class ClassificationSystemEdit(ClassificationSystemBase):
 
 class ClassificationSystem(ClassificationSystemBase, TableBase):
     classification_system_id: int = Field(description=CLASSIFICATION_SYSTEM_ID)
+    deleted: bool
 
     class Config:
         orm_mode = True

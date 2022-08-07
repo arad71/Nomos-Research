@@ -21,6 +21,7 @@ class InformalGroupEdit(InformalGroupBase):
 class InformalGroup(InformalGroupBase, TableBase):
     informal_group_id: int
     classification_system: ClassificationSystem
+    deleted: bool
 
     class Config:
         orm_mode = True

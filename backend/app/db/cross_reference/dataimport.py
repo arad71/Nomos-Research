@@ -14,7 +14,6 @@ class ImportCrossReference(DataImportBase):
             "old_name_id",
             "new_name_id",
             "cross_reference_type",
-            "active",
             "authorised_yr",
             "authorised_mn",
             "authorised_dy",
@@ -50,7 +49,7 @@ class ImportCrossReference(DataImportBase):
                 "cross_reference_type": self.map_cross_reference_type_enum(
                     row["XREF_TYPE"]
                 ),
-                "active": self.map_y_n_to_bool(row["ACTIVE"]),
+                "deleted": self.map_y_n_to_bool(row["ACTIVE"]) or False,
                 "authorised_yr": row["AUTHORISED_YR"] or None,
                 "authorised_mn": row["AUTHORISED_MN"] or None,
                 "authorised_dy": row["AUTHORISED_DY"] or None,

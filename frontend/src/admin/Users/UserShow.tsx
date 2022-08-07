@@ -67,13 +67,6 @@ export const UserShow: FC = (props) => {
               </Labeled>
             </Box>
           </Box>
-          <Box className={globalClasses.formRow}>
-            <Box className={globalClasses.fieldMargin}>
-              <Labeled label="Is active?">
-                <BooleanField source="is_active" />
-              </Labeled>
-            </Box>
-          </Box>
         </Box>
       </Box>
     </Show>

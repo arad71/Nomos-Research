@@ -41,6 +41,7 @@ import { FormattedScientificNameWithStatus } from '../Taxon_names';
 import { CrossReferenceRowForm } from '../Cross_references/CrossReferenceRowForm';
 import { HierarchyRowForm } from '../Hierarchies';
 import ScientificNameReference from './ScientificNameReference';
+import CustomAction from '../shared/CustomAction';
 import EditToolbar from '../shared/EditToolbar';
 
 const validateNumber = [number(), minValue(0)];
@@ -63,14 +64,24 @@ export const TaxonNameCreateEdit: FC = ({
   const classes = useStyles();
   const globalClasses = GlobalTheme();
   const gridClasses = GlobalGridTheme();
-  const citationInitialValues = { taxon_name_id: props.record?.id };
+  const citationInitialValues = {
+    taxon_name_id: props.record?.id,
+  };
   const hierarchyInitialValues = { taxon_name_id: props.record?.id };
   const vernacularInitialValues = {
     taxon_name_id: props.record?.id,
-    enabled: true,
   };
-  const oldNameInitialValues = { new_name_id: props.record?.id, active: true };
-  const newNameInitialValues = { old_name_id: props.record?.id, active: true };
+  const oldNameInitialValues = {
+    new_name_id: props.record?.id,
+  };
+  const newNameInitialValues = {
+    old_name_id: props.record?.id,
+  };
+  const role: any = localStorage.getItem('scopes');
+  let deleted_column = null;
+  if (role == 'SUPER_ADMIN') {
+    deleted_column = <BooleanField source="deleted" />;
+  }
   return (
     <>
       <NamePageSummary />
@@ -195,6 +206,8 @@ export const TaxonNameCreateEdit: FC = ({
                   {...props}
                 >
                   <EditableDatagrid
+                    actions={<CustomAction />}
+                    undoable
                     /* eslint-disable-next-line max-len */
                     className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
                     createForm={
@@ -211,6 +224,7 @@ export const TaxonNameCreateEdit: FC = ({
                     </ReferenceField>
                     <SelectField source="author_type" choices={AuthorType} />
                     <NumberField source="author_order" />
+                    {deleted_column}
                   </EditableDatagrid>
                 </ReferenceManyField>
               )) || (
@@ -272,6 +286,7 @@ export const TaxonNameCreateEdit: FC = ({
                   {...props}
                 >
                   <EditableDatagrid
+                    actions={<CustomAction />}
                     /* eslint-disable-next-line max-len */
                     className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
                     createForm={
@@ -460,10 +475,11 @@ export const TaxonNameCreateEdit: FC = ({
                     fullWidth
                     reference="cross_references"
                     target="new_name_id"
-                    filter={{ active: true }}
                     {...props}
                   >
                     <EditableDatagrid
+                      actions={<CustomAction />}
+                      undoable
                       /* eslint-disable-next-line max-len */
                       className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
                       createForm={
@@ -512,10 +528,11 @@ export const TaxonNameCreateEdit: FC = ({
                     fullWidth
                     reference="cross_references"
                     target="old_name_id"
-                    filter={{ active: true }}
                     {...props}
                   >
                     <EditableDatagrid
+                      actions={<CustomAction />}
+                      undoable
                       /* eslint-disable-next-line max-len */
                       className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
                       createForm={

@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, overload
 
 from fastapi import APIRouter, Depends, Response
 
@@ -25,12 +25,13 @@ async def publication_list(
     sort: Optional[str] = None,
     filter: Optional[str] = None,
     db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Get all publications
     """
     publications, content_range = PublicationCrud.get_items(
-        db, range=range, sort=sort, list_filter=filter
+        db, current_user, range=range, sort=sort, list_filter=filter
     )
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = content_range
@@ -46,11 +47,12 @@ async def publication_list(
 async def publication_details(
     publication_id: int,
     db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Get any publication details
     """
-    publication = PublicationCrud.get_item(db, publication_id)
+    publication = PublicationCrud.get_item(db, current_user, publication_id)
     return publication
 
 
@@ -104,11 +106,10 @@ async def publication_edit(
     """
     Update existing publication
     """
-    return PublicationCrud.edit_item(
-        db, publication_id, publication, current_user=current_user.user_id
-    )
+    return PublicationCrud.edit_item(db, current_user, publication_id, publication)
 
 
+@overload
 @r.delete(
     "/{publication_id}",
     dependencies=[
@@ -123,8 +124,30 @@ async def publication_edit(
 async def publication_delete(
     publication_id: int,
     db=Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Delete existing publication
     """
-    return PublicationCrud.delete_item(db, publication_id)
+    return PublicationCrud.delete_item(db, current_user, publication_id)
+
+
+@r.delete(
+    "/{publication_id}/hard",
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
+async def publication_delete(
+    publication_id: int,
+    db=Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+):
+    """
+    Delete existing publication
+    """
+    return PublicationCrud.delete_item(db, current_user, publication_id, True)

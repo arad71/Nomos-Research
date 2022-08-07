@@ -32,6 +32,19 @@ def test_delete_taxon_rank(client, test_taxon_rank, test_db, superuser_token_hea
         headers=superuser_token_headers,
     )
     assert response.status_code == status.HTTP_200_OK
+    assert response.json()["deleted"] is True
+    assert test_db.query(TaxonRank).all() == [test_taxon_rank]
+
+
+def test_hard_delete_taxon_rank(
+    client, test_taxon_rank, test_db, superuser_token_headers, test_superuser
+):
+    response = client.delete(
+        f"/api/v1/taxon_ranks/{test_taxon_rank.taxon_rank_id}/hard",
+        headers=superuser_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {"taxon_rank_id": test_taxon_rank.taxon_rank_id}
     assert test_db.query(TaxonRank).all() == []
 
 

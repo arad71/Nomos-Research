@@ -36,6 +36,7 @@ class Hierarchy(HierarchyBase, TableBase):
     scientific_name: str
     rank_name: str
     path: typing.Optional[typing.Any]
+    deleted: bool
 
     class Config:
         orm_mode = True

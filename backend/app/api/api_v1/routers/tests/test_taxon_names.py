@@ -1,6 +1,7 @@
 import pytest
 from starlette import status
 
+from app.db.taxon_name.crud import TaxonNameCrud
 from app.db.taxon_name.model import TaxonName
 
 
@@ -30,16 +31,36 @@ def test_get_taxon_names(
             "scientific_name": "Testuninomial",
             "formatted_scientific_name": "<i class='canonical-name'>Testuninomial</i>",
             "uninomial": "Testuninomial",
+            "deleted": False,
         }
     ]
 
 
-def test_delete_taxon_name(client, test_taxon_name, test_db, superuser_token_headers):
+def test_delete_taxon_name(
+    client, test_taxon_name, test_db, superuser_token_headers, test_superuser
+):
     response = client.delete(
         f"/api/v1/taxon_names/{test_taxon_name.taxon_name_id}",
         headers=superuser_token_headers,
     )
     assert response.status_code == status.HTTP_200_OK
+    assert response.json()["deleted"] is True
+    assert test_db.query(TaxonName).all() == [test_taxon_name]
+    assert TaxonNameCrud.get_items(test_db, test_superuser)[0] == []
+    assert TaxonNameCrud.get_items(
+        test_db, test_superuser, list_filter='{"deleted": true}'
+    )[0] == [test_taxon_name]
+
+
+def test_hard_delete_taxon_name(
+    client, test_taxon_name, test_db, superuser_token_headers, test_superuser
+):
+    response = client.delete(
+        f"/api/v1/taxon_names/{test_taxon_name.taxon_name_id}/hard",
+        headers=superuser_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {"taxon_name_id": test_taxon_name.taxon_name_id}
     assert test_db.query(TaxonName).all() == []
 
 
@@ -87,6 +108,7 @@ def test_edit_taxon_name(
     new_taxon_name["kingdom"] = response.json()["kingdom"]
     new_taxon_name["taxon_rank"] = response.json()["taxon_rank"]
     new_taxon_name["all_vernaculars"] = response.json()["all_vernaculars"]
+    new_taxon_name["deleted"] = False
     assert response.json() == new_taxon_name
 
 
@@ -150,6 +172,7 @@ def test_get_taxon_name(
         "path": [],
         "scientific_name": "Testuninomial",
         "uninomial": "Testuninomial",
+        "deleted": False,
     }
 
 
@@ -186,6 +209,7 @@ def test_canonical_name_1(
         "created_on": test_taxon_name_canonical_name_1.created_on.isoformat(),
         "classification_system_ids": [],
         "path": [],
+        "deleted": False,
     }
 
 
@@ -223,6 +247,7 @@ def test_canonical_name_2(
         "classification_system_ids": [],
         "path": [],
         "uninomial": "Acanthiza",
+        "deleted": False,
     }
 
 
@@ -261,6 +286,7 @@ def test_canonical_name_3(
         "created_on": test_taxon_name_canonical_name_3.created_on.isoformat(),
         "classification_system_ids": [],
         "path": [],
+        "deleted": False,
     }
 
 

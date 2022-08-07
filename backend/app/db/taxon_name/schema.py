@@ -92,6 +92,7 @@ class TaxonName(TaxonNameBase, TableBase):
     formatted_scientific_name: Optional[str]
     canonical_name_without_rank: Optional[str]
     path: Optional[List[str]]
+    deleted: bool
 
     class Config:
         orm_mode = True

@@ -59,12 +59,6 @@ export const VernacularCreateEdit: FC = (props) => {
           validate={required()}
           defaultValue={false}
         />
-        <BooleanInput
-          label="Enabled"
-          source="enabled"
-          validate={required()}
-          defaultValue={false}
-        />
       </Box>
     </SimpleForm>
   );
