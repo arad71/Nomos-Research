@@ -49,10 +49,6 @@ export const HierarchyList: FC = (props) => (
       >
         <TextField source="class_desc" />
       </ReferenceField>
-      <ReferenceField source="created_by" reference="users" link="show">
-        <TextField source="full_name" />
-      </ReferenceField>
-      <DateField source="created_on" />
       <ReferenceField source="updated_by" reference="users" link="show">
         <TextField source="full_name" />
       </ReferenceField>
