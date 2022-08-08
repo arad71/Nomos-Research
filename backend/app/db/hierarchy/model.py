@@ -14,6 +14,7 @@ from app.db.hierarchy.constants import (
     TAXON_NAME_ID,
 )
 from app.db.models import BaseModel, TableMixin
+from app.db.session import get_db
 from app.db.taxon_name.model import TaxonName
 
 id_seq = Sequence("hierarchy_hierarchy_id_seq")
@@ -131,6 +132,7 @@ class Hierarchy(BaseModel, TableMixin):
         return self.get_parent_path() + self.ltree(self.taxon_name_id)
 
     def get_parent_path(self):
+        logger.debug(self)
         parent_path = None
         if self.parent_nid:
             parent_hierarchy = self.where(
@@ -144,22 +146,33 @@ class Hierarchy(BaseModel, TableMixin):
         return parent_path
 
     def calculate_path(self, parent: "Hierarchy" = None):
+        logger.debug("Setting path")
+        logger.debug(self)
         new_path = self.get_path()
+        logger.debug(new_path)
+        values = {"path": new_path}
+        self.path = new_path
         if parent:
-            self.path = new_path
             if parent:
                 self.updated_by = parent.updated_by
                 self.updated_on = parent.updated_on
-            self.save()
         else:
             session: Session = self.session
             values = {"path": new_path}
+            # TODO: Make this save in a transaction
             set_committed_value(self, "path", new_path)
+            logger.debug('about to set values')
             session.execute(
                 self.__table__.update()
                 .values(values)
                 .where(Hierarchy.hierarchy_id == self.hierarchy_id)
             )
+            logger.debug('set values')
+            logger.debug(self)
+        # self.save()
+        self.session.refresh(self)
+        # self.session.commit()
+        # self.update(values)
 
     def calculate_path_for_children(self):
         child: Hierarchy
@@ -178,7 +191,7 @@ class Hierarchy(BaseModel, TableMixin):
         logger.info("Rebuilding hierarchy paths")
         done = set()
         hierarchy: Hierarchy
-        for hierarchy in Hierarchy.all():
+        for hierarchy in Hierarchy.where(deleted=False):
             root = hierarchy.find_root_parent()
             if root not in done:
                 logger.debug("Rebuilding hierarchy for {} and descendants.", root)
@@ -188,18 +201,22 @@ class Hierarchy(BaseModel, TableMixin):
         return done
 
 
-@event.listens_for(Hierarchy, "after_insert")
-@event.listens_for(Hierarchy, "after_update")
+# @event.listens_for(Hierarchy, "after_insert")
+# @event.listens_for(Hierarchy, "after_update")
 def calculate_fields(
     mapper,
     connection: Connection,
     hierarchy: Hierarchy,
 ):
+
     hierarchy.calculate_path()
 
 
 def rebuild_hierarchy_for_children(hierarchy_id: int):
+    logger.debug('started')
     hierarchy: Hierarchy = Hierarchy.find(hierarchy_id)
+    hierarchy.calculate_path()
     hierarchy.calculate_path_for_children()
     hierarchy.session.flush()
     hierarchy.session.commit()
+    logger.debug('finished')
