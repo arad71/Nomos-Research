@@ -5,11 +5,7 @@ from sqlalchemy.schema import UniqueConstraint
 
 from app.db.models import BaseModel, TableMixin
 from app.db.publication.calculated import calculate_fields
-from app.db.publication.constants import (
-    BAD_PUBLICATION,
-    PUBLICATION_ID,
-    TABLE_DESCRIPTION,
-)
+from app.db.publication.constants import PUBLICATION_ID, TABLE_DESCRIPTION
 
 
 class Publication(BaseModel, TableMixin):
@@ -24,11 +20,6 @@ class Publication(BaseModel, TableMixin):
         primary_key=True,
         comment=PUBLICATION_ID,
         doc=PUBLICATION_ID,
-    )
-    bad_publication = Column(
-        Boolean,
-        comment=BAD_PUBLICATION,
-        doc=BAD_PUBLICATION,
     )
     doi = Column(String)
     title = Column(String)

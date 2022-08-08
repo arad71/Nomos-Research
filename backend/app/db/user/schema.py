@@ -12,7 +12,7 @@ from app.db.user_role.schema import UserRole
 
 class UserBase(BaseModel):
     email: str = Field(description=EMAIL)
-    is_active: bool = True
+    deleted: bool = False
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     legacy_id_name: Optional[str] = None
@@ -50,6 +50,7 @@ class User(UserBase):
     updated_on: Optional[datetime]
     created_by: Optional[int]
     created_on: Optional[datetime]
+    deleted: bool
 
     class Config:
         orm_mode = True

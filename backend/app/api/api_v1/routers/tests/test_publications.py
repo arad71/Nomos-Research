@@ -10,7 +10,6 @@ def test_get_publications(client, test_publication, superuser_token_headers):
     assert response.json() == [
         {
             "publication_id": test_publication.publication_id,
-            "bad_publication": test_publication.bad_publication,
             "abbreviated_title": test_publication.abbreviated_title,
             "display_title": test_publication.display_title,
             "title": test_publication.title,
@@ -26,6 +25,7 @@ def test_get_publications(client, test_publication, superuser_token_headers):
             "author_ids": [],
             "author_names": [],
             "author_name": "",
+            "deleted": False,
         }
     ]
 
@@ -36,6 +36,19 @@ def test_delete_publication(client, test_publication, test_db, superuser_token_h
         headers=superuser_token_headers,
     )
     assert response.status_code == status.HTTP_200_OK
+    assert response.json()["deleted"] is True
+    assert test_db.query(Publication).all() == [test_publication]
+
+
+def test_hard_delete_publication(
+    client, test_publication, test_db, superuser_token_headers, test_superuser
+):
+    response = client.delete(
+        f"/api/v1/publications/{test_publication.publication_id}/hard",
+        headers=superuser_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {"publication_id": test_publication.publication_id}
     assert test_db.query(Publication).all() == []
 
 
@@ -50,7 +63,6 @@ def test_edit_publication(
     client, test_publication, test_superuser, superuser_token_headers
 ):
     new_publication = {
-        "bad_publication": test_publication.bad_publication,
         "abbreviated_title": test_publication.abbreviated_title,
         "title": test_publication.title,
         "publication_day": test_publication.publication_day,
@@ -76,6 +88,7 @@ def test_edit_publication(
     new_publication["author_names"] = []
     new_publication["author_name"] = ""
     new_publication["display_title"] = test_publication.display_title
+    new_publication["deleted"] = False
     assert response.json() == new_publication
 
 
@@ -83,7 +96,7 @@ def test_edit_publication_not_found(
     client, test_db, test_publication, test_superuser, superuser_token_headers
 ):
     new_publication = {
-        "bad_publication": True,
+        "deleted": True,
         "abbreviated_title": "PUBLICATION 2",
         "title": "PUBLICATION_NAME",
         "updated_by": test_superuser.user_id,
@@ -111,7 +124,6 @@ def test_get_publication(
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {
         "publication_id": test_publication.publication_id,
-        "bad_publication": test_publication.bad_publication,
         "abbreviated_title": test_publication.abbreviated_title,
         "display_title": test_publication.display_title,
         "title": test_publication.title,
@@ -127,6 +139,7 @@ def test_get_publication(
         "author_ids": [],
         "author_names": [],
         "author_name": "",
+        "deleted": False,
     }
 
 
@@ -147,7 +160,6 @@ def test_unauthenticated_routes(client):
 
 
 NEW_PUBLICATION = {
-    "bad_publication": False,
     "abbreviated_title": "PUBLICATION",
     "title": "PUBLICATION_NAME_NEW",
     "updated_by": None,

@@ -1,12 +1,5 @@
-import {
-  required,
-  SimpleForm,
-  TextInput,
-  SaveButton,
-  DeleteButton,
-  Toolbar,
-} from 'react-admin';
-import { WithPermissions } from '@react-admin/ra-rbac';
+import { required, SimpleForm, TextInput } from 'react-admin';
+
 import React, { FC } from 'react';
 import { Box, Typography } from '@material-ui/core';
 import { GlobalTheme } from '../../GlobalTheme';

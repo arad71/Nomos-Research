@@ -45,7 +45,7 @@ async def curation_checklist(
         )
         .group_by(CrossReference.old_name_id)
         .filter(
-            CrossReference.active,
+            CrossReference.deleted == False,  # noqa: E712
         )
         .subquery()
     )
@@ -70,7 +70,6 @@ async def curation_checklist(
             CrossReference.updated_on.label("cross_reference_updated_on").label(
                 "crossReferenceUpdated"
             ),
-            CrossReference.active.label("crossReferenceActive"),
             accepted_name.scientific_name.label("acceptedNameUsage"),
             accepted_name.author.label("acceptedNameAuthor"),
             accepted_name.is_current.label("acceptedNameCurrent"),
@@ -102,7 +101,12 @@ async def curation_checklist(
                 accepted_name.is_current, accepted_name.is_current == None  # noqa: E711
             )
         )
-        .filter(or_(CrossReference.active, CrossReference.active == None))  # noqa: E711
+        .filter(
+            or_(
+                accepted_name.deleted == False,  # noqa: E712
+                accepted_name.deleted == None,  # noqa: E711
+            )
+        )
     )
     if updated:
         statement = statement.filter(original_name.updated_on >= updated)
@@ -120,6 +124,7 @@ async def curation_checklist(
         )
     if current is not None:
         statement = statement.filter(original_name.is_current == current)
+    statement = statement.filter(original_name.deleted == False)  # noqa
     if validated is not None:
         statement = statement.filter(original_name.validated == validated)
     count_query = statement.with_only_columns(func.count(original_name.taxon_name_id))

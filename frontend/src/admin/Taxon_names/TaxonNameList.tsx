@@ -17,6 +17,8 @@ import {
 import NaturalisedStatus from './NaturalisedStatus';
 import PublicationStatus from './PublicationStatus';
 import { List, WithPermissions } from '@react-admin/ra-rbac';
+import DeleteIcon from '@material-ui/icons/Delete';
+import VisibilityIcon from '@material-ui/icons/Visibility';
 
 import {
   ListProps,
@@ -55,14 +57,105 @@ const postListColumns = {
   ),
   canonical_name: <RichTextField source="canonical_name" />,
   scientific_name: <TextField source="scientific_name" />,
-  phylum: <TextField source="phylum" />,
-  taxon_class: <TextField source="taxon_class" />,
-  order: <TextField source="order" />,
-  family: <TextField source="family" />,
-  genus: <TextField source="genus" />,
-  subgenus: <TextField source="subgenus" />,
-  species: <TextField source="species" />,
-  subspecies: <TextField source="subspecies" />,
+  division: (
+    <ReferenceField
+      label="Division"
+      source="id"
+      reference={`taxon_names_ancestors/Division`}
+      link={false}
+      sortable={false}
+    >
+      <RichTextField source="ancestor_name__formatted_scientific_name" />
+    </ReferenceField>
+  ),
+  phylum: (
+    <ReferenceField
+      label="Phylum"
+      source="id"
+      reference={`taxon_names_ancestors/Phylum`}
+      link={false}
+      sortable={false}
+    >
+      <RichTextField source="ancestor_name__formatted_scientific_name" />
+    </ReferenceField>
+  ),
+  taxon_class: (
+    <ReferenceField
+      label="Class"
+      source="id"
+      reference={`taxon_names_ancestors/Class`}
+      link={false}
+      sortable={false}
+    >
+      <RichTextField source="ancestor_name__formatted_scientific_name" />
+    </ReferenceField>
+  ),
+  order: (
+    <ReferenceField
+      label="Order"
+      source="id"
+      reference={`taxon_names_ancestors/Order`}
+      link={false}
+      sortable={false}
+    >
+      <RichTextField source="ancestor_name__formatted_scientific_name" />
+    </ReferenceField>
+  ),
+  family: (
+    <ReferenceField
+      label="Family"
+      source="id"
+      reference={`taxon_names_ancestors/Family`}
+      link={false}
+      sortable={false}
+    >
+      <RichTextField source="ancestor_name__formatted_scientific_name" />
+    </ReferenceField>
+  ),
+  genus: (
+    <ReferenceField
+      label="Genus"
+      source="id"
+      reference={`taxon_names_ancestors/Genus`}
+      link={false}
+      sortable={false}
+    >
+      <RichTextField source="ancestor_name__formatted_scientific_name" />
+    </ReferenceField>
+  ),
+  subgenus: (
+    <ReferenceField
+      label="Subgenus"
+      source="id"
+      reference={`taxon_names_ancestors/Subgenus`}
+      link={false}
+      sortable={false}
+    >
+      <RichTextField source="ancestor_name__formatted_scientific_name" />
+    </ReferenceField>
+  ),
+  species: (
+    <ReferenceField
+      label="Species"
+      source="id"
+      reference={`taxon_names_ancestors/Species`}
+      link={false}
+      sortable={false}
+    >
+      <RichTextField source="ancestor_name__formatted_scientific_name" />
+    </ReferenceField>
+  ),
+  subspecies: (
+    <ReferenceField
+      label="Subspecies"
+      source="id"
+      reference={`taxon_names_ancestors/Subspecies`}
+      link={false}
+      sortable={false}
+    >
+      <RichTextField source="ancestor_name__formatted_scientific_name" />
+    </ReferenceField>
+  ),
   uninomial: <TextField source="uninomial" />,
   specific_epithet: <TextField source="specific_epithet" />,
   infraspecific_epithet: <TextField source="infraspecific_epithet" />,
@@ -176,14 +269,20 @@ export const TaxonNameList = (props: ListProps) => {
       sort={{ field: 'updated_on', order: 'DESC' }}
       actions={<Actions />}
       perPage={100}
-      filters={TaxonNameFilters}
+      filters={TaxonNameFilters()}
       pagination={<DefaultPagination />}
       bulkActionButtons={useCanBulkDelete()}
       {...props}
     >
       <Datagrid rowClick="show">
         {columns}
-
+        <WithPermissions resource="taxon_names" action="viewdeleted">
+          <BooleanField
+            source="deleted"
+            TrueIcon={DeleteIcon}
+            FalseIcon={VisibilityIcon}
+          />
+        </WithPermissions>
         <WithPermissions resource="taxon_names" action="edit">
           <EditButton />
         </WithPermissions>

@@ -166,8 +166,19 @@ scripts/downgrade.sh
 
 Alembic can view the status of the database and compare against the table metadata in the application, generating the “obvious” migrations based on a comparison. This is achieved using the --autogenerate option to the alembic revision command, which places so-called candidate migrations into our new migrations file. We review and modify these by hand as needed, then proceed normally.
 ```
-alembic revision  --autogenerate -m "Data Model Updates."
+alembic revision --autogenerate -m "Data Model Updates."
 ```
+
+*I've been working on a branch for a while and there are other migrations? How do I deal with this?*
+This normally results in the error message:
+
+> FAILED: Multiple head revisions are present for given argument 'head'; please specify a specific target revision, '<branchname>@head' to narrow to a specific head, or 'heads' for all heads
+
+You can generally resolve this by merging the heads of your migrations:
+```
+ docker-compose run --rm backend alembic merge heads --message "<Add your message here>"
+```
+Alternatively you can edit your migrations and change the `down_revision`
 
 ### Recreating migrations:
 
@@ -259,6 +270,10 @@ Two authentication providers are supported and can be switched between using  th
 | password | Use password based authentication. Enables password on the user edit form                                                         |
 | auth2    | Auth2 authentication is based on request headers set by the proxy https://dev.azure.com/BIO-WA/WA-BDR/_wiki/wikis/BDR-WA.wiki/70/Authentication. For local development the user details are set in nginx.conf. |
 
+
+##### Testing other roles
+If you want to test with other roles you can switch your auth provider to 'password' and then log in using one of the
+test role based user accounts.
 
 ### Environments
 In order to deploy to the **staging** environment push code to the `staging` branch via a pull request into **staging**.

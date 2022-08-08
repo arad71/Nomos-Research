@@ -69,7 +69,6 @@ export const UserCreateEdit: FC = (props) => {
             />
           </ReferenceArrayInput>
         </Box>
-        <BooleanInput source="is_active" defaultValue={false} />
       </Box>
     </SimpleForm>
   );

@@ -44,7 +44,7 @@ def map_canonical_name(mapper, connection, target):
 
 
 def map_authors(mapper, connection, target):
-    citations = target.citations\
+    citations = target.citations.filter_by(deleted=False)\
         .order_by(asc("author_type"))\
         .order_by(asc("author_order"))  # fmt: skip
 
@@ -106,7 +106,9 @@ def map_editors(mapper, connection, target):
 
 def map_vernacular(target):
     vernacular = (
-        target.vernaculars.filter_by(preferred=True).order_by(asc("sort_order")).first()
+        target.vernaculars.filter_by(deleted=False, preferred=True)
+        .order_by(asc("sort_order"))
+        .first()
     )
     if vernacular:
         return vernacular.vernacular
@@ -114,7 +116,9 @@ def map_vernacular(target):
 
 
 def map_vernaculars(target):
-    vernaculars = target.vernaculars.filter_by(enabled=True).order_by(desc("preferred"))
+    vernaculars = target.vernaculars.filter_by(deleted=False).order_by(
+        desc("preferred")
+    )
     if vernaculars.count:
         return ", ".join(
             filter(

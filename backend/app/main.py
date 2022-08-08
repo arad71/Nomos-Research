@@ -28,6 +28,7 @@ from app.api.api_v1.routers.vernaculars import vernaculars_router
 from app.core import config
 from app.core.auth import get_current_active_user
 from app.db.init_db import init_db
+from app.db.models import BaseModel
 from app.db.session import SessionLocal
 
 API_V1_URL = config.settings.API_V1_STR
@@ -198,7 +199,9 @@ app.include_router(auth_router, prefix="/api", tags=["auth"])
 
 @app.on_event("startup")
 async def initialise_database():
-    init_db(SessionLocal())
+    session = SessionLocal()
+    BaseModel.set_session(session)
+    init_db(session)
 
 
 if __name__ == "__main__":

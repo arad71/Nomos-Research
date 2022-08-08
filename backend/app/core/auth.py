@@ -73,8 +73,8 @@ async def get_current_user(
 async def get_current_active_user(
     current_user=Security(get_current_user, scopes=[], use_cache=False),
 ) -> model.User:
-    if not current_user.is_active:
-        raise HTTPException(status_code=400, detail="Inactive user")
+    if current_user.deleted:
+        raise HTTPException(status_code=400, detail="Soft deleted user")
     return current_user
 
 
@@ -128,7 +128,6 @@ def sign_up_new_user(db, email: str, password: str):
         schema.UserCreate(
             email=email,
             password=password,
-            is_active=True,
         ),
     )
     return new_user
@@ -149,7 +148,7 @@ def auth2_authenticate_user(
                 email=x_email,
                 first_name=x_first_name,
                 last_name=x_last_name,
-                is_active=False,
+                deleted=True,
                 password=password,
             ),
         )

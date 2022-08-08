@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 import app.db.crud as crud
 from app.db.citation.calculated import trigger_taxon_name_calculated_fields
 from app.db.citation.model import Citation
+from app.db.user.schema import User
 
 
 class CitationCrud(crud.Crud):
@@ -11,19 +12,24 @@ class CitationCrud(crud.Crud):
     name = "Citation"
 
     @classmethod
-    def delete_item(cls, db: Session, citation_id: int):
-        citation = cls.get_item(db, citation_id)
+    def delete_item(
+        cls, db: Session, current_user: User, citation_id: int, hard: bool = False
+    ):
+        citation = cls.get_item(db, current_user, citation_id)
         taxon_name_id = citation.taxon_name_id
-        id_dict = super().delete_item(db, citation_id)
+        super().delete_item(db, current_user, citation_id, hard)
         trigger_taxon_name_calculated_fields(db, taxon_name_id)
         db.commit()
-        return id_dict
+        if hard:
+            return {cls.id_key: citation_id}
+        db.refresh(citation)
+        return citation
 
     @classmethod
     def edit_item(
-        cls, db: Session, citation_id: int, values: object, current_user: int
+        cls, db: Session, current_user: User, citation_id: int, values: object
     ):
-        citation = super().edit_item(db, citation_id, values, current_user)
+        citation = super().edit_item(db, current_user, citation_id, values)
         taxon_name_id = citation.taxon_name_id
         trigger_taxon_name_calculated_fields(db, taxon_name_id)
         db.commit()

@@ -12,7 +12,7 @@ import LanguageType from './LanguageType';
 import { Box, Typography, makeStyles } from '@material-ui/core';
 import { GlobalTheme } from '../../GlobalTheme';
 import EditToolbar from '../shared/EditToolbar';
-import { ScientificNameReference } from '../Taxon_names';
+import ScientificNameReference from '../Taxon_names/ScientificNameReference';
 
 const useStyles = makeStyles((theme) => ({
   mainGrid: {
@@ -56,12 +56,6 @@ export const VernacularCreateEdit: FC = (props) => {
         <BooleanInput
           label="preferred"
           source="preferred"
-          validate={required()}
-          defaultValue={false}
-        />
-        <BooleanInput
-          label="Enabled"
-          source="enabled"
           validate={required()}
           defaultValue={false}
         />

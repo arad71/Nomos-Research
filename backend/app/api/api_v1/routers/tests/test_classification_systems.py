@@ -21,6 +21,7 @@ def test_get_classification_systems(
             "updated_on": test_classification_system.updated_on.isoformat(),
             "created_by": test_classification_system.created_by,
             "created_on": test_classification_system.created_on.isoformat(),
+            "deleted": False,
         }
     ]
 
@@ -33,6 +34,21 @@ def test_delete_classification_system(
         headers=superuser_token_headers,
     )
     assert response.status_code == status.HTTP_200_OK
+    assert response.json()["deleted"] is True
+    assert test_db.query(ClassificationSystem).all() == [test_classification_system]
+
+
+def test_hard_delete_classification_system(
+    client, test_classification_system, test_db, superuser_token_headers, test_superuser
+):
+    response = client.delete(
+        f"/api/v1/classification_systems/{test_classification_system.classification_system_id}/hard",
+        headers=superuser_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {
+        "classification_system_id": test_classification_system.classification_system_id
+    }
     assert test_db.query(ClassificationSystem).all() == []
 
 
@@ -66,6 +82,7 @@ def test_edit_classification_system(
         "classification_system_id"
     ] = test_classification_system.classification_system_id
     new_classification_system["updated_on"] = response.json()["updated_on"]
+    new_classification_system["deleted"] = False
     assert response.json() == new_classification_system
 
 
@@ -109,6 +126,7 @@ def test_get_classification_system(
         "updated_on": test_classification_system.updated_on.isoformat(),
         "created_by": test_classification_system.created_by,
         "created_on": test_classification_system.created_on.isoformat(),
+        "deleted": False,
     }
 
 

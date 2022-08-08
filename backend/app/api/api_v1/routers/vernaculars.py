@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, overload
 
 from fastapi import APIRouter, Depends, Response
 
@@ -25,12 +25,13 @@ async def vernacular_list(
     sort: Optional[str] = None,
     filter: Optional[str] = None,
     db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Get all vernaculars
     """
     vernaculars, content_range = VernacularCrud.get_items(
-        db, range=range, sort=sort, list_filter=filter
+        db, current_user, range=range, sort=sort, list_filter=filter
     )
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = content_range
@@ -46,11 +47,12 @@ async def vernacular_list(
 async def vernacular_details(
     vernacular_id: int,
     db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
 ):
     """
     Get any vernacular details
     """
-    vernacular = VernacularCrud.get_item(db, vernacular_id)
+    vernacular = VernacularCrud.get_item(db, current_user, vernacular_id)
     return vernacular
 
 
@@ -102,9 +104,10 @@ async def vernacular_edit(
     """
     Update existing vernacular
     """
-    return VernacularCrud.edit_item(db, vernacular_id, vernacular, current_user.user_id)
+    return VernacularCrud.edit_item(db, current_user, vernacular_id, vernacular)
 
 
+@overload
 @r.delete(
     "/{vernacular_id}",
     dependencies=[
@@ -119,8 +122,30 @@ async def vernacular_edit(
 async def vernacular_delete(
     vernacular_id: int,
     db=Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Delete existing vernacular
     """
-    return VernacularCrud.delete_item(db, vernacular_id)
+    return VernacularCrud.delete_item(db, current_user, vernacular_id)
+
+
+@r.delete(
+    "/{vernacular_id}/hard",
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
+async def vernacular_delete(
+    vernacular_id: int,
+    db=Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+):
+    """
+    Delete existing vernacular
+    """
+    return VernacularCrud.delete_item(db, current_user, vernacular_id, True)

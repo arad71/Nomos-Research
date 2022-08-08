@@ -4,7 +4,6 @@ import {
   Datagrid,
   DateField,
   EditButton,
-  NumberField,
   ReferenceField,
   RichTextField,
   SelectField,
@@ -12,16 +11,23 @@ import {
 } from 'react-admin';
 import CrossRefType from './CrossRefType';
 import { WithPermissions, List } from '@react-admin/ra-rbac';
-import { DefaultPagination, useCanBulkDelete } from '../shared';
+import {
+  DefaultPagination,
+  selectableFilters,
+  useCanBulkDelete,
+} from '../shared';
+import DeleteIcon from '@material-ui/icons/Delete';
+import VisibilityIcon from '@material-ui/icons/Visibility';
 
 export const CrossReferenceList: FC = (props) => (
   <List
     {...props}
-    sort={{ field: 'old_name___scientific_name' }}
+    sort={{ field: 'updated_on', order: 'DESC' }}
     perPage={100}
     pagination={<DefaultPagination />}
     bulkActionButtons={useCanBulkDelete()}
     title="Related names"
+    filters={selectableFilters()}
   >
     <Datagrid rowClick="show">
       <ReferenceField
@@ -39,7 +45,6 @@ export const CrossReferenceList: FC = (props) => (
         <RichTextField source="formatted_scientific_name" />
       </ReferenceField>
       <SelectField source="cross_reference_type" choices={CrossRefType} />
-      <BooleanField source="active" />
       <TextField source="authorised_by" />
       <TextField source="reference_comments" />
       <TextField source="notes" />
@@ -47,6 +52,13 @@ export const CrossReferenceList: FC = (props) => (
         <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" />
+      <WithPermissions resource="cross_references" action="viewdeleted">
+        <BooleanField
+          source="deleted"
+          TrueIcon={DeleteIcon}
+          FalseIcon={VisibilityIcon}
+        />
+      </WithPermissions>
       <WithPermissions resource="cross_references" action="edit">
         <EditButton />
       </WithPermissions>

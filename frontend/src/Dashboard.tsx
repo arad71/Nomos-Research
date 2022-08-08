@@ -6,6 +6,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Typography, Button } from '@material-ui/core';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import CardWithIcon from './CardWithIcon';
+import { WithPermissions } from '@react-admin/ra-rbac';
 
 const useStyles = makeStyles(() => ({
   cardtitle: {
@@ -47,76 +48,88 @@ const Dashboard = () => {
           <Typography variant="h4" className={classes.cardtitle}>
             Welcome to Nomos taxonomic names register
           </Typography>
-          <Button
-            href="/#/taxon_names"
-            variant="contained"
-            color="secondary"
-            className={classes.cardbutton}
-          >
-            View Names
-          </Button>
-          <Button
-            href="/#/publications"
-            variant="contained"
-            color="secondary"
-            className={classes.cardbutton}
-          >
-            View Publications
-          </Button>
+          <WithPermissions action="list" resource="taxon_names">
+            <Button
+              href="/#/taxon_names"
+              variant="contained"
+              color="secondary"
+              className={classes.cardbutton}
+            >
+              View Names
+            </Button>
+          </WithPermissions>
+          <WithPermissions action="list" resource="publications">
+            <Button
+              href="/#/"
+              variant="contained"
+              color="secondary"
+              className={classes.cardbutton}
+            >
+              View Publications
+            </Button>
+          </WithPermissions>
         </CardContent>
       </Card>
-      <div className={classes.wrapper}>
-        <CardWithIcon
-          icon={
-            <ArrowForwardIcon
-              fontSize={'large'}
-              className={classes.arrowPadding}
-            />
-          }
-          to={'/users/create'}
-          title="Add User"
-          subtitle="Create a new Nomos user"
-        />
-      </div>
-      <div className={classes.wrapper}>
-        <CardWithIcon
-          icon={
-            <ArrowForwardIcon
-              fontSize={'large'}
-              className={classes.arrowPadding}
-            />
-          }
-          to={'/taxon_names/create'}
-          title="Add Name"
-          subtitle="Create a new Taxon name"
-        />
-      </div>
-      <div className={classes.wrapper}>
-        <CardWithIcon
-          icon={
-            <ArrowForwardIcon
-              fontSize={'large'}
-              className={classes.arrowPadding}
-            />
-          }
-          to={'/authors/create'}
-          title="Add Author"
-          subtitle="Create a new Author"
-        />
-      </div>
-      <div className={classes.wrapper}>
-        <CardWithIcon
-          icon={
-            <ArrowForwardIcon
-              fontSize={'large'}
-              className={classes.arrowPadding}
-            />
-          }
-          to={'/publications/create'}
-          title="Add Publication"
-          subtitle="Create a new Publication"
-        />
-      </div>
+      <WithPermissions action="create" resource="users">
+        <div className={classes.wrapper}>
+          <CardWithIcon
+            icon={
+              <ArrowForwardIcon
+                fontSize={'large'}
+                className={classes.arrowPadding}
+              />
+            }
+            to={'/users/create'}
+            title="Add User"
+            subtitle="Create a new Nomos user"
+          />
+        </div>
+      </WithPermissions>
+      <WithPermissions action="create" resource="taxon_names">
+        <div className={classes.wrapper}>
+          <CardWithIcon
+            icon={
+              <ArrowForwardIcon
+                fontSize={'large'}
+                className={classes.arrowPadding}
+              />
+            }
+            to={'/taxon_names/create'}
+            title="Add Name"
+            subtitle="Create a new Taxon name"
+          />
+        </div>
+      </WithPermissions>
+      <WithPermissions action="create" resource="authors">
+        <div className={classes.wrapper}>
+          <CardWithIcon
+            icon={
+              <ArrowForwardIcon
+                fontSize={'large'}
+                className={classes.arrowPadding}
+              />
+            }
+            to={'/authors/create'}
+            title="Add Author"
+            subtitle="Create a new Author"
+          />
+        </div>
+      </WithPermissions>
+      <WithPermissions action="create" resource="publications">
+        <div className={classes.wrapper}>
+          <CardWithIcon
+            icon={
+              <ArrowForwardIcon
+                fontSize={'large'}
+                className={classes.arrowPadding}
+              />
+            }
+            to={'/publications/create'}
+            title="Add Publication"
+            subtitle="Create a new Publication"
+          />
+        </div>
+      </WithPermissions>
     </div>
   );
 };

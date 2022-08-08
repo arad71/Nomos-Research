@@ -10,7 +10,7 @@ import CrossRefType from './CrossRefType';
 import { GlobalTheme } from '../../GlobalTheme';
 import { Box, Typography, makeStyles } from '@material-ui/core';
 import EditToolbar from '../shared/EditToolbar';
-import { ScientificNameReference } from '../Taxon_names';
+import ScientificNameReference from '../Taxon_names/ScientificNameReference';
 
 const useStyles = makeStyles((theme) => ({
   mainGrid: {
@@ -46,12 +46,6 @@ export const CrossRefCreateEdit: FC = (props) => {
         <TextInput source="authorised_by" />
         <TextInput multiline source="reference_comments" />
         <TextInput multiline source="notes" />
-        <BooleanInput
-          label="Active"
-          source="active"
-          validate={required()}
-          defaultValue={false}
-        />
       </Box>
     </SimpleForm>
   );
