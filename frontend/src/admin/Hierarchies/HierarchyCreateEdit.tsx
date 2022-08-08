@@ -1,9 +1,15 @@
-import { ReferenceInput, required, SelectInput, SimpleForm } from 'react-admin';
+import {
+  ReferenceInput,
+  required,
+  SelectInput,
+  SimpleForm,
+  TextField,
+} from 'react-admin';
 import React, { FC } from 'react';
 import { GlobalTheme } from '../../GlobalTheme';
 import { Box, Typography, makeStyles } from '@material-ui/core';
 import EditToolbar from '../shared/EditToolbar';
-import { ScientificNameReference } from '../Taxon_names';
+import ScientificNameReference from '../Taxon_names/ScientificNameReference';
 
 const useStyles = makeStyles((theme) => ({
   mainGrid: {
@@ -30,23 +36,27 @@ export const HierarchyCreateEdit: FC = (props) => {
       </Box>
       <Box className={classes.mainGrid}>
         <Box>
-          <ScientificNameReference
-            source="taxon_name_id"
-            validate={required()}
-          />
-        </Box>
-        <Box>
           <ReferenceInput
             source="classification_system_id"
             reference="classification_systems"
+            filter={{ class_type: 'hierarchical' }}
           >
             <SelectInput optionText="class_desc" validate={required()} />
           </ReferenceInput>
         </Box>
         <Box>
-          <ReferenceInput source="parent_nid" reference="taxon_names">
-            <SelectInput optionText="scientific_name" validate={required()} />
-          </ReferenceInput>
+          <ScientificNameReference
+            source="parent_nid"
+            label="Parent name"
+            validate={required()}
+          />
+        </Box>
+        <Box>
+          <ScientificNameReference
+            source="taxon_name_id"
+            label="Taxon name"
+            validate={required()}
+          />
         </Box>
       </Box>
     </SimpleForm>

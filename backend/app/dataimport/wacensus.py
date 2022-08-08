@@ -14,6 +14,7 @@ from app.db.citation.dataimport import ImportCitation
 from app.db.classification_system.dataimport import ImportClassificationSystem
 from app.db.cross_reference.dataimport import ImportCrossReference
 from app.db.dataimport import LEGACY_DATA_DIRECTORY
+from app.db.hierarchy.crud import HierarchyCrud
 from app.db.hierarchy.dataimport import ImportHierarchy
 from app.db.informal_group.dataimport import ImportInformalGroup
 from app.db.kingdom.dataimport import ImportKingdom
@@ -86,6 +87,7 @@ def import_data(url: AnyUrl = settings.WACENSUS_DATA_FILE_URL):
     ImportHierarchy(db, admin_id).ingest("HBTPARENTS")
     ImportInformalGroup(db, admin_id).ingest("HBTGROUPS")
     trigger_calculated_fields(db)
+    HierarchyCrud.rebuild()
     logger.info("Import completed")
     logger.remove(log)
 

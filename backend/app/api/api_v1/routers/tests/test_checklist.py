@@ -11,7 +11,7 @@ def test_checklist(client, test_cross_reference, test_taxon_name, checklist_api_
     assert response.json() == [
         {
             "nomenclaturalCode": "Kingdom1",
-            "scientificName": None,
+            "scientificName": "Testuninomial",
             "scientificNameAuthorship": None,
             "isCurrent": True,
             "taxonRank": "Rank Name 1",
@@ -23,7 +23,7 @@ def test_checklist(client, test_cross_reference, test_taxon_name, checklist_api_
             "crossReferenceId": 1,
             "crossReferenceCreated": test_cross_reference.created_on.isoformat(),
             "crossReferenceUpdated": test_cross_reference.updated_on.isoformat(),
-            "acceptedNameUsage": None,
+            "acceptedNameUsage": "Testuninomial",
             "acceptedNameAuthor": None,
             "acceptedNameCurrent": True,
             "acceptedNameValidated": True,

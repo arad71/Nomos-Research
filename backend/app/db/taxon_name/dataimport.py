@@ -18,7 +18,6 @@ class ImportTaxonName(DataImportBase):
         self.update_cols = (
             "kingdom_id",
             "uninomial",
-            "subgenus",
             "specific_epithet",
             "infraspecific_epithet",
             "publication_id",

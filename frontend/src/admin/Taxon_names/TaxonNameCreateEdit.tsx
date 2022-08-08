@@ -20,6 +20,8 @@ import {
   SelectArrayInput,
   ReferenceArrayInput,
   AutocompleteInput,
+  RichTextField,
+  FormDataConsumer,
 } from 'react-admin';
 import { EditableDatagrid } from '@react-admin/ra-editable-datagrid';
 import React, { FC, PropsWithChildren } from 'react';
@@ -39,6 +41,8 @@ import CrossRefType from '../Cross_references/CrossRefType';
 import { FormattedScientificNameWithStatus } from '../Taxon_names';
 // eslint-disable-next-line max-len
 import { CrossReferenceRowForm } from '../Cross_references/CrossReferenceRowForm';
+import { EmbeddedHierarchyShow, HierarchyRowForm } from '../Hierarchies';
+import ScientificNameReference from './ScientificNameReference';
 import CustomAction from '../shared/CustomAction';
 import EditToolbar from '../shared/EditToolbar';
 
@@ -55,7 +59,13 @@ const useStyles = makeStyles({
     color: '#ff0000',
   },
 });
-
+export interface FormData {
+  kingdom_id: number;
+}
+export interface FormDataProps {
+  formData: FormData;
+  rest: PropsWithChildren<any>;
+}
 export const TaxonNameCreateEdit: FC = ({
   ...props
 }: PropsWithChildren<any>) => {
@@ -65,6 +75,7 @@ export const TaxonNameCreateEdit: FC = ({
   const citationInitialValues = {
     taxon_name_id: props.record?.id,
   };
+  const hierarchyInitialValues = { taxon_name_id: props.record?.id };
   const vernacularInitialValues = {
     taxon_name_id: props.record?.id,
   };
@@ -108,16 +119,26 @@ export const TaxonNameCreateEdit: FC = ({
             >
               <SelectInput optionText="kingdom_name" fullWidth />
             </ReferenceInput>
-            <ReferenceInput
-              source="rank_id"
-              reference="taxon_ranks"
-              validate={[required()]}
-              className={gridClasses.EightCol3to5span}
-              sort={{ field: 'rank_name', order: 'ASC' }}
-              perPage={100}
-            >
-              <AutocompleteInput optionText="rank_name" fullWidth resettable />
-            </ReferenceInput>
+            <FormDataConsumer>
+              {({ formData, ...rest }: FormDataProps) => (
+                <ReferenceInput
+                  source="rank_id"
+                  reference="taxon_ranks"
+                  validate={[required()]}
+                  className={gridClasses.EightCol3to5span}
+                  filter={{ kingdom_id: formData.kingdom_id }}
+                  {...rest}
+                  sort={{ field: 'rank_name', order: 'ASC' }}
+                  perPage={100}
+                >
+                  <AutocompleteInput
+                    optionText="rank_name"
+                    fullWidth
+                    resettable
+                  />
+                </ReferenceInput>
+              )}
+            </FormDataConsumer>
             <TextInput
               source="uninomial"
               className={gridClasses.EightCol1to3span}
@@ -204,7 +225,6 @@ export const TaxonNameCreateEdit: FC = ({
                 >
                   <EditableDatagrid
                     actions={<CustomAction />}
-                    undoable
                     /* eslint-disable-next-line max-len */
                     className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
                     createForm={
@@ -315,7 +335,7 @@ export const TaxonNameCreateEdit: FC = ({
             </Box>
           </Box>
         </FormTab>
-        <FormTab label="Details" className={globalClasses.bold}>
+        <FormTab label="Details" path="details" className={globalClasses.bold}>
           <Typography
             variant="h5"
             className={`${globalClasses.bold} ${globalClasses.sectionMargin}`}
@@ -378,9 +398,12 @@ export const TaxonNameCreateEdit: FC = ({
             </ReferenceArrayInput>
           </Box>
         </FormTab>
-        <FormTab label="Hierarchy" className={globalClasses.bold}>
-          <Box
-            /* eslint-disable-next-line max-len */
+        <FormTab
+          label="Hierarchy"
+          path="hierarchy"
+          className={globalClasses.bold}
+        >
+          <Box /* eslint-disable-next-line max-len */
             className={`${globalClasses.mainGrid} ${globalClasses.sectionMargin}`}
           >
             <Typography
@@ -391,9 +414,65 @@ export const TaxonNameCreateEdit: FC = ({
             >
               Taxon Name - Hierarchy
             </Typography>
+            <Box className={gridClasses.EightCol1to9span}>
+              {(props.record?.id && (
+                <ReferenceManyField
+                  fullWidth
+                  label="Hierarchical classification"
+                  reference="hierarchies"
+                  target="taxon_name_id"
+                  sort={{
+                    field: 'path',
+                    order: 'ASC',
+                  }}
+                  {...props}
+                >
+                  <EditableDatagrid
+                    actions={<CustomAction />}
+                    hasCreate
+                    // eslint-disable-next-line max-len
+                    className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
+                    createForm={
+                      <HierarchyRowForm
+                        initialValues={hierarchyInitialValues}
+                        {...props}
+                      />
+                    }
+                    editForm={<HierarchyRowForm {...props} />}
+                    expand={<EmbeddedHierarchyShow />}
+                  >
+                    <ReferenceField
+                      source="classification_system_id"
+                      reference="classification_systems"
+                      filter={{ class_type: 'hierarchical' }}
+                    >
+                      <TextField source="class_desc" />
+                    </ReferenceField>
+                    <ReferenceField
+                      source="parent_nid"
+                      reference="taxon_names"
+                      label="Parent name"
+                      link="show"
+                      sortBy="taxon_name___scientific_name"
+                    >
+                      <RichTextField source="formatted_scientific_name" />
+                    </ReferenceField>
+                  </EditableDatagrid>
+                </ReferenceManyField>
+              )) || (
+                <Typography>
+                  You need to save the record before you can add any authors /
+                  citations.
+                </Typography>
+              )}
+            </Box>
           </Box>
         </FormTab>
-        <FormTab label="Related Names" className={globalClasses.bold}>
+        <FormTab
+          label="Related Names"
+          path="related_names"
+          className={globalClasses.bold}
+        >
           <Box
             /* eslint-disable-next-line max-len */
             className={`${globalClasses.mainGrid} ${globalClasses.sectionMargin}`}
@@ -479,7 +558,6 @@ export const TaxonNameCreateEdit: FC = ({
                   >
                     <EditableDatagrid
                       actions={<CustomAction />}
-                      undoable
                       /* eslint-disable-next-line max-len */
                       className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
                       createForm={
@@ -523,7 +601,7 @@ export const TaxonNameCreateEdit: FC = ({
             </Box>
           </Box>
         </FormTab>
-        <FormTab label="Notes" className={globalClasses.bold}>
+        <FormTab label="Notes" path="notes" className={globalClasses.bold}>
           <Box
             /* eslint-disable-next-line max-len */
             className={`${globalClasses.mainGrid} ${globalClasses.sectionMargin}`}

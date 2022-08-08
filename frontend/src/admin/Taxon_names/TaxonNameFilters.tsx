@@ -42,15 +42,16 @@ export const TaxonNameFilters = () => {
       label="Volume information"
     />,
     <TextInput source="all_vernaculars__contains" label="Vernacular" />,
-    <TextInput source="phylum__contains" label="Phylum" />,
-    <TextInput source="taxon_class__contains" label="Class" />,
-    <TextInput source="order__contains" label="Order" />,
-    <TextInput source="family__contains" label="Family" />,
-    <TextInput source="genus__contains" label="Genus" />,
-    <TextInput source="subgenus__contains" label="Subgenus" />,
-    <TextInput source="species__contains" label="Species" />,
-    <TextInput source="subspecies__contains" label="Subspecies" />,
-    <TextInput source="uninomial__contains" label="Uninomial" />,
+    <TextInput source="division" label="Division" />,
+    <TextInput source="phylum" label="Phylum" />,
+    <TextInput source="taxon_class" label="Class" />,
+    <TextInput source="order" label="Order" />,
+    <TextInput source="family" label="Family" />,
+    <TextInput source="genus" label="Genus" />,
+    <TextInput source="subgenus" label="Subgenus" />,
+    <TextInput source="species" label="Species" />,
+    <TextInput source="subspecies" label="Subspecies" />,
+    <TextInput source="uninomial_contains" label="Uninomial" />,
     <TextInput
       source="infraspecific_epithet__contains"
       label="Infraspecific epithet"

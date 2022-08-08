@@ -50,7 +50,7 @@ export const CitationList: FC = (props) => (
         <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" />
-      <WithPermissions resource="citations" action="harddelete">
+      <WithPermissions resource="citations" action="viewdeleted">
         <BooleanField
           source="deleted"
           TrueIcon={DeleteIcon}

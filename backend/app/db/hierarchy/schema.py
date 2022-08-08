@@ -1,3 +1,5 @@
+import typing
+
 from pydantic import BaseModel, Field
 
 from app.db.classification_system.schema import ClassificationSystem
@@ -15,7 +17,6 @@ class HierarchyBase(BaseModel):
     taxon_name_id: int = Field(description=TAXON_NAME_ID)
     classification_system_id: int = Field(description=CLASSIFICATION_SYSTEM_ID)
     parent_nid: int = Field(description=PARENT_NAME_ID)
-    pass
 
 
 class HierarchyCreate(HierarchyBase):
@@ -29,10 +30,15 @@ class HierarchyEdit(HierarchyBase):
 class Hierarchy(HierarchyBase, TableBase):
     hierarchy_id: int
     taxon_name: TaxonName
-    parent: TaxonName
+    parent_name: TaxonName
     classification_system: ClassificationSystem
+    formatted_scientific_name: str
+    scientific_name: str
+    rank_name: str
+    path: typing.Optional[typing.Any]
     deleted: bool
 
     class Config:
         orm_mode = True
+        arbitrary_types_allowed = True
         schema_extra = {"description": TABLE_DESCRIPTION}

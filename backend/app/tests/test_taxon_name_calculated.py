@@ -81,7 +81,6 @@ def create_taxon_name(test_db, row, kingdom, taxon_rank, user_id):
         rank_id=taxon_rank.taxon_rank_id,
         is_current=True,
         validated=True,
-        genus=row["genus"] or None,
         uninomial=row["uninomial"] or None,
         specific_epithet=row["specific_epithet"] or None,
         infraspecific_epithet=row["infraspecific_epithet"] or None,

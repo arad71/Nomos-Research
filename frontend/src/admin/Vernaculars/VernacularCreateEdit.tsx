@@ -12,7 +12,7 @@ import LanguageType from './LanguageType';
 import { Box, Typography, makeStyles } from '@material-ui/core';
 import { GlobalTheme } from '../../GlobalTheme';
 import EditToolbar from '../shared/EditToolbar';
-import { ScientificNameReference } from '../Taxon_names';
+import ScientificNameReference from '../Taxon_names/ScientificNameReference';
 
 const useStyles = makeStyles((theme) => ({
   mainGrid: {

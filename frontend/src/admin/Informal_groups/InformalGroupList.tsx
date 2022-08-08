@@ -4,7 +4,6 @@ import {
   Datagrid,
   DateField,
   EditButton,
-  NumberField,
   ReferenceField,
   RichTextField,
   TextField,
@@ -46,7 +45,7 @@ export const InformalGroupList: FC = (props) => (
         <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" />
-      <WithPermissions resource="informal_groups" action="harddelete">
+      <WithPermissions resource="informal_groups" action="viewdeleted">
         <BooleanField
           source="deleted"
           TrueIcon={DeleteIcon}

@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Aside = () => {
+const Aside = (props: any) => {
   const classes = useStyles();
   const globalClasses = GlobalTheme();
   const location = useLocation();
@@ -68,12 +68,13 @@ const Aside = () => {
   const isTaxonNames = currPath == 'taxon_names';
   const record = useRecordContext();
   const resource = useResourceContext();
-  const deleted = record.deleted ? (
-    <Typography variant="subtitle1" className={classes.deleted}>
-      <DeleteIcon />
-      Deleted
-    </Typography>
-  ) : null;
+  const deleted =
+    record && record.deleted ? (
+      <Typography variant="subtitle1" className={classes.deleted}>
+        <DeleteIcon />
+        Deleted
+      </Typography>
+    ) : null;
   return (
     <Box className={classes.asideWidth}>
       <Card className={classes.asidePadding}>
@@ -88,7 +89,7 @@ const Aside = () => {
                 History
               </Typography>
             </Box>
-            <WithPermissions resource={resource} action="harddelete">
+            <WithPermissions resource={resource} action="viewdeleted">
               <Box>{deleted}</Box>
             </WithPermissions>
           </Box>
@@ -132,7 +133,7 @@ const Aside = () => {
       {isTaxonNames && (
         <>
           <TaxonNameInformalGroups />
-          <TaxonHierarchy />
+          <TaxonHierarchy {...props} />
         </>
       )}
     </Box>

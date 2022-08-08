@@ -31,7 +31,6 @@ export const EditableCrossReferenceManyGrid = (props: {
     >
       <EditableDatagrid
         actions={<CustomAction />}
-        undoable
         createForm={
           <CrossReferenceRowForm
             initialValues={createInitialValues}

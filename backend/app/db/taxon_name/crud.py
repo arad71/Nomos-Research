@@ -14,10 +14,6 @@ class TaxonNameCrud(crud.Crud):
         "scientific_name",
         "author",
         "all_vernaculars",
-        "phylum",
-        "taxon_class",
-        "order",
-        "family",
         "cross_referenced_old_name___new_name___scientific_name",
     ]
 

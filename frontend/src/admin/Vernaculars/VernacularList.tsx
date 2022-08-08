@@ -47,7 +47,7 @@ export const VernacularList: FC = (props) => (
         <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" />
-      <WithPermissions resource="vernaculars" action="harddelete">
+      <WithPermissions resource="vernaculars" action="viewdeleted">
         <BooleanField
           source="deleted"
           TrueIcon={DeleteIcon}

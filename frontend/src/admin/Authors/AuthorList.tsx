@@ -52,7 +52,7 @@ export const AuthorList: FC = (props) => (
         <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" />
-      <WithPermissions action="harddelete" resource="authors">
+      <WithPermissions action="viewdeleted" resource="authors">
         <BooleanField
           source="deleted"
           TrueIcon={DeleteIcon}

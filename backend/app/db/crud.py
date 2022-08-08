@@ -1,16 +1,25 @@
 import datetime
 import json
+import re
 import typing as t
+from typing import Any, Tuple, Union
 
 from fastapi import HTTPException, status
+from loguru import logger
 from pydantic import BaseModel
-from sqlalchemy import or_
-from sqlalchemy.orm import Session
+from sqlalchemy import and_, or_
+from sqlalchemy.orm import Query, Session, aliased
+from sqlalchemy.sql import expression
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 from sqlalchemy_mixins.smartquery import smart_query
+from sqlalchemy_utils import Ltree
+from sqlalchemy_utils.types.ltree import LQUERY, LTXTQUERY
 
 from app.core.config import settings
+from app.db.hierarchy.model import Hierarchy
 from app.db.session import Base
+from app.db.taxon_name.model import TaxonName as TaxonNameModel
+from app.db.taxon_rank.model import TaxonRank
 from app.db.user.model import User
 
 
@@ -19,6 +28,7 @@ class Crud:
     model: Base = None
     name: str = None
     id_key: str = None
+    PATH_PATTERN = "(\\w+)__(ancestor_of|descendant_of|ltxtquery|lquery__(.+))"
 
     @classmethod
     def create_item(cls, db: Session, item: BaseModel, current_user: int = None):
@@ -93,7 +103,13 @@ class Crud:
             column: str
             for column in filter_items:
                 filter_value = filter_items[column]
-                if column == "q":
+                path_match = re.match(cls.PATH_PATTERN, column)
+                added_rank_filter, query = cls.add_ancestral_rank_filter(
+                    column, filter_value, query
+                )
+                if added_rank_filter:
+                    pass
+                elif column == "q":
                     if cls.search_fields:
                         conditions = {}
                         for search_field in cls.search_fields:
@@ -103,6 +119,8 @@ class Crud:
                     # Let super admin override the filter
                     if current_user.is_super_admin():
                         filters[column] = filter_value
+                elif path_match:
+                    query = cls.add_path_filters(filter_value, path_match, query)
                 else:
                     if hasattr(cls.model, column) and isinstance(
                         getattr(cls.model, column).type, TIMESTAMP
@@ -126,7 +144,89 @@ class Crud:
         return results, content_range
 
     @classmethod
-    def get_skip_and_limit(cls, range):
+    def add_path_filters(cls, filter_value, path_match, query):
+        # Filtering using sqlalchemy ltree path
+        # See https://www.kite.com/blog/python/sqlalchemy/
+        column = path_match.group(1)
+        search = path_match.group(2)
+        path_attr = getattr(cls.model, column)
+        search_attr = getattr(path_attr, search)
+        # TODO: Support multiple hierarchies here by filtering by each
+        #  hierarchy rather than just the first one
+        if isinstance(filter_value, list):
+            if len(filter_value) < 1:
+                filter_value = "no_filter"
+            else:
+                filter_value = filter_value.pop()
+        filter_value = str(filter_value)
+        cast = None
+        if search == "ltxtquery":
+            cast = LTXTQUERY
+        elif search == "lquery":
+            cast = LQUERY
+        if cast:
+            filter_value = expression.cast(str(filter_value), cast)
+        else:
+            filter_value = Ltree(filter_value)
+        query = query.where(search_attr(filter_value))
+        return query
+
+    @classmethod
+    def add_ancestral_rank_filter(
+        cls, column: str, filter_value: t.Any, query: Query
+    ) -> tuple[bool, Query]:
+        added_rank_filter = False
+        if column in [
+            "division",
+            "phylum",
+            "taxon_class",
+            "order",
+            "family",
+            "genus",
+            "subgenus",
+            "species",
+            "subspecies",
+        ]:
+            if cls.model == TaxonNameModel:
+                added_rank_filter = True
+                ancestor = aliased(Hierarchy)
+                taxon_name = aliased(cls.model)
+                ancestor_name = aliased(TaxonNameModel)
+                hierarchy = aliased(Hierarchy)
+                taxon_rank = aliased(TaxonRank)
+                query = (
+                    query.join(
+                        taxon_name,
+                        cls.model.taxon_name_id == taxon_name.taxon_name_id,
+                    )
+                    .join(
+                        hierarchy,
+                        hierarchy.taxon_name_id == taxon_name.taxon_name_id,
+                    )
+                    .join(
+                        ancestor,
+                        hierarchy.path.descendant_of(ancestor.path),
+                    )
+                    .join(
+                        ancestor_name,
+                        ancestor.taxon_name_id == ancestor_name.taxon_name_id,
+                    )
+                    .join(
+                        taxon_rank,
+                        and_(
+                            ancestor_name.rank_id == taxon_rank.taxon_rank_id,
+                            taxon_rank.rank_name == column.capitalize(),
+                        ),
+                    )
+                )
+
+                query = query.filter(
+                    ancestor_name.scientific_name.ilike(f"{filter_value}%")
+                )
+        return added_rank_filter, query
+
+    @staticmethod
+    def get_skip_and_limit(range):
         range = json.loads(range)
         start = range[0] or 0
         end = range[1] or settings.DEFAULT_PAGE_SIZE

@@ -9,6 +9,7 @@ from sqlalchemy import (
     event,
     func,
 )
+from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import backref, column_property, relationship
 from sqlalchemy.schema import UniqueConstraint
@@ -71,19 +72,9 @@ class TaxonName(BaseModel, TableMixin):
     )
     taxon_rank = relationship("TaxonRank", backref=name_plural)
     uninomial = Column(String, index=True)
-    # kingdom = Column(String)
-    phylum = Column(String)
-    taxon_class = Column(String, name="class", key="class")
-    order = Column(String)
-    family = Column(String, index=True)
-    genus = Column(String, index=True)
-    subgenus = Column(String, index=True)
     canonical_name = Column(String, index=True)
     scientific_name = Column(String, index=True)
     formatted_scientific_name = Column(String)
-    species = Column(String, index=True)
-    subspecies = Column(String, index=True)
-    # taxon_rank = Column(String(9))
     specific_epithet = Column(String(70), index=True)
     infraspecific_epithet = Column(String(70), index=True)
     publication_id = Column(
@@ -178,6 +169,12 @@ class TaxonName(BaseModel, TableMixin):
         deferred=True,
     )
     admin_comment = Column(String)
+    kingdom_name = association_proxy("kingdom", "kingdom_name")
+    rank_name = association_proxy("taxon_rank", "rank_name")
+
+    @hybrid_property
+    def path(self):
+        return [hierarchy.path.path for hierarchy in self.hierarchies]
 
     @hybrid_property
     def classification_system_ids(self):
