@@ -43,7 +43,6 @@ import { FormattedScientificNameWithStatus } from '../Taxon_names';
 import { CrossReferenceRowForm } from '../Cross_references/CrossReferenceRowForm';
 import { EmbeddedHierarchyShow, HierarchyRowForm } from '../Hierarchies';
 import ScientificNameReference from './ScientificNameReference';
-import CustomAction from '../shared/CustomAction';
 import EditToolbar from '../shared/EditToolbar';
 
 const validateNumber = [number(), minValue(0)];
@@ -224,7 +223,6 @@ export const TaxonNameCreateEdit: FC = ({
                   {...props}
                 >
                   <EditableDatagrid
-                    actions={<CustomAction />}
                     /* eslint-disable-next-line max-len */
                     className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
                     createForm={
@@ -303,7 +301,6 @@ export const TaxonNameCreateEdit: FC = ({
                   {...props}
                 >
                   <EditableDatagrid
-                    actions={<CustomAction />}
                     /* eslint-disable-next-line max-len */
                     className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
                     createForm={
@@ -428,7 +425,6 @@ export const TaxonNameCreateEdit: FC = ({
                   {...props}
                 >
                   <EditableDatagrid
-                    actions={<CustomAction />}
                     hasCreate
                     // eslint-disable-next-line max-len
                     className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
@@ -504,7 +500,6 @@ export const TaxonNameCreateEdit: FC = ({
                     {...props}
                   >
                     <EditableDatagrid
-                      actions={<CustomAction />}
                       undoable
                       /* eslint-disable-next-line max-len */
                       className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
@@ -557,7 +552,6 @@ export const TaxonNameCreateEdit: FC = ({
                     {...props}
                   >
                     <EditableDatagrid
-                      actions={<CustomAction />}
                       /* eslint-disable-next-line max-len */
                       className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
                       createForm={
