@@ -168,11 +168,26 @@ const authProvider = {
 
     permissions[Role.APPLICATION_SUPPORT] = [
       { action: ['show', 'list', 'export'], resource: '*' },
-      { action: '*', resource: 'users' },
-      { action: '*', resource: 'user_roles' },
-      { action: '*', resource: 'kingdoms' },
-      { action: '*', resource: 'taxon_ranks' },
-      { action: '*', resource: 'classification_systems' },
+      {
+        action: ['create', 'edit', 'delete'],
+        resource: 'users',
+      },
+      {
+        action: ['create', 'delete'],
+        resource: 'user_roles',
+      },
+      {
+        action: ['create', 'edit', 'delete'],
+        resource: 'kingdoms',
+      },
+      {
+        action: ['create', 'edit', 'delete'],
+        resource: 'taxon_ranks',
+      },
+      {
+        action: ['create', 'edit', 'delete'],
+        resource: 'classification_systems',
+      },
     ];
     permissions[Role.SUPER_ADMIN] = [
       {
