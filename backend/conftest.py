@@ -365,7 +365,6 @@ def create_hierarchy(
         created_by=user.user_id,
         updated_by=user.user_id,
     )
-    # hierarchy.save()
     test_db.add(hierarchy)
     test_db.commit()
     hierarchy.calculate_path(db=test_db)
@@ -711,11 +710,7 @@ def test_taxon_name_canonical_name_1(
         uninomial="Acanthiza",
         specific_epithet=None,
         infraspecific_epithet=None,
-        # publication_year=1911,
         canonical_name="Acanthiza",
-        # author="Mathews",
-        # scientific_name="Acanthiza Mathews, 1911",
-        # formatted_scientific_name="<i>Acanthiza</i> Mathews, 1911",
         updated_by=test_superuser.user_id,
         updated_on=now,
         created_by=test_superuser.user_id,
@@ -743,11 +738,7 @@ def test_taxon_name_canonical_name_2(
         uninomial="Acanthiza",
         specific_epithet="iredalei",
         infraspecific_epithet=None,
-        # publication_year=1911,
         canonical_name="Acanthiza iredalei",
-        # author="Mathews",
-        # scientific_name="Acanthiza iredalei Mathews, 1911",
-        # formatted_scientific_name="<i>Acanthiza iredalei</i> Mathews, 1911",
         updated_by=test_superuser.user_id,
         updated_on=now,
         created_by=test_superuser.user_id,
@@ -776,11 +767,7 @@ def test_taxon_name_canonical_name_3(
         uninomial="Acanthiza",
         specific_epithet="iredalei",
         infraspecific_epithet="iredalei",
-        # publication_year=1911,
         canonical_name="Acanthiza iredalei iredalei",
-        # author="Mathews",
-        # scientific_name="Acanthiza iredalei iredalei Mathews, 1911",
-        # formatted_scientific_name="<i>Acanthiza iredalei iredalei</i> Mathews, 1911",
         updated_by=test_superuser.user_id,
         updated_on=now,
         created_by=test_superuser.user_id,
