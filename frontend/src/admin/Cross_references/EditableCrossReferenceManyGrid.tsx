@@ -12,7 +12,7 @@ import { FormattedScientificNameWithStatus } from '../Taxon_names';
 import { GlobalTheme } from '../../GlobalTheme';
 import { CrossReferenceRowForm } from './CrossReferenceRowForm';
 import { EditableDatagrid } from '@react-admin/ra-editable-datagrid';
-import CustomAction from '../shared/CustomAction';
+import { canAccess, usePermissions } from '@react-admin/ra-rbac';
 
 export const EditableCrossReferenceManyGrid = (props: {
   source: string;
@@ -23,6 +23,9 @@ export const EditableCrossReferenceManyGrid = (props: {
 }) => {
   const globalClasses = GlobalTheme();
   const createInitialValues = props.createInitialValues;
+  const { loading, permissions } = usePermissions();
+  if (loading) return null;
+
   return (
     <ReferenceManyField
       reference="cross_references"
@@ -30,7 +33,6 @@ export const EditableCrossReferenceManyGrid = (props: {
       {...props.props}
     >
       <EditableDatagrid
-        actions={<CustomAction />}
         createForm={
           <CrossReferenceRowForm
             initialValues={createInitialValues}
@@ -40,6 +42,13 @@ export const EditableCrossReferenceManyGrid = (props: {
         editForm={<CrossReferenceRowForm {...props} />}
         hasCreate
         expand={<EmbeddedCrossReferenceShow />}
+        noDelete={
+          !canAccess({
+            permissions,
+            action: 'delete',
+            resource: 'cross_references',
+          })
+        }
       >
         <SelectField source="cross_reference_type" choices={CrossRefType} />
         <ReferenceField
