@@ -191,12 +191,9 @@ app.include_router(auth_router, prefix="/api", tags=["auth"])
 @app.on_event("startup")
 async def initialise_database():
     session = get_db().__next__()
-    # BaseModel.set_session(session)
     init_db(session)
     session.close()
-    # session.flush()
-    # session.close()
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", reload=True, port=8888, workers=10)
+    uvicorn.run("main:app", host="0.0.0.0", reload=True, port=8888, workers=5)
