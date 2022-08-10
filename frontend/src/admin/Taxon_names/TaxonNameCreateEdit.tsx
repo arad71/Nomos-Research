@@ -44,6 +44,7 @@ import { CrossReferenceRowForm } from '../Cross_references/CrossReferenceRowForm
 import { EmbeddedHierarchyShow, HierarchyRowForm } from '../Hierarchies';
 import ScientificNameReference from './ScientificNameReference';
 import EditToolbar from '../shared/EditToolbar';
+import { canAccess, usePermissions } from '@react-admin/ra-rbac';
 
 const validateNumber = [number(), minValue(0)];
 
@@ -89,6 +90,9 @@ export const TaxonNameCreateEdit: FC = ({
   if (role == 'SUPER_ADMIN') {
     deleted_column = <BooleanField source="deleted" />;
   }
+  const { loading, permissions } = usePermissions();
+  if (loading) return null;
+
   return (
     <>
       <NamePageSummary />
@@ -233,6 +237,13 @@ export const TaxonNameCreateEdit: FC = ({
                     }
                     editForm={<CitationRowForm {...props} />}
                     hasCreate
+                    noDelete={
+                      !canAccess({
+                        permissions,
+                        action: 'delete',
+                        resource: 'citations',
+                      })
+                    }
                   >
                     <ReferenceField source="author_id" reference="authors">
                       <TextField source="abbreviation" />
@@ -312,6 +323,13 @@ export const TaxonNameCreateEdit: FC = ({
                     editForm={<VernacularRowForm {...props} />}
                     hasCreate
                     expand={<EmbeddedVernacularShow />}
+                    noDelete={
+                      !canAccess({
+                        permissions,
+                        action: 'delete',
+                        resource: 'vernaculars',
+                      })
+                    }
                   >
                     <TextField source="vernacular" />
                     <SelectField source="language" choices={LanguageType} />
@@ -436,6 +454,13 @@ export const TaxonNameCreateEdit: FC = ({
                     }
                     editForm={<HierarchyRowForm {...props} />}
                     expand={<EmbeddedHierarchyShow />}
+                    noDelete={
+                      !canAccess({
+                        permissions,
+                        action: 'delete',
+                        resource: 'hierarchies',
+                      })
+                    }
                   >
                     <ReferenceField
                       source="classification_system_id"
@@ -518,6 +543,13 @@ export const TaxonNameCreateEdit: FC = ({
                       }
                       hasCreate
                       expand={<EmbeddedCrossReferenceShow />}
+                      noDelete={
+                        !canAccess({
+                          permissions,
+                          action: 'delete',
+                          resource: 'cross_references',
+                        })
+                      }
                     >
                       <SelectField
                         source="cross_reference_type"
@@ -569,6 +601,13 @@ export const TaxonNameCreateEdit: FC = ({
                       }
                       hasCreate
                       expand={<EmbeddedCrossReferenceShow />}
+                      noDelete={
+                        !canAccess({
+                          permissions,
+                          action: 'delete',
+                          resource: 'cross_references',
+                        })
+                      }
                     >
                       <SelectField
                         source="cross_reference_type"
