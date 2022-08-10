@@ -5,8 +5,12 @@ from app.db.hierarchy.crud import HierarchyCrud
 from app.db.models import BaseModel
 from app.db.session import get_db
 
-if __name__ == "__main__":
+
+def rebuild_with_session():
     db: Session = get_db().__next__()
-    BaseModel.set_session(db)
-    HierarchyCrud.rebuild()
+    HierarchyCrud.rebuild(db)
     db.commit()
+
+
+if __name__ == "__main__":
+    rebuild_with_session()

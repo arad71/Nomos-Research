@@ -28,8 +28,7 @@ from app.api.api_v1.routers.vernaculars import vernaculars_router
 from app.core import config
 from app.core.auth import get_current_active_user
 from app.db.init_db import init_db
-from app.db.models import BaseModel
-from app.db.session import SessionLocal
+from app.db.session import get_db
 
 API_V1_URL = config.settings.API_V1_STR
 
@@ -51,14 +50,6 @@ app.add_middleware(
     allow_headers=["*"],
     expose_headers=["*"],
 )
-
-
-@app.middleware("http")
-async def db_session_middleware(request: Request, call_next):
-    request.state.db = SessionLocal()
-    response = await call_next(request)
-    request.state.db.close()
-    return response
 
 
 @app.exception_handler(IntegrityError)
@@ -199,10 +190,13 @@ app.include_router(auth_router, prefix="/api", tags=["auth"])
 
 @app.on_event("startup")
 async def initialise_database():
-    session = SessionLocal()
-    BaseModel.set_session(session)
+    session = get_db().__next__()
+    # BaseModel.set_session(session)
     init_db(session)
+    session.close()
+    # session.flush()
+    # session.close()
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", reload=True, port=8888)
+    uvicorn.run("main:app", host="0.0.0.0", reload=True, port=8888, workers=10)

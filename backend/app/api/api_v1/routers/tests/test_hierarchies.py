@@ -412,3 +412,14 @@ def test_officer_permissions(
 ):
     response = getattr(client, method)(endpoint, headers=officer_token_headers)
     assert response.status_code == status_code
+
+
+def test_rebuild_hierarchies(
+    client,
+    superuser_token_headers,
+    test_hierarchies,
+):
+    response = client.post(
+        "/api/v1/hierarchies/rebuild", headers=superuser_token_headers
+    )
+    assert response.status_code == status.HTTP_202_ACCEPTED

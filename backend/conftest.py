@@ -15,7 +15,6 @@ from app.db.cross_reference.model import CrossReference
 from app.db.hierarchy.model import Hierarchy
 from app.db.informal_group.model import InformalGroup
 from app.db.kingdom.model import Kingdom
-from app.db.models import BaseModel
 from app.db.publication.model import Publication
 from app.db.role.constants import Role
 from app.db.role.model import Role as RoleModel
@@ -50,7 +49,6 @@ def test_db():
     # Run a parent transaction that can roll back all changes
     test_session_maker = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     test_session = test_session_maker()
-    BaseModel.set_session(test_session)
     test_session.begin_nested()
 
     @event.listens_for(test_session, "after_transaction_end")
@@ -349,6 +347,7 @@ def test_hierarchy(
     test_db.add(hierarchy)
     test_db.commit()
     test_db.refresh(hierarchy)
+    hierarchy.calculate_path(db=test_db)
     return hierarchy
 
 
@@ -357,6 +356,7 @@ def create_hierarchy(
     parent: TaxonName,
     test_classification_system: ClassificationSystem,
     user,
+    test_db,
 ) -> Hierarchy:
     hierarchy = Hierarchy(
         parent_nid=parent.taxon_name_id,
@@ -365,7 +365,10 @@ def create_hierarchy(
         created_by=user.user_id,
         updated_by=user.user_id,
     )
-    hierarchy.save()
+    # hierarchy.save()
+    test_db.add(hierarchy)
+    test_db.commit()
+    hierarchy.calculate_path(db=test_db)
     return hierarchy
 
 
@@ -379,34 +382,43 @@ def test_hierarchies(
     test_carnivora,
     test_panthera,
     test_superuser,
+    test_db,
 ):
     return {
         "chordate": create_hierarchy(
-            test_chordata, test_animalia, test_classification_system, test_superuser
+            test_chordata,
+            test_animalia,
+            test_classification_system,
+            test_superuser,
+            test_db,
         ),
         "mammal": create_hierarchy(
             test_mammalia,
             test_chordata,
             test_classification_system,
             test_superuser,
+            test_db,
         ),
         "reptile": create_hierarchy(
             test_reptilia,
             test_chordata,
             test_classification_system,
             test_superuser,
+            test_db,
         ),
         "carnivore": create_hierarchy(
             test_carnivora,
             test_mammalia,
             test_classification_system,
             test_superuser,
+            test_db,
         ),
         "panther": create_hierarchy(
             test_panthera,
             test_carnivora,
             test_classification_system,
             test_superuser,
+            test_db,
         ),
     }
 
@@ -615,7 +627,7 @@ def test_panthera_leo(
 def create_taxon_name(
     name, now, test_db, test_kingdom, test_superuser, rank, specific_epithet=None
 ):
-    taxon_name = TaxonName.create(
+    taxon_name = TaxonName(
         kingdom_id=test_kingdom.kingdom_id,
         rank_id=rank.taxon_rank_id,
         is_current=True,
@@ -627,6 +639,8 @@ def create_taxon_name(
         created_by=test_superuser.user_id,
         created_on=now,
     )
+    test_db.add(taxon_name)
+    test_db.commit()
     return taxon_name
 
 
