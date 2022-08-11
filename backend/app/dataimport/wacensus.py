@@ -87,7 +87,7 @@ def import_data(url: AnyUrl = settings.WACENSUS_DATA_FILE_URL):
     ImportHierarchy(db, admin_id).ingest("HBTPARENTS")
     ImportInformalGroup(db, admin_id).ingest("HBTGROUPS")
     trigger_calculated_fields(db)
-    HierarchyCrud.rebuild()
+    HierarchyCrud.rebuild(db)
     logger.info("Import completed")
     logger.remove(log)
 

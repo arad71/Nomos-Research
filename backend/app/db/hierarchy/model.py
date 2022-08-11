@@ -1,9 +1,7 @@
 from loguru import logger
-from sqlalchemy import Column, ForeignKey, Index, Integer, Sequence, and_, event, func
-from sqlalchemy.engine import Connection
+from sqlalchemy import Column, ForeignKey, Index, Integer, Sequence, and_, func
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import Session, backref, foreign, relationship, remote
-from sqlalchemy.orm.attributes import set_committed_value
 from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy_utils import Ltree, LtreeType
 
@@ -133,39 +131,27 @@ class Hierarchy(BaseModel, TableMixin):
     def get_parent_path(self):
         parent_path = None
         if self.parent_nid:
-            parent_hierarchy = self.where(
-                taxon_name_id=self.parent_nid,
-                classification_system_id=self.classification_system_id,
-            ).first()
+            parent_hierarchy = self.direct_parent
             if parent_hierarchy:
                 parent_path = parent_hierarchy.path
         if not parent_path:
             parent_path = self.ltree(self.classification_system_id)
         return parent_path
 
-    def calculate_path(self, parent: "Hierarchy" = None):
-        new_path = self.get_path()
+    def calculate_path(self, db: Session, parent: "Hierarchy" = None):
+        self.path = self.get_path()
         if parent:
-            self.path = new_path
-            if parent:
-                self.updated_by = parent.updated_by
-                self.updated_on = parent.updated_on
-            self.save()
-        else:
-            session: Session = self.session
-            values = {"path": new_path}
-            set_committed_value(self, "path", new_path)
-            session.execute(
-                self.__table__.update()
-                .values(values)
-                .where(Hierarchy.hierarchy_id == self.hierarchy_id)
-            )
+            self.updated_by = parent.updated_by
+            self.updated_on = parent.updated_on
+        db.add(self)
+        db.commit()
+        db.refresh(self)
 
-    def calculate_path_for_children(self):
+    def calculate_path_for_children(self, db: Session):
         child: Hierarchy
         for child in self.direct_children:
-            child.calculate_path(parent=self)
-            child.calculate_path_for_children()
+            child.calculate_path(db=db, parent=self)
+            child.calculate_path_for_children(db)
 
     def find_root_parent(self: "Hierarchy") -> "Hierarchy":
         parent = self.direct_parent
@@ -174,32 +160,21 @@ class Hierarchy(BaseModel, TableMixin):
         return parent or self
 
     @staticmethod
-    def rebuild_hierarchy_paths():
+    def rebuild_hierarchy_paths(db: Session):
         logger.info("Rebuilding hierarchy paths")
         done = set()
         hierarchy: Hierarchy
-        for hierarchy in Hierarchy.all():
+        for hierarchy in db.query(Hierarchy).filter(Hierarchy.deleted == False):
             root = hierarchy.find_root_parent()
             if root not in done:
-                logger.debug("Rebuilding hierarchy for {} and descendants.", root)
-                root.calculate_path()
-                root.calculate_path_for_children()
+                Hierarchy.rebuild_hierarchy_for_root(db, root)
                 done.add(root)
+        logger.info("Hierarchy rebuild complete. Rebuilt roots for {}.", done)
         return done
 
-
-@event.listens_for(Hierarchy, "after_insert")
-@event.listens_for(Hierarchy, "after_update")
-def calculate_fields(
-    mapper,
-    connection: Connection,
-    hierarchy: Hierarchy,
-):
-    hierarchy.calculate_path()
-
-
-def rebuild_hierarchy_for_children(hierarchy_id: int):
-    hierarchy: Hierarchy = Hierarchy.find(hierarchy_id)
-    hierarchy.calculate_path_for_children()
-    hierarchy.session.flush()
-    hierarchy.session.commit()
+    @staticmethod
+    def rebuild_hierarchy_for_root(db, root):
+        logger.debug("Rebuilding hierarchy for {} and descendants.", root)
+        root.calculate_path(db=db)
+        root.calculate_path_for_children(db=db)
+        logger.debug(f"Finished {root}")

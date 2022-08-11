@@ -2,10 +2,8 @@ import datetime
 import json
 import re
 import typing as t
-from typing import Any, Tuple, Union
 
 from fastapi import HTTPException, status
-from loguru import logger
 from pydantic import BaseModel
 from sqlalchemy import and_, or_
 from sqlalchemy.orm import Query, Session, aliased
@@ -31,8 +29,10 @@ class Crud:
     PATH_PATTERN = "(\\w+)__(ancestor_of|descendant_of|ltxtquery|lquery__(.+))"
 
     @classmethod
-    def create_item(cls, db: Session, item: BaseModel, current_user: int = None):
-        db_item = cls.model(**item.dict())
+    def create_item(
+        cls, db: Session, item: BaseModel, current_user: int = None
+    ) -> Base:
+        db_item: Base = cls.model(**item.dict())
         if current_user:
             setattr(db_item, "created_by", current_user)
             setattr(db_item, "updated_by", current_user)
@@ -43,7 +43,7 @@ class Crud:
         return db_item
 
     @classmethod
-    def get_item(cls, db: Session, current_user: User, id: int):
+    def get_item(cls, db: Session, current_user: User, id: int) -> Base:
         if current_user.is_super_admin():
             item = (
                 db.query(cls.model).filter(getattr(cls.model, cls.id_key) == id).first()
@@ -246,8 +246,8 @@ class Crud:
 
     @classmethod
     def edit_item(
-        cls, db: Session, current_user: User, id: int, values: object
-    ) -> object:
+        cls, db: Session, current_user: User, id: int, values: BaseModel
+    ) -> Base:
         db_item = cls.get_item(db, current_user, id)
         if not db_item:
             raise HTTPException(
