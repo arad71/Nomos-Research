@@ -1,11 +1,13 @@
 from sqlalchemy import TIMESTAMP, Boolean, Column, ForeignKey, Integer, func
 from sqlalchemy.ext.declarative import declared_attr
-from sqlalchemy_mixins import AllFeaturesMixin
+from sqlalchemy_mixins.repr import ReprMixin
+from sqlalchemy_mixins.serialize import SerializeMixin
+from sqlalchemy_mixins.smartquery import SmartQueryMixin
 
 from app.db.session import Base
 
 
-class BaseModel(Base, AllFeaturesMixin):
+class BaseModel(Base, SmartQueryMixin, ReprMixin, SerializeMixin):
     __abstract__ = True
 
 

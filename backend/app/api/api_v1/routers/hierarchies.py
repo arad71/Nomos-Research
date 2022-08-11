@@ -1,16 +1,17 @@
 from typing import List, Optional, overload
 
-from fastapi import APIRouter, Depends, Response
-from starlette.background import BackgroundTasks
+from fastapi import APIRouter, BackgroundTasks, Depends, Response
+from sqlalchemy.orm import Session
+from starlette import status
 
 from app.api.dependencies.range_query import RangeQueryParameter
 from app.core.auth import authorize, get_current_active_user
 from app.db.hierarchy.crud import HierarchyCrud
-from app.db.hierarchy.model import rebuild_hierarchy_for_children
 from app.db.hierarchy.schema import Hierarchy, HierarchyCreate, HierarchyEdit
 from app.db.role.constants import Role
 from app.db.session import get_db
 from app.db.user.schema import User
+from app.tools.hierarchy_calculation import rebuild_with_session
 
 hierarchies_router = r = APIRouter(prefix="/hierarchies")
 
@@ -98,7 +99,6 @@ async def hierarchy_create(
 async def hierarchy_edit(
     hierarchy_id: int,
     hierarchy: HierarchyEdit,
-    background_tasks: BackgroundTasks,
     db=Depends(get_db),
     current_user=Depends(get_current_active_user),
 ):
@@ -106,7 +106,7 @@ async def hierarchy_edit(
     Update existing hierarchy
     """
     ret = HierarchyCrud.edit_item(db, current_user, hierarchy_id, hierarchy)
-    background_tasks.add_task(rebuild_hierarchy_for_children, hierarchy_id)
+    ret.calculate_path_for_children(db)
     return ret
 
 
@@ -145,7 +145,7 @@ async def hierarchy_delete(
 )
 async def hierarchy_delete(
     hierarchy_id: int,
-    db=Depends(get_db),
+    db: Session = Depends(get_db),
     current_user=Depends(get_current_active_user),
 ):
     """
@@ -156,7 +156,7 @@ async def hierarchy_delete(
 
 @r.post(
     "/rebuild",
-    status_code=201,
+    status_code=status.HTTP_202_ACCEPTED,
     dependencies=[
         authorize(
             scopes=[
@@ -166,11 +166,11 @@ async def hierarchy_delete(
         )
     ],
 )
-async def hierarchy_rebuild(
+def hierarchy_rebuild(
     background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
 ):
     """
     Rebuild hierarchical indexes
     """
-    background_tasks.add_task(HierarchyCrud.rebuild)
-    return background_tasks.tasks
+    background_tasks.add_task(HierarchyCrud.rebuild, db)
