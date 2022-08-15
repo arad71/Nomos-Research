@@ -203,5 +203,5 @@ if __name__ == "__main__":
         host="0.0.0.0",
         reload=True,
         port=8888,
-        workers=int(getenv("UVICORN_WORKERS")),
+        workers=int(getenv("UVICORN_WORKERS", 2)),
     )
