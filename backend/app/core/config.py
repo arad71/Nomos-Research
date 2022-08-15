@@ -1,4 +1,5 @@
 from functools import lru_cache
+from os import getenv
 from typing import Any, Dict, Literal, Optional
 
 from pydantic import AnyUrl, BaseSettings, PostgresDsn, validator
@@ -31,6 +32,8 @@ class Settings(BaseSettings):
     AUTH_PROVIDER: Literal["auth2", "password"]
 
     SQLALCHEMY_DATABASE_URI: Optional[PostgresDsn] = None
+    SQLALCHEMY_SESSION_POOL_SIZE: int = getenv("SQLALCHEMY_SESSION_POOL_SIZE", 50)
+    SQLALCHEMY_SESSION_MAX_OVERFLOW: int = getenv("SQLALCHEMY_SESSION_MAX_OVERFLOW", 0)
     # Set this to True to enable printing db queries to the log
     ECHO_DB: bool = False
 
