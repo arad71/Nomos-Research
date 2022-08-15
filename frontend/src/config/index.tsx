@@ -4,3 +4,4 @@ export const BACKEND_URL: string =
   process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000/api/v1';
 export const AUTH_PROVIDER: string =
   process.env.REACT_APP_AUTH_PROVIDER || 'auth2';
+export const MAX_RESULTS: number = 1000;

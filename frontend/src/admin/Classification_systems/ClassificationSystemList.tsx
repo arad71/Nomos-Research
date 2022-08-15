@@ -24,6 +24,7 @@ import ResetPreferenceButton from '../shared/ResetPreferenceButton';
 import { ClassificationSystemFilters } from './ClassificationSystemFilters';
 import DeleteIcon from '@material-ui/icons/Delete';
 import VisibilityIcon from '@material-ui/icons/Visibility';
+import { MAX_RESULTS } from '../../config';
 
 const postListColumns = {
   id: <TextField source="id" />,
@@ -76,7 +77,7 @@ const Actions = () => (
       <CreateButton />
     </WithPermissions>
     <WithPermissions resource="classification_systems" action="export">
-      <ExportButton maxResults={100000} />
+      <ExportButton maxResults={MAX_RESULTS} />
     </WithPermissions>
   </TopToolbar>
 );
