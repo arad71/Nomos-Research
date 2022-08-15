@@ -1,5 +1,3 @@
-from os import getenv
-
 import uvicorn
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -203,5 +201,5 @@ if __name__ == "__main__":
         host="0.0.0.0",
         reload=True,
         port=8888,
-        workers=int(getenv("UVICORN_WORKERS", 2)),
+        workers=config.settings.UVICORN_WORKERS,
     )
