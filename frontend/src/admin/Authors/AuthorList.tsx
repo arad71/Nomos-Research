@@ -19,6 +19,7 @@ import {
 } from '../shared';
 import DeleteIcon from '@material-ui/icons/Delete';
 import VisibilityIcon from '@material-ui/icons/Visibility';
+import { MAX_RESULTS } from '../../config';
 
 const Actions = () => (
   <TopToolbar>
@@ -27,7 +28,7 @@ const Actions = () => (
       <CreateButton />
     </WithPermissions>
     <WithPermissions resource="authors" action="export">
-      <ExportButton maxResults={100000} />
+      <ExportButton maxResults={MAX_RESULTS} />
     </WithPermissions>
   </TopToolbar>
 );

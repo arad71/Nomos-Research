@@ -28,6 +28,7 @@ import {
 import { TaxonNameFilters } from './TaxonNameFilters';
 import ResetPreferenceButton from '../shared/ResetPreferenceButton';
 import { DefaultPagination, useCanBulkDelete } from '../shared';
+import { MAX_RESULTS } from '../../config';
 
 const postListColumns = {
   rank_id: (
@@ -252,7 +253,7 @@ const Actions = () => (
       <CreateButton />
     </WithPermissions>
     <WithPermissions resource="taxon_names" action="export">
-      <ExportButton maxResults={100000} />
+      <ExportButton maxResults={MAX_RESULTS} />
     </WithPermissions>
   </TopToolbar>
 );
