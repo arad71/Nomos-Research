@@ -29,16 +29,18 @@ import { TaxonNameFilters } from './TaxonNameFilters';
 import ResetPreferenceButton from '../shared/ResetPreferenceButton';
 import { DefaultPagination, useCanBulkDelete } from '../shared';
 import { MAX_RESULTS } from '../../config';
+import NestedLinkField from '../shared/NestedLinkField';
 
 const postListColumns = {
-  rank_id: (
-    <ReferenceField
-      source="rank_id"
+  rank: (
+    <NestedLinkField
+      source="taxon_rank"
       reference="taxon_ranks"
+      label="Taxon rank"
       sortBy="taxon_rank___rank_name"
-    >
-      <TextField source="rank_name" />
-    </ReferenceField>
+      idKey="taxon_rank_id"
+      labelKey="rank_name"
+    />
   ),
   formatted_scientific_name: (
     <RichTextField source="formatted_scientific_name" />
@@ -47,14 +49,15 @@ const postListColumns = {
   author: <TextField source="author" />,
 
   form_desc_yr: <TextField source="form_desc_yr" label="Year Published" />,
-  kingdom_id: (
-    <ReferenceField
-      source="kingdom_id"
+  kingdom: (
+    <NestedLinkField
+      source="kingdom"
       reference="kingdoms"
+      label="Kingdom"
       sortBy="kingdom___kingdom_name"
-    >
-      <TextField source="kingdom_name" />
-    </ReferenceField>
+      idKey="kingdom_id"
+      labelKey="kingdom_name"
+    />
   ),
   canonical_name: <RichTextField source="canonical_name" />,
   scientific_name: <TextField source="scientific_name" />,
@@ -222,7 +225,7 @@ const postListColumns = {
 };
 
 const includeColumns = new Set([
-  'rank_id',
+  'rank',
   'formatted_scientific_name',
   'author',
   'form_desc_yr',

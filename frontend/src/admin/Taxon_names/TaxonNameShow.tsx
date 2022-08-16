@@ -21,7 +21,7 @@ import Aside from '../shared/Aside';
 import NaturalisedStatus from './NaturalisedStatus';
 import PublicationStatus from './PublicationStatus';
 import { makeStyles } from '@material-ui/core/styles';
-import { Box, Typography, Button } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 import { GlobalTheme } from '../../GlobalTheme';
 import { CrossReferenceManyGrid } from '../Cross_references';
 import { AuthorReferenceManyGrid } from '../Authors';
@@ -29,11 +29,11 @@ import { VernacularReferenceManyGrid } from '../Vernaculars';
 // eslint-disable-next-line max-len
 import { FormattedScientificNameWithStatus } from './FormattedScientificNameWithStatus';
 import { NamePageSummary } from './NamePageSummary';
-import AuthorType from '../Citations/AuthorType';
 import { hierarchyRowClick } from './HierarchyRowClick';
 import PostShowActions from '../shared/PostShowActions';
+import NestedLinkField from '../shared/NestedLinkField';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   bottomPadding: {
     paddingBottom: '1.5em',
   },
@@ -75,16 +75,24 @@ export const TaxonNameShow: FC = (props) => {
                 Taxon Name
               </Typography>
               <Box className={globalClasses.fieldMargin}>
-                <ReferenceField source="kingdom_id" reference="kingdoms">
-                  <Labeled label="Kingdom">
-                    <TextField source="kingdom_name" />
-                  </Labeled>
-                </ReferenceField>
-                <ReferenceField source="rank_id" reference="taxon_ranks">
-                  <Labeled label="Rank">
-                    <TextField source="rank_name" />
-                  </Labeled>
-                </ReferenceField>
+                <Labeled label="Kingdom" {...props}>
+                  <NestedLinkField
+                    source="kingdom"
+                    reference="kingdoms"
+                    sortBy="kingdom___kingdom_name"
+                    idKey="kingdom_id"
+                    labelKey="kingdom_name"
+                  />
+                </Labeled>
+                <Labeled label="Rank">
+                  <NestedLinkField
+                    source="taxon_rank"
+                    reference="taxon_ranks"
+                    sortBy="taxon_rank___rank_name"
+                    idKey="taxon_rank_id"
+                    labelKey="rank_name"
+                  />
+                </Labeled>
               </Box>
             </Box>
             <Box className={globalClasses.formRow}>
