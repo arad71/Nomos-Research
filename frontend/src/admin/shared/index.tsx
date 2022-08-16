@@ -7,3 +7,4 @@ export * from './CustomAction';
 export { useCanBulkDelete } from './useCanBulkDelete';
 export { DefaultPagination } from './DefaultPagination';
 export { selectableFilters } from './SelectableFilters';
+export * from './NestedLinkField';
