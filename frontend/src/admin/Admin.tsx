@@ -77,6 +77,13 @@ import { RolesShow } from './Roles/RolesShow';
 import { RolesList } from './Roles/RolesList';
 import { UserRoleList } from './User_Role/UserRoleList';
 import { UserRoleShow } from './User_Role/UserRoleShow';
+import {
+  DataProvider,
+  GetListParams,
+  GetOneParams,
+  GetManyParams,
+  GetManyReferenceParams,
+} from 'ra-core/lib/types';
 
 const httpClient = (url: any, options: any) => {
   if (!options) {
@@ -115,7 +122,43 @@ const dataProvider = restDataProvider(
   {},
   httpClient
 );
+interface CacheDataProviderProxyParams {
+  dataProvider: DataProvider;
+  duration?: number;
+}
 
+// Add cacheing to requests as per https://marmelab.com/react-admin/doc/3.19/Caching.html#application-cache
+const cacheDataProviderProxy = ({
+  dataProvider,
+  // 5 minutes
+  duration = 5 * 60 * 1000,
+}: CacheDataProviderProxyParams) =>
+  new Proxy(dataProvider, {
+    get:
+      (target, name: string) =>
+      (
+        resource: string,
+        params: GetListParams &
+          GetOneParams &
+          GetManyParams &
+          GetManyReferenceParams
+      ) => {
+        if (typeof name === 'symbol') {
+          return;
+        }
+        if (
+          ['getOne', 'getMany', 'getList', 'getManyReference'].includes(name)
+        ) {
+          return dataProvider[name](resource, params).then((response: any) => {
+            const validUntil = new Date();
+            validUntil.setTime(validUntil.getTime() + duration);
+            response.validUntil = validUntil;
+            return response;
+          });
+        }
+        return dataProvider[name](resource, params);
+      },
+  });
 export const Admin: FC = () => {
   return (
     <ReactAdmin
@@ -124,7 +167,7 @@ export const Admin: FC = () => {
       layout={MyLayout}
       theme={theme}
       authProvider={authProvider}
-      dataProvider={dataProvider}
+      dataProvider={cacheDataProviderProxy({ dataProvider: dataProvider })}
       logoutButton={LogoutButton}
     >
       <Resource
