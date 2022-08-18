@@ -11,13 +11,10 @@ import {
 } from 'react-admin';
 import CrossRefType from './CrossRefType';
 import { WithPermissions, List } from '@react-admin/ra-rbac';
-import {
-  DefaultPagination,
-  selectableFilters,
-  useCanBulkDelete,
-} from '../shared';
+import { DefaultPagination, useCanBulkDelete } from '../shared';
 import DeleteIcon from '@material-ui/icons/Delete';
 import VisibilityIcon from '@material-ui/icons/Visibility';
+import { CrossReferenceFilters } from './CrossReferenceFilters';
 
 export const CrossReferenceList: FC = (props) => (
   <List
@@ -27,7 +24,7 @@ export const CrossReferenceList: FC = (props) => (
     pagination={<DefaultPagination />}
     bulkActionButtons={useCanBulkDelete()}
     title="Related names"
-    filters={selectableFilters()}
+    filters={CrossReferenceFilters()}
   >
     <Datagrid rowClick="show">
       <ReferenceField
