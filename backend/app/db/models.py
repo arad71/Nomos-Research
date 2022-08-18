@@ -19,6 +19,7 @@ class TableMixin(object):
             Boolean,
             default=False,
             nullable=False,
+            index=True,
             comment="If this record is soft deleted",
         )
 
@@ -27,6 +28,7 @@ class TableMixin(object):
         return Column(
             Integer,
             ForeignKey("user.user_id"),
+            index=True,
             comment="The person who updated this record",
         )
 
@@ -36,6 +38,7 @@ class TableMixin(object):
             TIMESTAMP(timezone=True),
             default=func.current_timestamp(),
             onupdate=func.current_timestamp(),
+            index=True,
             comment="The date this record was updated on",
         )
 
@@ -44,6 +47,7 @@ class TableMixin(object):
         return Column(
             Integer,
             ForeignKey("user.user_id"),
+            index=True,
             comment="The person who created this record",
         )
 
@@ -52,6 +56,7 @@ class TableMixin(object):
         return Column(
             TIMESTAMP(timezone=True),
             default=func.current_timestamp(),
+            index=True,
             comment="The date this record was created on",
         )
 
