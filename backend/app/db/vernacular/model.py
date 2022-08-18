@@ -22,7 +22,7 @@ class Vernacular(BaseModel, TableMixin):
     __table_args__ = (
         UniqueConstraint(
             "taxon_name_id",
-            "vernacular",
+            "vernacular_name",
             "language",
             name=f"uc_{ __tablename__}_legacy_id",
         ),
@@ -30,7 +30,7 @@ class Vernacular(BaseModel, TableMixin):
     )
 
     vernacular_id = Column(Integer, primary_key=True)
-    vernacular = Column(
+    vernacular_name = Column(
         String(120), nullable=False, comment=VERNACULAR, doc=VERNACULAR, index=True
     )
     taxon_name_id = Column(

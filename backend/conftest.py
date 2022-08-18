@@ -933,7 +933,7 @@ def test_vernacular(test_db, test_taxon_name, test_superuser) -> Vernacular:
     now = datetime.datetime.utcnow()
     vernacular = Vernacular(
         taxon_name_id=test_taxon_name.taxon_name_id,
-        vernacular="Vernacular 1",
+        vernacular_name="Vernacular 1",
         language="english",
         updated_by=test_superuser.user_id,
         updated_on=now,

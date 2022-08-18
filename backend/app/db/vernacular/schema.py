@@ -18,7 +18,7 @@ from app.db.vernacular.constants import (
 
 class VernacularBase(BaseModel):
     taxon_name_id: int = Field(description=TAXON_NAME_ID)
-    vernacular: str = Field(description=VERNACULAR)
+    vernacular_name: str = Field(description=VERNACULAR)
     language: enums.Language = Field(description=LANGUAGE)
     lang_pref: Optional[bool] = Field(description=LANG_PREF)
     preferred: Optional[bool] = Field(description=PREFERRED)
