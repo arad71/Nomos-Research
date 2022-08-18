@@ -30,7 +30,7 @@ class AuthorCrud(crud.Crud):
     ):
         author = cls.get_item(db, current_user, author_id)
         super().delete_item(db, current_user, author_id, hard)
-        delete_author_citations(db, current_user, author_id)
+        delete_author_citations(db, current_user, author_id, hard)
         db.commit()
         if hard:
             return {cls.id_key: author_id}
