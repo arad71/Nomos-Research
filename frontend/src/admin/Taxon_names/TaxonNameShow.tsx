@@ -313,24 +313,6 @@ export const TaxonNameShow: FC = (props) => {
                   <ReferenceField
                     source="taxon_name_id"
                     reference="taxon_names"
-                    label="Author"
-                    sortBy="taxon_name___author"
-                    link={false}
-                  >
-                    <RichTextField source="author" />
-                  </ReferenceField>
-                  <ReferenceField
-                    source="taxon_name_id"
-                    reference="taxon_names"
-                    label="Year"
-                    sortBy="taxon_name___form_desc_yr"
-                    link={false}
-                  >
-                    <RichTextField source="form_desc_yr" />
-                  </ReferenceField>
-                  <ReferenceField
-                    source="taxon_name_id"
-                    reference="taxon_names"
                     label="Is current"
                     sortBy="taxon_name___is_current"
                     link={false}
