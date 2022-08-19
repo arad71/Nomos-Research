@@ -37,7 +37,7 @@ export const VernacularList: FC = (props) => (
       >
         <RichTextField source="formatted_scientific_name" />
       </ReferenceField>
-      <TextField source="vernacular" />
+      <TextField source="vernacular_name" />
       <SelectField source="language" choices={LanguageType} />
       <BooleanField source="lang_pref" />
       <BooleanField source="preferred" />

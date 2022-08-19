@@ -111,7 +111,7 @@ def map_vernacular(target):
         .first()
     )
     if vernacular:
-        return vernacular.vernacular
+        return vernacular.vernacular_name
     return None
 
 
@@ -123,7 +123,7 @@ def map_vernaculars(target):
         return ", ".join(
             filter(
                 None,
-                [vernacular.vernacular for vernacular in vernaculars],
+                [vernacular.vernacular_name for vernacular in vernaculars],
             )
         )
     return None

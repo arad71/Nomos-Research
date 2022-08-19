@@ -306,7 +306,7 @@ export const TaxonNameCreateEdit: FC = ({
                   reference="vernaculars"
                   target="taxon_name_id"
                   sort={{
-                    field: 'vernacular,sort_order',
+                    field: 'vernacular_name,sort_order',
                     order: 'ASC,ASC',
                   }}
                   {...props}
@@ -331,7 +331,7 @@ export const TaxonNameCreateEdit: FC = ({
                       })
                     }
                   >
-                    <TextField source="vernacular" />
+                    <TextField source="vernacular_name" />
                     <SelectField source="language" choices={LanguageType} />
                     <BooleanField
                       source="lang_pref"

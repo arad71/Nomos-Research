@@ -22,7 +22,7 @@ export const VernacularRowForm = (props: RowFormProps) => {
   const classes = useStyles();
   return (
     <RowForm {...props}>
-      <TextInput source="vernacular" validate={required()} />
+      <TextInput source="vernacular_name" validate={required()} />
       <SelectInput
         source="language"
         validate={required()}

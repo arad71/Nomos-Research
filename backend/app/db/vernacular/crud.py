@@ -7,6 +7,7 @@ class VernacularCrud(crud.Crud):
     model = Vernacular
     id_key = "vernacular_id"
     name = "Vernacular"
+    search_fields = ["taxon_name___scientific_name", "vernacular_name"]
 
     @classmethod
     def create_item(cls, db, item, current_user):

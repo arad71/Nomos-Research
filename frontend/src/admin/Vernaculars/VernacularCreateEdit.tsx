@@ -38,7 +38,7 @@ export const VernacularCreateEdit: FC = (props) => {
         </Typography>
       </Box>
       <Box className={classes.mainGrid}>
-        <TextInput source="vernacular" validate={required()} />
+        <TextInput source="vernacular_name" validate={required()} />
         <ScientificNameReference source="taxon_name_id" validate={required()} />
         <SelectInput
           source="language"
