@@ -187,7 +187,7 @@ const postListColumns = {
   source: <TextField source="source" />,
   external_id: <TextField source="external_id" />,
   family_code: <TextField source="family_code" />,
-  vernacular: <TextField source="vernacular_name" />,
+  vernacular: <TextField source="vernacular" />,
   editor: <TextField source="editor" />,
   naturalised_status: (
     <SelectField source="naturalised_status" choices={NaturalisedStatus} />
