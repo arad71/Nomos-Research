@@ -26,7 +26,7 @@ const ScientificNameReference = (props: {
 );
 
 ScientificNameReference.defaultProps = {
-  perPage: 500,
+  perPage: 100,
   sort: { field: 'canonical_name,author', order: 'ASC,ASC' },
   filter: {},
 };
