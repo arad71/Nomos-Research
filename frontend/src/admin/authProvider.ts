@@ -169,7 +169,7 @@ const authProvider = {
     permissions[Role.APPLICATION_SUPPORT] = [
       { action: ['show', 'list', 'export'], resource: '*' },
       {
-        action: ['create', 'edit', 'delete'],
+        action: ['create', 'edit', 'delete', 'viewdeleted', 'deletedfilter'],
         resource: 'users',
       },
       {
