@@ -3,7 +3,7 @@ import json
 import re
 import typing as t
 
-from fastapi import HTTPException, status
+from fastapi import HTTPException, Security, status
 from pydantic import BaseModel
 from sqlalchemy import and_, or_
 from sqlalchemy.orm import Query, Session, aliased
@@ -18,6 +18,7 @@ from app.db.hierarchy.model import Hierarchy
 from app.db.session import Base
 from app.db.taxon_name.model import TaxonName as TaxonNameModel
 from app.db.taxon_rank.model import TaxonRank
+from app.db.role.constants import Role
 from app.db.user.model import User
 
 
@@ -116,8 +117,11 @@ class Crud:
                             conditions[f"{search_field}__contains"] = filter_value
                         filters[or_] = conditions
                 elif column == "deleted":
-                    # Let super admin override the filter
-                    if current_user.is_super_admin():
+                    # Let super admin and application support override the filter
+                    if Security(dependency=current_user, scopes=[
+                        Role.APPLICATION_SUPPORT["name"],
+                        Role.SUPER_ADMIN["name"],
+                    ]):
                         filters[column] = filter_value
                 elif path_match:
                     query = cls.add_path_filters(filter_value, path_match, query)
