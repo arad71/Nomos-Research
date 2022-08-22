@@ -117,16 +117,14 @@ class Crud:
                             conditions[f"{search_field}__contains"] = filter_value
                         filters[or_] = conditions
                 elif column == "deleted":
-                    # Let super admin override the filter for all models
-                    # Let application support override the filter for User
-                    if (
-                        cls.model == User
-                        and Security(
-                            dependency=current_user,
-                            scopes=[Role.APPLICATION_SUPPORT["name"]],
-                            use_cache=False,
-                        )
-                        or current_user.is_super_admin()
+                    # Let super admin and application support override the filter
+                    if Security(
+                        dependency=current_user,
+                        scopes=[
+                            Role.SUPER_ADMIN["name"],
+                            Role.APPLICATION_SUPPORT["name"],
+                        ],
+                        use_cache=False,
                     ):
                         filters[column] = filter_value
                 elif path_match:
