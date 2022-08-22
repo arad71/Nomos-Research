@@ -56,7 +56,7 @@ const Dashboard = () => {
             View Names
           </Button>
           <Button
-            href="/#/"
+            href="/#/publications"
             variant="contained"
             color="secondary"
             className={classes.cardbutton}
