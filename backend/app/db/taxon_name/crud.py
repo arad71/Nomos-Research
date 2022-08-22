@@ -4,6 +4,7 @@ import app.db.crud as crud
 import app.db.taxon_name.schema as schema
 from app.db.informal_group.model import InformalGroup
 from app.db.taxon_name.model import TaxonName
+from app.db.user.model import User
 
 
 class TaxonNameCrud(crud.Crud):
@@ -46,7 +47,7 @@ class TaxonNameCrud(crud.Crud):
     def edit_item(
         cls,
         db: Session,
-        current_user: int,
+        current_user: User,
         taxon_name_id: int,
         taxon_name: schema.TaxonNameEdit,
         **kwargs,
@@ -73,8 +74,8 @@ class TaxonNameCrud(crud.Crud):
                 informal_group = InformalGroup(
                     taxon_name_id=taxon_name_id,
                     classification_system_id=classification_system_id,
-                    created_by=current_user,
-                    updated_by=current_user,
+                    created_by=current_user.user_id,
+                    updated_by=current_user.user_id,
                 )
                 db.add(informal_group)
             db.commit()
