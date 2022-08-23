@@ -15,7 +15,7 @@ export const CitationRowForm = (props: RowFormProps) => {
   const classes = useStyles();
   const authorOrderValidation = [required(), minValue(0)];
   return (
-    <RowForm {...props}>
+    <RowForm warnWhenUnsavedChanges {...props}>
       <AuthorAutocomplete />
       <SelectInput
         source="author_type"
