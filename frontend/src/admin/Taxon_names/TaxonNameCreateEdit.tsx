@@ -86,10 +86,6 @@ export const TaxonNameCreateEdit: FC = ({
     old_name_id: props.record?.id,
   };
   const role: any = localStorage.getItem('scopes');
-  let deleted_column = null;
-  if (role == 'SUPER_ADMIN') {
-    deleted_column = <BooleanField source="deleted" />;
-  }
   const { loading, permissions } = usePermissions();
   if (loading) return null;
 
@@ -250,7 +246,6 @@ export const TaxonNameCreateEdit: FC = ({
                     </ReferenceField>
                     <SelectField source="author_type" choices={AuthorType} />
                     <NumberField source="author_order" />
-                    {deleted_column}
                   </EditableDatagrid>
                 </ReferenceManyField>
               )) || (

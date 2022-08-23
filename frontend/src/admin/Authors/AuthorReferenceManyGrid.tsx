@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  BooleanField,
   Datagrid,
   NumberField,
   ReferenceField,
@@ -9,7 +8,6 @@ import {
   TextField,
 } from 'react-admin';
 import { Box, Typography } from '@material-ui/core';
-import { WithPermissions } from '@react-admin/ra-rbac';
 import AuthorType from '../Citations/AuthorType';
 import { GlobalTheme } from '../../GlobalTheme';
 
@@ -38,15 +36,12 @@ export const AuthorReferenceManyGrid = (props: {
       }}
       {...props.props}
     >
-      <Datagrid empty={<Empty />} className={globalClasses.equalColumnWidth}>
+      <Datagrid empty={<Empty />}>
         <ReferenceField source={props.source} reference="authors" allowEmpty>
           <TextField source="abbreviation" />
         </ReferenceField>
         <SelectField source="author_type" choices={AuthorType} />
         <NumberField source="author_order" />
-        <WithPermissions resource="authors" action="viewdeleted">
-          <BooleanField source="deleted" />
-        </WithPermissions>
       </Datagrid>
     </ReferenceManyField>
   );
