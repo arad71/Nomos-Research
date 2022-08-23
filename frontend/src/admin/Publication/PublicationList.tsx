@@ -6,6 +6,7 @@ import {
   DateField,
   EditButton,
   ExportButton,
+  FilterButton,
   ReferenceField,
   TextField,
   TopToolbar,
@@ -22,6 +23,7 @@ import { MAX_RESULTS } from '../../config';
 
 const Actions = () => (
   <TopToolbar>
+    <FilterButton />
     <WithPermissions resource="publications" action="create">
       <CreateButton />
     </WithPermissions>
