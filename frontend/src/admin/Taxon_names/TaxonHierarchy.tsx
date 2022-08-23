@@ -20,6 +20,10 @@ const useStyles = makeStyles({
 const TaxonHierarchy = () => {
   const classes = useStyles();
   const record = useRecordContext();
+  let source = null;
+  if (record?.path) {
+    source = record.path.hasOwnProperty('path') ? 'path.path' : 'path';
+  }
   return (
     <Box mt="1.2em">
       <Box mt="2.2em">
@@ -27,11 +31,11 @@ const TaxonHierarchy = () => {
           Taxon Hierarchy
         </Typography>
       </Box>
-      {record?.path && (
+      {source && (
         <ReferenceManyField
           reference="hierarchies"
           target="path__ancestor_of"
-          source="path"
+          source={source}
           sort={{ field: 'path', order: 'ASC' }}
           perPage={25}
         >

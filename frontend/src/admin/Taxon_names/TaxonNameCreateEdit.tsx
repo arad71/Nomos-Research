@@ -445,7 +445,7 @@ export const TaxonNameCreateEdit: FC = ({
                   <EditableDatagrid
                     hasCreate
                     // eslint-disable-next-line max-len
-                    className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
+                    className={classes.bottomMargin}
                     createForm={
                       <HierarchyRowForm
                         initialValues={hierarchyInitialValues}

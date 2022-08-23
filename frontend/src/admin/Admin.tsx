@@ -114,6 +114,7 @@ const dataProvider = restDataProvider(
     taxon_names: 'taxon_name_id',
     informal_groups: 'informal_group_id',
     hierarchies: 'hierarchy_id',
+    'hierarchies/parents': 'taxon_name_id',
     cross_references: 'cross_reference_id',
     vernaculars: 'vernacular_id',
     user_roles: 'user_role_id',
@@ -168,6 +169,7 @@ export const Admin: FC = () => {
       theme={theme}
       authProvider={authProvider}
       dataProvider={cacheDataProviderProxy({ dataProvider: dataProvider })}
+      // dataProvider={dataProvider}
       logoutButton={LogoutButton}
     >
       <Resource
@@ -246,6 +248,13 @@ export const Admin: FC = () => {
       />
       <Resource
         name="hierarchies"
+        list={HierarchyList}
+        show={HierarchyShow}
+        edit={HierarchyEdit}
+        create={HierarchyCreate}
+      />
+      <Resource
+        name="hierarchies/parents"
         list={HierarchyList}
         show={HierarchyShow}
         edit={HierarchyEdit}

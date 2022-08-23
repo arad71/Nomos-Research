@@ -27,7 +27,7 @@ class Crud:
     model: Base = None
     name: str = None
     id_key: str = None
-    PATH_PATTERN = "(\\w+)__(ancestor_of|descendant_of|ltxtquery|lquery__(.+))"
+    PATH_PATTERN = "(\\w+)__(ancestor_of|descendant_of|ltxtquery|lquery__(.+)|lquery)"
 
     @classmethod
     def create_item(

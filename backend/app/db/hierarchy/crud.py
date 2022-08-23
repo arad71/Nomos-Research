@@ -9,7 +9,7 @@ class HierarchyCrud(crud.Crud):
     model = Hierarchy
     id_key = "hierarchy_id"
     name = "Hierarchy"
-    search_fields = ["parent_name___scientific_name", "taxon_name___scientific_name"]
+    search_fields = ["taxon_name___scientific_name"]
 
     @classmethod
     def rebuild(cls, db: Session):
