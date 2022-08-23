@@ -9,7 +9,7 @@ export const LogoutButton: FC = () => {
   // will only sit in function components. Hence, moving it here.
   const redirect = useRedirect();
   const logoutLink =
-    window.location.origin + localStorage.getItem('logout_url');
+    window.location.origin + (localStorage.getItem('logout_url') || '/');
   const handleClick = () => {
     clearLocalStorage();
     redirect(logoutLink);
