@@ -6,6 +6,7 @@ import {
   ReferenceManyField,
   RichTextField,
   TextField,
+  useRecordContext,
 } from 'react-admin';
 import { Box, Typography } from '@material-ui/core';
 import { hierarchyRowClick } from './HierarchyRowClick';
@@ -18,6 +19,7 @@ const useStyles = makeStyles({
 
 const TaxonHierarchy = () => {
   const classes = useStyles();
+  const record = useRecordContext();
   return (
     <Box mt="1.2em">
       <Box mt="2.2em">
@@ -25,28 +27,31 @@ const TaxonHierarchy = () => {
           Taxon Hierarchy
         </Typography>
       </Box>
-      <ReferenceManyField
-        reference="hierarchies"
-        target="path__ancestor_of"
-        source="path"
-        sort={{ field: 'path', order: 'ASC' }}
-      >
-        <Datagrid rowClick={hierarchyRowClick}>
-          <TextField
-            source="rank_name"
-            sortBy="taxon_name___taxon_rank___rank_name"
-            label="Rank"
-          />
-          <ReferenceField
-            source="taxon_name_id"
-            reference="taxon_names"
-            link={false}
-            sortBy="taxon_name___scientific_name"
-          >
-            <RichTextField source="formatted_scientific_name" />
-          </ReferenceField>
-        </Datagrid>
-      </ReferenceManyField>
+      {record?.path && (
+        <ReferenceManyField
+          reference="hierarchies"
+          target="path__ancestor_of"
+          source="path"
+          sort={{ field: 'path', order: 'ASC' }}
+          perPage={25}
+        >
+          <Datagrid rowClick={hierarchyRowClick}>
+            <TextField
+              source="rank_name"
+              sortBy="taxon_name___taxon_rank___rank_name"
+              label="Rank"
+            />
+            <ReferenceField
+              source="taxon_name_id"
+              reference="taxon_names"
+              link={false}
+              sortBy="taxon_name___scientific_name"
+            >
+              <RichTextField source="formatted_scientific_name" />
+            </ReferenceField>
+          </Datagrid>
+        </ReferenceManyField>
+      )}
     </Box>
   );
 };
