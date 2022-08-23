@@ -5,16 +5,11 @@ import {
   required,
   SelectInput,
 } from 'react-admin';
-import React, { PropsWithChildren } from 'react';
-import ScientificNameReference from '../Taxon_names/ScientificNameReference';
+import React from 'react';
 
-export interface FormData {
-  classification_system_id: number;
-}
-export interface FormDataProps {
-  formData: FormData;
-  rest: PropsWithChildren<any>;
-}
+import { dependentNameInput } from './DependentNameInput';
+import TaxonRank from '../Taxon_names/TaxonRank';
+
 export const HierarchyRowForm = (props: RowFormProps) => (
   <RowForm warnWhenUnsavedChanges {...props}>
     <ReferenceInput
@@ -22,23 +17,21 @@ export const HierarchyRowForm = (props: RowFormProps) => (
       reference="classification_systems"
       filter={{ class_type: 'hierarchical' }}
     >
-      <SelectInput optionText="class_desc" validate={required()} />
+      <SelectInput
+        optionText="class_desc"
+        validate={required()}
+        helperText="Choose a classification system"
+      />
     </ReferenceInput>
-    <FormDataConsumer>
-      {({ formData, ...rest }: FormDataProps) => {
-        return (
-          <ScientificNameReference
-            source="parent_nid"
-            label="Parent name"
-            validate={required()}
-            filter={{
-              hierarchies___classification_system_id:
-                formData.classification_system_id,
-            }}
-            {...rest}
-          />
-        );
-      }}
-    </FormDataConsumer>
+    <FormDataConsumer>{dependentNameInput}</FormDataConsumer>
+    <SelectInput
+      source="taxon_rank"
+      label="Filter parent rank"
+      choices={TaxonRank}
+      fullWidth
+      helperText="You may filter the parent names by taxonomic rank."
+      allowEmpty
+      resettable
+    />
   </RowForm>
 );

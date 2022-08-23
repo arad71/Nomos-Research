@@ -7,7 +7,12 @@ from starlette import status
 from app.api.dependencies.range_query import RangeQueryParameter
 from app.core.auth import authorize, get_current_active_user
 from app.db.hierarchy.crud import HierarchyCrud
-from app.db.hierarchy.schema import Hierarchy, HierarchyCreate, HierarchyEdit
+from app.db.hierarchy.schema import (
+    Hierarchy,
+    HierarchyCreate,
+    HierarchyEdit,
+    LightweightHierarchy,
+)
 from app.db.role.constants import Role
 from app.db.session import get_db
 from app.db.user.schema import User
@@ -21,6 +26,16 @@ hierarchies_router = r = APIRouter(prefix="/hierarchies")
     response_model=List[Hierarchy],
     response_model_exclude_none=True,
     dependencies=[authorize()],
+)
+@r.get(
+    "/parents",
+    response_model=List[LightweightHierarchy],
+    response_model_exclude_none=True,
+    dependencies=[authorize()],
+    description=(
+        "Duplicate api endpoint to lookup hierarchies. Used in hierarchy form data"
+        " consumer"
+    ),
 )
 async def hierarchy_list(
     response: Response,

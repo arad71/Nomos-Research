@@ -8,6 +8,8 @@ const ScientificNameReference = (props: {
   validate?: any;
   perPage?: number;
   filter?: object;
+  helperText?: string;
+  fullWidth?: boolean;
 }) => (
   <ReferenceInput
     reference="taxon_names"
@@ -21,6 +23,7 @@ const ScientificNameReference = (props: {
       validate={props.validate}
       resettable
       filter={props.filter}
+      {...props}
     />
   </ReferenceInput>
 );

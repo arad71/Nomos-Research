@@ -66,6 +66,7 @@ const Aside = (props: any) => {
   const location = useLocation();
   const currPath = location.pathname.split('/')[1];
   const isTaxonNames = currPath == 'taxon_names';
+  const isHierarchy = currPath == 'taxon_names' || currPath == 'hierarchies';
   const record = useRecordContext();
   const resource = useResourceContext();
   const deleted =
@@ -130,12 +131,8 @@ const Aside = (props: any) => {
           </Box>
         </SimpleShowLayout>
       </Card>
-      {isTaxonNames && (
-        <>
-          <TaxonNameInformalGroups />
-          <TaxonHierarchy {...props} />
-        </>
-      )}
+      {isTaxonNames && <TaxonNameInformalGroups />}
+      {isHierarchy && <TaxonHierarchy {...props} />}
     </Box>
   );
 };

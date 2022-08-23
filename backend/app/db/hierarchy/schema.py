@@ -27,7 +27,19 @@ class HierarchyEdit(HierarchyBase):
     pass
 
 
-class Hierarchy(HierarchyBase, TableBase):
+class LightweightHierarchy(HierarchyBase, TableBase):
+    hierarchy_id: int
+    scientific_name: str
+    rank_name: str
+    path: typing.Optional[typing.Any]
+
+    class Config:
+        orm_mode = True
+        arbitrary_types_allowed = True
+        schema_extra = {"description": TABLE_DESCRIPTION}
+
+
+class Hierarchy(LightweightHierarchy):
     hierarchy_id: int
     taxon_name: TaxonName
     parent_name: TaxonName
@@ -37,8 +49,3 @@ class Hierarchy(HierarchyBase, TableBase):
     rank_name: str
     path: typing.Optional[typing.Any]
     deleted: bool
-
-    class Config:
-        orm_mode = True
-        arbitrary_types_allowed = True
-        schema_extra = {"description": TABLE_DESCRIPTION}
