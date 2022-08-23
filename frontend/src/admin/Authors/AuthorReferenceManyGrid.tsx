@@ -36,7 +36,7 @@ export const AuthorReferenceManyGrid = (props: {
       }}
       {...props.props}
     >
-      <Datagrid empty={<Empty />}>
+      <Datagrid empty={<Empty />} className={globalClasses.equalColumnWidth}>
         <ReferenceField source={props.source} reference="authors" allowEmpty>
           <TextField source="abbreviation" />
         </ReferenceField>
