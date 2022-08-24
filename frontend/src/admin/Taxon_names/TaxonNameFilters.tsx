@@ -7,6 +7,7 @@ import {
   SearchInput,
   SelectArrayInput,
   TextInput,
+  TextField,
 } from 'react-admin';
 import TaxonRank from './TaxonRank';
 import PublicationStatus from './PublicationStatus';
@@ -56,6 +57,7 @@ export const TaxonNameFilters = () => {
       source="infraspecific_epithet__contains"
       label="Infraspecific epithet"
     />,
+    <TextInput source="specific_epithet__contains" label="Specific epithet" />,
     <TextInput
       source="cross_referenced_old_name___new_name___scientific_name__contains"
       label="Accepted name"
