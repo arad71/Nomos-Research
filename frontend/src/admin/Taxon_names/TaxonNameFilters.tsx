@@ -7,7 +7,6 @@ import {
   SearchInput,
   SelectArrayInput,
   TextInput,
-  TextField,
 } from 'react-admin';
 import TaxonRank from './TaxonRank';
 import PublicationStatus from './PublicationStatus';
@@ -45,7 +44,7 @@ export const TaxonNameFilters = () => {
     <TextInput source="all_vernaculars__contains" label="Vernacular" />,
     <TextInput source="division" label="Division" />,
     <TextInput source="phylum" label="Phylum" />,
-    <TextInput source="taxon_class" label="Class" />,
+    <TextInput source="class" label="Class" />,
     <TextInput source="order" label="Order" />,
     <TextInput source="family" label="Family" />,
     <TextInput source="genus" label="Genus" />,

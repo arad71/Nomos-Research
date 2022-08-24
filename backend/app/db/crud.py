@@ -187,7 +187,7 @@ class Crud:
         if column in [
             "division",
             "phylum",
-            "taxon_class",
+            "class",
             "order",
             "family",
             "genus",
