@@ -440,8 +440,7 @@ export const TaxonNameCreateEdit: FC = ({
             >
               {/* eslint-disable-next-line max-len */}
               Ensure to save within datagrid on create/edit or data could be
-              lost. Taxon name header will not reflect updated author details
-              until page is refreshed
+              lost. Saved changes will display when page is refreshed.
             </Typography>
             <Box className={gridClasses.EightCol1to9span}>
               {(props.record?.id && (
