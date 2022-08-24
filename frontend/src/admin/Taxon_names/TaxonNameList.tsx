@@ -32,6 +32,7 @@ import { MAX_RESULTS } from '../../config';
 import NestedLinkField from '../shared/NestedLinkField';
 
 const postListColumns = {
+  id: <TextField source="id" />,
   rank: (
     <NestedLinkField
       source="taxon_rank"
