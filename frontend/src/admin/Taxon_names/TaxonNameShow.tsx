@@ -1,19 +1,16 @@
 import React, { FC } from 'react';
 import {
   BooleanField,
+  ChipField,
   Labeled,
   NumberField,
-  Pagination,
-  Datagrid,
   ReferenceField,
   ReferenceManyField,
-  RichTextField,
   SelectField,
+  SingleFieldList,
   Tab,
   TabbedShowLayout,
   TextField,
-  SingleFieldList,
-  ChipField,
   useRecordContext,
 } from 'react-admin';
 import { Show } from '@react-admin/ra-rbac';
@@ -29,9 +26,9 @@ import { VernacularReferenceManyGrid } from '../Vernaculars';
 // eslint-disable-next-line max-len
 import { FormattedScientificNameWithStatus } from './FormattedScientificNameWithStatus';
 import { NamePageSummary } from './NamePageSummary';
-import { hierarchyRowClick } from './HierarchyRowClick';
 import PostShowActions from '../shared/PostShowActions';
 import NestedLinkField from '../shared/NestedLinkField';
+import { HierarchyGrid } from './HierarchyGrid';
 
 const useStyles = makeStyles(() => ({
   bottomPadding: {
@@ -284,52 +281,7 @@ export const TaxonNameShow: FC = (props) => {
               >
                 Taxon name - Hierarchy
               </Typography>
-              <ReferenceManyField
-                perPage={100}
-                pagination={<Pagination rowsPerPageOptions={[]} />}
-                reference="hierarchies"
-                target="path__descendant_of"
-                label="Child taxon names"
-                source="path"
-                sort={{ field: 'path', order: 'ASC' }}
-                filter={{ taxon_name___scientific_name__gt: '' }}
-              >
-                <Datagrid
-                  rowClick={hierarchyRowClick}
-                  className={globalClasses.equalColumnWidth}
-                >
-                  <TextField
-                    source="rank_name"
-                    sortBy="taxon_name___taxon_rank___rank_name"
-                    label="Rank"
-                  />
-                  <ReferenceField
-                    source="taxon_name_id"
-                    reference="taxon_names"
-                    link={false}
-                  >
-                    <RichTextField source="formatted_scientific_name" />
-                  </ReferenceField>
-                  <ReferenceField
-                    source="taxon_name_id"
-                    reference="taxon_names"
-                    label="Is current"
-                    sortBy="taxon_name___is_current"
-                    link={false}
-                  >
-                    <BooleanField source="is_current" />
-                  </ReferenceField>
-                  <ReferenceField
-                    source="taxon_name_id"
-                    reference="taxon_names"
-                    link={false}
-                    label="Vernaculars"
-                    sortBy="taxon_name___all_vernaculars"
-                  >
-                    <TextField source="all_vernaculars" />
-                  </ReferenceField>
-                </Datagrid>
-              </ReferenceManyField>
+              <HierarchyGrid />
             </Box>
           </Tab>
           <Tab

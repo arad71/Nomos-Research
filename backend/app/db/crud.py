@@ -27,7 +27,7 @@ class Crud:
     model: Base = None
     name: str = None
     id_key: str = None
-    PATH_PATTERN = "(\\w+)__(ancestor_of|descendant_of|ltxtquery|lquery__(.+)|lquery)"
+    PATH_PATTERN = "(\\w+)__(ancestor_of|descendant_of|ltxtquery|lquery|in_tree)"
 
     @classmethod
     def create_item(
@@ -158,7 +158,7 @@ class Crud:
         column = path_match.group(1)
         search = path_match.group(2)
         path_attr = getattr(cls.model, column)
-        search_attr = getattr(path_attr, search)
+        search_attr = getattr(path_attr, search, None)
         # TODO: Support multiple hierarchies here by filtering by each
         #  hierarchy rather than just the first one
         if isinstance(filter_value, list):
@@ -176,7 +176,14 @@ class Crud:
             filter_value = expression.cast(str(filter_value), cast)
         else:
             filter_value = Ltree(filter_value)
-        query = query.where(search_attr(filter_value))
+        if search == 'in_tree':
+            in_tree = or_(
+                path_attr.ancestor_of(filter_value),
+                path_attr.descendant_of(filter_value),
+            )
+            query = query.where(in_tree)
+        else:
+            query = query.where(search_attr(filter_value))
         return query
 
     @classmethod
