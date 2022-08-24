@@ -21,7 +21,7 @@ export const VernacularRowForm = (props: RowFormProps) => {
   const sortOrderValidation = [required(), minValue(0)];
   const classes = useStyles();
   return (
-    <RowForm warnWhenUnsavedChanges {...props}>
+    <RowForm {...props}>
       <TextInput source="vernacular_name" validate={required()} />
       <SelectInput
         source="language"

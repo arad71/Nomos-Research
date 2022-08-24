@@ -17,7 +17,7 @@ export const CrossReferenceRowForm = (props: {
 }) => {
   const classes = useStyles();
   return (
-    <RowForm warnWhenUnsavedChanges sanitizeEmptyValues={false} {...props}>
+    <RowForm sanitizeEmptyValues={false} {...props}>
       <SelectInput
         source="cross_reference_type"
         choices={CrossRefType}

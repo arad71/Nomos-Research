@@ -58,6 +58,9 @@ const useStyles = makeStyles({
   redTypography: {
     color: '#ff0000',
   },
+  columnStart: {
+    gridColumnStart: 1,
+  },
 });
 export interface FormData {
   kingdom_id: number;
@@ -424,10 +427,21 @@ export const TaxonNameCreateEdit: FC = ({
             <Typography
               variant="h5"
               /* eslint-disable-next-line max-len */
-              className={`${gridClasses.EightCol1to5span} ${globalClasses.bold}`}
+              className={`${gridClasses.EightCol1to5span} ${globalClasses.bold} ${classes.columnStart}`}
               gutterBottom
             >
               Taxon Name - Hierarchy
+            </Typography>
+            <Typography
+              variant="subtitle2"
+              /* eslint-disable-next-line max-len */
+              className={`${gridClasses.EightCol1to9span} ${classes.redTypography}`}
+              gutterBottom
+            >
+              {/* eslint-disable-next-line max-len */}
+              Ensure to save within datagrid on create/edit or data could be
+              lost. Taxon name header will not reflect updated author details
+              until page is refreshed
             </Typography>
             <Box className={gridClasses.EightCol1to9span}>
               {(props.record?.id && (
