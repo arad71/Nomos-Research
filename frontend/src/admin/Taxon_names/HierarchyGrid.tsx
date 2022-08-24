@@ -12,7 +12,7 @@ import {
 } from 'react-admin';
 import { GlobalTheme } from '../../GlobalTheme';
 import { hierarchyRowClick } from './HierarchyRowClick';
-import keyBy from 'lodash/keyBy';
+import _ from 'lodash';
 export interface HierarchyRecord {
   id: number;
   taxon_name_id: number;
@@ -59,7 +59,7 @@ export function HierarchyGrid(props: PropsWithChildren<{}>) {
         rowClick={hierarchyRowClick}
         rowStyle={rowStyle}
         className={globalClasses.equalColumnWidth}
-        data={keyBy(data, 'id')}
+        data={_.keyBy(data, 'id')}
         ids={data.map(({ id }: { id: number }) => id)}
         currentSort={sort}
         setSort={(field: string, order: string) => setSort({ field, order })}
