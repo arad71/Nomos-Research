@@ -176,7 +176,7 @@ class Crud:
             filter_value = expression.cast(str(filter_value), cast)
         else:
             filter_value = Ltree(filter_value)
-        if search == 'in_tree':
+        if search == "in_tree":
             in_tree = or_(
                 path_attr.ancestor_of(filter_value),
                 path_attr.descendant_of(filter_value),
