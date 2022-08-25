@@ -43,7 +43,7 @@ export const dependentNameInput = ({
         resettable
         fullWidth
         /* eslint-disable-next-line max-len */
-        helperText="Please select a name that will act as a parent of this name. Requires classification system and taxon name to be wet."
+        helperText="Please select a name that will act as a parent of this name. Requires classification system and taxon name to be set."
         {...rest}
       />
     </ReferenceInput>
