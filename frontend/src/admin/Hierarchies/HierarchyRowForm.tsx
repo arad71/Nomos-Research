@@ -9,7 +9,6 @@ import { ClassificationReference } from '../Classification_systems';
 export const HierarchyRowForm = (props: RowFormProps) => (
   <RowForm warnWhenUnsavedChanges {...props}>
     <ClassificationReference />
-    <FormDataConsumer>{dependentNameInput}</FormDataConsumer>
     <SelectInput
       source="taxon_rank_name"
       label="Filter parent rank"
@@ -19,5 +18,6 @@ export const HierarchyRowForm = (props: RowFormProps) => (
       allowEmpty
       resettable
     />
+    <FormDataConsumer>{dependentNameInput}</FormDataConsumer>
   </RowForm>
 );

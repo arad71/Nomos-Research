@@ -51,9 +51,6 @@ export const HierarchyCreateEdit: FC = (props) => {
           />
         </Box>
         <Box>
-          <FormDataConsumer>{dependentNameInput}</FormDataConsumer>
-        </Box>
-        <Box>
           <SelectInput
             source="taxon_rank_name"
             label="Filter parent rank"
@@ -63,6 +60,9 @@ export const HierarchyCreateEdit: FC = (props) => {
             allowEmpty
             resettable
           />
+        </Box>
+        <Box>
+          <FormDataConsumer>{dependentNameInput}</FormDataConsumer>
         </Box>
       </Box>
     </SimpleForm>
