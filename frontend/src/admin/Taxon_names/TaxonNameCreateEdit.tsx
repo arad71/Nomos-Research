@@ -1,27 +1,28 @@
 import {
+  AutocompleteInput,
+  BooleanField,
   BooleanInput,
+  FormDataConsumer,
   FormTab,
   Labeled,
+  maxValue,
+  minValue,
   NullableBooleanInput,
+  number,
   NumberField,
   NumberInput,
+  ReferenceArrayInput,
   ReferenceField,
-  BooleanField,
   ReferenceInput,
   ReferenceManyField,
   required,
+  RichTextField,
+  SelectArrayInput,
   SelectField,
   SelectInput,
   TabbedForm,
   TextField,
   TextInput,
-  number,
-  minValue,
-  SelectArrayInput,
-  ReferenceArrayInput,
-  AutocompleteInput,
-  RichTextField,
-  FormDataConsumer,
 } from 'react-admin';
 import { EditableDatagrid } from '@react-admin/ra-editable-datagrid';
 import React, { FC, PropsWithChildren } from 'react';
@@ -32,7 +33,7 @@ import AuthorType from '../Citations/AuthorType';
 import LanguageType from '../Vernaculars/LanguageType';
 import { Box, Typography } from '@material-ui/core';
 import { CitationRowForm } from '../Citations';
-import { VernacularRowForm, EmbeddedVernacularShow } from '../Vernaculars';
+import { EmbeddedVernacularShow, VernacularRowForm } from '../Vernaculars';
 import { GlobalGridTheme, GlobalTheme } from '../../GlobalTheme';
 import { NamePageSummary } from './NamePageSummary';
 // eslint-disable-next-line max-len
@@ -42,7 +43,6 @@ import { FormattedScientificNameWithStatus } from '../Taxon_names';
 // eslint-disable-next-line max-len
 import { CrossReferenceRowForm } from '../Cross_references/CrossReferenceRowForm';
 import { EmbeddedHierarchyShow, HierarchyRowForm } from '../Hierarchies';
-import ScientificNameReference from './ScientificNameReference';
 import EditToolbar from '../shared/EditToolbar';
 import { canAccess, usePermissions } from '@react-admin/ra-rbac';
 
@@ -88,7 +88,6 @@ export const TaxonNameCreateEdit: FC = ({
   const newNameInitialValues = {
     old_name_id: props.record?.id,
   };
-  const role: any = localStorage.getItem('scopes');
   const { loading, permissions } = usePermissions();
   if (loading) return null;
 
@@ -159,21 +158,23 @@ export const TaxonNameCreateEdit: FC = ({
               label="Day"
               className={gridClasses.EightCol1to2span}
               min={0}
-              validate={validateNumber}
+              max={31}
+              validate={[maxValue(31), ...validateNumber]}
             />
             <NumberInput
               source="form_desc_mn"
               label="Month"
               className={gridClasses.EightCol2to3span}
               min={0}
-              validate={validateNumber}
+              max={12}
+              validate={[maxValue(12), ...validateNumber]}
             />
             <NumberInput
               source="form_desc_yr"
               label="Year"
               className={gridClasses.EightCol3to4span}
-              min={0}
-              validate={validateNumber}
+              min={1735}
+              validate={[number(), minValue(1735)]}
             />
             <SelectInput
               source="publication_status"

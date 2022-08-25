@@ -11,6 +11,8 @@ import {
   AutocompleteInput,
   Labeled,
   AutocompleteArrayInput,
+  minValue,
+  maxValue,
 } from 'react-admin';
 import React, { FC } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
@@ -81,16 +83,24 @@ export const PublicationCreateEdit: FC = (props) => {
               source="publication_day"
               label="Day"
               className={gridClasses.EightCol1to2span}
+              validate={[minValue(0), maxValue(31)]}
+              min={0}
+              max={31}
             />
             <NumberInput
               source="publication_month"
               label="Month"
               className={gridClasses.EightCol2to3span}
+              validate={[minValue(0), maxValue(12)]}
+              min={0}
+              max={12}
             />
             <NumberInput
               source="publication_year"
               label="Year"
               className={gridClasses.EightCol3to4span}
+              validate={minValue(1735)}
+              min={1735}
             />
             <BooleanInput
               label="Published"
@@ -166,13 +176,29 @@ export const PublicationCreateEdit: FC = (props) => {
             </Box>
             <NumberInput
               source="legacy_id"
+              label="Legacy ID"
               className={gridClasses.EightCol1to3span}
+              validate={minValue(0)}
+              min={0}
             />
-            <TextInput source="isbn" className={gridClasses.EightCol3to5span} />
-            <TextInput source="issn" className={gridClasses.EightCol5to7span} />
-            <TextInput source="tl2" className={gridClasses.EightCol7to9span} />
+            <TextInput
+              source="isbn"
+              label="ISBN"
+              className={gridClasses.EightCol3to5span}
+            />
+            <TextInput
+              source="issn"
+              label="ISSN"
+              className={gridClasses.EightCol5to7span}
+            />
+            <TextInput
+              source="tl2"
+              label="TL2"
+              className={gridClasses.EightCol7to9span}
+            />
             <TextInput
               source="bhl_url"
+              label="BHL URL"
               className={gridClasses.EightCol1to5span}
             />
             <TextInput

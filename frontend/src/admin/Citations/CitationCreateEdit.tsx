@@ -5,6 +5,7 @@ import {
   SelectInput,
   SimpleForm,
   AutocompleteInput,
+  minValue,
 } from 'react-admin';
 import React, { FC } from 'react';
 import AuthorType from './AuthorType';
@@ -60,8 +61,9 @@ export const CitationCreateEdit: FC = (props) => {
         <Box>
           <NumberInput
             source="author_order"
-            validate={required()}
+            validate={[required(), minValue(0)]}
             initialValue={0}
+            min={0}
             fullWidth
           />
         </Box>
