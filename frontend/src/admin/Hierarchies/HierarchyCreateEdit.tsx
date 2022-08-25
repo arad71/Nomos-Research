@@ -1,6 +1,5 @@
 import {
   FormDataConsumer,
-  ReferenceInput,
   required,
   SelectInput,
   SimpleForm,
@@ -12,6 +11,7 @@ import EditToolbar from '../shared/EditToolbar';
 import ScientificNameReference from '../Taxon_names/ScientificNameReference';
 import TaxonRank from '../Taxon_names/TaxonRank';
 import { dependentNameInput } from './DependentNameInput';
+import { ClassificationReference } from '../Classification_systems';
 
 const useStyles = makeStyles((theme) => ({
   mainGrid: {
@@ -38,18 +38,7 @@ export const HierarchyCreateEdit: FC = (props) => {
       </Box>
       <Box className={classes.mainGrid}>
         <Box>
-          <ReferenceInput
-            source="classification_system_id"
-            reference="classification_systems"
-            filter={{ class_type: 'hierarchical' }}
-          >
-            <SelectInput
-              optionText="class_desc"
-              validate={required()}
-              fullWidth
-              helperText="Choose a classification system"
-            />
-          </ReferenceInput>
+          <ClassificationReference />
         </Box>
 
         <Box>
