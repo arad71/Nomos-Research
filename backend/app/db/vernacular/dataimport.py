@@ -13,7 +13,7 @@ class ImportVernacular(DataImportBase):
         self.upsert_constraint = f"uc_{VernacularModel.__tablename__}_legacy_id"
         self.update_cols = (
             "taxon_name_id",
-            "vernacular",
+            "vernacular_name",
             "language",
             "lang_pref",
             "preferred",
@@ -33,7 +33,7 @@ class ImportVernacular(DataImportBase):
                     self.legacy_id_prefix + row["NAME_ID"] if row["NAME_ID"] else None,
                     "taxon_name_id",
                 ),
-                "vernacular": row["VERNACULAR"],
+                "vernacular_name": row["VERNACULAR"],
                 "language": self.map_enum_base(row["LANGUAGE"]),
                 "lang_pref": self.map_y_n_to_bool(row["LANG_PREF"]),
                 "preferred": self.map_y_n_to_bool(row["PREFERRED"]),
