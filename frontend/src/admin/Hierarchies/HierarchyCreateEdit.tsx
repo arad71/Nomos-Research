@@ -55,7 +55,7 @@ export const HierarchyCreateEdit: FC = (props) => {
         </Box>
         <Box>
           <SelectInput
-            source="taxon_rank"
+            source="taxon_rank_name"
             label="Filter parent rank"
             choices={TaxonRank}
             fullWidth
