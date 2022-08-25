@@ -45,7 +45,14 @@ class Crud:
 
     @classmethod
     def get_item(cls, db: Session, current_user: User, id: int) -> Base:
-        if current_user.is_super_admin():
+        if Security(
+            dependency=current_user,
+            scopes=[
+                Role.SUPER_ADMIN["name"],
+                Role.APPLICATION_SUPPORT["name"],
+            ],
+            use_cache=False,
+        ):
             item = (
                 db.query(cls.model).filter(getattr(cls.model, cls.id_key) == id).first()
             )
