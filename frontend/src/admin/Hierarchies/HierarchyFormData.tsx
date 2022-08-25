@@ -3,5 +3,5 @@ export interface HierarchyFormData {
   taxon_name_id: number;
   parent_nid: number;
   path?: { path: string };
-  taxon_rank?: string;
+  taxon_rank_name?: string;
 }

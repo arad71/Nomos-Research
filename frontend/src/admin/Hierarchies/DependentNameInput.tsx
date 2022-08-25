@@ -11,18 +11,21 @@ export const dependentNameInput = ({
   if (!formData.classification_system_id || !formData.taxon_name_id) {
     enabled = false;
   }
-  const taxon = formData.taxon_name_id;
+
   let filter: HierarchyFilterType = {
     taxon_name___scientific_name__gt: '',
-    // Don't load the current name
-    taxon_name_id__ne: taxon,
-    classification_system_id: formData.classification_system_id,
   };
-  if (formData?.taxon_rank) {
-    filter.taxon_name___taxon_rank___rank_name = formData.taxon_rank;
+  if (enabled) {
+    const taxon = formData.taxon_name_id;
+    // Don't load the current name
+    filter.taxon_name_id__ne = taxon;
+    filter.classification_system_id = formData.classification_system_id;
+    filter.path__ltxtquery = `!${taxon}`;
+  }
+  if (formData?.taxon_rank_name) {
+    filter.taxon_name___taxon_rank___rank_name = formData.taxon_rank_name;
   }
   // Does not contain the taxon id in the path
-  filter.path__ltxtquery = `!${taxon}`;
   return (
     <ReferenceInput
       source="parent_nid"

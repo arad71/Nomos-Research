@@ -11,7 +11,7 @@ export const HierarchyRowForm = (props: RowFormProps) => (
     <ClassificationReference />
     <FormDataConsumer>{dependentNameInput}</FormDataConsumer>
     <SelectInput
-      source="taxon_rank"
+      source="taxon_rank_name"
       label="Filter parent rank"
       choices={TaxonRank}
       fullWidth
