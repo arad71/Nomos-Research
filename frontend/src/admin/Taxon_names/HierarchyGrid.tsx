@@ -4,7 +4,6 @@ import {
   Datagrid,
   Loading,
   Pagination,
-  ReferenceField,
   RichTextField,
   TextField,
   useQuery,
@@ -69,13 +68,11 @@ export function HierarchyGrid(props: PropsWithChildren<{}>) {
           sortBy="taxon_name___taxon_rank___rank_name"
           label="Rank"
         />
-        <ReferenceField
-          source="taxon_name_id"
-          reference="taxon_names"
-          link={false}
-        >
-          <RichTextField source="formatted_scientific_name" />
-        </ReferenceField>
+        <RichTextField
+          source="taxon_name.formatted_scientific_name"
+          label="Scientific name"
+          sortBy="taxon_name___scientific_name"
+        />
         <BooleanField
           source="taxon_name.is_current"
           label="Is current"
