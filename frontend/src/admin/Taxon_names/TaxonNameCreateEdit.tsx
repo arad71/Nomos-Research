@@ -157,17 +157,17 @@ export const TaxonNameCreateEdit: FC = ({
               source="form_desc_dy"
               label="Day"
               className={gridClasses.EightCol1to2span}
-              min={0}
+              min={1}
               max={31}
-              validate={[maxValue(31), ...validateNumber]}
+              validate={[maxValue(31), number(), minValue(1)]}
             />
             <NumberInput
               source="form_desc_mn"
               label="Month"
               className={gridClasses.EightCol2to3span}
-              min={0}
+              min={1}
               max={12}
-              validate={[maxValue(12), ...validateNumber]}
+              validate={[maxValue(12), number(), minValue(1)]}
             />
             <NumberInput
               source="form_desc_yr"

@@ -83,16 +83,16 @@ export const PublicationCreateEdit: FC = (props) => {
               source="publication_day"
               label="Day"
               className={gridClasses.EightCol1to2span}
-              validate={[minValue(0), maxValue(31)]}
-              min={0}
+              validate={[minValue(1), maxValue(31)]}
+              min={1}
               max={31}
             />
             <NumberInput
               source="publication_month"
               label="Month"
               className={gridClasses.EightCol2to3span}
-              validate={[minValue(0), maxValue(12)]}
-              min={0}
+              validate={[minValue(1), maxValue(12)]}
+              min={1}
               max={12}
             />
             <NumberInput
