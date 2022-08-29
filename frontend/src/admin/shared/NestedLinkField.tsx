@@ -11,7 +11,12 @@ export interface NestedFieldPropType extends PublicFieldProps {
 const NestedLinkField = (props: NestedFieldPropType) => {
   const record = useRecordContext(props);
   const { idKey, labelKey, source, reference } = props;
-  if (!record[source] || !record[source][idKey] || !record[source][labelKey]) {
+  if (
+    !record ||
+    !record[source] ||
+    !record[source][idKey] ||
+    !record[source][labelKey]
+  ) {
     return null;
   }
   const showPage = linkToRecord(`/${reference}`, record[source][idKey], 'show');
