@@ -16,14 +16,14 @@
 
 ## Development
 
-The only dependencies for this project should be docker and docker-compose.
-
+The only dependencies for this project should be docker and docker compose plugin. Get docker and the compose plugin from
+https://docs.docker.com/engine/install/ubuntu/.
 
 ### Setup
 
 This project uses private packages, before building you will need to obtain your NPM token and add it to your local `.env` file.
 
-The following commands will allow you to login to the marmelab registry which will store your token in `$HOME/.npmrc`
+The following commands will allow you to login to the Marmelab registry which will store your token in `$HOME/.npmrc`
 ```bash
 npm config set @react-admin:registry https://registry.marmelab.com
 npm login --registry=https://registry.marmelab.com
@@ -40,6 +40,23 @@ If you're using a different user on your system other than the first user you'll
 USER_ID="<Your user id>"
 GROUP_ID="<your group id>"
 ```
+
+### Persistent data
+Data for this application lives in a BIO DB instance:
+
+| Environment | Server                                                                                                                                                                                       |
+|-------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Staging     | [nomos-staging-db.postgres.database.azure.com](https://start.1password.com/open/i?a=NDOPYIX54ZELTLEXLCRF2UQINA&v=qv2jh4w2fasw37noy7d4jdeopi&i=zzgpz7s7ldvzc5eervj3oa5va4&h=my.1password.com) |
+| Production  | [nomos-prod-db.postgres.database.azure.com](https://start.1password.com/open/i?a=NDOPYIX54ZELTLEXLCRF2UQINA&v=qv2jh4w2fasw37noy7d4jdeopi&i=72fvyio5crsu7p6klpb53fjyhq&h=my.1password.com)    |
+
+### Sample data
+There is a snapshot of the production database at https://drive.google.com/file/d/1rmjuG73CI1J_-edj-za_lvhvuHdWNjwL/view?usp=share_link. You can restore this into a local database called `taxman` using psql. Place this file
+into the `backup` folder. Note that this will restore the most recent file.
+
+```shell
+docker compose exec backend restore
+```
+
 
 ### Quick Start
 
@@ -67,7 +84,7 @@ Once you have set up the initial database you can import the data from WA Census
 * Run scripts/build.sh to ensure this setting is set
 * Import data using:
 ```
-docker-compose run --rm backend python app/import.py
+docker compose run --rm backend python app/import.py
 ```
 
 ### Example data
@@ -75,7 +92,7 @@ docker-compose run --rm backend python app/import.py
 Extracting example data can be performed using:
 
 ```bash
-docker-compose exec backend app/tools/extract_sample_data.py
+docker compose exec backend app/tools/extract_sample_data.py
 ```
 
 The example data file [backend/nomos_sample_data.xlsx](backend/nomos_sample_data.xlsx) can then be uploaded to
@@ -86,27 +103,27 @@ The example data file [backend/nomos_sample_data.xlsx](backend/nomos_sample_data
 ### Rebuilding containers:
 
 ```
-docker-compose build
+docker compose build
 ```
 
 ### Restarting containers:
 
 ```
-docker-compose restart
+docker compose restart
 ```
 
 ### Bringing containers down:
 
 Note that this will delete the containers themselves
 ```
-docker-compose down
+docker compose down
 ```
 
 ### Kill it with fire
-In order to nuke your database and everythign in it use:
+In order to nuke your database and everything in it use:
 
 ```bash
-docker-compose down -v
+docker compose down -v
 scripts/build.sh
 ```
 
@@ -145,7 +162,7 @@ npm test
 Migrations are run using alembic. To run all migrations:
 
 ```
-docker-compose run --rm backend alembic upgrade head
+docker compose run --rm backend alembic upgrade head
 ```
 
 To create a new migration:
@@ -176,7 +193,7 @@ This normally results in the error message:
 
 You can generally resolve this by merging the heads of your migrations:
 ```
- docker-compose run --rm backend alembic merge heads --message "<Add your message here>"
+ docker compose run --rm backend alembic merge heads --message "<Add your message here>"
 ```
 Alternatively you can edit your migrations and change the `down_revision`
 
@@ -204,7 +221,7 @@ There is a helper script for both frontend and backend tests:
 ### Backend Tests
 
 ```
-docker-compose run backend pytest
+docker compose run backend pytest
 ```
 
 any arguments to pytest can also be passed after this command
@@ -212,7 +229,7 @@ any arguments to pytest can also be passed after this command
 ### Frontend Tests
 
 ```
-docker-compose run frontend test
+docker compose run frontend test
 ```
 
 This is the same as running npm test from within the frontend directory
@@ -242,13 +259,13 @@ Linting is run through the continuous integration pipeline [.github/workflows/ci
 ## Logging
 
 ```
-docker-compose logs
+docker compose logs
 ```
 
 Or for a specific service:
 
 ```
-docker-compose logs -f name_of_service # frontend|backend|db
+docker compose logs -f name_of_service # frontend|backend|db
 ```
 
 ## Deployment
