@@ -73,6 +73,8 @@ jobs:
       - name: Build the docker compose stack
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          DB_USER: posgres
+          DB_NAME: postgres
         run: scripts/build.sh
       - name: Run test suite
         run: scripts/test.sh
