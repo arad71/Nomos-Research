@@ -51,7 +51,7 @@ services:
       DB_PORT: ${DB_PORT:-5432}
       DB_NAME: ${DB_NAME:-taxman}
       ENVIRONMENT: ${ENVIRONMENT:-local}
-      DATABASE_URL: 'postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-password}@${DB_HOST:-postgres}:${DB_PORT:-5432}/${DB_NAME:-postgres}'
+      DATABASE_URL: 'postgresql://${DB_USER:-taxman}:${DB_PASSWORD:-password}@${DB_HOST:-postgres}:${DB_PORT:-5432}/${DB_NAME:-taxman}'
       API_KEY_CHECKLIST: ${API_KEY_CHECKLIST:-password}
       IMPORT_API_KEY_WACENSUS:  ${IMPORT_API_KEY_WACENSUS:-password}
       CELERY_BROKER_URL: redis://redis:6379/0
