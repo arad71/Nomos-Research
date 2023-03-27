@@ -13,7 +13,7 @@
     "@react-admin/ra-relationships": "^2.1.15",
     "babel-eslint": "^10.1.0",
     "jwt-decode": "^3.0.0",
-    "ra-data-json-server": "^3.19.11",
+    "ra-data-json-server": "^3.19.12",
     "ra-data-rest-client": "^1.1.1",
     "ra-data-simple-rest": "^3.19.11",
     "ra-input-rich-text": "^3.19.11",
