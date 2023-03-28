@@ -172,9 +172,9 @@ def test_edit_hierarchy(
     new_hierarchy["taxon_name"] = response.json()["taxon_name"]
     new_hierarchy["classification_system"] = response.json()["classification_system"]
     new_hierarchy["parent_name"] = response.json()["parent_name"]
-    new_hierarchy[
-        "formatted_scientific_name"
-    ] = "<i class='canonical-name'>Testuninomial</i>"
+    new_hierarchy["formatted_scientific_name"] = (
+        "<i class='canonical-name'>Testuninomial</i>"
+    )
     new_hierarchy["path"] = {
         "path": "{}.{}".format(
             test_hierarchy.classification_system_id, test_hierarchy.taxon_name_id
@@ -341,7 +341,9 @@ def test_manager_permissions(
     hierarchy_json = {
         **NEW_HIERARCHY,
         "taxon_name_id": test_taxon_name_canonical_name_1.taxon_name_id,
-        "classification_system_id": test_hierarchical_classification_system.classification_system_id,
+        "classification_system_id": (
+            test_hierarchical_classification_system.classification_system_id
+        ),
         "parent_nid": test_taxon_name_2.taxon_name_id,
     }
     response = client.post(
