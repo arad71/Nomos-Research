@@ -200,9 +200,13 @@ def test_canonical_name_1(
         "validated": test_taxon_name_canonical_name_1.validated,
         "uninomial": test_taxon_name_canonical_name_1.uninomial,
         "canonical_name": test_taxon_name_canonical_name_1.canonical_name,
-        "canonical_name_without_rank": test_taxon_name_canonical_name_1.canonical_name_without_rank,
+        "canonical_name_without_rank": (
+            test_taxon_name_canonical_name_1.canonical_name_without_rank
+        ),
         "scientific_name": test_taxon_name_canonical_name_1.scientific_name,
-        "formatted_scientific_name": test_taxon_name_canonical_name_1.formatted_scientific_name,
+        "formatted_scientific_name": (
+            test_taxon_name_canonical_name_1.formatted_scientific_name
+        ),
         "updated_by": test_taxon_name_canonical_name_1.updated_by,
         "updated_on": test_taxon_name_canonical_name_1.updated_on.isoformat(),
         "created_by": test_taxon_name_canonical_name_1.created_by,
@@ -237,9 +241,13 @@ def test_canonical_name_2(
         "validated": test_taxon_name_canonical_name_2.validated,
         "specific_epithet": test_taxon_name_canonical_name_2.specific_epithet,
         "canonical_name": test_taxon_name_canonical_name_2.canonical_name,
-        "canonical_name_without_rank": test_taxon_name_canonical_name_2.canonical_name_without_rank,
+        "canonical_name_without_rank": (
+            test_taxon_name_canonical_name_2.canonical_name_without_rank
+        ),
         "scientific_name": test_taxon_name_canonical_name_2.scientific_name,
-        "formatted_scientific_name": test_taxon_name_canonical_name_2.formatted_scientific_name,
+        "formatted_scientific_name": (
+            test_taxon_name_canonical_name_2.formatted_scientific_name
+        ),
         "updated_by": test_taxon_name_canonical_name_2.updated_by,
         "updated_on": test_taxon_name_canonical_name_2.updated_on.isoformat(),
         "created_by": test_taxon_name_canonical_name_2.created_by,
@@ -277,9 +285,13 @@ def test_canonical_name_3(
         "specific_epithet": test_taxon_name_canonical_name_3.specific_epithet,
         "infraspecific_epithet": test_taxon_name_canonical_name_3.infraspecific_epithet,
         "canonical_name": test_taxon_name_canonical_name_3.canonical_name,
-        "canonical_name_without_rank": test_taxon_name_canonical_name_3.canonical_name_without_rank,
+        "canonical_name_without_rank": (
+            test_taxon_name_canonical_name_3.canonical_name_without_rank
+        ),
         "scientific_name": test_taxon_name_canonical_name_3.scientific_name,
-        "formatted_scientific_name": test_taxon_name_canonical_name_3.formatted_scientific_name,
+        "formatted_scientific_name": (
+            test_taxon_name_canonical_name_3.formatted_scientific_name
+        ),
         "updated_by": test_taxon_name_canonical_name_3.updated_by,
         "updated_on": test_taxon_name_canonical_name_3.updated_on.isoformat(),
         "created_by": test_taxon_name_canonical_name_3.created_by,

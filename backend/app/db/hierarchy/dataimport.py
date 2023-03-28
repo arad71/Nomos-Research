@@ -39,9 +39,11 @@ class ImportHierarchy(DataImportBase):
                 "parent_nid": self.map_row_by_unique_key(
                     TaxonName,
                     "legacy_id",
-                    self.legacy_id_prefix + row["PARENT_NID"]
-                    if row["PARENT_NID"]
-                    else None,
+                    (
+                        self.legacy_id_prefix + row["PARENT_NID"]
+                        if row["PARENT_NID"]
+                        else None
+                    ),
                     "taxon_name_id",
                 ),
                 "created_by": self.current_user,
