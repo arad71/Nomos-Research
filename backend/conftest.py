@@ -19,6 +19,7 @@ from app.db.publication.model import Publication
 from app.db.role.constants import Role
 from app.db.role.model import Role as RoleModel
 from app.db.session import Base, get_db
+from app.db.taxon_name.enums import NaturalisedStatus
 from app.db.taxon_name.model import TaxonName
 from app.db.taxon_rank.model import TaxonRank
 from app.db.user.model import User
@@ -511,6 +512,19 @@ def test_taxon_name(
     test_db.commit()
     test_db.refresh(taxon_name)
     return taxon_name
+
+
+@pytest.fixture
+def test_checklist_name(
+    test_db, test_taxon_name, test_informal_group, test_vernacular
+) -> TaxonName:
+    test_taxon_name.naturalised_status = NaturalisedStatus.native
+    test_db.add(test_taxon_name)
+    # test_db.commit()
+    test_vernacular.preferred = True
+    test_db.add(test_vernacular)
+    test_db.commit()
+    return test_taxon_name
 
 
 @pytest.fixture
