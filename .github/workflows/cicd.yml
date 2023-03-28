@@ -70,7 +70,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-      - name: Build the docker-compose stack
+      - name: Build the docker compose stack
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: scripts/build.sh
@@ -80,7 +80,7 @@ jobs:
         run: scripts/downgrade.sh
       - name: Print logs
         if: always()
-        run: docker-compose logs
+        run: docker compose logs
 
   deploy:
     # The type of runner that the job will run on

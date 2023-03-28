@@ -19,3 +19,4 @@ RUN \
 
 USER app
 COPY . .
+ENV PATH="$PATH:/app/bin"
