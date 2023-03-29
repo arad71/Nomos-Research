@@ -48,7 +48,8 @@ async def curation_checklist(
         )
         .group_by(CrossReference.old_name_id)
         .filter(
-            CrossReference.deleted == False,  # noqa: E712
+            CrossReference.deleted
+            == False,  # noqa: E712 SQLAlchemy requires == for boolan comparison
         )
         .subquery()
     )
@@ -59,8 +60,10 @@ async def curation_checklist(
         )
         .group_by(Vernacular.taxon_name_id)
         .filter(
-            and_(Vernacular.deleted == False, Vernacular.preferred == True)  # noqa:
-            # E712
+            and_(
+                Vernacular.deleted == False,  # noqa: E712
+                Vernacular.preferred == True,  # noqa: E712
+            )
         )
         .subquery()
     )
