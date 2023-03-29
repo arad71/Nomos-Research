@@ -60,6 +60,14 @@ class TableMixin(object):
             comment="The date this record was created on",
         )
 
+    @declared_attr
+    def deleted_on(cls):
+        return Column(
+            TIMESTAMP(timezone=True),
+            index=True,
+            comment="The date this record was deleted on",
+        )
+
 
 class PublicationAuthor(BaseModel):
     __tablename__ = "publication_author"

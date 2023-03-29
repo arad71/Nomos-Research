@@ -115,6 +115,7 @@ class Hierarchy(BaseModel, TableMixin):
         UniqueConstraint(
             "taxon_name_id",
             "classification_system_id",
+            "deleted_on",
             name=f"uc_{ __tablename__}_legacy_id",
         ),
         Index("ix_nodes_path", path, postgresql_using="gist"),

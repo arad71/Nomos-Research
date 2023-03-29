@@ -12,6 +12,7 @@ class InformalGroup(BaseModel, TableMixin):
         UniqueConstraint(
             "classification_system_id",
             "taxon_name_id",
+            "deleted_on",
             name=f"uc_{ __tablename__}_legacy_id",
         ),
         {"comment": TABLE_DESCRIPTION},

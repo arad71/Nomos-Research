@@ -17,7 +17,9 @@ from app.db.models import BaseModel, TableMixin
 class ClassificationSystem(BaseModel, TableMixin):
     __tablename__ = "classification_system"
     __table_args__ = (
-        UniqueConstraint("legacy_id_name", name=f"uc_{ __tablename__}_legacy_id"),
+        UniqueConstraint("legacy_id_name",
+                         "deleted_on",
+                         name=f"uc_{ __tablename__}_legacy_id"),
         {"comment": TABLE_DESCRIPTION},
     )
 

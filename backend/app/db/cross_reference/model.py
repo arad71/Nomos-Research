@@ -20,7 +20,9 @@ from app.db.taxon_name.model import TaxonName
 class CrossReference(BaseModel, TableMixin):
     __tablename__ = "cross_reference"
     __table_args__ = (
-        UniqueConstraint("legacy_id", name=f"uc_{ __tablename__}_legacy_id"),
+        UniqueConstraint("legacy_id",
+                         "deleted_on",
+                         name=f"uc_{ __tablename__}_legacy_id"),
         {"comment": TABLE_DESCRIPTION},
     )
 

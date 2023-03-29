@@ -24,6 +24,7 @@ class Vernacular(BaseModel, TableMixin):
             "taxon_name_id",
             "vernacular_name",
             "language",
+            "deleted_on",
             name=f"uc_{ __tablename__}_legacy_id",
         ),
         {"comment": TABLE_DESCRIPTION},

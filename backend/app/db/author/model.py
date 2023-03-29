@@ -26,12 +26,17 @@ def abbreviation_to_display_name(abbreviation):
 class Author(BaseModel, TableMixin):
     __tablename__ = "author"
     __table_args__ = (
-        UniqueConstraint("legacy_id_name", name=f"uc_{ __tablename__}_legacy_id"),
+        UniqueConstraint("legacy_id_name",
+                         "deleted_on",
+                         name=f"uc_{ __tablename__}_legacy_id"),
+        UniqueConstraint("abbreviation",
+                         "deleted_on",
+                         name=f"uc_{__tablename__}_abbreviation"),
         {"comment": TABLE_DESCRIPTION},
     )
 
     author_id = Column(Integer, primary_key=True)
-    abbreviation = Column(String(30), nullable=False, comment=AUTHOR, unique=True)
+    abbreviation = Column(String(30), nullable=False, comment=AUTHOR)
     surname = Column(String(30), comment=SURNAME, doc=SURNAME)
     first_names = Column(String(60), comment=FIRST_NAMES, doc=FIRST_NAMES)
     initials = Column(String(30), comment=INITIALS, doc=INITIALS)

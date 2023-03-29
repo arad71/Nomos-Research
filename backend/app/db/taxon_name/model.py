@@ -49,7 +49,9 @@ from app.db.taxon_name.constants import (
 class TaxonName(BaseModel, TableMixin):
     __tablename__ = "taxon_name"
     __table_args__ = (
-        UniqueConstraint("legacy_id", name=f"uc_{ __tablename__}_legacy_id"),
+        UniqueConstraint("legacy_id",
+                         "deleted_on",
+                         name=f"uc_{ __tablename__}_legacy_id"),
         {"comment": TABLE_DESCRIPTION},
     )
     name_plural = "taxon_names"

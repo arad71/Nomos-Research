@@ -14,14 +14,18 @@ from app.db.user.constants import (
 class User(BaseModel, TableMixin):
     __tablename__ = "user"
     __table_args__ = (
-        UniqueConstraint("legacy_id_name", name=f"uc_{__tablename__}_legacy_id"),
+        UniqueConstraint("legacy_id_name",
+                         "deleted_on",
+                         name=f"uc_{__tablename__}_legacy_id"),
+        UniqueConstraint("email",
+                         "deleted_on",
+                         name=f"uc_{__tablename__}_email"),
         {"comment": TABLE_DESCRIPTION},
     )
 
     user_id = Column(Integer, primary_key=True)
     email = Column(
         String,
-        unique=True,
         index=True,
         nullable=False,
         comment=EMAIL,

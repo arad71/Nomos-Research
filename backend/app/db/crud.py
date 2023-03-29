@@ -300,6 +300,7 @@ class Crud:
             return {cls.id_key: item_id}
         item.deleted = True
         item.updated_by = current_user.user_id
+        item.deleted_on = datetime.datetime.now()
         db.commit()
         db.refresh(item)
         return item
@@ -313,6 +314,7 @@ class Crud:
             )
         item.deleted = False
         item.updated_by = current_user.user_id
+        item.deleted_on = None
         db.commit()
         db.refresh(item)
         return item
