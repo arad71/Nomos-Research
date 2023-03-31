@@ -26,12 +26,12 @@ def abbreviation_to_display_name(abbreviation):
 class Author(BaseModel, TableMixin):
     __tablename__ = "author"
     __table_args__ = (
-        UniqueConstraint("legacy_id_name",
-                         "deleted_on",
-                         name=f"uc_{ __tablename__}_legacy_id"),
-        UniqueConstraint("abbreviation",
-                         "deleted_on",
-                         name=f"uc_{__tablename__}_abbreviation"),
+        UniqueConstraint(
+            "legacy_id_name", "deleted_on", name=f"uc_{ __tablename__}_legacy_id"
+        ),
+        UniqueConstraint(
+            "abbreviation", "deleted_on", name=f"uc_{__tablename__}_abbreviation"
+        ),
         {"comment": TABLE_DESCRIPTION},
     )
 

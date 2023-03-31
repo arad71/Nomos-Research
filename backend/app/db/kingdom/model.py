@@ -13,9 +13,9 @@ from app.db.models import BaseModel, TableMixin
 class Kingdom(BaseModel, TableMixin):
     __tablename__ = "kingdom"
     __table_args__ = (
-        UniqueConstraint("legacy_id",
-                         "deleted_on",
-                         name=f"uc_{ __tablename__}_legacy_id"),
+        UniqueConstraint(
+            "legacy_id", "deleted_on", name=f"uc_{ __tablename__}_legacy_id"
+        ),
         {"comment": TABLE_DESCRIPTION},
     )
 
