@@ -23,9 +23,9 @@ def get_sample_data(response: Response):
 
 
 def download_file(response):
-    response.headers[
-        "content-disposition"
-    ] = 'attachment; filename="nomos_sample_data.xlsx"'
+    response.headers["content-disposition"] = (
+        'attachment; filename="nomos_sample_data.xlsx"'
+    )
     return SAMPLE_DATA_XLSX
 
 
