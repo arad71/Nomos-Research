@@ -520,7 +520,6 @@ def test_checklist_name(
 ) -> TaxonName:
     test_taxon_name.naturalised_status = NaturalisedStatus.native
     test_db.add(test_taxon_name)
-    # test_db.commit()
     test_vernacular.preferred = True
     test_db.add(test_vernacular)
     test_db.commit()
