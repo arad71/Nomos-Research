@@ -3,14 +3,17 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, Response
 from fastapi_key_auth import AuthorizerDependency
-from sqlalchemy import func, or_, select
+from sqlalchemy import and_, func, or_, select
 from sqlalchemy.orm import Session, aliased
 
+from app.db.classification_system.model import ClassificationSystem
 from app.db.cross_reference.model import CrossReference
+from app.db.informal_group.model import InformalGroup
 from app.db.kingdom.model import Kingdom
 from app.db.session import get_db
 from app.db.taxon_name.model import TaxonName
 from app.db.taxon_rank.model import TaxonRank
+from app.db.vernacular.model import Vernacular
 
 checklist_router = r = APIRouter(prefix="/checklist")
 authorizer = AuthorizerDependency(key_pattern="API_KEY_")
@@ -45,7 +48,41 @@ async def curation_checklist(
         )
         .group_by(CrossReference.old_name_id)
         .filter(
-            CrossReference.deleted == False,  # noqa: E712
+            CrossReference.deleted
+            == False,  # noqa: E712 SQLAlchemy requires == for boolan comparison
+        )
+        .subquery()
+    )
+    vernacular = (
+        select(
+            Vernacular.taxon_name_id,
+            func.array_agg(Vernacular.vernacular_name).label("vernacular_names"),
+        )
+        .group_by(Vernacular.taxon_name_id)
+        .filter(
+            and_(
+                Vernacular.deleted == False,  # noqa: E712
+                Vernacular.preferred == True,  # noqa: E712
+            )
+        )
+        .subquery()
+    )
+    informal_group = (
+        select(
+            InformalGroup.taxon_name_id,
+            func.array_agg(ClassificationSystem.class_desc).label("informal_groups"),
+        )
+        .join(
+            ClassificationSystem,
+            onclause=InformalGroup.classification_system_id
+            == ClassificationSystem.classification_system_id,
+        )
+        .group_by(InformalGroup.taxon_name_id)
+        .filter(
+            and_(
+                InformalGroup.deleted == False,  # noqa: E712
+                ClassificationSystem.deleted == False,  # noqa: E712
+            )  #
         )
         .subquery()
     )
@@ -56,6 +93,9 @@ async def curation_checklist(
             original_name.author.label("scientificNameAuthorship"),
             original_name.canonical_name.label("canonicalName"),
             original_name.canonical_name_without_rank.label("canonicalNameWithoutRank"),
+            original_name.naturalised_status.label("establishmentMeans"),
+            vernacular.c.vernacular_names.label("vernacularNames"),
+            informal_group.c.informal_groups.label("informalGroups"),
             original_name.is_current.label("isCurrent"),
             TaxonRank.rank_name.label("taxonRank"),
             original_name.validated.label("validated"),
@@ -94,6 +134,14 @@ async def curation_checklist(
             onclause=cross_reference_counts.c.old_name_id
             == original_name.taxon_name_id,
         )
+        .outerjoin(
+            vernacular,
+            onclause=vernacular.c.taxon_name_id == original_name.taxon_name_id,
+        )
+        .outerjoin(
+            informal_group,
+            onclause=informal_group.c.taxon_name_id == original_name.taxon_name_id,
+        )
         .join(kingdom, onclause=kingdom.kingdom_id == original_name.kingdom_id)
         .join(TaxonRank, onclause=TaxonRank.taxon_rank_id == original_name.rank_id)
         .filter(
@@ -108,6 +156,7 @@ async def curation_checklist(
             )
         )
     )
+
     if updated:
         statement = statement.filter(original_name.updated_on >= updated)
     if crossReferenceUpdated:
