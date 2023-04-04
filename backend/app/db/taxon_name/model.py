@@ -12,7 +12,7 @@ from sqlalchemy import (
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import backref, column_property, relationship
-from sqlalchemy.schema import UniqueConstraint
+from sqlalchemy.schema import Index
 from sqlalchemy.types import Enum
 
 from app.db.models import BaseModel, TableMixin
@@ -49,9 +49,9 @@ from app.db.taxon_name.constants import (
 class TaxonName(BaseModel, TableMixin):
     __tablename__ = "taxon_name"
     __table_args__ = (
-        UniqueConstraint(
-            "legacy_id", "deleted_on", name=f"uc_{ __tablename__}_legacy_id"
-        ),
+        Index(f"ix_{__tablename__}_legacy_id_not_deleted", "legacy_id",
+              unique=True,
+              postgresql_where="deleted IS FALSE"),
         {"comment": TABLE_DESCRIPTION},
     )
     name_plural = "taxon_names"

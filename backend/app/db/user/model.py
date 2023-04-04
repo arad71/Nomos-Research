@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.schema import UniqueConstraint
+from sqlalchemy.schema import Index
 
 from app.db.models import BaseModel, TableMixin
 from app.db.user.constants import (
@@ -14,10 +14,12 @@ from app.db.user.constants import (
 class User(BaseModel, TableMixin):
     __tablename__ = "user"
     __table_args__ = (
-        UniqueConstraint(
-            "legacy_id_name", "deleted_on", name=f"uc_{__tablename__}_legacy_id"
-        ),
-        UniqueConstraint("email", "deleted_on", name=f"uc_{__tablename__}_email"),
+        Index(f"ix_{__tablename__}_legacy_id_name_not_deleted", "legacy_id_name",
+              unique=True,
+              postgresql_where="deleted IS FALSE"),
+        Index(f"ix_{__tablename__}_email_not_deleted", "email",
+              unique=True,
+              postgresql_where="deleted IS FALSE"),
         {"comment": TABLE_DESCRIPTION},
     )
 

@@ -2,7 +2,6 @@ from loguru import logger
 from sqlalchemy import Column, ForeignKey, Index, Integer, Sequence, and_, func
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import Session, backref, foreign, relationship, remote
-from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy_utils import Ltree, LtreeType
 
 from app.db.hierarchy.constants import (
@@ -112,12 +111,10 @@ class Hierarchy(BaseModel, TableMixin):
         "rank_name",
     ]
     __table_args__ = (
-        UniqueConstraint(
-            "taxon_name_id",
+        Index(f"ix_{__tablename__}_taxon_name_id_not_deleted", "taxon_name_id",
             "classification_system_id",
-            "deleted_on",
-            name=f"uc_{ __tablename__}_legacy_id",
-        ),
+              unique=True,
+              postgresql_where="deleted IS FALSE"),
         Index("ix_nodes_path", path, postgresql_using="gist"),
         {"comment": TABLE_DESCRIPTION},
     )

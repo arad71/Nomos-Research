@@ -1,6 +1,6 @@
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import backref, relationship
-from sqlalchemy.schema import UniqueConstraint
+from sqlalchemy.schema import Index
 from sqlalchemy.types import Enum
 
 from app.db.cross_reference import enums
@@ -20,9 +20,9 @@ from app.db.taxon_name.model import TaxonName
 class CrossReference(BaseModel, TableMixin):
     __tablename__ = "cross_reference"
     __table_args__ = (
-        UniqueConstraint(
-            "legacy_id", "deleted_on", name=f"uc_{ __tablename__}_legacy_id"
-        ),
+        Index(f"ix_{__tablename__}_legacy_id_not_deleted", "legacy_id",
+              unique=True,
+              postgresql_where="deleted IS FALSE"),
         {"comment": TABLE_DESCRIPTION},
     )
 

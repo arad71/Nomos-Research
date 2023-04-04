@@ -1,7 +1,7 @@
 from sqlalchemy import Boolean, Column, Enum, ForeignKey, Integer, String, event
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.orm.session import Session
-from sqlalchemy.schema import UniqueConstraint
+from sqlalchemy.schema import Index
 
 from app.db.models import BaseModel, TableMixin
 from app.db.vernacular import enums
@@ -20,13 +20,11 @@ from app.db.vernacular.constants import (
 class Vernacular(BaseModel, TableMixin):
     __tablename__ = "vernacular"
     __table_args__ = (
-        UniqueConstraint(
-            "taxon_name_id",
+        Index(f"ix_{__tablename__}_taxon_name_not_deleted", "taxon_name_id",
             "vernacular_name",
             "language",
-            "deleted_on",
-            name=f"uc_{ __tablename__}_legacy_id",
-        ),
+              unique=True,
+              postgresql_where="deleted IS FALSE"),
         {"comment": TABLE_DESCRIPTION},
     )
 

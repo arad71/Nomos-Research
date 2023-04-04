@@ -1,7 +1,7 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, event
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import backref, relationship
-from sqlalchemy.schema import UniqueConstraint
+from sqlalchemy.schema import Index
 
 from app.db.models import BaseModel, TableMixin
 from app.db.publication.calculated import calculate_fields
@@ -11,9 +11,9 @@ from app.db.publication.constants import PUBLICATION_ID, TABLE_DESCRIPTION
 class Publication(BaseModel, TableMixin):
     __tablename__ = "publication"
     __table_args__ = (
-        UniqueConstraint(
-            "legacy_id", "deleted_on", name=f"uc_{ __tablename__}_legacy_id"
-        ),
+        Index(f"ix_{__tablename__}_legacy_id_not_deleted", "legacy_id",
+              unique=True,
+              postgresql_where="deleted IS FALSE"),
         {"comment": TABLE_DESCRIPTION},
     )
 

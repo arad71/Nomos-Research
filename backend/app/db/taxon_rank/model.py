@@ -1,7 +1,7 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import backref, relationship
-from sqlalchemy.schema import UniqueConstraint
+from sqlalchemy.schema import Index
 from sqlalchemy.types import Enum
 
 from app.db.models import BaseModel, TableMixin
@@ -19,15 +19,12 @@ from app.db.taxon_rank.constants import (
 class TaxonRank(BaseModel, TableMixin):
     __tablename__ = "taxon_rank"
     __table_args__ = (
-        UniqueConstraint(
-            "legacy_id",
-            "kingdom_id",
-            "deleted_on",
-            name=f"uc_{ __tablename__}_legacy_id",
-        ),
-        UniqueConstraint(
-            "kingdom_id", "rank_name", "deleted_on", name="unique_rank_name_in_kingdom"
-        ),
+        Index(f"ix_{__tablename__}_legacy_id_not_deleted", "legacy_id", "kingdom_id",
+              unique=True,
+              postgresql_where="deleted IS FALSE"),
+        Index(f"ix_{__tablename__}_rank_name_not_deleted", "rank_name", "kingdom_id",
+              unique=True,
+              postgresql_where="deleted IS FALSE"),
         {"comment": TABLE_DESCRIPTION},
     )
 

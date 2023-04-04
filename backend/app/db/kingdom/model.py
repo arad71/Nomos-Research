@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String
-from sqlalchemy.schema import UniqueConstraint
+from sqlalchemy.schema import Index
 
 from app.db.kingdom.constants import (
     KINGDOM_DESCRIPTION,
@@ -13,9 +13,9 @@ from app.db.models import BaseModel, TableMixin
 class Kingdom(BaseModel, TableMixin):
     __tablename__ = "kingdom"
     __table_args__ = (
-        UniqueConstraint(
-            "legacy_id", "deleted_on", name=f"uc_{ __tablename__}_legacy_id"
-        ),
+        Index(f"ix_{__tablename__}_legacy_id_not_deleted", "legacy_id",
+              unique=True,
+              postgresql_where="deleted IS FALSE"),
         {"comment": TABLE_DESCRIPTION},
     )
 

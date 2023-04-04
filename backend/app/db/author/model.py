@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, func
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import column_property, relationship
-from sqlalchemy.schema import UniqueConstraint
+from sqlalchemy.schema import Index
 
 from app.db.author.constants import (
     AUTHOR,
@@ -22,16 +22,22 @@ def abbreviation_to_display_name(abbreviation):
         display_name += "."
     return display_name
 
+# https://stackoverflow.com/questions/8289100/create-unique-constraint-with-null-columns
+# https://stackoverflow.com/questions/27976683/creating-partial-unique-index-with-sqlalchemy-on-postgres
+# https://github.com/sqlalchemy/alembic/issues/750
+#
+
 
 class Author(BaseModel, TableMixin):
     __tablename__ = "author"
     __table_args__ = (
-        UniqueConstraint(
-            "legacy_id_name", "deleted_on", name=f"uc_{ __tablename__}_legacy_id"
-        ),
-        UniqueConstraint(
-            "abbreviation", "deleted_on", name=f"uc_{__tablename__}_abbreviation"
-        ),
+        # partial unique index to impose unique constraint only on active records
+        # see
+        Index(f"ix_{__tablename__}_legacy_id_name_not_deleted", "legacy_id_name",
+              unique=True,
+              postgresql_where="deleted IS FALSE"),
+        Index(f"ix_{__tablename__}_abbreviation_not_deleted", "abbreviation", unique=True,
+              postgresql_where="deleted IS FALSE"),
         {"comment": TABLE_DESCRIPTION},
     )
 
