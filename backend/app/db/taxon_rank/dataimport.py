@@ -10,7 +10,7 @@ class ImportTaxonRank(DataImportBase):
     def __init__(self, db, current_user):
         super().__init__(db, current_user)
         self.data_model = TaxonRankModel
-        self.upsert_constraint = f"uc_{TaxonRankModel.__tablename__}_legacy_id"
+        self.upsert_constraint = f"ix_{TaxonRankModel.__tablename__}_legacy_id"
         self.update_cols = (
             "kingdom_id",
             "rank_name",

@@ -10,7 +10,7 @@ class ImportVernacular(DataImportBase):
     def __init__(self, db, current_user):
         super().__init__(db, current_user)
         self.data_model = VernacularModel
-        self.upsert_constraint = f"uc_{VernacularModel.__tablename__}_legacy_id"
+        self.upsert_constraint = f"ix_{VernacularModel.__tablename__}_legacy_id"
         self.update_cols = (
             "taxon_name_id",
             "vernacular_name",

@@ -12,7 +12,7 @@ class ImportClassificationSystem(DataImportBase):
         super().__init__(db, current_user)
         self.data_model = ClassificationSystemModel
         self.upsert_constraint = (
-            f"uc_{ClassificationSystemModel.__tablename__}_legacy_id"
+            f"ix_{ClassificationSystemModel.__tablename__}_legacy_id"
         )
         self.update_cols = (
             "class_desc",

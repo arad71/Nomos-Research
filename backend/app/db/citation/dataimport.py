@@ -17,7 +17,7 @@ class ImportCitation(DataImportBase):
     def __init__(self, db, current_user):
         super().__init__(db, current_user)
         self.data_model = CitationModel
-        self.upsert_constraint = f"uc_{CitationModel.__tablename__}_legacy_id"
+        self.upsert_constraint = f"ix_{CitationModel.__tablename__}_legacy_id"
         self.update_cols = (
             "taxon_name_id",
             "author_id",

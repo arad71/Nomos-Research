@@ -124,7 +124,8 @@ class DataImportBase:
         # TODO should we add a variable here to allow update?
         if upsert_constraint:
             insert_statement = insert_statement.on_conflict_do_update(
-                constraint=upsert_constraint, set_=data
+                constraint=upsert_constraint,
+                set_=data
             )
         self.db.execute(insert_statement)
         self.db.commit()

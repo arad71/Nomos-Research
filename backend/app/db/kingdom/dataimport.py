@@ -9,7 +9,7 @@ class ImportKingdom(DataImportBase):
     def __init__(self, db, current_user):
         super().__init__(db, current_user)
         self.data_model = KingdomModel
-        self.upsert_constraint = f"uc_{KingdomModel.__tablename__}_legacy_id"
+        self.upsert_constraint = f"ix_{KingdomModel.__tablename__}_legacy_id"
         self.update_cols = (
             "kingdom_name",
             "kingdom_desc",
