@@ -20,9 +20,10 @@ from app.db.vernacular.constants import (
 class Vernacular(BaseModel, TableMixin):
     __tablename__ = "vernacular"
     __table_args__ = (
-        Index(f"ix_{__tablename__}_taxon_name_not_deleted", "taxon_name_id",
-            "vernacular_name",
-            "language",
+        Index(f"ix_{__tablename__}_legacy_id",
+              "taxon_name_id",
+              "vernacular_name",
+              "language",
               unique=True,
               postgresql_where="deleted IS FALSE"),
         {"comment": TABLE_DESCRIPTION},

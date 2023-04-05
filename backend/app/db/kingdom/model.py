@@ -13,7 +13,8 @@ from app.db.models import BaseModel, TableMixin
 class Kingdom(BaseModel, TableMixin):
     __tablename__ = "kingdom"
     __table_args__ = (
-        Index(f"ix_{__tablename__}_legacy_id_not_deleted", "legacy_id",
+        Index(f"ix_{__tablename__}_legacy_id",
+              "legacy_id",
               unique=True,
               postgresql_where="deleted IS FALSE"),
         {"comment": TABLE_DESCRIPTION},

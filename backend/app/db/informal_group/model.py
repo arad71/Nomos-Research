@@ -9,8 +9,9 @@ from app.db.models import BaseModel, TableMixin
 class InformalGroup(BaseModel, TableMixin):
     __tablename__ = "informal_group"
     __table_args__ = (
-        Index(f"ix_{__tablename__}_classification_system_id_not_deleted", "classification_system_id",
-            "taxon_name_id",
+        Index(f"ix_{__tablename__}_legacy_id",
+              "classification_system_id",
+              "taxon_name_id",
               unique=True,
               postgresql_where="deleted IS FALSE"),
         {"comment": TABLE_DESCRIPTION},

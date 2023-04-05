@@ -14,10 +14,12 @@ from app.db.user.constants import (
 class User(BaseModel, TableMixin):
     __tablename__ = "user"
     __table_args__ = (
-        Index(f"ix_{__tablename__}_legacy_id_name_not_deleted", "legacy_id_name",
+        Index(f"ix_{__tablename__}_legacy_id",
+              "legacy_id_name",
               unique=True,
               postgresql_where="deleted IS FALSE"),
-        Index(f"ix_{__tablename__}_email_not_deleted", "email",
+        Index(f"ix_{__tablename__}_email",
+              "email",
               unique=True,
               postgresql_where="deleted IS FALSE"),
         {"comment": TABLE_DESCRIPTION},

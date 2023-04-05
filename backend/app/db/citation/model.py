@@ -16,14 +16,16 @@ from app.db.models import BaseModel, TableMixin
 class Citation(BaseModel, TableMixin):
     __tablename__ = "citation"
     __table_args__ = (
-        Index(f"ix_{__tablename__}_author_id_not_deleted", "author_id",
-            "taxon_name_id",
-            "author_type",
+        Index(f"ix_{__tablename__}_author_id",
+              "author_id",
+              "taxon_name_id",
+              "author_type",
               unique=True,
               postgresql_where="deleted IS FALSE"),
-        Index(f"ix_{__tablename__}_legacy_id_name_not_deleted", "legacy_id_name",
-            "taxon_name_id",
-            "author_type",
+        Index(f"ix_{__tablename__}_legacy_id",
+              "legacy_id_name",
+              "taxon_name_id",
+              "author_type",
               unique=True,
               postgresql_where="deleted IS FALSE"),
         {"comment": TABLE_DESCRIPTION},

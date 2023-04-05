@@ -11,7 +11,7 @@ from app.db.publication.constants import PUBLICATION_ID, TABLE_DESCRIPTION
 class Publication(BaseModel, TableMixin):
     __tablename__ = "publication"
     __table_args__ = (
-        Index(f"ix_{__tablename__}_legacy_id_not_deleted", "legacy_id",
+        Index(f"ix_{__tablename__}_legacy_id", "legacy_id",
               unique=True,
               postgresql_where="deleted IS FALSE"),
         {"comment": TABLE_DESCRIPTION},

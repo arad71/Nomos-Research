@@ -19,10 +19,14 @@ from app.db.taxon_rank.constants import (
 class TaxonRank(BaseModel, TableMixin):
     __tablename__ = "taxon_rank"
     __table_args__ = (
-        Index(f"ix_{__tablename__}_legacy_id_not_deleted", "legacy_id", "kingdom_id",
+        Index(f"ix_{__tablename__}_legacy_id",
+              "legacy_id",
+              "kingdom_id",
               unique=True,
               postgresql_where="deleted IS FALSE"),
-        Index(f"ix_{__tablename__}_rank_name_not_deleted", "rank_name", "kingdom_id",
+        Index(f"ix_{__tablename__}_unique_rank_name_in_kingdom",
+              "rank_name",
+              "kingdom_id",
               unique=True,
               postgresql_where="deleted IS FALSE"),
         {"comment": TABLE_DESCRIPTION},

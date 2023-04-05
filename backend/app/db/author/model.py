@@ -33,10 +33,10 @@ class Author(BaseModel, TableMixin):
     __table_args__ = (
         # partial unique index to impose unique constraint only on active records
         # see
-        Index(f"ix_{__tablename__}_legacy_id_name_not_deleted", "legacy_id_name",
+        Index(f"ix_{__tablename__}_legacy_id", "legacy_id_name",
               unique=True,
               postgresql_where="deleted IS FALSE"),
-        Index(f"ix_{__tablename__}_abbreviation_not_deleted", "abbreviation", unique=True,
+        Index(f"ix_{__tablename__}_abbreviation", "abbreviation", unique=True,
               postgresql_where="deleted IS FALSE"),
         {"comment": TABLE_DESCRIPTION},
     )

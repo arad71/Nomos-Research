@@ -33,6 +33,8 @@ class UserRole(BaseModel, TableMixin):
     )
 
     __table_args__ = (
-        Index(f"ix_{__tablename__}_user_role_not_deleted", "user_id", "role_id",
+        Index(f"ix_{__tablename__}_unique_user_role",
+              "user_id",
+              "role_id",
               unique=True,
               postgresql_where="deleted IS FALSE"),)

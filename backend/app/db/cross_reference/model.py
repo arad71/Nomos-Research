@@ -20,7 +20,8 @@ from app.db.taxon_name.model import TaxonName
 class CrossReference(BaseModel, TableMixin):
     __tablename__ = "cross_reference"
     __table_args__ = (
-        Index(f"ix_{__tablename__}_legacy_id_not_deleted", "legacy_id",
+        Index(f"ix_{__tablename__}_legacy_id",
+              "legacy_id",
               unique=True,
               postgresql_where="deleted IS FALSE"),
         {"comment": TABLE_DESCRIPTION},

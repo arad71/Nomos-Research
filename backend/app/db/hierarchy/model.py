@@ -111,8 +111,9 @@ class Hierarchy(BaseModel, TableMixin):
         "rank_name",
     ]
     __table_args__ = (
-        Index(f"ix_{__tablename__}_taxon_name_id_not_deleted", "taxon_name_id",
-            "classification_system_id",
+        Index(f"ix_{__tablename__}_legacy_id",
+              "taxon_name_id",
+              "classification_system_id",
               unique=True,
               postgresql_where="deleted IS FALSE"),
         Index("ix_nodes_path", path, postgresql_using="gist"),
