@@ -37,4 +37,4 @@ class UserRole(BaseModel, TableMixin):
               "user_id",
               "role_id",
               unique=True,
-              postgresql_where="deleted IS FALSE"),)
+              postgresql_where="deleted = FALSE"),)

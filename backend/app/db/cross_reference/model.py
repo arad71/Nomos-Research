@@ -70,6 +70,6 @@ class CrossReference(BaseModel, TableMixin):
         Index(f"ix_{__tablename__}_legacy_id_isactive",
               *legacy_id_columns,
               unique=True,
-              postgresql_where="deleted IS FALSE"),
+              postgresql_where="deleted = FALSE"),
         {"comment": TABLE_DESCRIPTION},
     )

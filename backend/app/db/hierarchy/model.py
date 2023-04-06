@@ -116,7 +116,7 @@ class Hierarchy(BaseModel, TableMixin):
         Index(f"ix_{__tablename__}_legacy_id_isactive",
               *legacy_id_columns,
               unique=True,
-              postgresql_where="deleted IS FALSE"),
+              postgresql_where="deleted = FALSE"),
         Index("ix_nodes_path", path, postgresql_using="gist"),
         {"comment": TABLE_DESCRIPTION},
     )

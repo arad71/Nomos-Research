@@ -51,11 +51,11 @@ class Author(BaseModel, TableMixin):
         Index(f"ix_{__tablename__}_legacy_id_isactive",
               *legacy_id_columns,
               unique=True,
-              postgresql_where="deleted IS FALSE"),
+              postgresql_where="deleted = FALSE"),
         Index(f"ix_{__tablename__}_abbreviation_isactive",
               "abbreviation",
               unique=True,
-              postgresql_where="deleted IS FALSE"),
+              postgresql_where="deleted = FALSE"),
         {"comment": TABLE_DESCRIPTION},
     )
 

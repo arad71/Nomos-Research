@@ -71,11 +71,11 @@ class TaxonRank(BaseModel, TableMixin):
         Index(f"ix_{__tablename__}_legacy_id_isactive",
               *legacy_id_columns,
               unique=True,
-              postgresql_where="deleted IS FALSE"),
+              postgresql_where="deleted = FALSE"),
         Index(f"ix_{__tablename__}_unique_rank_name_in_kingdom_isactive",
               "rank_name",
               "kingdom_id",
               unique=True,
-              postgresql_where="deleted IS FALSE"),
+              postgresql_where="deleted = FALSE"),
         {"comment": TABLE_DESCRIPTION},
     )
