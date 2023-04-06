@@ -15,23 +15,8 @@ from app.db.models import BaseModel, TableMixin
 
 class Citation(BaseModel, TableMixin):
     __tablename__ = "citation"
-    __table_args__ = (
-        Index(f"ix_{__tablename__}_author_id",
-              "author_id",
-              "taxon_name_id",
-              "author_type",
-              unique=True,
-              postgresql_where="deleted IS FALSE"),
-        Index(f"ix_{__tablename__}_legacy_id",
-              "legacy_id_name",
-              "taxon_name_id",
-              "author_type",
-              unique=True,
-              postgresql_where="deleted IS FALSE"),
-        {"comment": TABLE_DESCRIPTION},
-    )
-    name_plural = "citations"
 
+    name_plural = "citations"
     citation_id = Column(Integer, primary_key=True)
     taxon_name_id = Column(
         Integer,
@@ -58,3 +43,18 @@ class Citation(BaseModel, TableMixin):
         doc=AUTHOR_ORDER,
     )
     legacy_id_name = Column(String())
+    legacy_id_columns = ["legacy_id_name", "taxon_name_id", "author_type"]
+    legacy_id_index_string = ",".join(legacy_id_columns)
+    __table_args__ = (
+        Index(f"ix_{__tablename__}_author_id_isactive",
+              "author_id",
+              "taxon_name_id",
+              "author_type",
+              unique=True,
+              postgresql_where="deleted IS FALSE"),
+        Index(f"ix_{__tablename__}_legacy_id_isactive",
+              *legacy_id_columns,
+              unique=True,
+              postgresql_where="deleted IS FALSE"),
+        {"comment": TABLE_DESCRIPTION},
+    )

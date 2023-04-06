@@ -30,19 +30,6 @@ def abbreviation_to_display_name(abbreviation):
 
 class Author(BaseModel, TableMixin):
     __tablename__ = "author"
-    __table_args__ = (
-        # partial unique index to impose unique constraint only on active records
-        # see
-        Index(f"ix_{__tablename__}_legacy_id",
-              "legacy_id_name",
-              unique=True,
-              postgresql_where="deleted IS FALSE"),
-        Index(f"ix_{__tablename__}_abbreviation",
-              "abbreviation",
-              unique=True,
-              postgresql_where="deleted IS FALSE"),
-        {"comment": TABLE_DESCRIPTION},
-    )
 
     author_id = Column(Integer, primary_key=True)
     abbreviation = Column(String(30), nullable=False, comment=AUTHOR)
@@ -54,7 +41,23 @@ class Author(BaseModel, TableMixin):
         "Publication", secondary="publication_author", back_populates="author"
     )
     legacy_id_name = Column(String())
+    legacy_id_columns = ["legacy_id_name"]
+    legacy_id_index_string = ",".join(legacy_id_columns)
     full_name = column_property(func.CONCAT_WS(" ", initials, surname))
+
+    __table_args__ = (
+        # partial unique index to impose unique constraint only on active records
+        # see
+        Index(f"ix_{__tablename__}_legacy_id_isactive",
+              *legacy_id_columns,
+              unique=True,
+              postgresql_where="deleted IS FALSE"),
+        Index(f"ix_{__tablename__}_abbreviation_isactive",
+              "abbreviation",
+              unique=True,
+              postgresql_where="deleted IS FALSE"),
+        {"comment": TABLE_DESCRIPTION},
+    )
 
     @hybrid_property
     def display_name(self):

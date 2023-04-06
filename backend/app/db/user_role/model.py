@@ -33,7 +33,7 @@ class UserRole(BaseModel, TableMixin):
     )
 
     __table_args__ = (
-        Index(f"ix_{__tablename__}_unique_user_role",
+        Index(f"ix_{__tablename__}_unique_user_role_isactive",
               "user_id",
               "role_id",
               unique=True,

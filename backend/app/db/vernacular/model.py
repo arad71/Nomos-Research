@@ -19,15 +19,6 @@ from app.db.vernacular.constants import (
 
 class Vernacular(BaseModel, TableMixin):
     __tablename__ = "vernacular"
-    __table_args__ = (
-        Index(f"ix_{__tablename__}_legacy_id",
-              "taxon_name_id",
-              "vernacular_name",
-              "language",
-              unique=True,
-              postgresql_where="deleted IS FALSE"),
-        {"comment": TABLE_DESCRIPTION},
-    )
 
     vernacular_id = Column(Integer, primary_key=True)
     vernacular_name = Column(
@@ -61,6 +52,15 @@ class Vernacular(BaseModel, TableMixin):
     )
     source = Column(String(50), comment=SOURCE, doc=SOURCE)
     sort_order = Column(Integer)
+    legacy_id_columns = ["taxon_name_id", "vernacular_name", "language"]
+    legacy_id_index_string = ",".join(legacy_id_columns)
+    __table_args__ = (
+        Index(f"ix_{__tablename__}_legacy_id_isactive",
+              *legacy_id_columns,
+              unique=True,
+              postgresql_where="deleted IS FALSE"),
+        {"comment": TABLE_DESCRIPTION},
+    )
 
 
 def before_flush(session, flush_context, instances):

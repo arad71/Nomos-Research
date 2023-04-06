@@ -110,10 +110,11 @@ class Hierarchy(BaseModel, TableMixin):
         "scientific_name",
         "rank_name",
     ]
+    legacy_id_columns = ["taxon_name_id", "classification_system_id"]
+    legacy_id_index_string = ",".join(legacy_id_columns)
     __table_args__ = (
-        Index(f"ix_{__tablename__}_legacy_id",
-              "taxon_name_id",
-              "classification_system_id",
+        Index(f"ix_{__tablename__}_legacy_id_isactive",
+              *legacy_id_columns,
               unique=True,
               postgresql_where="deleted IS FALSE"),
         Index("ix_nodes_path", path, postgresql_using="gist"),

@@ -16,13 +16,6 @@ from app.db.models import BaseModel, TableMixin
 
 class ClassificationSystem(BaseModel, TableMixin):
     __tablename__ = "classification_system"
-    __table_args__ = (
-        Index(f"ix_{__tablename__}_legacy_id",
-              "legacy_id_name",
-              unique=True,
-              postgresql_where="deleted IS FALSE"),
-        {"comment": TABLE_DESCRIPTION},
-    )
 
     classification_system_id = Column(
         Integer,
@@ -46,3 +39,12 @@ class ClassificationSystem(BaseModel, TableMixin):
     )
     sort_order = Column(Integer, comment=SORT_ORDER, doc=SORT_ORDER)
     legacy_id_name = Column(String())
+    legacy_id_columns = ["legacy_id_name"]
+    legacy_id_index_string = ",".join(legacy_id_columns)
+    __table_args__ = (
+        Index(f"ix_{__tablename__}_legacy_id_isactive",
+              *legacy_id_columns,
+              unique=True,
+              postgresql_where="deleted IS FALSE"),
+        {"comment": TABLE_DESCRIPTION},
+    )

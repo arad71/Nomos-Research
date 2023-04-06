@@ -19,13 +19,6 @@ from app.db.taxon_name.model import TaxonName
 
 class CrossReference(BaseModel, TableMixin):
     __tablename__ = "cross_reference"
-    __table_args__ = (
-        Index(f"ix_{__tablename__}_legacy_id",
-              "legacy_id",
-              unique=True,
-              postgresql_where="deleted IS FALSE"),
-        {"comment": TABLE_DESCRIPTION},
-    )
 
     cross_reference_id = Column(
         Integer,
@@ -71,3 +64,12 @@ class CrossReference(BaseModel, TableMixin):
     reference_comments = Column(String(1000), comment=COMMENTS, doc=COMMENTS)
     notes = Column(String(3000))
     legacy_id = Column(Integer)
+    legacy_id_columns = ["legacy_id"]
+    legacy_id_index_string = ",".join(legacy_id_columns)
+    __table_args__ = (
+        Index(f"ix_{__tablename__}_legacy_id_isactive",
+              *legacy_id_columns,
+              unique=True,
+              postgresql_where="deleted IS FALSE"),
+        {"comment": TABLE_DESCRIPTION},
+    )

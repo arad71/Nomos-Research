@@ -10,12 +10,6 @@ from app.db.publication.constants import PUBLICATION_ID, TABLE_DESCRIPTION
 
 class Publication(BaseModel, TableMixin):
     __tablename__ = "publication"
-    __table_args__ = (
-        Index(f"ix_{__tablename__}_legacy_id", "legacy_id",
-              unique=True,
-              postgresql_where="deleted IS FALSE"),
-        {"comment": TABLE_DESCRIPTION},
-    )
 
     publication_id = Column(
         Integer,
@@ -68,6 +62,15 @@ class Publication(BaseModel, TableMixin):
         backref=backref("duplicates"),
     )
     legacy_id = Column(Integer)
+    legacy_id_columns = ["legacy_id"]
+    legacy_id_index_string = ",".join(legacy_id_columns)
+    __table_args__ = (
+        Index(f"ix_{__tablename__}_legacy_id_isactive",
+              *legacy_id_columns,
+              unique=True,
+              postgresql_where="deleted IS FALSE"),
+        {"comment": TABLE_DESCRIPTION},
+    )
 
     @hybrid_property
     def author_names(self):

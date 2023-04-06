@@ -18,19 +18,6 @@ from app.db.taxon_rank.constants import (
 
 class TaxonRank(BaseModel, TableMixin):
     __tablename__ = "taxon_rank"
-    __table_args__ = (
-        Index(f"ix_{__tablename__}_legacy_id",
-              "legacy_id",
-              "kingdom_id",
-              unique=True,
-              postgresql_where="deleted IS FALSE"),
-        Index(f"ix_{__tablename__}_unique_rank_name_in_kingdom",
-              "rank_name",
-              "kingdom_id",
-              unique=True,
-              postgresql_where="deleted IS FALSE"),
-        {"comment": TABLE_DESCRIPTION},
-    )
 
     taxon_rank_id = Column(Integer, primary_key=True)
     kingdom_id = Column(
@@ -78,3 +65,17 @@ class TaxonRank(BaseModel, TableMixin):
     uninomial = Column(Boolean, nullable=False, default=False)
     legacy_id = Column(Integer)
     kingdom_name = association_proxy("kingdom", "kingdom_name")
+    legacy_id_columns = ["legacy_id", "kingdom_id"]
+    legacy_id_index_string = ",".join(legacy_id_columns)
+    __table_args__ = (
+        Index(f"ix_{__tablename__}_legacy_id_isactive",
+              *legacy_id_columns,
+              unique=True,
+              postgresql_where="deleted IS FALSE"),
+        Index(f"ix_{__tablename__}_unique_rank_name_in_kingdom_isactive",
+              "rank_name",
+              "kingdom_id",
+              unique=True,
+              postgresql_where="deleted IS FALSE"),
+        {"comment": TABLE_DESCRIPTION},
+    )

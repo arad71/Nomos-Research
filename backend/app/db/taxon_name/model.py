@@ -48,15 +48,7 @@ from app.db.taxon_name.constants import (
 
 class TaxonName(BaseModel, TableMixin):
     __tablename__ = "taxon_name"
-    __table_args__ = (
-        Index(f"ix_{__tablename__}_legacy_id",
-              "legacy_id",
-              unique=True,
-              postgresql_where="deleted IS FALSE"),
-        {"comment": TABLE_DESCRIPTION},
-    )
     name_plural = "taxon_names"
-
     taxon_name_id = Column(Integer, primary_key=True, comment=TAXON_NAME_ID)
     kingdom_id = Column(
         Integer,
@@ -174,6 +166,16 @@ class TaxonName(BaseModel, TableMixin):
     admin_comment = Column(String)
     kingdom_name = association_proxy("kingdom", "kingdom_name")
     rank_name = association_proxy("taxon_rank", "rank_name")
+
+    legacy_id_columns = ["legacy_id"]
+    legacy_id_index_string = ",".join(legacy_id_columns)
+    __table_args__ = (
+        Index(f"ix_{__tablename__}_legacy_id_isactive",
+              *legacy_id_columns,
+              unique=True,
+              postgresql_where="deleted IS FALSE"),
+        {"comment": TABLE_DESCRIPTION},
+    )
 
     @hybrid_property
     def path(self):
