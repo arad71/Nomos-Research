@@ -37,7 +37,12 @@ export const AuthorReferenceManyGrid = (props: {
       {...props.props}
     >
       <Datagrid empty={<Empty />} className={globalClasses.equalColumnWidth}>
-        <ReferenceField source={props.source} reference="authors" allowEmpty>
+        <ReferenceField
+          source={props.source}
+          reference="authors"
+          allowEmpty
+          link="show"
+        >
           <TextField source="abbreviation" />
         </ReferenceField>
         <SelectField source="author_type" choices={AuthorType} />

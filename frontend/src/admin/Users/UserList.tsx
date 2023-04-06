@@ -44,7 +44,7 @@ export const UserList: FC = (props) => {
             <ChipField source="name" />
           </SingleFieldList>
         </ReferenceArrayField>
-        <ReferenceField source="updated_by" reference="users">
+        <ReferenceField source="updated_by" reference="users" link="show">
           <TextField source="full_name" />
         </ReferenceField>
         <DateField source="updated_on" />
