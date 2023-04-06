@@ -30,6 +30,7 @@ import ResetPreferenceButton from '../shared/ResetPreferenceButton';
 import { DefaultPagination, useCanBulkDelete } from '../shared';
 import { MAX_RESULTS } from '../../config';
 import NestedLinkField from '../shared/NestedLinkField';
+import BatchExportButton from '../shared/BatchExportButton';
 
 const postListColumns = {
   id: <TextField source="id" />,
@@ -241,6 +242,11 @@ const excludeColumns = Object.keys(postListColumns).filter((name: string) => {
 });
 const TAXON_NAMES_PREFERENCE = 'taxon_names.list.columns';
 
+const CustomExportButton = (props) => (
+  <ExportButton {...props}>
+    <BatchExportButton />
+  </ExportButton>
+);
 const Actions = () => (
   <TopToolbar>
     <FilterButton />
@@ -257,7 +263,8 @@ const Actions = () => (
       <CreateButton />
     </WithPermissions>
     <WithPermissions resource="taxon_names" action="export">
-      <ExportButton maxResults={MAX_RESULTS} />
+      {/*<ExportButton maxResults={MAX_RESULTS} />*/}
+      <BatchExportButton />
     </WithPermissions>
   </TopToolbar>
 );
