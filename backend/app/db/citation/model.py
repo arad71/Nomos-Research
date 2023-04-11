@@ -44,7 +44,6 @@ class Citation(BaseModel, TableMixin):
     )
     legacy_id_name = Column(String())
     legacy_id_columns = ["legacy_id_name", "taxon_name_id", "author_type"]
-    legacy_id_index_string = ",".join(legacy_id_columns)
     __table_args__ = (
         Index(
             f"ix_{__tablename__}_author_id_isactive",

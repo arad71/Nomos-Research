@@ -33,7 +33,6 @@ class User(BaseModel, TableMixin):
     hashed_password = Column(String, nullable=False)
     legacy_id_name = Column(String())
     legacy_id_columns = ["legacy_id_name"]
-    legacy_id_index_string = ",".join(legacy_id_columns)
     __table_args__ = (
         Index(
             f"ix_{__tablename__}_legacy_id_isactive",

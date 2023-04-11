@@ -23,12 +23,6 @@ def abbreviation_to_display_name(abbreviation):
     return display_name
 
 
-# https://stackoverflow.com/questions/8289100/create-unique-constraint-with-null-columns
-# https://stackoverflow.com/questions/27976683/creating-partial-unique-index-with-sqlalchemy-on-postgres
-# https://github.com/sqlalchemy/alembic/issues/750
-#
-
-
 class Author(BaseModel, TableMixin):
     __tablename__ = "author"
 
@@ -43,12 +37,9 @@ class Author(BaseModel, TableMixin):
     )
     legacy_id_name = Column(String())
     legacy_id_columns = ["legacy_id_name"]
-    legacy_id_index_string = ",".join(legacy_id_columns)
     full_name = column_property(func.CONCAT_WS(" ", initials, surname))
 
     __table_args__ = (
-        # partial unique index to impose unique constraint only on active records
-        # see
         Index(
             f"ix_{__tablename__}_legacy_id_isactive",
             *legacy_id_columns,
