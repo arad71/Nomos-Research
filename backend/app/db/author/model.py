@@ -22,6 +22,7 @@ def abbreviation_to_display_name(abbreviation):
         display_name += "."
     return display_name
 
+
 # https://stackoverflow.com/questions/8289100/create-unique-constraint-with-null-columns
 # https://stackoverflow.com/questions/27976683/creating-partial-unique-index-with-sqlalchemy-on-postgres
 # https://github.com/sqlalchemy/alembic/issues/750
@@ -48,14 +49,18 @@ class Author(BaseModel, TableMixin):
     __table_args__ = (
         # partial unique index to impose unique constraint only on active records
         # see
-        Index(f"ix_{__tablename__}_legacy_id_isactive",
-              *legacy_id_columns,
-              unique=True,
-              postgresql_where="deleted = FALSE"),
-        Index(f"ix_{__tablename__}_abbreviation_isactive",
-              "abbreviation",
-              unique=True,
-              postgresql_where="deleted = FALSE"),
+        Index(
+            f"ix_{__tablename__}_legacy_id_isactive",
+            *legacy_id_columns,
+            unique=True,
+            postgresql_where="deleted = FALSE",
+        ),
+        Index(
+            f"ix_{__tablename__}_abbreviation_isactive",
+            "abbreviation",
+            unique=True,
+            postgresql_where="deleted = FALSE",
+        ),
         {"comment": TABLE_DESCRIPTION},
     )
 

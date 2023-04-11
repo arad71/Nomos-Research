@@ -67,9 +67,11 @@ class CrossReference(BaseModel, TableMixin):
     legacy_id_columns = ["legacy_id"]
     legacy_id_index_string = ",".join(legacy_id_columns)
     __table_args__ = (
-        Index(f"ix_{__tablename__}_legacy_id_isactive",
-              *legacy_id_columns,
-              unique=True,
-              postgresql_where="deleted = FALSE"),
+        Index(
+            f"ix_{__tablename__}_legacy_id_isactive",
+            *legacy_id_columns,
+            unique=True,
+            postgresql_where="deleted = FALSE",
+        ),
         {"comment": TABLE_DESCRIPTION},
     )

@@ -1,8 +1,8 @@
 import pytest
-
-from app.db.author.model import Author
-from app.db.author.crud import AuthorCrud
 from sqlalchemy.exc import IntegrityError
+
+from app.db.author.crud import AuthorCrud
+from app.db.author.model import Author
 
 
 def test_multiple_soft_deletes(test_db, test_superuser, test_author):
@@ -21,39 +21,45 @@ def test_multiple_soft_deletes(test_db, test_superuser, test_author):
     new_author4 = Author(abbreviation=abbreviation, surname="to fail db entry")
 
     # confirm test entry does not exist
-    query_empty, _ = AuthorCrud.get_items(test_db, test_superuser,
-                                                    list_filter=active_filter_conditions)
+    query_empty, _ = AuthorCrud.get_items(
+        test_db, test_superuser, list_filter=active_filter_conditions
+    )
     assert len(query_empty) == 0
-    query_also_empty, _ = AuthorCrud.get_items(test_db, test_superuser,
-                                                    list_filter=deleted_filter_conditions)
+    query_also_empty, _ = AuthorCrud.get_items(
+        test_db, test_superuser, list_filter=deleted_filter_conditions
+    )
     assert len(query_also_empty) == 0
 
     # add first occurrence entry and validate
     test_db.add(new_author1)
     test_db.commit()
-    query_first_author, _ = AuthorCrud.get_items(test_db, test_superuser,
-                                               list_filter=active_filter_conditions)
+    query_first_author, _ = AuthorCrud.get_items(
+        test_db, test_superuser, list_filter=active_filter_conditions
+    )
     assert len(query_first_author) == 1
 
     # delete first occurrence and validate
     query_first_author[0].deleted = True
     test_db.commit()
-    query_deleted_author, _ = AuthorCrud.get_items(test_db, test_superuser,
-                                               list_filter=deleted_filter_conditions)
+    query_deleted_author, _ = AuthorCrud.get_items(
+        test_db, test_superuser, list_filter=deleted_filter_conditions
+    )
     assert len(query_deleted_author) == 1
 
     # add second occurrence and validate
     test_db.add(new_author2)
     test_db.commit()
-    query_2nd_author, _ = AuthorCrud.get_items(test_db, test_superuser,
-                                                   list_filter=active_filter_conditions)
+    query_2nd_author, _ = AuthorCrud.get_items(
+        test_db, test_superuser, list_filter=active_filter_conditions
+    )
     assert len(query_2nd_author) == 1
 
     # delete second occurrence and validate
     query_2nd_author[0].deleted = True
     test_db.commit()
-    query_two_deleted_authors, _ = AuthorCrud.get_items(test_db, test_superuser,
-                                               list_filter=deleted_filter_conditions)
+    query_two_deleted_authors, _ = AuthorCrud.get_items(
+        test_db, test_superuser, list_filter=deleted_filter_conditions
+    )
     assert len(query_two_deleted_authors) == 2
 
     # add third occurrence, attempt to add fourth occurrence as duplicate active entry

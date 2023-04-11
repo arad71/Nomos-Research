@@ -1,4 +1,4 @@
-from sqlalchemy import Column, ForeignKey, Integer, Index
+from sqlalchemy import Column, ForeignKey, Index, Integer
 from sqlalchemy.orm import backref, relationship
 
 from app.db.models import BaseModel, TableMixin
@@ -33,8 +33,11 @@ class UserRole(BaseModel, TableMixin):
     )
 
     __table_args__ = (
-        Index(f"ix_{__tablename__}_unique_user_role_isactive",
-              "user_id",
-              "role_id",
-              unique=True,
-              postgresql_where="deleted = FALSE"),)
+        Index(
+            f"ix_{__tablename__}_unique_user_role_isactive",
+            "user_id",
+            "role_id",
+            unique=True,
+            postgresql_where="deleted = FALSE",
+        ),
+    )

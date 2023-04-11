@@ -7,8 +7,8 @@ import traceback
 from dateutil.relativedelta import relativedelta
 from loguru import logger
 from pydantic import ValidationError
-from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy import text
+from sqlalchemy.dialects.postgresql import insert as pg_insert
 
 from app.core.config import settings
 from app.db.taxon_rank.model import TaxonRank
@@ -113,7 +113,7 @@ class DataImportBase:
             insert_statement = insert_statement.on_conflict_do_update(
                 # constraint=self.upsert_constraint,
                 index_elements=self.data_model.legacy_id_columns,
-                index_where=text('deleted = False'),
+                index_where=text("deleted = False"),
                 set_={
                     k: getattr(insert_statement.excluded, k) for k in self.update_cols
                 },
@@ -129,8 +129,8 @@ class DataImportBase:
             insert_statement = insert_statement.on_conflict_do_update(
                 # constraint=upsert_constraint,
                 index_elements=self.data_model.legacy_id_columns,
-                index_where=text('deleted = False'),
-                set_=data
+                index_where=text("deleted = False"),
+                set_=data,
             )
         self.db.execute(insert_statement)
         self.db.commit()

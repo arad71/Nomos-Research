@@ -11,7 +11,9 @@ class ImportInformalGroup(DataImportBase):
     def __init__(self, db, current_user):
         super().__init__(db, current_user)
         self.data_model = InformalGroupModel
-        self.upsert_constraint = f"ix_{InformalGroupModel.__tablename__}_legacy_id_isactive"
+        self.upsert_constraint = (
+            f"ix_{InformalGroupModel.__tablename__}_legacy_id_isactive"
+        )
         self.update_cols = (
             "taxon_name_id",
             "classification_system_id",
