@@ -21,7 +21,7 @@ TEST_DATA = [
     (None, "Cde.", "abcdefg", "abcdefg"),
     ("A.B.", None, "abcdefgh", "abcdefgh"),
     (None, None, "A B C", "A B C"),
-    (None, None, "A. B. C.", "A.B. C.")
+    (None, None, "A. B. C.", "A.B. C."),
 ]
 
 NOW = datetime.datetime.utcnow()
