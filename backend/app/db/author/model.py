@@ -15,10 +15,18 @@ from app.db.models import BaseModel, TableMixin
 
 
 def abbreviation_to_display_name(abbreviation):
-    abbreviation_has_end_dot = abbreviation.endswith(".")
-    abbreviation = abbreviation.strip(".").replace(" ", "")
-    display_name = ". ".join(abbreviation.rsplit(".", 1))
-    if abbreviation_has_end_dot:
+    """
+    1. Removes leading and trailing white space
+    2. Does not alter a trailing full-stop
+    2. Replaces multiple spaces with single space if present
+    3. Removes spaces after full-stops in the abbreviation, except the last full-stop
+    """
+    display_name = abbreviation
+    display_name = display_name.strip().strip(".")
+    display_name = " ".join([s for s in display_name.split(" ") if s])
+    display_name = display_name.replace(". ", ".")
+    display_name = ". ".join(display_name.rsplit(".", 1))
+    if abbreviation.endswith("."):
         display_name += "."
     return display_name
 
@@ -44,7 +52,16 @@ class Author(BaseModel, TableMixin):
 
     @hybrid_property
     def display_name(self):
+        """Return the display name according to specific rules
+
+        When Surname and Initials both exist, return "Initials Surname" with leading and
+        trailing whitespace removed from each element, and a single space between the
+        two elements.
+
+        When either Surname or Initials are absent, apply formatting rules to the
+        abbreviation element and return the result.
+        """
         if self.surname and self.initials:
-            return f"{self.initials} {self.surname}"
+            return f"{self.initials.strip()} {self.surname.strip()}"
         elif self.abbreviation:
             return abbreviation_to_display_name(self.abbreviation)
