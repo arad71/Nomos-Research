@@ -14,7 +14,7 @@ SQLAlchemy==1.4.39
 uvicorn==0.21.1
 passlib==1.7.4
 pandas==1.5.3
-openpyxl==3.0.10
+openpyxl==3.1.2
 bcrypt==4.0.1
 sqlalchemy-utils==0.38.3
 sqlalchemy_mixins==1.5.3
