@@ -14,7 +14,7 @@ from app.db.author.constants import (
 from app.db.models import BaseModel, TableMixin
 
 
-def abbreviation_to_display_name(abbreviation):
+def abbreviation_to_display_name(abbreviation: str) -> str:
     """
     1. Removes leading and trailing white space
     2. Does not alter a trailing full-stop
@@ -26,7 +26,7 @@ def abbreviation_to_display_name(abbreviation):
     display_name = " ".join([s for s in display_name.split(" ") if s])
     display_name = display_name.replace(". ", ".")
     display_name = ". ".join(display_name.rsplit(".", 1))
-    if abbreviation.endswith("."):
+    if abbreviation.strip().endswith("."):
         display_name += "."
     return display_name
 
@@ -51,7 +51,7 @@ class Author(BaseModel, TableMixin):
     full_name = column_property(func.CONCAT_WS(" ", initials, surname))
 
     @hybrid_property
-    def display_name(self):
+    def display_name(self) -> str:
         """Return the display name according to specific rules
 
         When Surname and Initials both exist, return "Initials Surname" with leading and
