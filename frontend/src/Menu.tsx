@@ -22,7 +22,7 @@ const Menu = () => {
         icon={<DashboardIcon />}
         to="/"
       />
-      <MenuItem name="Nomos" label="Nomos">
+      <MenuItem name="Nomos" label="Nomos" icon={<WebIcon />}>
         <MenuItem
           name="Taxon Names"
           label="Taxon Names"
@@ -42,7 +42,7 @@ const Menu = () => {
           to="/authors"
         />
       </MenuItem>
-      <MenuItem name="Admin" label="Admin">
+      <MenuItem name="Admin" label="Admin" icon={<SettingsIcon />}>
         <MenuItem
           name="Citations"
           label="Citations"
