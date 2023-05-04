@@ -169,6 +169,7 @@ const postListColumns = {
       source="publication_id"
       reference="publications"
       sortBy="publication___title"
+      link="show"
     >
       <TextField source="title" />
     </ReferenceField>
@@ -203,6 +204,7 @@ const postListColumns = {
       source="family_nid"
       reference="taxon_names"
       sortBy="family"
+      link="show"
     >
       <RichTextField source="formatted_scientific_name" />
     </ReferenceField>
