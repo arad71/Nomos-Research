@@ -11,6 +11,8 @@ import CompareArrowsIcon from '@material-ui/icons/CompareArrows';
 import CallSplitIcon from '@material-ui/icons/CallSplit';
 import MenuBookIcon from '@material-ui/icons/MenuBook';
 import ChangeHistoryIcon from '@material-ui/icons/ChangeHistory';
+import WebIcon from '@material-ui/icons/Web';
+import SettingsIcon from '@material-ui/icons/Settings';
 import GroupWorkIcon from '@material-ui/icons/GroupWork';
 import LinkIcon from '@material-ui/icons/Link';
 const Menu = () => {
