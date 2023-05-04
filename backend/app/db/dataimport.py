@@ -7,6 +7,7 @@ import traceback
 from dateutil.relativedelta import relativedelta
 from loguru import logger
 from pydantic import ValidationError
+from sqlalchemy import text
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 
 from app.core.config import settings
@@ -110,7 +111,9 @@ class DataImportBase:
         # TODO should we add a variable here to allow update?
         if self.upsert_constraint:
             insert_statement = insert_statement.on_conflict_do_update(
-                constraint=self.upsert_constraint,
+                # constraint=self.upsert_constraint,
+                index_elements=self.data_model.legacy_id_columns,
+                index_where=text("deleted = False"),
                 set_={
                     k: getattr(insert_statement.excluded, k) for k in self.update_cols
                 },
@@ -124,7 +127,10 @@ class DataImportBase:
         # TODO should we add a variable here to allow update?
         if upsert_constraint:
             insert_statement = insert_statement.on_conflict_do_update(
-                constraint=upsert_constraint, set_=data
+                # constraint=upsert_constraint,
+                index_elements=self.data_model.legacy_id_columns,
+                index_where=text("deleted = False"),
+                set_=data,
             )
         self.db.execute(insert_statement)
         self.db.commit()

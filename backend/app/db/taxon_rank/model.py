@@ -1,7 +1,7 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import backref, relationship
-from sqlalchemy.schema import UniqueConstraint
+from sqlalchemy.schema import Index
 from sqlalchemy.types import Enum
 
 from app.db.models import BaseModel, TableMixin
@@ -18,13 +18,6 @@ from app.db.taxon_rank.constants import (
 
 class TaxonRank(BaseModel, TableMixin):
     __tablename__ = "taxon_rank"
-    __table_args__ = (
-        UniqueConstraint(
-            "legacy_id", "kingdom_id", name=f"uc_{ __tablename__}_legacy_id"
-        ),
-        UniqueConstraint("kingdom_id", "rank_name", name="unique_rank_name_in_kingdom"),
-        {"comment": TABLE_DESCRIPTION},
-    )
 
     taxon_rank_id = Column(Integer, primary_key=True)
     kingdom_id = Column(
@@ -72,3 +65,20 @@ class TaxonRank(BaseModel, TableMixin):
     uninomial = Column(Boolean, nullable=False, default=False)
     legacy_id = Column(Integer)
     kingdom_name = association_proxy("kingdom", "kingdom_name")
+    legacy_id_columns = ["legacy_id", "kingdom_id"]
+    __table_args__ = (
+        Index(
+            f"ix_{__tablename__}_legacy_id_isactive",
+            *legacy_id_columns,
+            unique=True,
+            postgresql_where="deleted = FALSE",
+        ),
+        Index(
+            f"ix_{__tablename__}_unique_rank_name_in_kingdom_isactive",
+            "rank_name",
+            "kingdom_id",
+            unique=True,
+            postgresql_where="deleted = FALSE",
+        ),
+        {"comment": TABLE_DESCRIPTION},
+    )
