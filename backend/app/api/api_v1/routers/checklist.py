@@ -3,7 +3,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, Query, Response
 from fastapi_key_auth import AuthorizerDependency
-from sqlalchemy import and_, func, or_, select
+from sqlalchemy import and_, func, or_, select, case
 from sqlalchemy.orm import Session, aliased
 
 from app.db.checklist.schema import CheckList
@@ -32,7 +32,7 @@ authorizer = AuthorizerDependency(key_pattern="API_KEY_")
 async def curation_checklist(
     response: Response,
     validated: Optional[bool] = None,
-    limit: Optional[int] = Query(default=10, ge=0, le=1000),
+    limit: Optional[int] = Query(default=10, ge=0, le=10000),
     offset: Optional[int] = 0,
     current: Optional[bool] = None,
     anyUpdated: Optional[datetime] = None,
@@ -41,16 +41,17 @@ async def curation_checklist(
     acceptedNameUpdated: Optional[datetime] = None,
     db: Session = Depends(get_db),
 ):
-    """Get a list of taxonomic names in the database, with optional filters.
+    """
+    Get a list of taxonomic names in the database, with optional filters.
 
     This endpoint retrieves a list of taxonomic names in the database, with various
-     optional filters available. By default, the endpoint will return the first 10
-     results. You can control the number of results returned using the `limit`
-      parameter, and the starting point using the `offset` parameter.
+    optional filters available. By default, the endpoint will return the first 10
+    results. You can control the number of results returned using the `limit`
+    parameter, and the starting point using the `offset` parameter.
 
     You can filter the results based on a number of criteria, such as whether the
-     taxonomic name has been validated or is current. You can also filter the results by
-      the date when the taxonomic name or related data was last updated.
+    taxonomic name has been validated or is current. You can also filter the results by
+    the date when the taxonomic name or related data was last updated.
 
     To use this endpoint, you must provide an API key in the request headers. The key
     should be stored in an environment variable named `API_KEY_XXX`, where `XXX` is a
@@ -108,8 +109,11 @@ async def curation_checklist(
             original_name.author.label("scientificNameAuthorship"),
             original_name.canonical_name.label("canonicalName"),
             original_name.canonical_name_without_rank.label("canonicalNameWithoutRank"),
+            original_name.uninomial.label("uninomial"),
+            original_name.specific_epithet.label("specificEpithet"),
+            original_name.infraspecific_epithet.label("infraspecificEpithet"),
             original_name.naturalised_status.label("establishmentMeans"),
-            vernacular.c.vernacular_names.label("vernacularNames"),
+            vernacular.c.vernacular_names.label("vernacularName"),
             informal_group.c.informal_groups.label("informalGroups"),
             original_name.is_current.label("isCurrent"),
             TaxonRank.rank_name.label("taxonRank"),
@@ -133,6 +137,7 @@ async def curation_checklist(
             accepted_name.updated_on.label("acceptedNameUpdated"),
             accepted_name.taxon_name_id.label("acceptedNameUsageId"),
             cross_reference_counts.c.count.label("relatedNamesCount"),
+            kingdom.kingdom_name.label("kingdom"),
         )
         .join(
             CrossReference,
@@ -171,7 +176,6 @@ async def curation_checklist(
             )
         )
     )
-    statement = await add_higher_ranks_to_statement(original_name, statement)
 
     if updated:
         statement = statement.filter(original_name.updated_on >= updated)
@@ -192,6 +196,7 @@ async def curation_checklist(
     statement = statement.filter(original_name.deleted == False)  # noqa
     if validated is not None:
         statement = statement.filter(original_name.validated == validated)
+    statement = await add_higher_ranks_to_statement(original_name, statement)
     count_query = statement.with_only_columns(func.count(original_name.taxon_name_id))
     count = db.execute(count_query).scalar_one()
     response.headers["Content-Range"] = f"{offset}-{limit - 1 + offset}/{count}"
@@ -225,80 +230,75 @@ async def add_higher_ranks_to_statement(
         "subfamily",
         "genus",
         "subgenus",
+        "section",
+        "series",
         "species",
         "subspecies",
         "variety",
         "form",
     ]
-    # Loop through higher taxonomic ranks and add subqueries to the SQL statement
-    for higher_rank in higher_ranks:
-        statement = await add_higher_rank_subquery(
-            statement, original_name, higher_rank
-        )
-    # Return the modified SQL select statement
+
+    statement = await add_higher_rank_subquery_pivot(
+        statement, original_name, higher_ranks
+    )
     return statement
 
 
-async def add_higher_rank_subquery(
-    statement: select, original_name: TaxonName, higher_rank: str
+async def add_higher_rank_subquery_pivot(
+    statement: select, original_name: TaxonName, higher_ranks: list[str]
 ) -> select:
     """
-    Adds a subquery to the given `statement` that joins the `Hierarchy`, `TaxonName`,
-    and `TaxonRank` tables to return the canonical name and ID of the given
-    `higher_rank` for each taxon in the hierarchy containing `original_name`. The
-     subquery is added to the `statement` using an outer join.
+    This function takes in a select statement and modifies it to include a subquery
+    for the specified higher ranks.
 
-    :param statement: The SQLAlchemy `select` statement to add the subquery to.
+    :param statement: A SQLAlchemy select statement to be modified.
     :type statement: select
-    :param original_name: The original taxon name to find the hierarchy containing it.
+    :param original_name: A TaxonName instance representing the taxon of interest.
     :type original_name: TaxonName
-    :param higher_rank: The higher rank to find the canonical name and ID for.
-    :type higher_rank: str
-    :return: The modified SQLAlchemy `select` statement.
-    :rtype: select"""
-    hierarchy = aliased(Hierarchy)
+    :param higher_ranks: A list of string values representing the higher ranks to be
+    included.
+    :type higher_ranks: list[str]
+
+    :return: A SQLAlchemy select statement that has been modified to include a subquery
+    pivot for the specified higher ranks.
+    :rtype: select
+    """
+    h = aliased(Hierarchy)
     ancestor = aliased(Hierarchy)
     ancestor_name = aliased(TaxonName)
-    taxon_rank = aliased(TaxonRank)
-    higher_rank_id = higher_rank + "_id"
+    ancestor_rank = aliased(TaxonRank)
+    columns = [h.taxon_name_id]
+    for higher_rank in higher_ranks:
+        columns.append(
+            func.min(
+                case(
+                    [
+                        (
+                            ancestor_rank.rank_name == higher_rank.capitalize(),
+                            ancestor_name.canonical_name,
+                        )
+                    ],
+                    else_=None,
+                )
+            ).label(higher_rank)
+        )
     subquery = (
-        select(
-            hierarchy.taxon_name_id,
-            ancestor_name.canonical_name.label(higher_rank),
-            ancestor.taxon_name_id.label(higher_rank_id),
-        )
-        .join(
-            ancestor,
-            ancestor.path.ancestor_of(hierarchy.path),
-        )
-        .join(
-            ancestor_name,
-            ancestor.taxon_name_id == ancestor_name.taxon_name_id,
-        )
-        .join(
-            taxon_rank,
-            and_(
-                ancestor_name.rank_id == taxon_rank.taxon_rank_id,
-                taxon_rank.rank_name == higher_rank.capitalize(),
-            ),
-        )
-        .filter(
-            and_(
-                hierarchy.deleted == False,  # noqa: E712 SQLAlchemy requires == comp.
-                ancestor.deleted == False,  # noqa: E712
-                ancestor_name.deleted == False,  # noqa: E712
-                taxon_rank.deleted == False,  # noqa: E712
-            )
-        )
-        .subquery(higher_rank)
-    )
+        select(*columns)
+        .join(ancestor, ancestor.path.ancestor_of(h.path))
+        .join(ancestor_name, ancestor.taxon_name_id == ancestor_name.taxon_name_id)
+        .join(ancestor_rank, ancestor_name.rank_id == ancestor_rank.taxon_rank_id)
+        .filter(h.deleted == False)
+        .filter(ancestor.deleted == False)
+        .filter(ancestor_name.deleted == False)
+        .filter(ancestor_rank.deleted == False)
+        .group_by(h.taxon_name_id)
+    ).subquery()
     statement = statement.outerjoin(
         subquery,
         onclause=subquery.c.taxon_name_id == original_name.taxon_name_id,
-    ).add_columns(
-        subquery.c[higher_rank],
-        subquery.c[higher_rank_id].label(higher_rank + "Id"),
     )
+    for higher_rank in higher_ranks:
+        statement = statement.add_columns(subquery.c[higher_rank])
     return statement
 
 
@@ -306,7 +306,8 @@ async def cross_reference_counts_subquery() -> select:
     """
     Create a subquery that returns the count of cross-references for each old name ID.
 
-    :return: A SQLAlchemy select statement representing the subquery."""
+    :return: A SQLAlchemy select statement representing the subquery.
+    """
     cross_reference_counts = (
         select(
             CrossReference.old_name_id.label("old_name_id"),
@@ -327,7 +328,8 @@ async def vernacular_subquery() -> select:
     Create a subquery to get a list of vernacular names for each taxon name.
 
     :return: A SQAlchemy select statement representing the subquery.
-    :rtype: select"""
+    :rtype: select
+    """
     vernacular = (
         select(
             Vernacular.taxon_name_id,
@@ -345,14 +347,15 @@ async def vernacular_subquery() -> select:
     return vernacular
 
 
-async def informal_group_subquery():
+async def informal_group_subquery() -> select:
     """
     Returns a subquery that joins the `InformalGroup` and `ClassificationSystem` tables
     to aggregate the informal groups of a given taxon name as an array. The resulting
     subquery can be used to join with a SQLAlchemy `select` statement.
 
     :return: A SQLAlchemy `select` statement.
-    :rtype: :class:`sqlalchemy.sql.selectable.Select`"""
+    :rtype: :class:`sqlalchemy.sql.selectable.Select`
+    """
     informal_group = (
         select(
             InformalGroup.taxon_name_id,

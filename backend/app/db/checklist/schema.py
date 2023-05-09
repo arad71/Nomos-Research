@@ -10,8 +10,11 @@ class ChecklistName(BaseModel):
     scientificNameAuthorship: Optional[str]
     canonicalName: str
     canonicalNameWithoutRank: str
+    uninomial: Optional[str]
+    specificEpithet: Optional[str]
+    infraspecificEpithet: Optional[str]
     establishmentMeans: Optional[str]
-    vernacularNames: Optional[List[str]]
+    vernacularName: Optional[List[str]]
     informalGroups: Optional[List[str]]
     isCurrent: bool
     taxonRank: str
@@ -32,29 +35,21 @@ class ChecklistName(BaseModel):
     acceptedNameUsageId: Optional[int]
     relatedNamesCount: Optional[int]
     kingdom: Optional[str]
-    kingdomId: Optional[str]
     division: Optional[str]
-    divisionId: Optional[int]
     phylum: Optional[str]
-    phylumId: Optional[int]
     class_: Optional[str] = Field(None, alias="class")
-    classId: Optional[int]
     subclass: Optional[str]
-    subclassId: Optional[int]
     order: Optional[str]
-    orderId: Optional[int]
     suborder: Optional[str]
-    suborderId: Optional[int]
     family: Optional[str]
-    familyId: Optional[int]
     subfamily: Optional[str]
-    subfamilyId: Optional[int]
     genus: Optional[str]
-    genusId: Optional[int]
     subgenus: Optional[str]
-    subgenusId: Optional[int]
+    section: Optional[str]
+    series: Optional[str]
     species: Optional[str]
-    speciesId: Optional[int]
+    variety: Optional[str]
+    form: Optional[str]
 
 
 CheckList = List[ChecklistName]
