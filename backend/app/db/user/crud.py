@@ -19,7 +19,11 @@ class UserCrud(crud.Crud):
 
     @classmethod
     def get_user_by_email(cls, db: Session, email: str) -> User:
-        return db.query(User).filter(User.email == email).one_or_none()
+        return (
+            db.query(User)
+            .filter(User.email == email, User.deleted == False)
+            .one_or_none()
+        )
 
     @classmethod
     def create_item(
