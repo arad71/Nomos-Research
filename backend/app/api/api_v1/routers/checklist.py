@@ -275,7 +275,11 @@ async def add_higher_rank_subquery_pivot(
                     [
                         (
                             ancestor_rank.rank_name == higher_rank.capitalize(),
-                            ancestor_name.canonical_name,
+                            func.coalesce(
+                                ancestor_name.infraspecific_epithet,
+                                ancestor_name.specific_epithet,
+                                ancestor_name.uninomial,
+                            ),
                         )
                     ],
                     else_=None,
