@@ -291,10 +291,10 @@ async def add_higher_rank_subquery_pivot(
         .join(ancestor, ancestor.path.ancestor_of(h.path))
         .join(ancestor_name, ancestor.taxon_name_id == ancestor_name.taxon_name_id)
         .join(ancestor_rank, ancestor_name.rank_id == ancestor_rank.taxon_rank_id)
-        .filter(h.deleted == False)
-        .filter(ancestor.deleted == False)
-        .filter(ancestor_name.deleted == False)
-        .filter(ancestor_rank.deleted == False)
+        .filter(h.deleted == False)  # noqa: E712 == required for SQLAlchemy comparator
+        .filter(ancestor.deleted == False)  # noqa: E712
+        .filter(ancestor_name.deleted == False)  # noqa: E712
+        .filter(ancestor_rank.deleted == False)  # noqa: E712
         .group_by(h.taxon_name_id)
     ).subquery()
     statement = statement.outerjoin(
