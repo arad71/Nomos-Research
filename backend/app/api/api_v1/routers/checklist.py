@@ -24,7 +24,7 @@ authorizer = AuthorizerDependency(key_pattern="API_KEY_")
 @r.get(
     "/curation",
     response_model=CheckList,
-    # response_model_exclude_none=True,
+    response_model_exclude_none=True,
     dependencies=[
         Depends(authorizer),
     ],
