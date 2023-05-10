@@ -33,7 +33,7 @@ async def curation_checklist(
     response: Response,
     validated: Optional[bool] = None,
     limit: Optional[int] = Query(default=10, ge=0, le=10000),
-    offset: Optional[int] = 0,
+    offset: Optional[int] = Query(default=0, ge=0),
     current: Optional[bool] = None,
     anyUpdated: Optional[datetime] = None,
     updated: Optional[datetime] = None,
