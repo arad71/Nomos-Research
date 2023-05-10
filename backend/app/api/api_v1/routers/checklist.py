@@ -3,7 +3,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, Query, Response
 from fastapi_key_auth import AuthorizerDependency
-from sqlalchemy import and_, func, or_, select, case
+from sqlalchemy import and_, case, func, or_, select
 from sqlalchemy.orm import Session, aliased
 
 from app.db.checklist.schema import CheckList
