@@ -56,7 +56,7 @@ class ChecklistName(BaseModel):
         schema_extra = {
             "example": {
                 "nomenclaturalCode": "Animalia",
-                "scientificName": "Dero (Aulophorus) furcatus (Müller, 1774)",
+                "scientificName": "Dero (Aulophorus) furcatus furcatus (Müller, 1774)",
                 "scientificNameAuthorship": "(Müller, 1774)",
                 "canonicalName": "Dero (Aulophorus) furcatus furcatus",
                 "canonicalNameWithoutRank": "Dero (Aulophorus) furcatus furcatus",
@@ -72,7 +72,7 @@ class ChecklistName(BaseModel):
                     "Dero furcatus furcatus",
                 ],
                 "isCurrent": True,
-                "taxonRank": "Species",
+                "taxonRank": "Subspecies",
                 "validated": True,
                 "created": "2022-07-22T07:10:09.276837+00:00",
                 "updated": "2022-12-13T06:31:09.938014+00:00",
