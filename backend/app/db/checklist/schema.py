@@ -13,6 +13,7 @@ class ChecklistName(BaseModel):
     uninomial: Optional[str]
     specificEpithet: Optional[str]
     infraspecificEpithet: Optional[str]
+    nameRepresentations: Optional[List[str]]
     establishmentMeans: Optional[str]
     vernacularName: Optional[List[str]]
     informalGroups: Optional[List[str]]
@@ -50,6 +51,46 @@ class ChecklistName(BaseModel):
     species: Optional[str]
     variety: Optional[str]
     form: Optional[str]
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "nomenclaturalCode": "Animalia",
+                "scientificName": "Dero (Aulophorus) furcatus (Müller, 1774)",
+                "scientificNameAuthorship": "(Müller, 1774)",
+                "canonicalName": "Dero (Aulophorus) furcatus furcatus",
+                "canonicalNameWithoutRank": "Dero (Aulophorus) furcatus furcatus",
+                "uninomial": "Dero",
+                "specificEpithet": "furcatus",
+                "infraspecificEpithet": "furcatus",
+                "nameRepresentations": [
+                    "Dero (Aulophorus) furcatus subsp. furcatus (Müller, 1774)",
+                    "Dero (Aulophorus) furcatus furcatus (Müller, 1774)",
+                    "Dero furcatus furcatus (Müller, 1774)",
+                    "Dero (Aulophorus) furcatus subsp. furcatus",
+                    "Dero (Aulophorus) furcatus furcatus",
+                    "Dero furcatus furcatus",
+                ],
+                "isCurrent": True,
+                "taxonRank": "Species",
+                "validated": True,
+                "created": "2022-07-22T07:10:09.276837+00:00",
+                "updated": "2022-12-13T06:31:09.938014+00:00",
+                "scientificNameId": 99999999,
+                "kingdom": "Animalia",
+                "phylum": "Annelida",
+                "class": "Oligochaeta",
+                "subclass": "Tubificata",
+                "order": "Tubificida",
+                "suborder": "Tubificina",
+                "family": "Naididae",
+                "subfamily": "Naidinae",
+                "genus": "Dero",
+                "subgenus": "Aulophorus",
+                "species": "furcatus",
+                "subspecies": "furcatus",
+            }
+        }
 
 
 CheckList = List[ChecklistName]
