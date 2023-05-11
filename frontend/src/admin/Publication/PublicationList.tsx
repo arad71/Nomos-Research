@@ -55,7 +55,7 @@ export const PublicationList: FC = (props) => (
       <TextField source="abbreviated_title" />
       <TextField source="title" />
       <BooleanField source="bad_publication" />
-      <ReferenceField source="updated_by" reference="users">
+      <ReferenceField source="updated_by" reference="users" link="show">
         <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" />

@@ -244,7 +244,11 @@ export const TaxonNameCreateEdit: FC = ({
                       })
                     }
                   >
-                    <ReferenceField source="author_id" reference="authors">
+                    <ReferenceField
+                      source="author_id"
+                      reference="authors"
+                      link="show"
+                    >
                       <TextField source="abbreviation" />
                     </ReferenceField>
                     <SelectField source="author_type" choices={AuthorType} />
@@ -473,6 +477,7 @@ export const TaxonNameCreateEdit: FC = ({
                       source="classification_system_id"
                       reference="classification_systems"
                       filter={{ class_type: 'hierarchical' }}
+                      link="show"
                     >
                       <TextField source="class_desc" />
                     </ReferenceField>

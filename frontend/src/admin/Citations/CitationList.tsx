@@ -34,6 +34,7 @@ export const CitationList: FC = (props) => (
         source="taxon_name_id"
         reference="taxon_names"
         sortBy="taxon_name___scientific_name"
+        link="show"
       >
         <RichTextField source="formatted_scientific_name" />
       </ReferenceField>
@@ -41,12 +42,13 @@ export const CitationList: FC = (props) => (
         source="author_id"
         reference="authors"
         sortBy="author___display_name"
+        link="show"
       >
         <TextField source="display_name" />
       </ReferenceField>
       <SelectField source="author_type" choices={AuthorType} />
       <NumberField source="author_order" />
-      <ReferenceField source="updated_by" reference="users">
+      <ReferenceField source="updated_by" reference="users" link="show">
         <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" />

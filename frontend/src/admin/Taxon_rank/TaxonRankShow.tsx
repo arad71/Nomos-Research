@@ -38,6 +38,7 @@ export const TaxonRankShow: FC = (props) => {
                 label="Kingdom"
                 source="kingdom_id"
                 reference="kingdoms"
+                link="show"
               >
                 <TextField source="kingdom_name" />
               </ReferenceField>
@@ -61,6 +62,7 @@ export const TaxonRankShow: FC = (props) => {
                 label="Direct Parent Rank"
                 source="direct_parent_rank_id"
                 reference="taxon_ranks"
+                link="show"
               >
                 <NumberField source="rank_name" />
               </ReferenceField>
@@ -74,6 +76,7 @@ export const TaxonRankShow: FC = (props) => {
                 label="Req Parent Rank"
                 source="required_parent_rank_id"
                 reference="taxon_ranks"
+                link="show"
               >
                 <NumberField source="rank_name" />
               </ReferenceField>

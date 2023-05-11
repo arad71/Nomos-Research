@@ -34,7 +34,11 @@ export const VernacularShowLayout = () => {
         </Box>
         <Box className={globalClasses.fieldMargin}>
           <Labeled label="Taxon name">
-            <ReferenceField source="taxon_name_id" reference="taxon_names">
+            <ReferenceField
+              source="taxon_name_id"
+              reference="taxon_names"
+              link="show"
+            >
               <RichTextField source="formatted_scientific_name" />
             </ReferenceField>
           </Labeled>

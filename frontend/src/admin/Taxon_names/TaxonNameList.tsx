@@ -169,6 +169,7 @@ const postListColumns = {
       source="publication_id"
       reference="publications"
       sortBy="publication___title"
+      link="show"
     >
       <TextField source="title" />
     </ReferenceField>
@@ -203,6 +204,7 @@ const postListColumns = {
       source="family_nid"
       reference="taxon_names"
       sortBy="family"
+      link="show"
     >
       <RichTextField source="formatted_scientific_name" />
     </ReferenceField>
@@ -212,13 +214,13 @@ const postListColumns = {
   admin_comment: <TextField source="admin_comment" />,
   authorised_on: <DateField source="authorised_on" />,
   created_by: (
-    <ReferenceField source="created_by" reference="users">
+    <ReferenceField source="created_by" reference="users" link="show">
       <TextField source="full_name" />
     </ReferenceField>
   ),
   created_on: <DateField source="created_on" />,
   updated_by: (
-    <ReferenceField source="updated_by" reference="users">
+    <ReferenceField source="updated_by" reference="users" link="show">
       <TextField source="full_name" />
     </ReferenceField>
   ),

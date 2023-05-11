@@ -148,6 +148,7 @@ export const PublicationShow: FC = (props) => {
                     label="Parent"
                     source="parent_id"
                     reference="publications"
+                    link="show"
                   >
                     <TextField source="abbreviated_title" />
                   </ReferenceField>
@@ -231,6 +232,7 @@ export const PublicationShow: FC = (props) => {
                     label="Duplicate Of"
                     source="duplicate_of_id"
                     reference="publications"
+                    link="show"
                   >
                     <TextField source="abbreviated_title" />
                   </ReferenceField>
