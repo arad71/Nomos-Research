@@ -24,7 +24,6 @@ authorizer = AuthorizerDependency(key_pattern="API_KEY_")
 @r.get(
     "/curation",
     response_model=CheckList,
-    response_model_exclude_none=True,
     dependencies=[
         Depends(authorizer),
     ],
@@ -88,7 +87,7 @@ async def curation_checklist(
 
     response = requests.get(
         "http://localhost:8000/checklist/curation",
-        headers={"Authorization": "Bearer YOUR_API_KEY_HERE"},
+        headers={"X-API-KEY": "YOUR_API_KEY_HERE"},
         params={"limit": 20, "validated": True},
     )
 
