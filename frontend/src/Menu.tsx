@@ -11,6 +11,8 @@ import CompareArrowsIcon from '@material-ui/icons/CompareArrows';
 import CallSplitIcon from '@material-ui/icons/CallSplit';
 import MenuBookIcon from '@material-ui/icons/MenuBook';
 import ChangeHistoryIcon from '@material-ui/icons/ChangeHistory';
+import WebIcon from '@material-ui/icons/Web';
+import SettingsIcon from '@material-ui/icons/Settings';
 import GroupWorkIcon from '@material-ui/icons/GroupWork';
 import LinkIcon from '@material-ui/icons/Link';
 const Menu = () => {
@@ -22,7 +24,7 @@ const Menu = () => {
         icon={<DashboardIcon />}
         to="/"
       />
-      <MenuItem name="Nomos" label="Nomos">
+      <MenuItem name="Nomos" label="Nomos" icon={<WebIcon />}>
         <MenuItem
           name="Taxon Names"
           label="Taxon Names"
@@ -42,7 +44,7 @@ const Menu = () => {
           to="/authors"
         />
       </MenuItem>
-      <MenuItem name="Admin" label="Admin">
+      <MenuItem name="Admin" label="Admin" icon={<SettingsIcon />}>
         <MenuItem
           name="Citations"
           label="Citations"
