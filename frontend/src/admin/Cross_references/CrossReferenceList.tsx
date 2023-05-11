@@ -31,6 +31,7 @@ export const CrossReferenceList: FC = (props) => (
         source="old_name_id"
         reference="taxon_names"
         sortBy="old_name___scientific_name"
+        link="show"
       >
         <RichTextField source="formatted_scientific_name" />
       </ReferenceField>
@@ -38,6 +39,7 @@ export const CrossReferenceList: FC = (props) => (
         source="new_name_id"
         reference="taxon_names"
         sortBy="new_name___scientific_name"
+        link="show"
       >
         <RichTextField source="formatted_scientific_name" />
       </ReferenceField>
@@ -45,7 +47,7 @@ export const CrossReferenceList: FC = (props) => (
       <TextField source="authorised_by" />
       <TextField source="reference_comments" />
       <TextField source="notes" />
-      <ReferenceField source="updated_by" reference="users">
+      <ReferenceField source="updated_by" reference="users" link="show">
         <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" />

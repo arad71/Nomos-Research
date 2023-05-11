@@ -9,7 +9,9 @@ class ImportCrossReference(DataImportBase):
     def __init__(self, db, current_user):
         super().__init__(db, current_user)
         self.data_model = CrossReferenceModel
-        self.upsert_constraint = f"uc_{CrossReferenceModel.__tablename__}_legacy_id"
+        self.upsert_constraint = (
+            f"ix_{CrossReferenceModel.__tablename__}_legacy_id_isactive"
+        )
         self.update_cols = (
             "old_name_id",
             "new_name_id",

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, ForeignKey, Integer, UniqueConstraint
+from sqlalchemy import Column, ForeignKey, Index, Integer
 from sqlalchemy.orm import backref, relationship
 
 from app.db.models import BaseModel, TableMixin
@@ -32,4 +32,12 @@ class UserRole(BaseModel, TableMixin):
         remote_side=[User.user_id],
     )
 
-    __table_args__ = (UniqueConstraint("user_id", "role_id", name="unique_user_role"),)
+    __table_args__ = (
+        Index(
+            f"ix_{__tablename__}_unique_user_role_isactive",
+            "user_id",
+            "role_id",
+            unique=True,
+            postgresql_where="deleted = FALSE",
+        ),
+    )

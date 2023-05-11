@@ -172,7 +172,11 @@ export const TaxonNameShow: FC = (props) => {
               </Typography>
             </Box>
             <Box my="1.2em">
-              <ReferenceField source="publication_id" reference="publications">
+              <ReferenceField
+                source="publication_id"
+                reference="publications"
+                link="show"
+              >
                 <Labeled label="Publication">
                   <TextField source="display_title" />
                 </Labeled>

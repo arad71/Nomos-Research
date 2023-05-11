@@ -13,6 +13,7 @@ import AuthorType from './AuthorType';
 import Aside from '../shared/Aside';
 import { GlobalTheme } from '../../GlobalTheme';
 import { Box, Typography } from '@material-ui/core';
+import ScientificNameReference from '../Taxon_names/ScientificNameReference';
 
 const useStyles = makeStyles((theme) => ({
   showPad: {
@@ -32,14 +33,22 @@ export const CitationShow: FC = (props) => {
         <Box className={globalClasses.formRow}>
           <Box className={globalClasses.fieldMargin}>
             <Labeled label="Taxon Name">
-              <ReferenceField source="taxon_name_id" reference="taxon_names">
+              <ReferenceField
+                source="taxon_name_id"
+                reference="taxon_names"
+                link="show"
+              >
                 <RichTextField source="formatted_scientific_name" />
               </ReferenceField>
             </Labeled>
           </Box>
           <Box className={globalClasses.fieldMargin}>
             <Labeled label="Author">
-              <ReferenceField source="author_id" reference="authors">
+              <ReferenceField
+                source="author_id"
+                reference="authors"
+                link="show"
+              >
                 <TextField source="abbreviation" />
               </ReferenceField>
             </Labeled>

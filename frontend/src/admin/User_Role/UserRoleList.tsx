@@ -13,7 +13,12 @@ export const UserRoleList: FC = (props) => (
       <TextField source="id" />
       <TextField source="user_id" />
       <TextField source="role_id" />
-      <ReferenceField label="Roles" source="role" reference="user_roles">
+      <ReferenceField
+        label="Roles"
+        source="role"
+        reference="user_roles"
+        link="show"
+      >
         <TextField source="name" />
       </ReferenceField>
     </Datagrid>

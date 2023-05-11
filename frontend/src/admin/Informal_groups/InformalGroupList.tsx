@@ -31,6 +31,7 @@ export const InformalGroupList: FC = (props) => (
         source="classification_system_id"
         reference="classification_systems"
         sortBy="classification_system___class_desc"
+        link="show"
       >
         <TextField source="class_desc" />
       </ReferenceField>
@@ -38,10 +39,11 @@ export const InformalGroupList: FC = (props) => (
         source="taxon_name_id"
         reference="taxon_names"
         sortBy="taxon_name___scientific_name"
+        link="show"
       >
         <RichTextField source="formatted_scientific_name" />
       </ReferenceField>
-      <ReferenceField source="updated_by" reference="users">
+      <ReferenceField source="updated_by" reference="users" link="show">
         <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" />

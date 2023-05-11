@@ -41,7 +41,7 @@ const postListColumns = {
   preferred: <BooleanField source="preferred" />,
   sort_order: <TextField source="sort_order" />,
   updated_by: (
-    <ReferenceField source="updated_by" reference="users">
+    <ReferenceField source="updated_by" reference="users" link="show">
       <TextField source="full_name" />
     </ReferenceField>
   ),

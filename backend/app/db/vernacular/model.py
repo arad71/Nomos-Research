@@ -1,7 +1,7 @@
 from sqlalchemy import Boolean, Column, Enum, ForeignKey, Integer, String, event
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.orm.session import Session
-from sqlalchemy.schema import UniqueConstraint
+from sqlalchemy.schema import Index
 
 from app.db.models import BaseModel, TableMixin
 from app.db.vernacular import enums
@@ -19,15 +19,6 @@ from app.db.vernacular.constants import (
 
 class Vernacular(BaseModel, TableMixin):
     __tablename__ = "vernacular"
-    __table_args__ = (
-        UniqueConstraint(
-            "taxon_name_id",
-            "vernacular_name",
-            "language",
-            name=f"uc_{ __tablename__}_legacy_id",
-        ),
-        {"comment": TABLE_DESCRIPTION},
-    )
 
     vernacular_id = Column(Integer, primary_key=True)
     vernacular_name = Column(
@@ -61,6 +52,16 @@ class Vernacular(BaseModel, TableMixin):
     )
     source = Column(String(50), comment=SOURCE, doc=SOURCE)
     sort_order = Column(Integer)
+    legacy_id_columns = ["taxon_name_id", "vernacular_name", "language"]
+    __table_args__ = (
+        Index(
+            f"ix_{__tablename__}_legacy_id_isactive",
+            *legacy_id_columns,
+            unique=True,
+            postgresql_where="deleted = FALSE",
+        ),
+        {"comment": TABLE_DESCRIPTION},
+    )
 
 
 def before_flush(session, flush_context, instances):

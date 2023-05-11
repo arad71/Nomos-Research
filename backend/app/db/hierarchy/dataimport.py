@@ -11,7 +11,7 @@ class ImportHierarchy(DataImportBase):
     def __init__(self, db, current_user):
         super().__init__(db, current_user)
         self.data_model = HierarchyModel
-        self.upsert_constraint = f"uc_{HierarchyModel.__tablename__}_legacy_id"
+        self.upsert_constraint = f"ix_{HierarchyModel.__tablename__}_legacy_id_isactive"
         self.update_cols = (
             "taxon_name_id",
             "classification_system_id",
