@@ -18,6 +18,13 @@ LEGACY_DATA_DIRECTORY = "/legacy_data"
 
 
 class DataImportBase:
+    """
+    This is a BASE class for importing WACENSUS data from flat files(csv)
+    Import are sourced from @LEGACY_DATA_DIRECTORY + Name + settings.WACENSUS_SUFFIX
+    (csv) This class is not intended to be used by itself, rather a placeholder that
+    other import classes can derive from as it loads the import file and provides base
+    methods to the caller."""
+
     skip_count: int = 0
     validation_count: int = 0
     success_count: int = 0
@@ -108,7 +115,6 @@ class DataImportBase:
     def bulk_insert(self):
         insert_statement = pg_insert(self.data_model)
 
-        # TODO should we add a variable here to allow update?
         if self.upsert_constraint:
             insert_statement = insert_statement.on_conflict_do_update(
                 # constraint=self.upsert_constraint,
@@ -124,7 +130,6 @@ class DataImportBase:
 
     def insert(self, data: dict, model: object, upsert_constraint: str = None):
         insert_statement = pg_insert(model).values(data)
-        # TODO should we add a variable here to allow update?
         if upsert_constraint:
             insert_statement = insert_statement.on_conflict_do_update(
                 # constraint=upsert_constraint,
