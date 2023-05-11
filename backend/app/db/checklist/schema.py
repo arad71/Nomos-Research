@@ -49,6 +49,7 @@ class ChecklistName(BaseModel):
     section: Optional[str]
     series: Optional[str]
     species: Optional[str]
+    subspecies: Optional[str]
     variety: Optional[str]
     form: Optional[str]
 
@@ -77,18 +78,29 @@ class ChecklistName(BaseModel):
                 "created": "2022-07-22T07:10:09.276837+00:00",
                 "updated": "2022-12-13T06:31:09.938014+00:00",
                 "scientificNameId": 99999999,
+                "crossReferenceType": None,
+                "acceptedNameUsage": None,
+                "acceptedNameAuthor": None,
+                "acceptedNameCurrent": None,
+                "acceptedNameValidated": None,
+                "relatedNamesCount": None,
                 "kingdom": "Animalia",
+                "division": None,
                 "phylum": "Annelida",
                 "class": "Oligochaeta",
-                "subclass": "Tubificata",
+                "subclass": None,
                 "order": "Tubificida",
                 "suborder": "Tubificina",
                 "family": "Naididae",
                 "subfamily": "Naidinae",
                 "genus": "Dero",
                 "subgenus": "Aulophorus",
+                "section": None,
+                "series": None,
                 "species": "furcatus",
                 "subspecies": "furcatus",
+                "variety": None,
+                "form": None,
             }
         }
 

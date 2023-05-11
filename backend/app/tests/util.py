@@ -20,7 +20,6 @@ def assert_list_dict_equal_ignoring(
         {key: value for key, value in d.items() if key not in ignore_properties}
         for d in actual
     ]
-    print(modified_actual)
     assert modified_expected == modified_actual
 
 
