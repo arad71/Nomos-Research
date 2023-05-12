@@ -516,7 +516,7 @@ def test_taxon_name(
 
 @pytest.fixture
 def test_checklist_name(
-    test_db, test_taxon_name, test_informal_group, test_vernacular
+    test_db, test_taxon_name, test_informal_group, test_vernacular, test_panthera
 ) -> TaxonName:
     test_taxon_name.naturalised_status = NaturalisedStatus.native
     test_db.add(test_taxon_name)
@@ -580,20 +580,20 @@ def test_reptilia(
 
 @pytest.fixture
 def test_carnivora(
-    test_db, test_kingdom, test_publication, test_superuser, test_rank_class
+    test_db, test_kingdom, test_publication, test_superuser, test_rank_order
 ) -> TaxonName:
     """
     Taxon Name for testing
     """
     now = datetime.datetime.utcnow()
     return create_taxon_name(
-        "Carnivora", now, test_db, test_kingdom, test_superuser, test_rank_class
+        "Carnivora", now, test_db, test_kingdom, test_superuser, test_rank_order
     )
 
 
 @pytest.fixture
 def test_felidae(
-    test_db, test_kingdom, test_publication, test_superuser, test_rank_class
+    test_db, test_kingdom, test_publication, test_superuser, test_rank_family
 ) -> TaxonName:
     """
     Taxon Name for testing
