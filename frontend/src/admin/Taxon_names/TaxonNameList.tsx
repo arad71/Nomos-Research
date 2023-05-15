@@ -5,7 +5,6 @@ import {
   Datagrid,
   DateField,
   EditButton,
-  ExportButton,
   FilterButton,
   NumberField,
   ReferenceField,
@@ -28,8 +27,8 @@ import {
 import { TaxonNameFilters } from './TaxonNameFilters';
 import ResetPreferenceButton from '../shared/ResetPreferenceButton';
 import { DefaultPagination, useCanBulkDelete } from '../shared';
-import { MAX_RESULTS } from '../../config';
 import NestedLinkField from '../shared/NestedLinkField';
+import BatchExportButton from '../shared/BatchExportButton';
 
 const postListColumns = {
   id: <TextField source="id" />,
@@ -259,7 +258,7 @@ const Actions = () => (
       <CreateButton />
     </WithPermissions>
     <WithPermissions resource="taxon_names" action="export">
-      <ExportButton maxResults={MAX_RESULTS} />
+      <BatchExportButton />
     </WithPermissions>
   </TopToolbar>
 );
