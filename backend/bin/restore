@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -e
+set -u
+# Restores a database dump. Sorts by filename descending and uses the most recent backup.
+# Alternatively you can pass it a filename.to restore
+FILE=${1:-$(find /backup -name '*.sql'|sort -r|head -n1)}
+export PGHOST=$DB_HOST
+export PGDATABASE=$DB_NAME
+export PGUSER=$DB_USER
+export PGPASSWORD=$DB_PASSWORD
+dropdb --if-exists --force "$PGDATABASE"
+createdb --template=template0 "$PGDATABASE"
+psql \
+  --file "$FILE"

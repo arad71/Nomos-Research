@@ -6,3 +6,4 @@ class CrossReferenceCrud(crud.Crud):
     model = CrossReference
     id_key = "cross_reference_id"
     name = "Cross Reference"
+    search_fields = ["old_name___scientific_name", "new_name___scientific_name"]

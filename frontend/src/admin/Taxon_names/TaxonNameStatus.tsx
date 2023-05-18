@@ -8,7 +8,7 @@ export const TaxonNameStatus = () => {
   return record && record.is_current ? (
     <Tooltip title="This name is current">
       <CheckCircleIcon
-        style={{ color: '#334e32', marginLeft: '5px' }}
+        style={{ color: '#334e32', marginLeft: '5px', marginBottom: '8px' }}
         fontSize="small"
       />
     </Tooltip>

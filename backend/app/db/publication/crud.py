@@ -5,6 +5,7 @@ import app.db.crud as crud
 import app.db.publication.schema as schema
 from app.db.models import PublicationAuthor
 from app.db.publication.model import Publication
+from app.db.user.schema import User
 
 
 class PublicationCrud(crud.Crud):
@@ -51,13 +52,13 @@ class PublicationCrud(crud.Crud):
     def edit_item(
         cls,
         db: Session,
+        current_user: User,
         publication_id: int,
         publication: schema.PublicationEdit,
         raise_exception: bool = True,
-        current_user: int = None,
         **kwargs,
     ) -> Publication:
-        db_publication = PublicationCrud.get_item(db, publication_id)
+        db_publication = PublicationCrud.get_item(db, current_user, publication_id)
         if not db_publication:
             raise HTTPException(
                 status.HTTP_404_NOT_FOUND, detail="Publication not found"
@@ -86,7 +87,7 @@ class PublicationCrud(crud.Crud):
 
         update_data.pop("author_ids", None)
         update_data.pop("display_title", None)
-        update_data["updated_by"] = current_user
+        update_data["updated_by"] = current_user.user_id
         for key, value in update_data.items():
             setattr(db_publication, key, value)
 

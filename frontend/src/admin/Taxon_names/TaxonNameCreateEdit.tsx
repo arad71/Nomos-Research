@@ -1,28 +1,28 @@
 import {
+  AutocompleteInput,
+  BooleanField,
   BooleanInput,
+  FormDataConsumer,
   FormTab,
   Labeled,
+  maxValue,
+  minValue,
   NullableBooleanInput,
+  number,
   NumberField,
   NumberInput,
+  ReferenceArrayInput,
   ReferenceField,
-  BooleanField,
   ReferenceInput,
   ReferenceManyField,
   required,
+  RichTextField,
+  SelectArrayInput,
   SelectField,
   SelectInput,
   TabbedForm,
   TextField,
   TextInput,
-  number,
-  minValue,
-  SelectArrayInput,
-  ReferenceArrayInput,
-  FunctionField,
-  ReferenceArrayField,
-  ChipField,
-  SingleFieldList,
 } from 'react-admin';
 import { EditableDatagrid } from '@react-admin/ra-editable-datagrid';
 import React, { FC, PropsWithChildren } from 'react';
@@ -33,7 +33,7 @@ import AuthorType from '../Citations/AuthorType';
 import LanguageType from '../Vernaculars/LanguageType';
 import { Box, Typography } from '@material-ui/core';
 import { CitationRowForm } from '../Citations';
-import { VernacularRowForm, EmbeddedVernacularShow } from '../Vernaculars';
+import { EmbeddedVernacularShow, VernacularRowForm } from '../Vernaculars';
 import { GlobalGridTheme, GlobalTheme } from '../../GlobalTheme';
 import { NamePageSummary } from './NamePageSummary';
 // eslint-disable-next-line max-len
@@ -42,7 +42,9 @@ import CrossRefType from '../Cross_references/CrossRefType';
 import { FormattedScientificNameWithStatus } from '../Taxon_names';
 // eslint-disable-next-line max-len
 import { CrossReferenceRowForm } from '../Cross_references/CrossReferenceRowForm';
+import { EmbeddedHierarchyShow, HierarchyRowForm } from '../Hierarchies';
 import EditToolbar from '../shared/EditToolbar';
+import { canAccess, usePermissions } from '@react-admin/ra-rbac';
 
 const validateNumber = [number(), minValue(0)];
 
@@ -56,21 +58,39 @@ const useStyles = makeStyles({
   redTypography: {
     color: '#ff0000',
   },
+  columnStart: {
+    gridColumnStart: 1,
+  },
 });
-
+export interface FormData {
+  kingdom_id: number;
+}
+export interface FormDataProps {
+  formData: FormData;
+  rest: PropsWithChildren<any>;
+}
 export const TaxonNameCreateEdit: FC = ({
   ...props
 }: PropsWithChildren<any>) => {
   const classes = useStyles();
   const globalClasses = GlobalTheme();
   const gridClasses = GlobalGridTheme();
-  const citationInitialValues = { taxon_name_id: props.record?.id };
+  const citationInitialValues = {
+    taxon_name_id: props.record?.id,
+  };
+  const hierarchyInitialValues = { taxon_name_id: props.record?.id };
   const vernacularInitialValues = {
     taxon_name_id: props.record?.id,
-    enabled: true,
   };
-  const oldNameInitialValues = { new_name_id: props.record?.id, active: true };
-  const newNameInitialValues = { old_name_id: props.record?.id, active: true };
+  const oldNameInitialValues = {
+    new_name_id: props.record?.id,
+  };
+  const newNameInitialValues = {
+    old_name_id: props.record?.id,
+  };
+  const { loading, permissions } = usePermissions();
+  if (loading) return null;
+
   return (
     <>
       <NamePageSummary />
@@ -100,14 +120,26 @@ export const TaxonNameCreateEdit: FC = ({
             >
               <SelectInput optionText="kingdom_name" fullWidth />
             </ReferenceInput>
-            <ReferenceInput
-              source="rank_id"
-              reference="taxon_ranks"
-              validate={[required()]}
-              className={gridClasses.EightCol3to5span}
-            >
-              <SelectInput optionText="rank_name" fullWidth />
-            </ReferenceInput>
+            <FormDataConsumer>
+              {({ formData, ...rest }: FormDataProps) => (
+                <ReferenceInput
+                  source="rank_id"
+                  reference="taxon_ranks"
+                  validate={[required()]}
+                  className={gridClasses.EightCol3to5span}
+                  filter={{ kingdom_id: formData.kingdom_id }}
+                  {...rest}
+                  sort={{ field: 'rank_name', order: 'ASC' }}
+                  perPage={100}
+                >
+                  <AutocompleteInput
+                    optionText="rank_name"
+                    fullWidth
+                    resettable
+                  />
+                </ReferenceInput>
+              )}
+            </FormDataConsumer>
             <TextInput
               source="uninomial"
               className={gridClasses.EightCol1to3span}
@@ -125,22 +157,24 @@ export const TaxonNameCreateEdit: FC = ({
               source="form_desc_dy"
               label="Day"
               className={gridClasses.EightCol1to2span}
-              min={0}
-              validate={validateNumber}
+              min={1}
+              max={31}
+              validate={[maxValue(31), number(), minValue(1)]}
             />
             <NumberInput
               source="form_desc_mn"
               label="Month"
               className={gridClasses.EightCol2to3span}
-              min={0}
-              validate={validateNumber}
+              min={1}
+              max={12}
+              validate={[maxValue(12), number(), minValue(1)]}
             />
             <NumberInput
               source="form_desc_yr"
               label="Year"
               className={gridClasses.EightCol3to4span}
-              min={0}
-              validate={validateNumber}
+              min={1735}
+              validate={[number(), minValue(1735)]}
             />
             <SelectInput
               source="publication_status"
@@ -174,9 +208,8 @@ export const TaxonNameCreateEdit: FC = ({
                 gutterBottom
               >
                 {/* eslint-disable-next-line max-len */}
-                Ensure to save within datagrid on create/edit or data could be
-                lost. Taxon name header will not reflect updated author details
-                until page is refreshed
+                Save records in this grid before exiting and/or saving Taxon
+                Name. Saved changes will display when page is refreshed
               </Typography>
             </Box>
             <Box className={gridClasses.EightCol1to9span}>
@@ -193,7 +226,6 @@ export const TaxonNameCreateEdit: FC = ({
                   {...props}
                 >
                   <EditableDatagrid
-                    undoable
                     /* eslint-disable-next-line max-len */
                     className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
                     createForm={
@@ -204,8 +236,19 @@ export const TaxonNameCreateEdit: FC = ({
                     }
                     editForm={<CitationRowForm {...props} />}
                     hasCreate
+                    noDelete={
+                      !canAccess({
+                        permissions,
+                        action: 'delete',
+                        resource: 'citations',
+                      })
+                    }
                   >
-                    <ReferenceField source="author_id" reference="authors">
+                    <ReferenceField
+                      source="author_id"
+                      reference="authors"
+                      link="show"
+                    >
                       <TextField source="abbreviation" />
                     </ReferenceField>
                     <SelectField source="author_type" choices={AuthorType} />
@@ -234,9 +277,11 @@ export const TaxonNameCreateEdit: FC = ({
             <ReferenceInput
               source="publication_id"
               reference="publications"
+              sort={{ field: 'abbreviated_title', order: 'ASC' }}
+              perPage={100}
               className={gridClasses.EightCol1to5span}
             >
-              <SelectInput optionText="title" />
+              <AutocompleteInput optionText="title" fullWidth resettable />
             </ReferenceInput>
             <Box
               /* eslint-disable-next-line max-len */
@@ -251,8 +296,8 @@ export const TaxonNameCreateEdit: FC = ({
                 gutterBottom
               >
                 {/* eslint-disable-next-line max-len */}
-                Ensure to save within datagrid on create/edit or data could be
-                lost
+                Save records in this grid before exiting and/or saving Taxon
+                Name.
               </Typography>
             </Box>
             <Box className={gridClasses.EightCol1to9span}>
@@ -263,7 +308,7 @@ export const TaxonNameCreateEdit: FC = ({
                   reference="vernaculars"
                   target="taxon_name_id"
                   sort={{
-                    field: 'vernacular,sort_order',
+                    field: 'vernacular_name,sort_order',
                     order: 'ASC,ASC',
                   }}
                   {...props}
@@ -271,7 +316,6 @@ export const TaxonNameCreateEdit: FC = ({
                   <EditableDatagrid
                     /* eslint-disable-next-line max-len */
                     className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
-                    undoable
                     createForm={
                       <VernacularRowForm
                         initialValues={vernacularInitialValues}
@@ -281,8 +325,15 @@ export const TaxonNameCreateEdit: FC = ({
                     editForm={<VernacularRowForm {...props} />}
                     hasCreate
                     expand={<EmbeddedVernacularShow />}
+                    noDelete={
+                      !canAccess({
+                        permissions,
+                        action: 'delete',
+                        resource: 'vernaculars',
+                      })
+                    }
                   >
-                    <TextField source="vernacular" />
+                    <TextField source="vernacular_name" />
                     <SelectField source="language" choices={LanguageType} />
                     <BooleanField
                       source="lang_pref"
@@ -301,7 +352,7 @@ export const TaxonNameCreateEdit: FC = ({
             </Box>
           </Box>
         </FormTab>
-        <FormTab label="Details" className={globalClasses.bold}>
+        <FormTab label="Details" path="details" className={globalClasses.bold}>
           <Typography
             variant="h5"
             className={`${globalClasses.bold} ${globalClasses.sectionMargin}`}
@@ -364,22 +415,97 @@ export const TaxonNameCreateEdit: FC = ({
             </ReferenceArrayInput>
           </Box>
         </FormTab>
-        <FormTab label="Hierarchy" className={globalClasses.bold}>
-          <Box
-            /* eslint-disable-next-line max-len */
+        <FormTab
+          label="Hierarchy"
+          path="hierarchy"
+          className={globalClasses.bold}
+        >
+          <Box /* eslint-disable-next-line max-len */
             className={`${globalClasses.mainGrid} ${globalClasses.sectionMargin}`}
           >
             <Typography
               variant="h5"
               /* eslint-disable-next-line max-len */
-              className={`${gridClasses.EightCol1to5span} ${globalClasses.bold}`}
+              className={`${gridClasses.EightCol1to5span} ${globalClasses.bold} ${classes.columnStart}`}
               gutterBottom
             >
               Taxon Name - Hierarchy
             </Typography>
+            <Typography
+              variant="subtitle2"
+              /* eslint-disable-next-line max-len */
+              className={`${gridClasses.EightCol1to9span} ${classes.redTypography}`}
+              gutterBottom
+            >
+              {/* eslint-disable-next-line max-len */}
+              Save records in this grid before exiting and/or saving Taxon Name.
+            </Typography>
+            <Box className={gridClasses.EightCol1to9span}>
+              {(props.record?.id && (
+                <ReferenceManyField
+                  fullWidth
+                  label="Hierarchical classification"
+                  reference="hierarchies"
+                  target="taxon_name_id"
+                  sort={{
+                    field: 'path',
+                    order: 'ASC',
+                  }}
+                  {...props}
+                >
+                  <EditableDatagrid
+                    hasCreate
+                    // eslint-disable-next-line max-len
+                    className={classes.bottomMargin}
+                    createForm={
+                      <HierarchyRowForm
+                        initialValues={hierarchyInitialValues}
+                        {...props}
+                      />
+                    }
+                    editForm={<HierarchyRowForm {...props} />}
+                    expand={<EmbeddedHierarchyShow />}
+                    noDelete={
+                      !canAccess({
+                        permissions,
+                        action: 'delete',
+                        resource: 'hierarchies',
+                      })
+                    }
+                  >
+                    <ReferenceField
+                      source="classification_system_id"
+                      reference="classification_systems"
+                      filter={{ class_type: 'hierarchical' }}
+                      link="show"
+                    >
+                      <TextField source="class_desc" />
+                    </ReferenceField>
+                    <ReferenceField
+                      source="parent_nid"
+                      reference="taxon_names"
+                      label="Parent name"
+                      link="show"
+                      sortBy="taxon_name___scientific_name"
+                    >
+                      <RichTextField source="formatted_scientific_name" />
+                    </ReferenceField>
+                  </EditableDatagrid>
+                </ReferenceManyField>
+              )) || (
+                <Typography>
+                  You need to save the record before you can add any authors /
+                  citations.
+                </Typography>
+              )}
+            </Box>
           </Box>
         </FormTab>
-        <FormTab label="Related Names" className={globalClasses.bold}>
+        <FormTab
+          label="Related Names"
+          path="related_names"
+          className={globalClasses.bold}
+        >
           <Box
             /* eslint-disable-next-line max-len */
             className={`${globalClasses.mainGrid} ${globalClasses.sectionMargin}`}
@@ -398,8 +524,7 @@ export const TaxonNameCreateEdit: FC = ({
               gutterBottom
             >
               {/* eslint-disable-next-line max-len */}
-              Ensure to save within datagrid on create/edit or data could be
-              lost
+              Save records in this grid before exiting and/or saving Taxon Name.
             </Typography>
             <Box className={gridClasses.EightCol1to9span}>
               <Labeled label="Previous names">
@@ -408,7 +533,6 @@ export const TaxonNameCreateEdit: FC = ({
                     fullWidth
                     reference="cross_references"
                     target="new_name_id"
-                    filter={{ active: true }}
                     {...props}
                   >
                     <EditableDatagrid
@@ -430,6 +554,13 @@ export const TaxonNameCreateEdit: FC = ({
                       }
                       hasCreate
                       expand={<EmbeddedCrossReferenceShow />}
+                      noDelete={
+                        !canAccess({
+                          permissions,
+                          action: 'delete',
+                          resource: 'cross_references',
+                        })
+                      }
                     >
                       <SelectField
                         source="cross_reference_type"
@@ -461,11 +592,9 @@ export const TaxonNameCreateEdit: FC = ({
                     fullWidth
                     reference="cross_references"
                     target="old_name_id"
-                    filter={{ active: true }}
                     {...props}
                   >
                     <EditableDatagrid
-                      undoable
                       /* eslint-disable-next-line max-len */
                       className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
                       createForm={
@@ -483,6 +612,13 @@ export const TaxonNameCreateEdit: FC = ({
                       }
                       hasCreate
                       expand={<EmbeddedCrossReferenceShow />}
+                      noDelete={
+                        !canAccess({
+                          permissions,
+                          action: 'delete',
+                          resource: 'cross_references',
+                        })
+                      }
                     >
                       <SelectField
                         source="cross_reference_type"
@@ -509,7 +645,7 @@ export const TaxonNameCreateEdit: FC = ({
             </Box>
           </Box>
         </FormTab>
-        <FormTab label="Notes" className={globalClasses.bold}>
+        <FormTab label="Notes" path="notes" className={globalClasses.bold}>
           <Box
             /* eslint-disable-next-line max-len */
             className={`${globalClasses.mainGrid} ${globalClasses.sectionMargin}`}

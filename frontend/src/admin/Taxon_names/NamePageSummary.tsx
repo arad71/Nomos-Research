@@ -1,9 +1,9 @@
 import { Box } from '@material-ui/core';
 // eslint-disable-next-line max-len
 import { FormattedScientificNameWithStatus } from './FormattedScientificNameWithStatus';
-import { ReferenceField, TextField } from 'react-admin';
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import NestedLinkField from '../shared/NestedLinkField';
 const useStyles = makeStyles({
   title: {
     fontSize: '1.5em',
@@ -24,9 +24,15 @@ export const NamePageSummary = () => {
       <Box className={classes.title}>
         <FormattedScientificNameWithStatus />
       </Box>
-      <ReferenceField source="rank_id" reference="taxon_ranks" link={false}>
-        <TextField source="rank_name" className={classes.subtitle} />
-      </ReferenceField>
+      <NestedLinkField
+        source="taxon_rank"
+        reference="taxon_ranks"
+        label="Taxon rank"
+        sortBy="taxon_rank___rank_name"
+        idKey="taxon_rank_id"
+        labelKey="rank_name"
+        className={classes.subtitle}
+      />
     </Box>
   );
 };

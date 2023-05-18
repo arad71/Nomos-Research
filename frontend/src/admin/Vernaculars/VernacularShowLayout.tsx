@@ -29,12 +29,16 @@ export const VernacularShowLayout = () => {
       <Box className={globalClasses.formRow}>
         <Box className={globalClasses.fieldMargin}>
           <Labeled label="Vernacular">
-            <TextField source="vernacular" />
+            <TextField source="vernacular_name" />
           </Labeled>
         </Box>
         <Box className={globalClasses.fieldMargin}>
           <Labeled label="Taxon name">
-            <ReferenceField source="taxon_name_id" reference="taxon_names">
+            <ReferenceField
+              source="taxon_name_id"
+              reference="taxon_names"
+              link="show"
+            >
               <RichTextField source="formatted_scientific_name" />
             </ReferenceField>
           </Labeled>
@@ -68,11 +72,6 @@ export const VernacularShowLayout = () => {
         <Box className={globalClasses.fieldMargin}>
           <Labeled label="Preferred">
             <BooleanField source="preferred" />
-          </Labeled>
-        </Box>
-        <Box className={globalClasses.fieldMargin}>
-          <Labeled label="Enabled">
-            <BooleanField source="enabled" />
           </Labeled>
         </Box>
       </Box>

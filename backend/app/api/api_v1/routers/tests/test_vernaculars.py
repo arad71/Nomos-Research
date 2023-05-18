@@ -12,13 +12,13 @@ def test_get_vernaculars(client, test_vernacular, superuser_token_headers):
             "vernacular_id": test_vernacular.vernacular_id,
             "taxon_name_id": test_vernacular.taxon_name_id,
             "taxon_name": response.json()[0]["taxon_name"],
-            "vernacular": test_vernacular.vernacular,
+            "vernacular_name": test_vernacular.vernacular_name,
             "language": test_vernacular.language.value,
-            "enabled": test_vernacular.enabled,
             "updated_by": test_vernacular.updated_by,
             "updated_on": test_vernacular.updated_on.isoformat(),
             "created_by": test_vernacular.created_by,
             "created_on": test_vernacular.created_on.isoformat(),
+            "deleted": False,
         }
     ]
 
@@ -29,6 +29,19 @@ def test_delete_vernacular(client, test_vernacular, test_db, superuser_token_hea
         headers=superuser_token_headers,
     )
     assert response.status_code == status.HTTP_200_OK
+    assert response.json()["deleted"] is True
+    assert test_db.query(Vernacular).all() == [test_vernacular]
+
+
+def test_hard_delete_vernacular(
+    client, test_vernacular, test_db, superuser_token_headers, test_superuser
+):
+    response = client.delete(
+        f"/api/v1/vernaculars/{test_vernacular.vernacular_id}/hard",
+        headers=superuser_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {"vernacular_id": test_vernacular.vernacular_id}
     assert test_db.query(Vernacular).all() == []
 
 
@@ -44,9 +57,8 @@ def test_edit_vernacular(
 ):
     new_vernacular = {
         "taxon_name_id": test_vernacular.taxon_name_id,
-        "vernacular": "Vernacular 2",
+        "vernacular_name": "Vernacular 2",
         "language": "english",
-        "enabled": True,
         "updated_by": test_superuser.user_id,
         "updated_on": test_vernacular.updated_on.isoformat(),
         "created_by": test_superuser.user_id,
@@ -62,6 +74,7 @@ def test_edit_vernacular(
     new_vernacular["vernacular_id"] = test_vernacular.vernacular_id
     new_vernacular["taxon_name"] = response.json()["taxon_name"]
     new_vernacular["updated_on"] = response.json()["updated_on"]
+    new_vernacular["deleted"] = False
     assert response.json() == new_vernacular
 
 
@@ -70,9 +83,8 @@ def test_edit_vernacular_not_found(
 ):
     new_vernacular = {
         "taxon_name_id": test_vernacular.taxon_name_id,
-        "vernacular": "Vernacular 2",
+        "vernacular_name": "Vernacular 2",
         "language": "english",
-        "enabled": True,
         "updated_by": test_superuser.user_id,
         "updated_on": test_vernacular.updated_on.isoformat(),
         "created_by": test_superuser.user_id,
@@ -98,13 +110,13 @@ def test_get_vernacular(
         "vernacular_id": test_vernacular.vernacular_id,
         "taxon_name_id": test_vernacular.taxon_name_id,
         "taxon_name": response.json()["taxon_name"],
-        "vernacular": test_vernacular.vernacular,
+        "vernacular_name": test_vernacular.vernacular_name,
         "language": test_vernacular.language.value,
-        "enabled": test_vernacular.enabled,
         "updated_by": test_vernacular.updated_by,
         "updated_on": test_vernacular.updated_on.isoformat(),
         "created_by": test_vernacular.created_by,
         "created_on": test_vernacular.created_on.isoformat(),
+        "deleted": False,
     }
 
 
@@ -144,9 +156,8 @@ def test_super_admin_permissions(
 
     vernacular_json = {
         "taxon_name_id": test_taxon_name_canonical_name_3.taxon_name_id,
-        "vernacular": "Vernacular 1",
+        "vernacular_name": "Vernacular 1",
         "language": "english",
-        "enabled": True,
         "created_by": test_superuser.user_id,
     }
     response = client.post(
@@ -199,9 +210,8 @@ def test_manager_permissions(
 
     vernacular_json = {
         "taxon_name_id": test_taxon_name_canonical_name_3.taxon_name_id,
-        "vernacular": "Vernacular 1",
+        "vernacular_name": "Vernacular 1",
         "language": "english",
-        "enabled": True,
         "created_by": test_manager.user_id,
     }
     response = client.post(
@@ -254,9 +264,8 @@ def test_officer_permissions(
 
     vernacular_json = {
         "taxon_name_id": test_taxon_name_canonical_name_3.taxon_name_id,
-        "vernacular": "Vernacular 1",
+        "vernacular_name": "Vernacular 1",
         "language": "english",
-        "enabled": True,
         "created_by": test_officer.user_id,
     }
     response = client.post(

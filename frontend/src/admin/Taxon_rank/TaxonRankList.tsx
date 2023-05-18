@@ -11,14 +11,19 @@ import {
 } from 'react-admin';
 import RankAbbreviation from './RankAbbreviation';
 import { WithPermissions, List } from '@react-admin/ra-rbac';
-import { DefaultPagination, useCanBulkDelete } from '../shared';
+import {
+  DefaultPagination,
+  selectableFilters,
+  useCanBulkDelete,
+} from '../shared';
 
 export const TaxonRankList: FC = (props) => (
   <List
     {...props}
-    sort={{ field: 'rank_name' }}
+    sort={{ field: 'rank_name', order: 'ASC' }}
     perPage={100}
     pagination={<DefaultPagination />}
+    filters={selectableFilters()}
     bulkActionButtons={useCanBulkDelete()}
   >
     <Datagrid rowClick="show">
@@ -26,6 +31,7 @@ export const TaxonRankList: FC = (props) => (
         source="kingdom_id"
         reference="kingdoms"
         sortBy="kingdom___kingdom_name"
+        link="show"
       >
         <TextField source="kingdom_name" />
       </ReferenceField>
@@ -40,6 +46,7 @@ export const TaxonRankList: FC = (props) => (
         source="direct_parent_rank_id"
         reference="taxon_ranks"
         sortBy="direct_parent_rank___rank_name"
+        link="show"
       >
         <NumberField source="rank_name" />
       </ReferenceField>
@@ -48,11 +55,12 @@ export const TaxonRankList: FC = (props) => (
         source="required_parent_rank_id"
         reference="taxon_ranks"
         sortBy="required_parent_rank___rank_name"
+        link="show"
       >
         <TextField source="rank_name" />
       </ReferenceField>
       <BooleanField source="uninomial" />
-      <ReferenceField source="updated_by" reference="users">
+      <ReferenceField source="updated_by" reference="users" link="show">
         <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" />

@@ -11,19 +11,11 @@ import CompareArrowsIcon from '@material-ui/icons/CompareArrows';
 import CallSplitIcon from '@material-ui/icons/CallSplit';
 import MenuBookIcon from '@material-ui/icons/MenuBook';
 import ChangeHistoryIcon from '@material-ui/icons/ChangeHistory';
-import SupervisedUserCircleIcon from '@material-ui/icons/SupervisedUserCircle';
+import WebIcon from '@material-ui/icons/Web';
+import SettingsIcon from '@material-ui/icons/Settings';
 import GroupWorkIcon from '@material-ui/icons/GroupWork';
 import LinkIcon from '@material-ui/icons/Link';
-import { makeStyles } from '@material-ui/core/styles';
-
-const useStyles = makeStyles((theme) => ({
-  noMargin: {
-    marginLeft: '-32px',
-  },
-}));
-
 const Menu = () => {
-  const classes = useStyles();
   return (
     <MultiLevelMenu initialOpen>
       <MenuItem
@@ -32,7 +24,7 @@ const Menu = () => {
         icon={<DashboardIcon />}
         to="/"
       />
-      <MenuItem name="Nomos" label="Nomos">
+      <MenuItem name="Nomos" label="Nomos" icon={<WebIcon />}>
         <MenuItem
           name="Taxon Names"
           label="Taxon Names"
@@ -51,14 +43,8 @@ const Menu = () => {
           icon={<PeopleIcon />}
           to="/authors"
         />
-        <MenuItem
-          name="Hierarchies"
-          label="Hierarchies"
-          to="/hierarchies"
-          icon={<ChangeHistoryIcon />}
-        />
       </MenuItem>
-      <MenuItem name="Admin" label="Admin">
+      <MenuItem name="Admin" label="Admin" icon={<SettingsIcon />}>
         <MenuItem
           name="Citations"
           label="Citations"
@@ -70,6 +56,12 @@ const Menu = () => {
           label="Classification Types"
           icon={<FiberManualRecordOutlinedIcon />}
           to="/classification_systems"
+        />
+        <MenuItem
+          name="Hierarchies"
+          label="Hierarchies"
+          to="/hierarchies"
+          icon={<ChangeHistoryIcon />}
         />
         <MenuItem
           name="Informal Groups"

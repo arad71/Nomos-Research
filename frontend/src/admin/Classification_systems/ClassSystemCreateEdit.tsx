@@ -5,6 +5,7 @@ import {
   SimpleForm,
   TextInput,
   NullableBooleanInput,
+  minValue,
 } from 'react-admin';
 import React, { FC } from 'react';
 import ClassificationType from './ClassificationType';
@@ -55,7 +56,12 @@ export const ClassSystemCreateEdit: FC = (props) => {
           />
         </Box>
         <Box>
-          <NumberInput source="sort_order" fullWidth />
+          <NumberInput
+            source="sort_order"
+            fullWidth
+            validate={[minValue(0)]}
+            min={0}
+          />
         </Box>
       </Box>
     </SimpleForm>

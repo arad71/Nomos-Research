@@ -1,5 +1,6 @@
 from functools import lru_cache
 from importlib import metadata
+from os import getenv
 from typing import Any, Dict, Literal, Optional
 
 from pydantic import AnyUrl, BaseSettings, PostgresDsn, validator
@@ -9,7 +10,7 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "Nomos - Taxonomic Names Management Tool"
     PROJECT_VERSION: str = f'v{metadata.version("Nomos")}'
     ENVIRONMENT: str
-    DEFAULT_PAGE_SIZE: int = 100
+    DEFAULT_PAGE_SIZE: int = 200
 
     FIRST_SUPER_ADMIN_EMAIL: str = "admin@taxman.com"
     FIRST_SUPER_ADMIN_PASSWORD: str = "password"
@@ -33,6 +34,9 @@ class Settings(BaseSettings):
     AUTH_PROVIDER: Literal["auth2", "password"]
 
     SQLALCHEMY_DATABASE_URI: Optional[PostgresDsn] = None
+    SQLALCHEMY_SESSION_POOL_SIZE: int = getenv("SQLALCHEMY_SESSION_POOL_SIZE", 50)
+    SQLALCHEMY_SESSION_MAX_OVERFLOW: int = getenv("SQLALCHEMY_SESSION_MAX_OVERFLOW", 0)
+    UVICORN_WORKERS: int = getenv("UVICORN_WORKERS", 2)
     # Set this to True to enable printing db queries to the log
     ECHO_DB: bool = False
 

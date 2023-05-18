@@ -17,6 +17,8 @@ type Action =
   | 'write' // for a field in the resource
   | 'delete'
   | 'bulkdelete'
+  | 'viewdeleted'
+  | 'deletedfilter'
   | '*';
 type Actions = Action[] | Action;
 
@@ -74,12 +76,6 @@ const authProvider = {
       params.body = formData;
     }
     return getAuthToken(params);
-  },
-  logout: () => {
-    const logout_url = localStorage.getItem('logout_url');
-    clearLocalStorage();
-    // React admin will redirect to the logout url if it's defined.
-    return Promise.resolve(logout_url);
   },
   getIdentity: () => {
     return {
@@ -141,19 +137,19 @@ const authProvider = {
     ];
     permissions[Role.MANAGER] = [
       { action: ['show', 'list', 'export'], resource: '*' },
-      { action: ['create', 'edit'], resource: 'authors' },
-      { action: ['create', 'edit'], resource: 'citations' },
-      { action: ['create', 'edit'], resource: 'cross_references' },
+      { action: ['create', 'edit', 'delete'], resource: 'authors' },
+      { action: ['create', 'edit', 'delete'], resource: 'citations' },
+      { action: ['create', 'edit', 'delete'], resource: 'cross_references' },
       {
-        action: ['create', 'edit'],
+        action: ['create', 'edit', 'delete'],
         resource: 'hierarchies',
       },
       {
-        action: ['create', 'edit'],
+        action: ['create', 'edit', 'delete'],
         resource: 'informal_groups',
       },
       {
-        action: ['create', 'edit'],
+        action: ['create', 'edit', 'delete'],
         resource: 'publications',
       },
       {
@@ -161,26 +157,50 @@ const authProvider = {
         resource: 'publication_authors',
       },
       {
-        action: ['create', 'edit'],
+        action: ['create', 'edit', 'delete'],
         resource: 'taxon_names',
       },
       {
-        action: ['create', 'edit'],
+        action: ['create', 'edit', 'delete'],
         resource: 'vernaculars',
       },
     ];
 
     permissions[Role.APPLICATION_SUPPORT] = [
       { action: ['show', 'list', 'export'], resource: '*' },
-      { action: '*', resource: 'users' },
-      { action: '*', resource: 'user_roles' },
-      { action: '*', resource: 'kingdoms' },
-      { action: '*', resource: 'taxon_ranks' },
-      { action: '*', resource: 'classification_systems' },
+      {
+        action: ['create', 'edit', 'delete', 'viewdeleted', 'deletedfilter'],
+        resource: 'users',
+      },
+      {
+        action: ['create', 'delete'],
+        resource: 'user_roles',
+      },
+      {
+        action: ['create', 'edit', 'delete'],
+        resource: 'kingdoms',
+      },
+      {
+        action: ['create', 'edit', 'delete'],
+        resource: 'taxon_ranks',
+      },
+      {
+        action: ['create', 'edit', 'delete'],
+        resource: 'classification_systems',
+      },
     ];
     permissions[Role.SUPER_ADMIN] = [
       {
-        action: ['show', 'list', 'export', 'create', 'edit', 'delete'],
+        action: [
+          'show',
+          'list',
+          'export',
+          'create',
+          'edit',
+          'delete',
+          'viewdeleted',
+          'deletedfilter',
+        ],
         resource: '*',
       },
     ];

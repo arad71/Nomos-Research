@@ -3,7 +3,7 @@
 set -x
 set -e
 function backend() {
-    docker-compose run --rm backend "$@"
+    docker compose run --rm backend "$@"
 }
 # Check whitespace for better diffs
 backend black --diff --check --color .

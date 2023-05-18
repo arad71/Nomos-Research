@@ -3,10 +3,9 @@ import zipfile
 from pathlib import Path
 from shutil import rmtree
 
-from fastapi import APIRouter, Depends, UploadFile
+from fastapi import APIRouter, BackgroundTasks, Depends, UploadFile
 from fastapi.responses import FileResponse
 from fastapi_key_auth import AuthorizerDependency
-from starlette.background import BackgroundTasks
 
 from app.dataimport.csv import import_taxon_names
 from app.dataimport.wacensus import import_data

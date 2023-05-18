@@ -1,6 +1,5 @@
 import {
   NumberInput,
-  ReferenceInput,
   required,
   SelectInput,
   SimpleForm,
@@ -13,6 +12,7 @@ import LanguageType from './LanguageType';
 import { Box, Typography, makeStyles } from '@material-ui/core';
 import { GlobalTheme } from '../../GlobalTheme';
 import EditToolbar from '../shared/EditToolbar';
+import ScientificNameReference from '../Taxon_names/ScientificNameReference';
 
 const useStyles = makeStyles((theme) => ({
   mainGrid: {
@@ -38,10 +38,8 @@ export const VernacularCreateEdit: FC = (props) => {
         </Typography>
       </Box>
       <Box className={classes.mainGrid}>
-        <TextInput source="vernacular" validate={required()} />
-        <ReferenceInput source="taxon_name_id" reference="taxon_names">
-          <SelectInput optionText="scientific_name" validate={required()} />
-        </ReferenceInput>
+        <TextInput source="vernacular_name" validate={required()} />
+        <ScientificNameReference source="taxon_name_id" validate={required()} />
         <SelectInput
           source="language"
           choices={LanguageType}
@@ -58,12 +56,6 @@ export const VernacularCreateEdit: FC = (props) => {
         <BooleanInput
           label="preferred"
           source="preferred"
-          validate={required()}
-          defaultValue={false}
-        />
-        <BooleanInput
-          label="Enabled"
-          source="enabled"
           validate={required()}
           defaultValue={false}
         />

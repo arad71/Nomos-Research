@@ -1,6 +1,6 @@
 from sqlalchemy import Column, ForeignKey, Integer
 from sqlalchemy.orm import backref, relationship
-from sqlalchemy.schema import UniqueConstraint
+from sqlalchemy.schema import Index
 
 from app.db.informal_group.constants import CLASSIFICATION_SYSTEM_ID, TABLE_DESCRIPTION
 from app.db.models import BaseModel, TableMixin
@@ -8,16 +8,8 @@ from app.db.models import BaseModel, TableMixin
 
 class InformalGroup(BaseModel, TableMixin):
     __tablename__ = "informal_group"
-    __table_args__ = (
-        UniqueConstraint(
-            "classification_system_id",
-            "taxon_name_id",
-            name=f"uc_{ __tablename__}_legacy_id",
-        ),
-        {"comment": TABLE_DESCRIPTION},
-    )
-    name_plural = "informal_groups"
 
+    name_plural = "informal_groups"
     informal_group_id = Column(Integer, primary_key=True)
     classification_system_id = Column(
         Integer,
@@ -34,4 +26,14 @@ class InformalGroup(BaseModel, TableMixin):
         "TaxonName",
         foreign_keys=[taxon_name_id],
         backref=backref(name_plural, cascade="all, delete-orphan"),
+    )
+    legacy_id_columns = ["classification_system_id", "taxon_name_id"]
+    __table_args__ = (
+        Index(
+            f"ix_{__tablename__}_legacy_id_isactive",
+            *legacy_id_columns,
+            unique=True,
+            postgresql_where="deleted = FALSE",
+        ),
+        {"comment": TABLE_DESCRIPTION},
     )

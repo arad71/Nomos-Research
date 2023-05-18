@@ -14,11 +14,10 @@ class ImportTaxonName(DataImportBase):
     def __init__(self, db, current_user):
         super().__init__(db, current_user)
         self.data_model = TaxonNameModel
-        self.upsert_constraint = f"uc_{TaxonNameModel.__tablename__}_legacy_id"
+        self.upsert_constraint = f"ix_{TaxonNameModel.__tablename__}_legacy_id_isactive"
         self.update_cols = (
             "kingdom_id",
             "uninomial",
-            "subgenus",
             "specific_epithet",
             "infraspecific_epithet",
             "publication_id",
@@ -210,7 +209,7 @@ class ImportTaxonNameUpload(ImportTaxonName):
             *row["canonical_name_without_rank"].split()
         )
         if not uninomial:
-            raise DataSkipError(f"No uninomial defined")
+            raise DataSkipError("No uninomial defined")
         admin_comment = [
             f"Created by import script {__name__}",
             f" from source csv {self.legacy_id_prefix[:-1]}",

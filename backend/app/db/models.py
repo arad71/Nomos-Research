@@ -1,24 +1,34 @@
-from sqlalchemy import TIMESTAMP, Column, ForeignKey, Integer, func
+from sqlalchemy import TIMESTAMP, Boolean, Column, ForeignKey, Integer, func
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy_mixins.repr import ReprMixin
+from sqlalchemy_mixins.serialize import SerializeMixin
 from sqlalchemy_mixins.smartquery import SmartQueryMixin
 
 from app.db.session import Base
 
 
-class BaseModel(Base, SmartQueryMixin, ReprMixin):
+class BaseModel(Base, SmartQueryMixin, ReprMixin, SerializeMixin):
     __abstract__ = True
-    __repr__ = ReprMixin.__repr__
-    pass
 
 
 # See https://docs.sqlalchemy.org/en/13/orm/extensions/declarative/mixins.html
 class TableMixin(object):
     @declared_attr
+    def deleted(cls):
+        return Column(
+            Boolean,
+            default=False,
+            nullable=False,
+            index=True,
+            comment="If this record is soft deleted",
+        )
+
+    @declared_attr
     def updated_by(cls):
         return Column(
             Integer,
             ForeignKey("user.user_id"),
+            index=True,
             comment="The person who updated this record",
         )
 
@@ -28,6 +38,7 @@ class TableMixin(object):
             TIMESTAMP(timezone=True),
             default=func.current_timestamp(),
             onupdate=func.current_timestamp(),
+            index=True,
             comment="The date this record was updated on",
         )
 
@@ -36,6 +47,7 @@ class TableMixin(object):
         return Column(
             Integer,
             ForeignKey("user.user_id"),
+            index=True,
             comment="The person who created this record",
         )
 
@@ -44,6 +56,7 @@ class TableMixin(object):
         return Column(
             TIMESTAMP(timezone=True),
             default=func.current_timestamp(),
+            index=True,
             comment="The date this record was created on",
         )
 

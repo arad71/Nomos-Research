@@ -4,7 +4,7 @@ set -x
 set -e
 
 docker ps
-docker-compose logs backend
-docker-compose restart backend
+docker compose logs backend
+docker compose restart backend
 # Run migrations
-docker-compose run --rm backend alembic downgrade base
+docker compose run --rm backend alembic downgrade base

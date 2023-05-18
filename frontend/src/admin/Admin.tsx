@@ -9,6 +9,7 @@ import MyLayout from '../MyLayout';
 import theme from '../Theme';
 import Dashboard from '../Dashboard';
 import BookIcon from '@material-ui/icons/Book';
+import { LogoutButton } from '../LogoutButton';
 
 import { UserList, UserShow, UserEdit, UserCreate } from './Users';
 import {
@@ -76,6 +77,13 @@ import { RolesShow } from './Roles/RolesShow';
 import { RolesList } from './Roles/RolesList';
 import { UserRoleList } from './User_Role/UserRoleList';
 import { UserRoleShow } from './User_Role/UserRoleShow';
+import {
+  DataProvider,
+  GetListParams,
+  GetOneParams,
+  GetManyParams,
+  GetManyReferenceParams,
+} from 'ra-core/lib/types';
 
 const httpClient = (url: any, options: any) => {
   if (!options) {
@@ -106,6 +114,7 @@ const dataProvider = restDataProvider(
     taxon_names: 'taxon_name_id',
     informal_groups: 'informal_group_id',
     hierarchies: 'hierarchy_id',
+    'hierarchies/parents': 'taxon_name_id',
     cross_references: 'cross_reference_id',
     vernaculars: 'vernacular_id',
     user_roles: 'user_role_id',
@@ -114,7 +123,43 @@ const dataProvider = restDataProvider(
   {},
   httpClient
 );
+interface CacheDataProviderProxyParams {
+  dataProvider: DataProvider;
+  duration?: number;
+}
 
+// Add cacheing to requests as per https://marmelab.com/react-admin/doc/3.19/Caching.html#application-cache
+const cacheDataProviderProxy = ({
+  dataProvider,
+  // 5 minutes
+  duration = 5 * 60 * 1000,
+}: CacheDataProviderProxyParams) =>
+  new Proxy(dataProvider, {
+    get:
+      (target, name: string) =>
+      (
+        resource: string,
+        params: GetListParams &
+          GetOneParams &
+          GetManyParams &
+          GetManyReferenceParams
+      ) => {
+        if (typeof name === 'symbol') {
+          return;
+        }
+        if (
+          ['getOne', 'getMany', 'getList', 'getManyReference'].includes(name)
+        ) {
+          return dataProvider[name](resource, params).then((response: any) => {
+            const validUntil = new Date();
+            validUntil.setTime(validUntil.getTime() + duration);
+            response.validUntil = validUntil;
+            return response;
+          });
+        }
+        return dataProvider[name](resource, params);
+      },
+  });
 export const Admin: FC = () => {
   return (
     <ReactAdmin
@@ -123,7 +168,9 @@ export const Admin: FC = () => {
       layout={MyLayout}
       theme={theme}
       authProvider={authProvider}
-      dataProvider={dataProvider}
+      dataProvider={cacheDataProviderProxy({ dataProvider: dataProvider })}
+      // dataProvider={dataProvider}
+      logoutButton={LogoutButton}
     >
       <Resource
         name="users"
@@ -183,6 +230,15 @@ export const Admin: FC = () => {
         create={TaxonNameCreate}
         icon={BookIcon}
       />
+      <Resource name="taxon_names_ancestors/Division" />
+      <Resource name="taxon_names_ancestors/Phylum" />
+      <Resource name="taxon_names_ancestors/Order" />
+      <Resource name="taxon_names_ancestors/Class" />
+      <Resource name="taxon_names_ancestors/Family" />
+      <Resource name="taxon_names_ancestors/Genus" />
+      <Resource name="taxon_names_ancestors/Subgenus" />
+      <Resource name="taxon_names_ancestors/Species" />
+      <Resource name="taxon_names_ancestors/Subspecies" />
       <Resource
         name="informal_groups"
         list={InformalGroupList}
@@ -192,6 +248,13 @@ export const Admin: FC = () => {
       />
       <Resource
         name="hierarchies"
+        list={HierarchyList}
+        show={HierarchyShow}
+        edit={HierarchyEdit}
+        create={HierarchyCreate}
+      />
+      <Resource
+        name="hierarchies/parents"
         list={HierarchyList}
         show={HierarchyShow}
         edit={HierarchyEdit}

@@ -10,15 +10,16 @@ class ImportVernacular(DataImportBase):
     def __init__(self, db, current_user):
         super().__init__(db, current_user)
         self.data_model = VernacularModel
-        self.upsert_constraint = f"uc_{VernacularModel.__tablename__}_legacy_id"
+        self.upsert_constraint = (
+            f"ix_{VernacularModel.__tablename__}_legacy_id_isactive"
+        )
         self.update_cols = (
             "taxon_name_id",
-            "vernacular",
+            "vernacular_name",
             "language",
             "lang_pref",
             "preferred",
             "source",
-            "enabled",
             "sort_order",
             "created_by",
             "updated_by",
@@ -34,12 +35,12 @@ class ImportVernacular(DataImportBase):
                     self.legacy_id_prefix + row["NAME_ID"] if row["NAME_ID"] else None,
                     "taxon_name_id",
                 ),
-                "vernacular": row["VERNACULAR"],
+                "vernacular_name": row["VERNACULAR"],
                 "language": self.map_enum_base(row["LANGUAGE"]),
                 "lang_pref": self.map_y_n_to_bool(row["LANG_PREF"]),
                 "preferred": self.map_y_n_to_bool(row["PREFERRED"]),
                 "source": row["SOURCE"],
-                "enabled": self.map_y_n_to_bool(row["ENABLED"]),
+                "deleted": self.map_y_n_to_bool(row["ENABLED"]),
                 "sort_order": row["SORT_ORDER"] or None,
                 "created_by": self.current_user,
                 "updated_by": self.map_row_by_unique_key(

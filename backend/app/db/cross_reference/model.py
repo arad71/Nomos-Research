@@ -1,11 +1,10 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import backref, relationship
-from sqlalchemy.schema import UniqueConstraint
+from sqlalchemy.schema import Index
 from sqlalchemy.types import Enum
 
 from app.db.cross_reference import enums
 from app.db.cross_reference.constants import (
-    ACTIVE,
     AUTHORISED_BY,
     COMMENTS,
     CROSS_REFERENCE_ID,
@@ -20,10 +19,6 @@ from app.db.taxon_name.model import TaxonName
 
 class CrossReference(BaseModel, TableMixin):
     __tablename__ = "cross_reference"
-    __table_args__ = (
-        UniqueConstraint("legacy_id", name=f"uc_{ __tablename__}_legacy_id"),
-        {"comment": TABLE_DESCRIPTION},
-    )
 
     cross_reference_id = Column(
         Integer,
@@ -62,12 +57,6 @@ class CrossReference(BaseModel, TableMixin):
         comment=CROSS_REFERENCE_TYPE,
         doc=CROSS_REFERENCE_TYPE,
     )
-    active = Column(
-        Boolean,
-        nullable=False,
-        comment=ACTIVE,
-        doc=ACTIVE,
-    )
     authorised_yr = Column(Integer, index=True, comment="The year of authorisation")
     authorised_mn = Column(Integer, index=True, comment="The month of authorisation")
     authorised_dy = Column(Integer, index=True, comment="The day of authorisation")
@@ -75,3 +64,13 @@ class CrossReference(BaseModel, TableMixin):
     reference_comments = Column(String(1000), comment=COMMENTS, doc=COMMENTS)
     notes = Column(String(3000))
     legacy_id = Column(Integer)
+    legacy_id_columns = ["legacy_id"]
+    __table_args__ = (
+        Index(
+            f"ix_{__tablename__}_legacy_id_isactive",
+            *legacy_id_columns,
+            unique=True,
+            postgresql_where="deleted = FALSE",
+        ),
+        {"comment": TABLE_DESCRIPTION},
+    )

@@ -1,6 +1,6 @@
-from sqlalchemy import Boolean, Column, Integer, String
+from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.schema import UniqueConstraint
+from sqlalchemy.schema import Index
 
 from app.db.models import BaseModel, TableMixin
 from app.db.user.constants import (
@@ -13,15 +13,10 @@ from app.db.user.constants import (
 
 class User(BaseModel, TableMixin):
     __tablename__ = "user"
-    __table_args__ = (
-        UniqueConstraint("legacy_id_name", name=f"uc_{__tablename__}_legacy_id"),
-        {"comment": TABLE_DESCRIPTION},
-    )
 
     user_id = Column(Integer, primary_key=True)
     email = Column(
         String,
-        unique=True,
         index=True,
         nullable=False,
         comment=EMAIL,
@@ -36,8 +31,23 @@ class User(BaseModel, TableMixin):
         doc=DEFAULT_CLASS,
     )
     hashed_password = Column(String, nullable=False)
-    is_active = Column(Boolean, default=True, nullable=False)
     legacy_id_name = Column(String())
+    legacy_id_columns = ["legacy_id_name"]
+    __table_args__ = (
+        Index(
+            f"ix_{__tablename__}_legacy_id_isactive",
+            *legacy_id_columns,
+            unique=True,
+            postgresql_where="deleted = FALSE",
+        ),
+        Index(
+            f"ix_{__tablename__}_email_isactive",
+            "email",
+            unique=True,
+            postgresql_where="deleted = FALSE",
+        ),
+        {"comment": TABLE_DESCRIPTION},
+    )
 
     @hybrid_property
     def full_name(self):
@@ -47,6 +57,9 @@ class User(BaseModel, TableMixin):
 
     def has_role(self, role: dict):
         return any(user_role.role.name == role["name"] for user_role in self.user_role)
+
+    def is_super_admin(self):
+        return any(user_role.role.name == "SUPER_ADMIN" for user_role in self.user_role)
 
     @hybrid_property
     def role_names(self):

@@ -75,13 +75,6 @@ export const CrossReferenceShowLayout: FC = (props) => {
           </Labeled>
         </Box>
       </Box>
-      <Box className={globalClasses.formRow}>
-        <Box className={globalClasses.fieldMargin}>
-          <Labeled label="Active">
-            <BooleanField source="active" />
-          </Labeled>
-        </Box>
-      </Box>
     </Box>
   );
 };

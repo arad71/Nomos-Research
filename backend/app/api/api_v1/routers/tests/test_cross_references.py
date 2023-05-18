@@ -20,11 +20,11 @@ def test_get_cross_references(
         "new_name_id": test_taxon_name.taxon_name_id,
         "cross_reference_id": test_cross_reference.cross_reference_id,
         "cross_reference_type": test_cross_reference.cross_reference_type,
-        "active": test_cross_reference.active,
         "updated_by": test_cross_reference.updated_by,
         "updated_on": test_cross_reference.updated_on.isoformat(),
         "created_by": test_cross_reference.created_by,
         "created_on": test_cross_reference.created_on.isoformat(),
+        "deleted": False,
     }
 
 
@@ -36,6 +36,21 @@ def test_delete_cross_reference(
         headers=superuser_token_headers,
     )
     assert response.status_code == status.HTTP_200_OK
+    assert response.json()["deleted"] is True
+    assert test_db.query(CrossReference).all() == [test_cross_reference]
+
+
+def test_hard_delete_cross_reference(
+    client, test_cross_reference, test_db, superuser_token_headers, test_superuser
+):
+    response = client.delete(
+        f"/api/v1/cross_references/{test_cross_reference.cross_reference_id}/hard",
+        headers=superuser_token_headers,
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {
+        "cross_reference_id": test_cross_reference.cross_reference_id
+    }
     assert test_db.query(CrossReference).all() == []
 
 
@@ -56,7 +71,6 @@ def test_edit_cross_reference(
     new_cross_reference = {
         "old_name_id": test_taxon_name.taxon_name_id,
         "cross_reference_type": "misapplied_name",
-        "active": True,
         "updated_by": test_superuser.user_id,
         "updated_on": test_cross_reference.updated_on.isoformat(),
         "created_by": test_superuser.user_id,
@@ -73,6 +87,7 @@ def test_edit_cross_reference(
     json = response.json()
     new_cross_reference["updated_on"] = json["updated_on"]
     new_cross_reference["new_name_id"] = test_taxon_name.taxon_name_id
+    new_cross_reference["deleted"] = False
     del json["old_name"]
     del json["new_name"]
     assert json == new_cross_reference
@@ -88,7 +103,7 @@ def test_edit_cross_reference_not_found(
     new_cross_reference = {
         "old_name_id": test_taxon_name.taxon_name_id,
         "cross_reference_type": "misapplied_name",
-        "active": False,
+        "deleted": True,
         "updated_by": test_superuser.user_id,
         "updated_on": test_cross_reference.updated_on.isoformat(),
         "created_by": test_superuser.user_id,
@@ -122,11 +137,11 @@ def test_get_cross_reference(
         "new_name_id": test_taxon_name.taxon_name_id,
         "cross_reference_id": test_cross_reference.cross_reference_id,
         "cross_reference_type": "misapplied_name",
-        "active": test_cross_reference.active,
         "updated_by": test_cross_reference.updated_by,
         "updated_on": test_cross_reference.updated_on.isoformat(),
         "created_by": test_cross_reference.created_by,
         "created_on": test_cross_reference.created_on.isoformat(),
+        "deleted": False,
     }
 
 
@@ -150,7 +165,6 @@ def test_unauthenticated_routes(client):
 
 NEW_CROSS_REFERENCE = {
     "cross_reference_type": "misapplied_name",
-    "active": True,
     "updated_by": None,
     "updated_on": None,
 }

@@ -19,6 +19,7 @@ from app.db.publication.model import Publication
 from app.db.role.constants import Role
 from app.db.role.model import Role as RoleModel
 from app.db.session import Base, get_db
+from app.db.taxon_name.enums import NaturalisedStatus
 from app.db.taxon_name.model import TaxonName
 from app.db.taxon_rank.model import TaxonRank
 from app.db.user.model import User
@@ -74,11 +75,11 @@ def create_test_db():
     test_db_url = get_test_db_url()
 
     # Create the test database
-    assert not database_exists(
-        test_db_url
-    ), "Test database already exists. Aborting tests."
+    if database_exists(test_db_url):
+        drop_database(test_db_url)
     create_database(test_db_url)
     test_engine = create_engine(test_db_url)
+    test_engine.execute("CREATE EXTENSION IF NOT EXISTS ltree")
     Base.metadata.create_all(test_engine)
 
     # Run the tests
@@ -123,7 +124,7 @@ def test_user(test_db) -> User:
     user = User(
         email="fake@email.com",
         hashed_password=get_password_hash(),
-        is_active=True,
+        deleted=False,
     )
     test_db.add(user)
     test_db.commit()
@@ -163,7 +164,6 @@ def create_user_with_role(role, test_db) -> User:
     user = User(
         email=f"{role_name}@email.com",
         hashed_password=get_password_hash(),
-        is_active=True,
         created_by=None,
         updated_by=None,
     )
@@ -280,6 +280,29 @@ def test_classification_system(test_db, test_superuser) -> ClassificationSystem:
 
 
 @pytest.fixture
+def test_hierarchical_classification_system(
+    test_db, test_superuser
+) -> ClassificationSystem:
+    """
+    Classification System for testing
+    """
+
+    now = datetime.datetime.utcnow()
+    classification_system = ClassificationSystem(
+        class_desc="HIERARCHICAL_CLASS_DESC",
+        class_type="hierarchical",
+        preferred=True,
+        updated_by=test_superuser.user_id,
+        updated_on=now,
+        created_by=test_superuser.user_id,
+        created_on=now,
+    )
+    test_db.add(classification_system)
+    test_db.commit()
+    return classification_system
+
+
+@pytest.fixture
 def test_cross_reference(test_db, test_taxon_name, test_superuser) -> CrossReference:
     """
     Cross Reference for testing
@@ -290,7 +313,6 @@ def test_cross_reference(test_db, test_taxon_name, test_superuser) -> CrossRefer
         old_name_id=test_taxon_name.taxon_name_id,
         cross_reference_type="misapplied_name",
         new_name_id=test_taxon_name.taxon_name_id,
-        active=True,
         updated_by=test_superuser.user_id,
         updated_on=now,
         created_by=test_superuser.user_id,
@@ -325,7 +347,80 @@ def test_hierarchy(
     )
     test_db.add(hierarchy)
     test_db.commit()
+    test_db.refresh(hierarchy)
+    hierarchy.calculate_path(db=test_db)
     return hierarchy
+
+
+def create_hierarchy(
+    name: TaxonName,
+    parent: TaxonName,
+    test_classification_system: ClassificationSystem,
+    user,
+    test_db,
+) -> Hierarchy:
+    hierarchy = Hierarchy(
+        parent_nid=parent.taxon_name_id,
+        classification_system_id=test_classification_system.classification_system_id,
+        taxon_name_id=name.taxon_name_id,
+        created_by=user.user_id,
+        updated_by=user.user_id,
+    )
+    test_db.add(hierarchy)
+    test_db.commit()
+    hierarchy.calculate_path(db=test_db)
+    return hierarchy
+
+
+@pytest.fixture
+def test_hierarchies(
+    test_chordata,
+    test_animalia,
+    test_classification_system,
+    test_mammalia,
+    test_reptilia,
+    test_carnivora,
+    test_panthera,
+    test_superuser,
+    test_db,
+):
+    return {
+        "chordate": create_hierarchy(
+            test_chordata,
+            test_animalia,
+            test_classification_system,
+            test_superuser,
+            test_db,
+        ),
+        "mammal": create_hierarchy(
+            test_mammalia,
+            test_chordata,
+            test_classification_system,
+            test_superuser,
+            test_db,
+        ),
+        "reptile": create_hierarchy(
+            test_reptilia,
+            test_chordata,
+            test_classification_system,
+            test_superuser,
+            test_db,
+        ),
+        "carnivore": create_hierarchy(
+            test_carnivora,
+            test_mammalia,
+            test_classification_system,
+            test_superuser,
+            test_db,
+        ),
+        "panther": create_hierarchy(
+            test_panthera,
+            test_carnivora,
+            test_classification_system,
+            test_superuser,
+            test_db,
+        ),
+    }
 
 
 @pytest.fixture
@@ -378,7 +473,6 @@ def test_publication(test_db, test_superuser) -> Publication:
 
     now = datetime.datetime.utcnow()
     publication = Publication(
-        bad_publication=False,
         abbreviated_title="PUBLICATION",
         title="PUBLICATION_NAME",
         publication_day=23,
@@ -408,7 +502,150 @@ def test_taxon_name(
         rank_id=test_taxon_rank.taxon_rank_id,
         is_current=True,
         validated=True,
-        canonical_name="",
+        uninomial="Testuninomial",
+        updated_by=test_superuser.user_id,
+        updated_on=now,
+        created_by=test_superuser.user_id,
+        created_on=now,
+    )
+    test_db.add(taxon_name)
+    test_db.commit()
+    test_db.refresh(taxon_name)
+    return taxon_name
+
+
+@pytest.fixture
+def test_checklist_name(
+    test_db, test_taxon_name, test_informal_group, test_vernacular, test_panthera
+) -> TaxonName:
+    test_taxon_name.naturalised_status = NaturalisedStatus.native
+    test_db.add(test_taxon_name)
+    test_vernacular.preferred = True
+    test_db.add(test_vernacular)
+    test_db.commit()
+    return test_taxon_name
+
+
+@pytest.fixture
+def test_animalia(
+    test_db, test_kingdom, test_publication, test_superuser, test_rank_kingdom
+) -> TaxonName:
+    """
+    Taxon Name for testing
+    """
+    now = datetime.datetime.utcnow()
+    return create_taxon_name(
+        "Animalia", now, test_db, test_kingdom, test_superuser, test_rank_kingdom
+    )
+
+
+@pytest.fixture
+def test_chordata(
+    test_db, test_kingdom, test_publication, test_superuser, test_rank_phylum
+) -> TaxonName:
+    """
+    Taxon Name for testing
+    """
+    now = datetime.datetime.utcnow()
+    return create_taxon_name(
+        "Chordata", now, test_db, test_kingdom, test_superuser, test_rank_phylum
+    )
+
+
+@pytest.fixture
+def test_mammalia(
+    test_db, test_kingdom, test_publication, test_superuser, test_rank_class
+) -> TaxonName:
+    """
+    Taxon Name for testing
+    """
+    now = datetime.datetime.utcnow()
+    return create_taxon_name(
+        "Mammalia", now, test_db, test_kingdom, test_superuser, test_rank_class
+    )
+
+
+@pytest.fixture
+def test_reptilia(
+    test_db, test_kingdom, test_publication, test_superuser, test_rank_class
+) -> TaxonName:
+    """
+    Taxon Name for testing
+    """
+    now = datetime.datetime.utcnow()
+    return create_taxon_name(
+        "Reptilia", now, test_db, test_kingdom, test_superuser, test_rank_class
+    )
+
+
+@pytest.fixture
+def test_carnivora(
+    test_db, test_kingdom, test_publication, test_superuser, test_rank_order
+) -> TaxonName:
+    """
+    Taxon Name for testing
+    """
+    now = datetime.datetime.utcnow()
+    return create_taxon_name(
+        "Carnivora", now, test_db, test_kingdom, test_superuser, test_rank_order
+    )
+
+
+@pytest.fixture
+def test_felidae(
+    test_db, test_kingdom, test_publication, test_superuser, test_rank_family
+) -> TaxonName:
+    """
+    Taxon Name for testing
+    """
+    now = datetime.datetime.utcnow()
+    return create_taxon_name(
+        "Felidae", now, test_db, test_kingdom, test_superuser, test_rank_family
+    )
+
+
+@pytest.fixture
+def test_panthera(
+    test_db, test_kingdom, test_publication, test_superuser, test_rank_genus
+) -> TaxonName:
+    """
+    Taxon Name for testing
+    """
+    now = datetime.datetime.utcnow()
+    return create_taxon_name(
+        "Panthera", now, test_db, test_kingdom, test_superuser, test_rank_genus
+    )
+
+
+@pytest.fixture
+def test_panthera_leo(
+    test_db, test_kingdom, test_publication, test_superuser, test_rank_species
+) -> TaxonName:
+    """
+    Taxon Name for testing
+    """
+    now = datetime.datetime.utcnow()
+    return create_taxon_name(
+        "Panthera",
+        now,
+        test_db,
+        test_kingdom,
+        test_superuser,
+        test_rank_species,
+        specific_epithet="leo",
+    )
+
+
+def create_taxon_name(
+    name, now, test_db, test_kingdom, test_superuser, rank, specific_epithet=None
+):
+    taxon_name = TaxonName(
+        kingdom_id=test_kingdom.kingdom_id,
+        rank_id=rank.taxon_rank_id,
+        is_current=True,
+        validated=True,
+        uninomial=name,
+        specific_epithet=specific_epithet,
         updated_by=test_superuser.user_id,
         updated_on=now,
         created_by=test_superuser.user_id,
@@ -433,7 +670,32 @@ def test_taxon_name_2(
         rank_id=test_taxon_rank.taxon_rank_id,
         is_current=True,
         validated=True,
-        canonical_name="",
+        uninomial="Testuninomial2",
+        updated_by=test_superuser.user_id,
+        updated_on=now,
+        created_by=test_superuser.user_id,
+        created_on=now,
+    )
+    test_db.add(taxon_name)
+    test_db.commit()
+    return taxon_name
+
+
+@pytest.fixture
+def test_taxon_name_3(
+    test_db, test_kingdom, test_taxon_rank, test_publication, test_superuser
+) -> TaxonName:
+    """
+    Taxon Name 3 for testing
+    """
+
+    now = datetime.datetime.utcnow()
+    taxon_name = TaxonName(
+        kingdom_id=test_kingdom.kingdom_id,
+        rank_id=test_taxon_rank.taxon_rank_id,
+        is_current=True,
+        validated=True,
+        uninomial="Testuninomial3",
         updated_by=test_superuser.user_id,
         updated_on=now,
         created_by=test_superuser.user_id,
@@ -458,15 +720,10 @@ def test_taxon_name_canonical_name_1(
         rank_id=test_taxon_rank.taxon_rank_id,
         is_current=True,
         validated=True,
-        genus="Acanthiza",
         uninomial="Acanthiza",
         specific_epithet=None,
         infraspecific_epithet=None,
-        # publication_year=1911,
         canonical_name="Acanthiza",
-        # author="Mathews",
-        # scientific_name="Acanthiza Mathews, 1911",
-        # formatted_scientific_name="<i>Acanthiza</i> Mathews, 1911",
         updated_by=test_superuser.user_id,
         updated_on=now,
         created_by=test_superuser.user_id,
@@ -491,14 +748,10 @@ def test_taxon_name_canonical_name_2(
         rank_id=test_taxon_rank.taxon_rank_id,
         is_current=True,
         validated=True,
-        genus="Acanthiza",
+        uninomial="Acanthiza",
         specific_epithet="iredalei",
         infraspecific_epithet=None,
-        # publication_year=1911,
         canonical_name="Acanthiza iredalei",
-        # author="Mathews",
-        # scientific_name="Acanthiza iredalei Mathews, 1911",
-        # formatted_scientific_name="<i>Acanthiza iredalei</i> Mathews, 1911",
         updated_by=test_superuser.user_id,
         updated_on=now,
         created_by=test_superuser.user_id,
@@ -524,15 +777,10 @@ def test_taxon_name_canonical_name_3(
         rank_id=test_taxon_rank.taxon_rank_id,
         is_current=True,
         validated=True,
-        genus="Acanthiza",
+        uninomial="Acanthiza",
         specific_epithet="iredalei",
         infraspecific_epithet="iredalei",
-        uninomial="",
-        # publication_year=1911,
         canonical_name="Acanthiza iredalei iredalei",
-        # author="Mathews",
-        # scientific_name="Acanthiza iredalei iredalei Mathews, 1911",
-        # formatted_scientific_name="<i>Acanthiza iredalei iredalei</i> Mathews, 1911",
         updated_by=test_superuser.user_id,
         updated_on=now,
         created_by=test_superuser.user_id,
@@ -566,6 +814,102 @@ def test_taxon_rank(test_db, test_kingdom, test_superuser) -> TaxonRank:
 
 
 @pytest.fixture
+def test_rank_kingdom(test_db, test_kingdom, test_superuser) -> TaxonRank:
+    """
+    Taxon Rank for testing
+    """
+
+    return create_rank(None, "Kingdom", test_db, test_kingdom, test_superuser)
+
+
+@pytest.fixture
+def test_rank_phylum(
+    test_db, test_kingdom, test_superuser, test_rank_kingdom
+) -> TaxonRank:
+    """
+    Taxon Rank for testing
+    """
+
+    return create_rank(
+        test_rank_kingdom, "Phylum", test_db, test_kingdom, test_superuser
+    )
+
+
+@pytest.fixture
+def test_rank_class(
+    test_db, test_kingdom, test_superuser, test_rank_phylum
+) -> TaxonRank:
+    """
+    Taxon Rank for testing
+    """
+
+    return create_rank(test_rank_phylum, "Class", test_db, test_kingdom, test_superuser)
+
+
+@pytest.fixture
+def test_rank_order(
+    test_db, test_kingdom, test_superuser, test_rank_class
+) -> TaxonRank:
+    """
+    Taxon Rank for testing
+    """
+
+    return create_rank(test_rank_class, "Order", test_db, test_kingdom, test_superuser)
+
+
+@pytest.fixture
+def test_rank_family(
+    test_db, test_kingdom, test_superuser, test_rank_order
+) -> TaxonRank:
+    """
+    Taxon Rank for testing
+    """
+
+    return create_rank(test_rank_order, "Family", test_db, test_kingdom, test_superuser)
+
+
+@pytest.fixture
+def test_rank_genus(
+    test_db, test_kingdom, test_superuser, test_rank_family
+) -> TaxonRank:
+    """
+    Taxon Rank for testing
+    """
+
+    return create_rank(test_rank_family, "Genus", test_db, test_kingdom, test_superuser)
+
+
+@pytest.fixture
+def test_rank_species(
+    test_db, test_kingdom, test_superuser, test_rank_genus
+) -> TaxonRank:
+    """
+    Taxon Rank for testing
+    """
+
+    return create_rank(
+        test_rank_genus, "Species", test_db, test_kingdom, test_superuser
+    )
+
+
+def create_rank(parent, rank_name, test_db, test_kingdom, test_superuser):
+    now = datetime.datetime.utcnow()
+    taxon_rank = TaxonRank(
+        kingdom_id=test_kingdom.kingdom_id,
+        rank_name=rank_name,
+        uninomial=False,
+        updated_by=test_superuser.user_id,
+        updated_on=now,
+        direct_parent_rank=parent,
+        created_by=test_superuser.user_id,
+        created_on=now,
+    )
+    test_db.add(taxon_rank)
+    test_db.commit()
+    return taxon_rank
+
+
+@pytest.fixture
 def test_taxon_name_canonical_name_4(
     test_db, test_kingdom, test_taxon_rank, test_superuser
 ) -> TaxonName:
@@ -579,7 +923,6 @@ def test_taxon_name_canonical_name_4(
         rank_id=test_taxon_rank.taxon_rank_id,
         is_current=True,
         validated=True,
-        genus="Acanthiza",
         uninomial="Acanthiza",
         specific_epithet="iredalei",
         infraspecific_epithet="iredalei",
@@ -603,9 +946,8 @@ def test_vernacular(test_db, test_taxon_name, test_superuser) -> Vernacular:
     now = datetime.datetime.utcnow()
     vernacular = Vernacular(
         taxon_name_id=test_taxon_name.taxon_name_id,
-        vernacular="Vernacular 1",
+        vernacular_name="Vernacular 1",
         language="english",
-        enabled=True,
         updated_by=test_superuser.user_id,
         updated_on=now,
         created_by=test_superuser.user_id,

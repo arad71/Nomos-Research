@@ -1,14 +1,23 @@
-import { ReferenceInput, required, SelectInput, SimpleForm } from 'react-admin';
+import {
+  FormDataConsumer,
+  required,
+  SelectInput,
+  SimpleForm,
+} from 'react-admin';
 import React, { FC } from 'react';
 import { GlobalTheme } from '../../GlobalTheme';
-import { Box, Typography, makeStyles } from '@material-ui/core';
+import { Box, makeStyles, Typography } from '@material-ui/core';
 import EditToolbar from '../shared/EditToolbar';
+import ScientificNameReference from '../Taxon_names/ScientificNameReference';
+import TaxonRank from '../Taxon_names/TaxonRank';
+import { dependentNameInput } from './DependentNameInput';
+import { ClassificationReference } from '../Classification_systems';
 
 const useStyles = makeStyles((theme) => ({
   mainGrid: {
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',
-    width: '70%',
+    width: '100%',
     gridColumnGap: '1.5em',
   },
 }));
@@ -29,22 +38,31 @@ export const HierarchyCreateEdit: FC = (props) => {
       </Box>
       <Box className={classes.mainGrid}>
         <Box>
-          <ReferenceInput source="taxon_name_id" reference="taxon_names">
-            <SelectInput optionText="scientific_name" validate={required()} />
-          </ReferenceInput>
+          <ClassificationReference />
+        </Box>
+
+        <Box>
+          <ScientificNameReference
+            source="taxon_name_id"
+            label="Taxon name"
+            fullWidth
+            helperText="Specify the name you are dealing with."
+            validate={required()}
+          />
         </Box>
         <Box>
-          <ReferenceInput
-            source="classification_system_id"
-            reference="classification_systems"
-          >
-            <SelectInput optionText="class_desc" validate={required()} />
-          </ReferenceInput>
+          <SelectInput
+            source="taxon_rank_name"
+            label="Filter parent rank"
+            choices={TaxonRank}
+            fullWidth
+            helperText="You may filter the parent names by taxonomic rank."
+            allowEmpty
+            resettable
+          />
         </Box>
         <Box>
-          <ReferenceInput source="parent_nid" reference="taxon_names">
-            <SelectInput optionText="scientific_name" validate={required()} />
-          </ReferenceInput>
+          <FormDataConsumer>{dependentNameInput}</FormDataConsumer>
         </Box>
       </Box>
     </SimpleForm>

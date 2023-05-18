@@ -7,6 +7,7 @@ import app.db.crud as crud
 import app.db.user.schema as schema
 from app.core.security import get_password_hash
 from app.db.user.model import User
+from app.db.user.schema import User as UserSchema
 from app.db.user_role.model import UserRole
 
 
@@ -18,7 +19,11 @@ class UserCrud(crud.Crud):
 
     @classmethod
     def get_user_by_email(cls, db: Session, email: str) -> User:
-        return db.query(User).filter(User.email == email).one_or_none()
+        return (
+            db.query(User)
+            .filter(User.email == email, User.deleted == False)
+            .one_or_none()
+        )
 
     @classmethod
     def create_item(
@@ -35,7 +40,7 @@ class UserCrud(crud.Crud):
             first_name=user.first_name,
             last_name=user.last_name,
             email=user.email,
-            is_active=user.is_active,
+            deleted=user.deleted,
             hashed_password=hashed_password,
             created_by=current_user,
             updated_by=current_user,
@@ -61,12 +66,12 @@ class UserCrud(crud.Crud):
     def edit_item(
         cls,
         db: Session,
+        current_user: UserSchema,
         user_id: int,
         user: schema.UserEdit,
-        current_user: int = None,
         **kwargs,
     ) -> User:
-        db_user = UserCrud.get_item(db, user_id)
+        db_user = UserCrud.get_item(db, current_user, user_id)
         if not db_user:
             raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")
         update_data = user.dict(exclude_unset=True)
@@ -89,13 +94,13 @@ class UserCrud(crud.Crud):
                 user_role = UserRole(
                     user_id=user_id,
                     role_id=role_id,
-                    created_by=current_user,
-                    updated_by=current_user,
+                    created_by=current_user.user_id,
+                    updated_by=current_user.user_id,
                 )
                 db.add(user_role)
 
         update_data.pop("role_ids", None)
-        update_data["updated_by"] = current_user
+        update_data["updated_by"] = current_user.user_id
 
         if "password" in update_data:
             update_data["hashed_password"] = get_password_hash(user.password)

@@ -1,5 +1,5 @@
 from sqlalchemy import Boolean, Column, Integer, String
-from sqlalchemy.schema import UniqueConstraint
+from sqlalchemy.schema import Index
 from sqlalchemy.types import Enum
 
 from app.db.classification_system import enums
@@ -16,10 +16,6 @@ from app.db.models import BaseModel, TableMixin
 
 class ClassificationSystem(BaseModel, TableMixin):
     __tablename__ = "classification_system"
-    __table_args__ = (
-        UniqueConstraint("legacy_id_name", name=f"uc_{ __tablename__}_legacy_id"),
-        {"comment": TABLE_DESCRIPTION},
-    )
 
     classification_system_id = Column(
         Integer,
@@ -43,3 +39,13 @@ class ClassificationSystem(BaseModel, TableMixin):
     )
     sort_order = Column(Integer, comment=SORT_ORDER, doc=SORT_ORDER)
     legacy_id_name = Column(String())
+    legacy_id_columns = ["legacy_id_name"]
+    __table_args__ = (
+        Index(
+            f"ix_{__tablename__}_legacy_id_isactive",
+            *legacy_id_columns,
+            unique=True,
+            postgresql_where="deleted = FALSE",
+        ),
+        {"comment": TABLE_DESCRIPTION},
+    )

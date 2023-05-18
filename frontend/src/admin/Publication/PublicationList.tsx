@@ -5,24 +5,29 @@ import {
   Datagrid,
   DateField,
   EditButton,
-  ExportButton,
+  FilterButton,
   ReferenceField,
-  SearchInput,
   TextField,
   TopToolbar,
 } from 'react-admin';
 import { List, WithPermissions } from '@react-admin/ra-rbac';
-import { DefaultPagination, useCanBulkDelete } from '../shared';
-
-const publicationFilters = [<SearchInput source="q" alwaysOn />];
+import {
+  DefaultPagination,
+  selectableFilters,
+  useCanBulkDelete,
+} from '../shared';
+import DeleteIcon from '@material-ui/icons/Delete';
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import BatchExportButton from '../shared/BatchExportButton';
 
 const Actions = () => (
   <TopToolbar>
+    <FilterButton />
     <WithPermissions resource="publications" action="create">
       <CreateButton />
     </WithPermissions>
     <WithPermissions resource="publications" action="export">
-      <ExportButton maxResults={100000} />
+      <BatchExportButton />
     </WithPermissions>
   </TopToolbar>
 );
@@ -31,11 +36,11 @@ export const PublicationList: FC = (props) => (
   <List
     {...props}
     sort={{ field: 'display_title', order: 'ASC' }}
-    filters={publicationFilters}
     actions={<Actions />}
     perPage={100}
     pagination={<DefaultPagination />}
     bulkActionButtons={useCanBulkDelete()}
+    filters={selectableFilters()}
   >
     <Datagrid rowClick="show">
       <TextField source="display_title" />
@@ -49,10 +54,17 @@ export const PublicationList: FC = (props) => (
       <TextField source="abbreviated_title" />
       <TextField source="title" />
       <BooleanField source="bad_publication" />
-      <ReferenceField source="updated_by" reference="users">
+      <ReferenceField source="updated_by" reference="users" link="show">
         <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" />
+      <WithPermissions resource="publications" action="viewdeleted">
+        <BooleanField
+          source="deleted"
+          TrueIcon={DeleteIcon}
+          FalseIcon={VisibilityIcon}
+        />
+      </WithPermissions>
       <WithPermissions resource="publications" action="edit">
         <EditButton />
       </WithPermissions>

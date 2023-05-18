@@ -13,7 +13,7 @@ export const VernacularName = () => {
   const classes = useStyles();
   return (
     <>
-      <TextField source="vernacular" className={classes.title} />
+      <TextField source="vernacular_name" className={classes.title} />
     </>
   );
 };

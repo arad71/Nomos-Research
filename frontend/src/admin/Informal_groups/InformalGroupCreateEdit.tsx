@@ -3,6 +3,7 @@ import React, { FC } from 'react';
 import { GlobalTheme } from '../../GlobalTheme';
 import { Box, Typography, makeStyles } from '@material-ui/core';
 import EditToolbar from '../shared/EditToolbar';
+import ScientificNameReference from '../Taxon_names/ScientificNameReference';
 
 const useStyles = makeStyles((theme) => ({
   mainGrid: {
@@ -34,9 +35,7 @@ export const InformalGroupCreateEdit: FC = (props) => {
         >
           <SelectInput optionText="class_desc" validate={required()} />
         </ReferenceInput>
-        <ReferenceInput source="taxon_name_id" reference="taxon_names">
-          <SelectInput optionText="scientific_name" validate={required()} />
-        </ReferenceInput>
+        <ScientificNameReference source="taxon_name_id" validate={required()} />
       </Box>
     </SimpleForm>
   );

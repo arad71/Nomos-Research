@@ -10,3 +10,6 @@ export * from './FormattedScientificNameWithStatus';
 export * from './ScientificNameReference';
 export * from './NamePageSummary';
 export * from './TaxonNameInformalGroups';
+export * from './HierarchyRowClick';
+export * from './TaxonName.d';
+export * from './HierarchyGrid';

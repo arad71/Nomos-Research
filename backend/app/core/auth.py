@@ -1,3 +1,4 @@
+from os import getenv
 from typing import Any, Callable, Optional, Sequence, Union
 from uuid import uuid4
 
@@ -72,8 +73,8 @@ async def get_current_user(
 async def get_current_active_user(
     current_user=Security(get_current_user, scopes=[], use_cache=False),
 ) -> model.User:
-    if not current_user.is_active:
-        raise HTTPException(status_code=400, detail="Inactive user")
+    if current_user.deleted:
+        raise HTTPException(status_code=400, detail="Soft deleted user")
     return current_user
 
 
@@ -127,7 +128,6 @@ def sign_up_new_user(db, email: str, password: str):
         schema.UserCreate(
             email=email,
             password=password,
-            is_active=True,
         ),
     )
     return new_user
@@ -148,8 +148,15 @@ def auth2_authenticate_user(
                 email=x_email,
                 first_name=x_first_name,
                 last_name=x_last_name,
-                is_active=False,
+                deleted=True,
                 password=password,
             ),
         )
+        admin_email = getenv("ADMIN_EMAIL")
+        admin = UserCrud.get_user_by_email(db=db, email=admin_email)
+        admin_user_id = admin.user_id
+        user.created_by = admin_user_id
+        user.updated_by = admin_user_id
+        db.add(user)
+        db.commit()
     return user

@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, overload
 
 from fastapi import APIRouter, Depends, Response
 
@@ -24,12 +24,13 @@ async def users_list(
     sort: Optional[str] = None,
     filter: Optional[str] = None,
     db=Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Get all users
     """
     users, content_range = UserCrud.get_items(
-        db, range=range, sort=sort, list_filter=filter
+        db, current_user, range=range, sort=sort, list_filter=filter
     )
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = content_range
@@ -55,11 +56,12 @@ async def user_me(current_user: User = Depends(get_current_active_user)):
 async def user_details(
     user_id: int,
     db=Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Get any user details
     """
-    user = UserCrud.get_item(db, user_id)
+    user = UserCrud.get_item(db, current_user, user_id)
     return user
 
 
@@ -111,12 +113,13 @@ async def user_edit(
     """
     return UserCrud.edit_item(
         db,
+        current_user,
         user_id,
         user,
-        current_user=current_user.user_id,
     )
 
 
+@overload
 @r.delete(
     "/{user_id}",
     dependencies=[
@@ -131,8 +134,30 @@ async def user_edit(
 async def user_delete(
     user_id: int,
     db=Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Delete existing user
     """
-    return UserCrud.delete_item(db, user_id)
+    return UserCrud.delete_item(db, current_user, user_id)
+
+
+@r.delete(
+    "/{user_id}/hard",
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
+async def user_delete(
+    user_id: int,
+    db=Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+):  # noqa: F811
+    """
+    Delete existing user
+    """
+    return UserCrud.delete_item(db, current_user, user_id, True)

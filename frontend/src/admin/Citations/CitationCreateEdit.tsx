@@ -4,12 +4,15 @@ import {
   required,
   SelectInput,
   SimpleForm,
+  AutocompleteInput,
+  minValue,
 } from 'react-admin';
 import React, { FC } from 'react';
 import AuthorType from './AuthorType';
 import { GlobalTheme } from '../../GlobalTheme';
 import { Box, Typography, makeStyles } from '@material-ui/core';
 import EditToolbar from '../shared/EditToolbar';
+import ScientificNameReference from '../Taxon_names/ScientificNameReference';
 
 const useStyles = makeStyles((theme) => ({
   mainGrid: {
@@ -36,21 +39,20 @@ export const CitationCreateEdit: FC = (props) => {
       </Box>
       <Box className={classes.mainGrid}>
         <Box>
-          <ReferenceInput
+          <ScientificNameReference
             source="taxon_name_id"
-            reference="taxon_names"
             validate={required()}
-          >
-            <SelectInput optionText="scientific_name" />
-          </ReferenceInput>
+          />
         </Box>
         <Box>
           <ReferenceInput
             source="author_id"
             reference="authors"
             validate={required()}
+            sort={{ field: 'abbreviation', order: 'ASC' }}
+            perPage={100}
           >
-            <SelectInput optionText="abbreviation" />
+            <AutocompleteInput optionText="abbreviation" resettable />
           </ReferenceInput>
         </Box>
         <Box>
@@ -59,8 +61,9 @@ export const CitationCreateEdit: FC = (props) => {
         <Box>
           <NumberInput
             source="author_order"
-            validate={required()}
+            validate={[required(), minValue(0)]}
             initialValue={0}
+            min={0}
             fullWidth
           />
         </Box>

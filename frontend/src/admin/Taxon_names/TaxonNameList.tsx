@@ -5,7 +5,6 @@ import {
   Datagrid,
   DateField,
   EditButton,
-  ExportButton,
   FilterButton,
   NumberField,
   ReferenceField,
@@ -17,6 +16,8 @@ import {
 import NaturalisedStatus from './NaturalisedStatus';
 import PublicationStatus from './PublicationStatus';
 import { List, WithPermissions } from '@react-admin/ra-rbac';
+import DeleteIcon from '@material-ui/icons/Delete';
+import VisibilityIcon from '@material-ui/icons/Visibility';
 
 import {
   ListProps,
@@ -26,16 +27,20 @@ import {
 import { TaxonNameFilters } from './TaxonNameFilters';
 import ResetPreferenceButton from '../shared/ResetPreferenceButton';
 import { DefaultPagination, useCanBulkDelete } from '../shared';
+import NestedLinkField from '../shared/NestedLinkField';
+import BatchExportButton from '../shared/BatchExportButton';
 
 const postListColumns = {
-  rank_id: (
-    <ReferenceField
-      source="rank_id"
+  id: <TextField source="id" />,
+  rank: (
+    <NestedLinkField
+      source="taxon_rank"
       reference="taxon_ranks"
+      label="Taxon rank"
       sortBy="taxon_rank___rank_name"
-    >
-      <TextField source="rank_name" />
-    </ReferenceField>
+      idKey="taxon_rank_id"
+      labelKey="rank_name"
+    />
   ),
   formatted_scientific_name: (
     <RichTextField source="formatted_scientific_name" />
@@ -44,25 +49,117 @@ const postListColumns = {
   author: <TextField source="author" />,
 
   form_desc_yr: <TextField source="form_desc_yr" label="Year Published" />,
-  kingdom_id: (
-    <ReferenceField
-      source="kingdom_id"
+  kingdom: (
+    <NestedLinkField
+      source="kingdom"
       reference="kingdoms"
+      label="Kingdom"
       sortBy="kingdom___kingdom_name"
-    >
-      <TextField source="kingdom_name" />
-    </ReferenceField>
+      idKey="kingdom_id"
+      labelKey="kingdom_name"
+    />
   ),
   canonical_name: <RichTextField source="canonical_name" />,
   scientific_name: <TextField source="scientific_name" />,
-  phylum: <TextField source="phylum" />,
-  taxon_class: <TextField source="taxon_class" />,
-  order: <TextField source="order" />,
-  family: <TextField source="family" />,
-  genus: <TextField source="genus" />,
-  subgenus: <TextField source="subgenus" />,
-  species: <TextField source="species" />,
-  subspecies: <TextField source="subspecies" />,
+  division: (
+    <ReferenceField
+      label="Division"
+      source="id"
+      reference={`taxon_names_ancestors/Division`}
+      link={false}
+      sortable={false}
+    >
+      <RichTextField source="ancestor_name__formatted_scientific_name" />
+    </ReferenceField>
+  ),
+  phylum: (
+    <ReferenceField
+      label="Phylum"
+      source="id"
+      reference={`taxon_names_ancestors/Phylum`}
+      link={false}
+      sortable={false}
+    >
+      <RichTextField source="ancestor_name__formatted_scientific_name" />
+    </ReferenceField>
+  ),
+  taxon_class: (
+    <ReferenceField
+      label="Class"
+      source="id"
+      reference={`taxon_names_ancestors/Class`}
+      link={false}
+      sortable={false}
+    >
+      <RichTextField source="ancestor_name__formatted_scientific_name" />
+    </ReferenceField>
+  ),
+  order: (
+    <ReferenceField
+      label="Order"
+      source="id"
+      reference={`taxon_names_ancestors/Order`}
+      link={false}
+      sortable={false}
+    >
+      <RichTextField source="ancestor_name__formatted_scientific_name" />
+    </ReferenceField>
+  ),
+  family: (
+    <ReferenceField
+      label="Family"
+      source="id"
+      reference={`taxon_names_ancestors/Family`}
+      link={false}
+      sortable={false}
+    >
+      <RichTextField source="ancestor_name__formatted_scientific_name" />
+    </ReferenceField>
+  ),
+  genus: (
+    <ReferenceField
+      label="Genus"
+      source="id"
+      reference={`taxon_names_ancestors/Genus`}
+      link={false}
+      sortable={false}
+    >
+      <RichTextField source="ancestor_name__formatted_scientific_name" />
+    </ReferenceField>
+  ),
+  subgenus: (
+    <ReferenceField
+      label="Subgenus"
+      source="id"
+      reference={`taxon_names_ancestors/Subgenus`}
+      link={false}
+      sortable={false}
+    >
+      <RichTextField source="ancestor_name__formatted_scientific_name" />
+    </ReferenceField>
+  ),
+  species: (
+    <ReferenceField
+      label="Species"
+      source="id"
+      reference={`taxon_names_ancestors/Species`}
+      link={false}
+      sortable={false}
+    >
+      <RichTextField source="ancestor_name__formatted_scientific_name" />
+    </ReferenceField>
+  ),
+  subspecies: (
+    <ReferenceField
+      label="Subspecies"
+      source="id"
+      reference={`taxon_names_ancestors/Subspecies`}
+      link={false}
+      sortable={false}
+    >
+      <RichTextField source="ancestor_name__formatted_scientific_name" />
+    </ReferenceField>
+  ),
   uninomial: <TextField source="uninomial" />,
   specific_epithet: <TextField source="specific_epithet" />,
   infraspecific_epithet: <TextField source="infraspecific_epithet" />,
@@ -71,6 +168,7 @@ const postListColumns = {
       source="publication_id"
       reference="publications"
       sortBy="publication___title"
+      link="show"
     >
       <TextField source="title" />
     </ReferenceField>
@@ -105,6 +203,7 @@ const postListColumns = {
       source="family_nid"
       reference="taxon_names"
       sortBy="family"
+      link="show"
     >
       <RichTextField source="formatted_scientific_name" />
     </ReferenceField>
@@ -114,13 +213,13 @@ const postListColumns = {
   admin_comment: <TextField source="admin_comment" />,
   authorised_on: <DateField source="authorised_on" />,
   created_by: (
-    <ReferenceField source="created_by" reference="users">
+    <ReferenceField source="created_by" reference="users" link="show">
       <TextField source="full_name" />
     </ReferenceField>
   ),
   created_on: <DateField source="created_on" />,
   updated_by: (
-    <ReferenceField source="updated_by" reference="users">
+    <ReferenceField source="updated_by" reference="users" link="show">
       <TextField source="full_name" />
     </ReferenceField>
   ),
@@ -128,7 +227,7 @@ const postListColumns = {
 };
 
 const includeColumns = new Set([
-  'rank_id',
+  'rank',
   'formatted_scientific_name',
   'author',
   'form_desc_yr',
@@ -159,7 +258,7 @@ const Actions = () => (
       <CreateButton />
     </WithPermissions>
     <WithPermissions resource="taxon_names" action="export">
-      <ExportButton maxResults={100000} />
+      <BatchExportButton />
     </WithPermissions>
   </TopToolbar>
 );
@@ -176,14 +275,20 @@ export const TaxonNameList = (props: ListProps) => {
       sort={{ field: 'updated_on', order: 'DESC' }}
       actions={<Actions />}
       perPage={100}
-      filters={TaxonNameFilters}
+      filters={TaxonNameFilters()}
       pagination={<DefaultPagination />}
       bulkActionButtons={useCanBulkDelete()}
       {...props}
     >
       <Datagrid rowClick="show">
         {columns}
-
+        <WithPermissions resource="taxon_names" action="viewdeleted">
+          <BooleanField
+            source="deleted"
+            TrueIcon={DeleteIcon}
+            FalseIcon={VisibilityIcon}
+          />
+        </WithPermissions>
         <WithPermissions resource="taxon_names" action="edit">
           <EditButton />
         </WithPermissions>

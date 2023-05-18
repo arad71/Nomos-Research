@@ -1,9 +1,8 @@
-import React, { FC } from 'react';
+import React from 'react';
 import {
   Datagrid,
   DateField,
   EditButton,
-  NumberField,
   ReferenceField,
   SelectField,
   TextField,
@@ -11,7 +10,6 @@ import {
   TopToolbar,
   FilterButton,
   CreateButton,
-  ExportButton,
 } from 'react-admin';
 import ClassificationType from './ClassificationType';
 import { List, WithPermissions } from '@react-admin/ra-rbac';
@@ -23,6 +21,9 @@ import {
 } from '@react-admin/ra-preferences';
 import ResetPreferenceButton from '../shared/ResetPreferenceButton';
 import { ClassificationSystemFilters } from './ClassificationSystemFilters';
+import DeleteIcon from '@material-ui/icons/Delete';
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import BatchExportButton from '../shared/BatchExportButton';
 
 const postListColumns = {
   id: <TextField source="id" />,
@@ -39,7 +40,7 @@ const postListColumns = {
   preferred: <BooleanField source="preferred" />,
   sort_order: <TextField source="sort_order" />,
   updated_by: (
-    <ReferenceField source="updated_by" reference="users">
+    <ReferenceField source="updated_by" reference="users" link="show">
       <TextField source="full_name" />
     </ReferenceField>
   ),
@@ -75,7 +76,7 @@ const Actions = () => (
       <CreateButton />
     </WithPermissions>
     <WithPermissions resource="classification_systems" action="export">
-      <ExportButton maxResults={100000} />
+      <BatchExportButton />
     </WithPermissions>
   </TopToolbar>
 );
@@ -93,12 +94,19 @@ export const ClassificationSystemList = (props: ListProps) => {
       sort={{ field: 'class_desc', order: 'ASC' }}
       actions={<Actions />}
       perPage={100}
-      filters={ClassificationSystemFilters}
+      filters={ClassificationSystemFilters()}
       pagination={<DefaultPagination />}
       bulkActionButtons={useCanBulkDelete()}
     >
       <Datagrid rowClick="show">
         {columns}
+        <WithPermissions resource="classification_systems" action="viewdeleted">
+          <BooleanField
+            source="deleted"
+            TrueIcon={DeleteIcon}
+            FalseIcon={VisibilityIcon}
+          />
+        </WithPermissions>
         <WithPermissions action="edit" resource="classification_systems">
           <EditButton />
         </WithPermissions>

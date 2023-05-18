@@ -1,7 +1,8 @@
 import { Card as MuiCard, CardContent, withStyles } from '@material-ui/core';
 import { FilterLiveSearch } from 'react-admin';
-import { IsActiveFilter, RolesFilter } from './UserFilters';
+import { DeletedFilter, RolesFilter } from './UserFilters';
 import React from 'react';
+import { WithPermissions } from '@react-admin/ra-rbac';
 
 export const Card = withStyles((theme) => ({
   root: {
@@ -20,7 +21,9 @@ export const FilterSidebar = () => (
     <CardContent>
       <FilterLiveSearch />
       <RolesFilter />
-      <IsActiveFilter />
+      <WithPermissions resource="users" action="viewdeleted">
+        <DeletedFilter />
+      </WithPermissions>
     </CardContent>
   </Card>
 );

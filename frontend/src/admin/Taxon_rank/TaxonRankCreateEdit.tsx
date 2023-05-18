@@ -5,6 +5,7 @@ import {
   SimpleForm,
   TextInput,
   BooleanInput,
+  AutocompleteInput,
 } from 'react-admin';
 import React, { FC } from 'react';
 import RankAbbreviation from './RankAbbreviation';
@@ -57,7 +58,7 @@ export const TaxonRankCreateEdit: FC = (props) => {
             reference="taxon_ranks"
             fullWidth
           >
-            <SelectInput optionText="rank_name" />
+            <AutocompleteInput optionText="rank_name" resettable />
           </ReferenceInput>
         </Box>
         <Box>
@@ -67,7 +68,7 @@ export const TaxonRankCreateEdit: FC = (props) => {
             reference="taxon_ranks"
             fullWidth
           >
-            <SelectInput optionText="rank_name" />
+            <AutocompleteInput optionText="rank_name" resettable />
           </ReferenceInput>
         </Box>
         <Box>
