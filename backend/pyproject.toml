@@ -3,7 +3,11 @@ name = "Nomos"
 version = "1.0.0"
 description = "Nomos - Taxonomic Names Management Tool"
 authors = [
-    "test",
+    "danny.murphy@dbca.wa.gov.au",
+    "kehan.harman@gaiaresources.com.au",
+    "nick.crawford@gaiaresources.com.au",
+    "Nikolai.Panine@dbca.wa.gov.au",
+    "phil.long@gaiaresources.com.au"
 ]
 packages = [
     { include = "app" },
@@ -11,35 +15,35 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.9"
-alembic = "1.10.4"
-Authlib = "1.2.0"
-fastapi = "0.95.0"
-fastapi-key-auth = "0.10.2"
-httpx = "0.24.0"
-ipython = "8.13.2"
-itsdangerous = "2.1.2"
-Jinja2 = "3.1.2"
-loguru = "0.6.0"
-psycopg2 = "2.9.6"
-pytest = "7.3.0"
-requests = "2.30.0"
-SQLAlchemy = "1.4.39"
-uvicorn = "0.22.0"
-passlib = "1.7.4"
-pandas = "2.0.1"
-openpyxl = "3.1.2"
-bcrypt = "4.0.1"
-sqlalchemy-utils = "0.41.1"
-sqlalchemy_mixins = "1.5.3"
-python-dateutil = "2.8.2"
-python-multipart = "0.0.6"
-pyjwt = "2.6.0"
-mypy = "1.3.0"
-autoflake = "2.1.1"
-flake8 = "6.0.0"
-black = "23.3.0"
-colorama = "0.4.5"
-isort = "5.12.0"
+alembic = "^1.10.4"
+Authlib = "^1.2.0"
+fastapi = "^0.95.0"
+fastapi-key-auth = "^0.10.2"
+httpx = "^0.24.0"
+ipython = "^8.13.2"
+itsdangerous = "^2.1.2"
+Jinja2 = "^3.1.2"
+loguru = "^0.6.0"
+psycopg2 = "^2.9.6"
+pytest = "^7.3.0"
+requests = "^2.30.0"
+SQLAlchemy = "^1.4.39"
+uvicorn = "^0.22.0"
+passlib = "^1.7.4"
+pandas = "^2.0.1"
+openpyxl = "^3.1.2"
+bcrypt = "^4.0.1"
+sqlalchemy-utils = "^0.41.1"
+sqlalchemy_mixins = "^1.5.3"
+python-dateutil = "^2.8.2"
+python-multipart = "^0.0.6"
+pyjwt = "^2.6.0"
+mypy = "^1.3.0"
+autoflake = "^2.1.1"
+flake8 = "^6.0.0"
+black = "^23.3.0"
+colorama = "^0.4.5"
+isort = "^5.12.0"
 
 [tool.black]
 preview = 1
