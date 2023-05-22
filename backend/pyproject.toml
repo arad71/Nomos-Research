@@ -7,7 +7,7 @@ authors = [
     "Kehan Harman <kehan.harman@gaiaresources.com.au>",
     "Nick Crawford <nick.crawford@gaiaresources.com.au>",
     "Nikolai Panine <Nikolai.Panine@dbca.wa.gov.au>",
-    "Phil Long <phil.long@gaiaresources.com.a>u"
+    "Phil Long <phil.long@gaiaresources.com.au>"
 ]
 packages = [
     { include = "app" },
