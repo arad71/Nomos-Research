@@ -1,10 +1,17 @@
-from sqlalchemy.orm import Session
+import json
+from typing import List
+
+from sqlalchemy.orm import Session, aliased, DeclarativeMeta
+from sqlalchemy_utils import Ltree
 
 import app.db.crud as crud
 import app.db.taxon_name.schema as schema
 from app.db.informal_group.model import InformalGroup
 from app.db.taxon_name.model import TaxonName
 from app.db.user.model import User
+from app.db.hierarchy.model import Hierarchy
+from app.db.taxon_rank.model import TaxonRank
+from app.db.taxon_name.infrageneric_names import InfragenericNames
 
 
 class TaxonNameCrud(crud.Crud):
@@ -82,3 +89,67 @@ class TaxonNameCrud(crud.Crud):
             delattr(taxon_name, "classification_system_ids")
         db_taxon_name = super().edit_item(db, current_user, taxon_name_id, taxon_name)
         return db_taxon_name
+
+    @classmethod
+    def generate_infrageneric_names(
+        cls,
+        db: Session,
+        taxon_name_id: int,
+        **kwargs,
+    ) -> List[dict]:
+        hierarchy = aliased(Hierarchy)
+        taxon_name = aliased(TaxonName)
+        taxon_rank = aliased(TaxonRank)
+
+        subquery = db.query(hierarchy.path, hierarchy.parent_nid).filter(
+            hierarchy.taxon_name_id == taxon_name_id).subquery()
+        sub = aliased(Hierarchy, subquery)
+
+        query = db.query(
+            taxon_name.taxon_name_id,
+            hierarchy.path,
+            taxon_name.scientific_name,
+            taxon_name.uninomial,
+            taxon_name.specific_epithet,
+            taxon_name.infraspecific_epithet,
+            taxon_rank.rank_name,
+            hierarchy.parent_nid
+        ).distinct(). \
+            join(
+            hierarchy, taxon_name.taxon_name_id == hierarchy.taxon_name_id
+        ).join(
+            sub, hierarchy.path.op('@>')(sub.path)
+        ).join(
+            taxon_rank, taxon_name.rank_id == taxon_rank.taxon_rank_id
+        ). \
+            filter(
+            taxon_name.deleted == False
+        ). \
+            order_by(
+            hierarchy.path
+        )
+
+        class CustomJSONEncoder(json.JSONEncoder):
+            def default(self, obj):citation_pkey
+                if isinstance(obj.__class__, DeclarativeMeta):
+                    # If the object is an SQLAlchemy model, convert it to a dictionary
+                    return {c.name: getattr(obj, c.name) for c in obj.__table__.columns}
+                if isinstance(obj, Ltree):
+                    # If the object is an Ltree, convert it to a string
+                    return str(obj)
+                return super().default(obj)
+
+        result = query.all()
+        print(result)
+
+        for row in result:
+            print(row.__dict__)
+
+        # Convert the result to a list of dictionaries
+        rows = [dict(row) for row in result]
+
+        # Convert the list to JSON using the custom encoder
+        json_result = json.dumps(rows, cls=CustomJSONEncoder)
+        print(json_result)
+
+        return [{}]

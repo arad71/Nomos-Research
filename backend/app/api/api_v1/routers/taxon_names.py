@@ -45,6 +45,22 @@ async def taxon_name_list(
 
 
 @r.get(
+    "/infrageneric_names/{taxon_name_id}",
+    response_model=List[TaxonName],
+    response_model_exclude_none=True,
+)
+async def taxon_name_list(
+    response: Response,
+    taxon_name_id: int = None,
+    db=Depends(get_db),
+):
+
+    result = TaxonNameCrud.generate_infrageneric_names(db,taxon_name_id)
+    print(result)
+    return result
+
+
+@r.get(
     "_ancestors/{rank}",
     dependencies=[authorize()],
 )
