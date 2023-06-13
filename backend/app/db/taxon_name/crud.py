@@ -113,6 +113,7 @@ class TaxonNameCrud(crud.Crud):
             taxon_name.specific_epithet,
             taxon_name.infraspecific_epithet,
             taxon_rank.rank_name,
+            taxon_rank.rank_abbrev,
             hierarchy.parent_nid
         ).distinct(). \
             join(
@@ -130,7 +131,7 @@ class TaxonNameCrud(crud.Crud):
         )
 
         class CustomJSONEncoder(json.JSONEncoder):
-            def default(self, obj):citation_pkey
+            def default(self, obj):
                 if isinstance(obj.__class__, DeclarativeMeta):
                     # If the object is an SQLAlchemy model, convert it to a dictionary
                     return {c.name: getattr(obj, c.name) for c in obj.__table__.columns}
@@ -142,8 +143,8 @@ class TaxonNameCrud(crud.Crud):
         result = query.all()
         print(result)
 
-        for row in result:
-            print(row.__dict__)
+        # for row in result:
+            # print(row.__dict__)
 
         # Convert the result to a list of dictionaries
         rows = [dict(row) for row in result]
@@ -152,4 +153,4 @@ class TaxonNameCrud(crud.Crud):
         json_result = json.dumps(rows, cls=CustomJSONEncoder)
         print(json_result)
 
-        return [{}]
+        return json_result

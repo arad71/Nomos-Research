@@ -45,9 +45,7 @@ async def taxon_name_list(
 
 
 @r.get(
-    "/infrageneric_names/{taxon_name_id}",
-    response_model=List[TaxonName],
-    response_model_exclude_none=True,
+    "/infrageneric_names/{taxon_name_id}"
 )
 async def taxon_name_list(
     response: Response,
