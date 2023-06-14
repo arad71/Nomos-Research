@@ -149,7 +149,7 @@ class TaxonNameCrud(crud.Crud):
         json_result = json.dumps(rows, cls=CustomJSONEncoder)
         if json_result:
             infrageneric_names_helper = InfraGenericNames()
-            infrageneric_names = infrageneric_names_helper.generate_names(rows)
+            infrageneric_names = infrageneric_names_helper.generate_names(taxon_name_id, rows)
             print(infrageneric_names)
 
             return infrageneric_names

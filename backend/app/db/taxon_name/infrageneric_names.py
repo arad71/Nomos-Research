@@ -6,12 +6,15 @@ from pydantic import BaseModel, Field
 
 from app.db.taxon_rank.enums import RankAbbreviationVals
 
+from app.db.taxon_name.Infrageneric_name_definitions import name_combinations
+
 
 class InfraGenericNameModel(BaseModel):
     formatted_name: str = ""
     name_version: str = ""
     contributing_taxon_ids: List[int] = []
     info: Optional[str] = None
+    searched_taxon_id: int = None
 
 
 class NameComponentModel(BaseModel):
@@ -36,10 +39,14 @@ class DefinitionComponentsListModel(BaseModel):
 class InfraGenericNames(BaseModel):
     name_definitions: List[dict] = []
     formatted_names: List[InfraGenericNameModel] = []
+    old_name_definitions: List[dict] = []
 
     def __init__(self, **data: Any):
         super().__init__(**data)
         # Canonical Name: Verticordia staminosa var. erecta
+        # self.name_definitions = name_combinations
+
+        # print(canonical)
 
         self.name_definitions = [{
             "name_version": "canonical_without_rank",
@@ -217,16 +224,14 @@ class InfraGenericNames(BaseModel):
     def get_source_data(self):
         pass
 
-    @staticmethod
-    def _strip_string(self, string: str) -> str:
-        return string.strip().rstrip()
-
-    def generate_names(self, taxon_info: List[dict]):
+    def generate_names(self, searched_taxon_id: int, taxon_info: List[dict]):
         for definition in self.name_definitions:
+
             name_definition_components_sorted = sorted(definition["name_components"],
                                             key=itemgetter("word_order_placement"))
             new_name = InfraGenericNameModel()
             new_name.name_version = definition["name_version"]
+            new_name.searched_taxon_id = searched_taxon_id
 
             generated_name = ""
             for definition_component in name_definition_components_sorted:
@@ -244,9 +249,7 @@ class InfraGenericNames(BaseModel):
                     break
                 else:
                     new_name.contributing_taxon_ids.append(name_component.taxon_name_id)
-                    value = name_component.name_value
-                    # generated_name = generated_name + name_component.name_value
-                    generated_name = generated_name + value
+                    generated_name = generated_name + name_component.name_value
             new_name.formatted_name = generated_name.strip().rstrip()
             self.formatted_names.append(new_name)
         return self.formatted_names
@@ -300,6 +303,8 @@ class InfraGenericNames(BaseModel):
             name_abbreviation = name_component_source.rank_abbreviation.strip().rstrip()
             rank_abbreviation = RankAbbreviationVals[name_abbreviation].strip().rstrip()
             name_value = rank_abbreviation + " " + name_value
+        if definition_component["has_parentheses"]:
+            name_value = "(" + name_value + ")"
         name_component.name_value = name_value + " "
         name_component.taxon_name_id = name_component_source.taxon_name_id
         return name_component
