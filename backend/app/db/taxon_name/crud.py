@@ -11,7 +11,7 @@ from app.db.taxon_name.model import TaxonName
 from app.db.user.model import User
 from app.db.hierarchy.model import Hierarchy
 from app.db.taxon_rank.model import TaxonRank
-from app.db.taxon_name.infrageneric_names import InfragenericNames
+from app.db.taxon_name.infrageneric_names import InfraGenericNames
 
 
 class TaxonNameCrud(crud.Crud):
@@ -141,16 +141,15 @@ class TaxonNameCrud(crud.Crud):
                 return super().default(obj)
 
         result = query.all()
-        print(result)
-
-        # for row in result:
-            # print(row.__dict__)
 
         # Convert the result to a list of dictionaries
         rows = [dict(row) for row in result]
 
         # Convert the list to JSON using the custom encoder
         json_result = json.dumps(rows, cls=CustomJSONEncoder)
-        print(json_result)
+        if json_result:
+            infrageneric_names_helper = InfraGenericNames()
+            infrageneric_names = infrageneric_names_helper.generate_names(rows)
+            print(infrageneric_names)
 
-        return json_result
+            return infrageneric_names
