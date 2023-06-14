@@ -6,7 +6,9 @@ ARG GROUP_ID=1000
 
 RUN mkdir /app /legacy_data
 WORKDIR /app
-COPY requirements.txt ./
+COPY poetry.lock pyproject.toml ./
+COPY . .
+
 RUN \
   addgroup --gid $GROUP_ID app && \
   adduser --disabled-password --gecos '' --uid $USER_ID --gid $GROUP_ID app && \
@@ -15,7 +17,10 @@ RUN \
   chown -R app:app ./ && \
   chown -R app:app /legacy_data && \
   pip install --no-cache-dir --upgrade pip && \
-  pip install --no-cache-dir --upgrade -r requirements.txt
+  pip install poetry && \
+  poetry config virtualenvs.create false  && \
+  poetry install --no-dev
 
 USER app
 COPY . .
+ENV PATH="$PATH:/app/bin"

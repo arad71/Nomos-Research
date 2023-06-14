@@ -26,6 +26,7 @@ export const InformalGroupShow: FC = (props) => {
               <ReferenceField
                 source="classification_system_id"
                 reference="classification_systems"
+                link="show"
               >
                 <TextField source="class_desc" />
               </ReferenceField>
@@ -35,7 +36,11 @@ export const InformalGroupShow: FC = (props) => {
         <Box className={globalClasses.formRow}>
           <Box className={globalClasses.fieldMargin}>
             <Labeled label="Taxon Name">
-              <ReferenceField source="taxon_name_id" reference="taxon_names">
+              <ReferenceField
+                source="taxon_name_id"
+                reference="taxon_names"
+                link="show"
+              >
                 <RichTextField source="formatted_scientific_name" />
               </ReferenceField>
             </Labeled>

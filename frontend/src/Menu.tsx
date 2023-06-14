@@ -11,6 +11,8 @@ import CompareArrowsIcon from '@material-ui/icons/CompareArrows';
 import CallSplitIcon from '@material-ui/icons/CallSplit';
 import MenuBookIcon from '@material-ui/icons/MenuBook';
 import ChangeHistoryIcon from '@material-ui/icons/ChangeHistory';
+import WebIcon from '@material-ui/icons/Web';
+import SettingsIcon from '@material-ui/icons/Settings';
 import GroupWorkIcon from '@material-ui/icons/GroupWork';
 import LinkIcon from '@material-ui/icons/Link';
 import { WithPermissions } from '@react-admin/ra-rbac';
@@ -23,7 +25,7 @@ const Menu = () => {
         icon={<DashboardIcon />}
         to="/"
       />
-      <MenuItem name="Nomos" label="Nomos">
+      <MenuItem name="Nomos" label="Nomos" icon={<WebIcon />}>
         <WithPermissions resource="taxon_names" action="list">
           <MenuItem
             name="Taxon Names"
@@ -49,7 +51,7 @@ const Menu = () => {
           />
         </WithPermissions>
       </MenuItem>
-      <MenuItem name="Admin" label="Admin">
+      <MenuItem name="Admin" label="Admin" icon={<SettingsIcon />}>
         <WithPermissions resource="citations" action="list">
           <MenuItem
             name="Citations"

@@ -16,7 +16,6 @@ from app.db.hierarchy.schema import (
 from app.db.role.constants import Role
 from app.db.session import get_db
 from app.db.user.schema import User
-from app.tools.hierarchy_calculation import rebuild_with_session
 
 hierarchies_router = r = APIRouter(prefix="/hierarchies")
 

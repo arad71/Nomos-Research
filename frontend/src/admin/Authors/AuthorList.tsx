@@ -5,7 +5,6 @@ import {
   Datagrid,
   DateField,
   EditButton,
-  ExportButton,
   FilterButton,
   ReferenceField,
   TextField,
@@ -19,7 +18,7 @@ import {
 } from '../shared';
 import DeleteIcon from '@material-ui/icons/Delete';
 import VisibilityIcon from '@material-ui/icons/Visibility';
-import { MAX_RESULTS } from '../../config';
+import BatchExportButton from '../shared/BatchExportButton';
 
 const Actions = () => (
   <TopToolbar>
@@ -28,7 +27,7 @@ const Actions = () => (
       <CreateButton />
     </WithPermissions>
     <WithPermissions resource="authors" action="export">
-      <ExportButton maxResults={MAX_RESULTS} />
+      <BatchExportButton />
     </WithPermissions>
   </TopToolbar>
 );
@@ -49,7 +48,7 @@ export const AuthorList: FC = (props) => (
       <TextField source="first_names" />
       <TextField source="initials" />
       <TextField source="orc_id" label="ORC ID" />
-      <ReferenceField source="updated_by" reference="users">
+      <ReferenceField source="updated_by" reference="users" link="show">
         <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" />

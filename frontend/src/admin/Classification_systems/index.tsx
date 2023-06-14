@@ -4,3 +4,4 @@ export * from './ClassificationSystemList';
 export * from './ClassificationSystemCreate';
 export * from './ClassSystemCreateEdit';
 export * from './ClassificationSystemFilters';
+export { ClassificationReference } from './ClassificationReference';

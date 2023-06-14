@@ -16,23 +16,26 @@
 
 ## Development
 
-The only dependencies for this project should be docker and docker-compose.
-
+The only dependencies for this project should be docker and docker compose plugin. Get docker and the compose plugin from
+https://docs.docker.com/engine/install/ubuntu/.
 
 ### Setup
 
 This project uses private packages, before building you will need to obtain your NPM token and add it to your local `.env` file.
 
-The following commands will allow you to login to the marmelab registry which will store your token in `$HOME/.npmrc`
+The following commands will allow you to login to the Marmelab registry which will store your token in `$HOME/.npmrc` (on Window the directory is C:\Users\%USERNAME%)
+```bash
 ```bash
 npm config set @react-admin:registry https://registry.marmelab.com
 npm login --registry=https://registry.marmelab.com
 ```
 
 example .env
+
 ```bash
 NPM_TOKEN="<Your token here>"
 ```
+
 For more information see https://registry.marmelab.com
 
 If you're using a different user on your system other than the first user you'll have to add these to your local `.env` file.
@@ -41,6 +44,24 @@ USER_ID="<Your user id>"
 GROUP_ID="<your group id>"
 ```
 
+### Persistent data
+Data for this application lives in a BIO DB instance:
+
+| Environment | Server                                                                                                                                                                                       |
+|-------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Staging     | [nomos-staging-db.postgres.database.azure.com](https://start.1password.com/open/i?a=NDOPYIX54ZELTLEXLCRF2UQINA&v=qv2jh4w2fasw37noy7d4jdeopi&i=zzgpz7s7ldvzc5eervj3oa5va4&h=my.1password.com) |
+| Production  | [nomos-prod-db.postgres.database.azure.com](https://start.1password.com/open/i?a=NDOPYIX54ZELTLEXLCRF2UQINA&v=qv2jh4w2fasw37noy7d4jdeopi&i=72fvyio5crsu7p6klpb53fjyhq&h=my.1password.com)    |
+
+### Sample data
+There is a snapshot of the production database at https://drive.google.com/file/d/1rmjuG73CI1J_-edj-za_lvhvuHdWNjwL/view?usp=share_link. You can restore this into a local database called `taxman` using psql. Place this file
+into the `backup` folder. Note that this will restore the most recent file.
+
+```shell
+docker compose exec backend restore
+docker compose restart # generates users and runs database migrations
+```
+
+
 ### Quick Start
 
 Starting the project
@@ -48,6 +69,7 @@ Starting the project
 ```bash
 scripts/build.sh
 ```
+
 This will start up your containers and create the super user if it does not already exist.
 
 And navigate to http://localhost:8000
@@ -60,14 +82,16 @@ http://localhost:8000/api/docs
 You will be able to log into http://localhost:8000/admin using: username "admin@taxman.com" password "password"
 
 ### Initial data load
+
 Once you have set up the initial database you can import the data from WA Census data supply:
 
-* Copy the **Raw data file URL** from https://dev.azure.com/BIO-WA/WA-BDR/_wiki/wikis/BDR-WA.wiki/19/WA-Herbarium-WACensus-DF
-* Add it as `WACENSUS_DATA_FILE_URL` in your local .env file
-* Run scripts/build.sh to ensure this setting is set
-* Import data using:
+- Copy the **Raw data file URL** from https://dev.azure.com/BIO-WA/WA-BDR/_wiki/wikis/BDR-WA.wiki/19/WA-Herbarium-WACensus-DF
+- Add it as `WACENSUS_DATA_FILE_URL` in your local .env file
+- Run scripts/build.sh to ensure this setting is set
+- Import data using:
+
 ```
-docker-compose run --rm backend python app/import.py
+docker compose run --rm backend python app/import.py
 ```
 
 ### Example data
@@ -75,38 +99,38 @@ docker-compose run --rm backend python app/import.py
 Extracting example data can be performed using:
 
 ```bash
-docker-compose exec backend app/tools/extract_sample_data.py
+docker compose exec backend app/tools/extract_sample_data.py
 ```
 
 The example data file [backend/nomos_sample_data.xlsx](backend/nomos_sample_data.xlsx) can then be uploaded to
 [google drive](https://drive.google.com/drive/u/1/folders/1i5ID5i6yodmXkK5FjFZsXQJT_gfToIfL).
 
-
-
 ### Rebuilding containers:
 
 ```
-docker-compose build
+docker compose build
 ```
 
 ### Restarting containers:
 
 ```
-docker-compose restart
+docker compose restart
 ```
 
 ### Bringing containers down:
 
 Note that this will delete the containers themselves
+
 ```
-docker-compose down
+docker compose down
 ```
 
 ### Kill it with fire
-In order to nuke your database and everythign in it use:
+
+In order to nuke your database and everything in it use:
 
 ```bash
-docker-compose down -v
+docker compose down -v
 scripts/build.sh
 ```
 
@@ -119,6 +143,9 @@ from loguru import logger
 
 logger.info("The meaning of life: {}", 42)
 ```
+
+You can view logs using the docker logs as specified elsewhere in this file.
+
 ### Frontend Development
 
 Alternatively to running inside docker, it can sometimes be easier
@@ -142,10 +169,11 @@ npm test
 
 ## Migrations
 
+
 Migrations are run using alembic. To run all migrations:
 
 ```
-docker-compose run --rm backend alembic upgrade head
+docker compose run --rm backend alembic upgrade head
 ```
 
 To create a new migration:
@@ -162,22 +190,26 @@ To roll the database to a clean slate run
 ```bash
 scripts/downgrade.sh
 ```
+
 ### Using `autogenerate`:
 
 Alembic can view the status of the database and compare against the table metadata in the application, generating the “obvious” migrations based on a comparison. This is achieved using the --autogenerate option to the alembic revision command, which places so-called candidate migrations into our new migrations file. We review and modify these by hand as needed, then proceed normally.
+
 ```
 alembic revision --autogenerate -m "Data Model Updates."
 ```
 
-*I've been working on a branch for a while and there are other migrations? How do I deal with this?*
+_I've been working on a branch for a while and there are other migrations? How do I deal with this?_
 This normally results in the error message:
 
 > FAILED: Multiple head revisions are present for given argument 'head'; please specify a specific target revision, '<branchname>@head' to narrow to a specific head, or 'heads' for all heads
 
 You can generally resolve this by merging the heads of your migrations:
+
 ```
- docker-compose run --rm backend alembic merge heads --message "<Add your message here>"
+ docker compose run --rm backend alembic merge heads --message "<Add your message here>"
 ```
+
 Alternatively you can edit your migrations and change the `down_revision`
 
 ### Recreating migrations:
@@ -185,13 +217,14 @@ Alternatively you can edit your migrations and change the `down_revision`
 Up until we have data that we care about in the system:
 
 In order to reset the clock on your db you need to do the following inside the backend container:
+
 ```bash
 alembic downgrade base
 rm app/alembic/versions/a61b3b720423_implement_data_model.py
 alembic revision  --autogenerate -m "Implement Data Model." --rev-id a61b3b720423
 ```
-Then run `scripts/format.sh`
 
+Then run `scripts/format.sh`
 
 ## Testing
 
@@ -204,7 +237,7 @@ There is a helper script for both frontend and backend tests:
 ### Backend Tests
 
 ```
-docker-compose run backend pytest
+docker compose run backend pytest
 ```
 
 any arguments to pytest can also be passed after this command
@@ -212,7 +245,7 @@ any arguments to pytest can also be passed after this command
 ### Frontend Tests
 
 ```
-docker-compose run frontend test
+docker compose run frontend test
 ```
 
 This is the same as running npm test from within the frontend directory
@@ -242,22 +275,25 @@ Linting is run through the continuous integration pipeline [.github/workflows/ci
 ## Logging
 
 ```
-docker-compose logs
+docker compose logs
 ```
 
 Or for a specific service:
 
 ```
-docker-compose logs -f name_of_service # frontend|backend|db
+docker compose logs -f name_of_service # frontend|backend|db
 ```
 
 ## Deployment
 
 The app is deployed using GitHub actions configured through [.github/workflows/cicd.yml](.github/workflows/cicd.yml).
+
 ### Deployment Process
-* Process captured in wiki: https://dev.azure.com/BIO-WA/WA-BDR/_wiki/wikis/BDR-WA.wiki/96/Developer-information
+
+- Process captured in wiki: https://dev.azure.com/BIO-WA/WA-BDR/_wiki/wikis/BDR-WA.wiki/96/Developer-information
 
 ### Configuration
+
 Environment specific configuration can be placed in a .env in the project directory on the deployment server.
 Take a look at [.env.example](.env.example) for an example of how to configure the app.
 
@@ -265,17 +301,31 @@ Take a look at [.env.example](.env.example) for an example of how to configure t
 
 Two authentication providers are supported and can be switched between using  the environment variable `AUTH_PROVIDER`
 
-| Provider | Info                                                                                                                              |
-|----------|-----------------------------------------------------------------------------------------------------------------------------------|
-| password | Use password based authentication. Enables password on the user edit form                                                         |
+| Provider | Info                                                                                                                                                                                                           |
+|----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| password | Use password based authentication. Enables password on the user edit form                                                                                                                                      |
 | auth2    | Auth2 authentication is based on request headers set by the proxy https://dev.azure.com/BIO-WA/WA-BDR/_wiki/wikis/BDR-WA.wiki/70/Authentication. For local development the user details are set in nginx.conf. |
 
 
 ##### Testing other roles
+
 If you want to test with other roles you can switch your auth provider to 'password' and then log in using one of the
 test role based user accounts.
 
+Alternatively when using the auth2 (default) authentication provider you need to edit the headers in [nginx.conf](nginx/nginx.conf) to one of the other role specific users.
+
+Here are the credentials you should use. See commented out lines in nginx.conf for examples:
+
+| email                            | first\_name          | last\_name | role                 |
+|:---------------------------------|:---------------------|:-----------|:---------------------|
+| READER@example.com               | READER               | Demo User  | READER               |
+| OFFICER@example.com              | OFFICER              | Demo User  | OFFICER              |
+| MANAGER@example.com              | MANAGER              | Demo User  | MANAGER              |
+| APPLICATION\_SUPPORT@example.com | APPLICATION\_SUPPORT | Demo User  | APPLICATION\_SUPPORT |
+| SUPER\_ADMIN@example.com         | SUPER\_ADMIN         | Demo User  | SUPER\_ADMIN         |
+
 ### Environments
+
 In order to deploy to the **staging** environment push code to the `staging` branch via a pull request into **staging**.
 This calls a script (action.bash) which fetches the latest code for that branch and builds the stack.
 

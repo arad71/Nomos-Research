@@ -1,5 +1,10 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Before starting
+
+In order to build the frontend please ensure you follow the readme "#setup" contained in the parent folder. There is a
+required step in order to build using ReactAdmin private packages.
+
 ## Available Scripts
 
 In the project directory, you can run:

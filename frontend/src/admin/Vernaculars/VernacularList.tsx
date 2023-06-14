@@ -34,6 +34,7 @@ export const VernacularList: FC = (props) => (
         source="taxon_name_id"
         reference="taxon_names"
         sortBy="taxon_name___scientific_name"
+        link="show"
       >
         <RichTextField source="formatted_scientific_name" />
       </ReferenceField>
@@ -43,7 +44,7 @@ export const VernacularList: FC = (props) => (
       <BooleanField source="preferred" />
       <TextField source="source" />
       <NumberField source="sort_order" />
-      <ReferenceField source="updated_by" reference="users">
+      <ReferenceField source="updated_by" reference="users" link="show">
         <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" />

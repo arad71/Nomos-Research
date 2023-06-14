@@ -10,7 +10,6 @@ import {
   TopToolbar,
   FilterButton,
   CreateButton,
-  ExportButton,
 } from 'react-admin';
 import ClassificationType from './ClassificationType';
 import { List, WithPermissions } from '@react-admin/ra-rbac';
@@ -24,7 +23,7 @@ import ResetPreferenceButton from '../shared/ResetPreferenceButton';
 import { ClassificationSystemFilters } from './ClassificationSystemFilters';
 import DeleteIcon from '@material-ui/icons/Delete';
 import VisibilityIcon from '@material-ui/icons/Visibility';
-import { MAX_RESULTS } from '../../config';
+import BatchExportButton from '../shared/BatchExportButton';
 
 const postListColumns = {
   id: <TextField source="id" />,
@@ -41,7 +40,7 @@ const postListColumns = {
   preferred: <BooleanField source="preferred" />,
   sort_order: <TextField source="sort_order" />,
   updated_by: (
-    <ReferenceField source="updated_by" reference="users">
+    <ReferenceField source="updated_by" reference="users" link="show">
       <TextField source="full_name" />
     </ReferenceField>
   ),
@@ -77,7 +76,7 @@ const Actions = () => (
       <CreateButton />
     </WithPermissions>
     <WithPermissions resource="classification_systems" action="export">
-      <ExportButton maxResults={MAX_RESULTS} />
+      <BatchExportButton />
     </WithPermissions>
   </TopToolbar>
 );

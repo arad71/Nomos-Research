@@ -13,7 +13,7 @@ class ImportUser(DataImportBase):
     def __init__(self, db, current_user):
         super().__init__(db, current_user)
         self.data_model = UserModel
-        self.upsert_constraint = f"uc_{UserModel.__tablename__}_legacy_id"
+        self.upsert_constraint = f"ix_{UserModel.__tablename__}_legacy_id_isactive"
         self.update_cols = (
             "email",
             "deleted",

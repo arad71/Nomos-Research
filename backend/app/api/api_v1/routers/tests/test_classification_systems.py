@@ -13,7 +13,9 @@ def test_get_classification_systems(
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == [
         {
-            "classification_system_id": test_classification_system.classification_system_id,
+            "classification_system_id": (
+                test_classification_system.classification_system_id
+            ),
             "class_desc": test_classification_system.class_desc,
             "class_type": test_classification_system.class_type.value,
             "preferred": test_classification_system.preferred,
@@ -78,9 +80,9 @@ def test_edit_classification_system(
         headers=superuser_token_headers,
     )
     assert response.status_code == status.HTTP_200_OK
-    new_classification_system[
-        "classification_system_id"
-    ] = test_classification_system.classification_system_id
+    new_classification_system["classification_system_id"] = (
+        test_classification_system.classification_system_id
+    )
     new_classification_system["updated_on"] = response.json()["updated_on"]
     new_classification_system["deleted"] = False
     assert response.json() == new_classification_system

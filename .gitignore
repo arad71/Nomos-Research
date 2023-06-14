@@ -14,3 +14,6 @@ __pycache__/
 .idea/
 /backend/nomos_sample_data.xlsx
 .~lock*
+wacensus-table-data
+frontend/.npmrc
+.DS_Store

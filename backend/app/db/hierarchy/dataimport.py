@@ -11,7 +11,7 @@ class ImportHierarchy(DataImportBase):
     def __init__(self, db, current_user):
         super().__init__(db, current_user)
         self.data_model = HierarchyModel
-        self.upsert_constraint = f"uc_{HierarchyModel.__tablename__}_legacy_id"
+        self.upsert_constraint = f"ix_{HierarchyModel.__tablename__}_legacy_id_isactive"
         self.update_cols = (
             "taxon_name_id",
             "classification_system_id",
@@ -39,9 +39,11 @@ class ImportHierarchy(DataImportBase):
                 "parent_nid": self.map_row_by_unique_key(
                     TaxonName,
                     "legacy_id",
-                    self.legacy_id_prefix + row["PARENT_NID"]
-                    if row["PARENT_NID"]
-                    else None,
+                    (
+                        self.legacy_id_prefix + row["PARENT_NID"]
+                        if row["PARENT_NID"]
+                        else None
+                    ),
                     "taxon_name_id",
                 ),
                 "created_by": self.current_user,

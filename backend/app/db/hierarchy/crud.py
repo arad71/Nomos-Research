@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 import app.db.crud as crud
-from app.model import *
+from app.model import Hierarchy, User
 
 
 class HierarchyCrud(crud.Crud):

@@ -27,7 +27,7 @@ export const KingdomList: FC = (props) => {
       <Datagrid rowClick="show">
         <TextField source="kingdom_name" />
         <TextField source="kingdom_desc" label="Description" />
-        <ReferenceField source="updated_by" reference="users">
+        <ReferenceField source="updated_by" reference="users" link="show">
           <TextField source="full_name" />
         </ReferenceField>
         <DateField source="updated_on" />

@@ -33,7 +33,10 @@ from app.db.session import get_db
 API_V1_URL = config.settings.API_V1_STR
 
 app = FastAPI(
-    title=config.settings.PROJECT_NAME, docs_url="/api/docs", openapi_url="/api"
+    title=config.settings.PROJECT_NAME,
+    version=config.settings.PROJECT_VERSION,
+    docs_url="/api/docs",
+    openapi_url="/api",
 )
 
 

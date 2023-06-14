@@ -5,7 +5,6 @@ import {
   Datagrid,
   DateField,
   EditButton,
-  ExportButton,
   FilterButton,
   NumberField,
   ReferenceField,
@@ -28,8 +27,8 @@ import {
 import { TaxonNameFilters } from './TaxonNameFilters';
 import ResetPreferenceButton from '../shared/ResetPreferenceButton';
 import { DefaultPagination, useCanBulkDelete } from '../shared';
-import { MAX_RESULTS } from '../../config';
 import NestedLinkField from '../shared/NestedLinkField';
+import BatchExportButton from '../shared/BatchExportButton';
 
 const postListColumns = {
   id: <TextField source="id" />,
@@ -169,6 +168,7 @@ const postListColumns = {
       source="publication_id"
       reference="publications"
       sortBy="publication___title"
+      link="show"
     >
       <TextField source="title" />
     </ReferenceField>
@@ -203,6 +203,7 @@ const postListColumns = {
       source="family_nid"
       reference="taxon_names"
       sortBy="family"
+      link="show"
     >
       <RichTextField source="formatted_scientific_name" />
     </ReferenceField>
@@ -212,13 +213,13 @@ const postListColumns = {
   admin_comment: <TextField source="admin_comment" />,
   authorised_on: <DateField source="authorised_on" />,
   created_by: (
-    <ReferenceField source="created_by" reference="users">
+    <ReferenceField source="created_by" reference="users" link="show">
       <TextField source="full_name" />
     </ReferenceField>
   ),
   created_on: <DateField source="created_on" />,
   updated_by: (
-    <ReferenceField source="updated_by" reference="users">
+    <ReferenceField source="updated_by" reference="users" link="show">
       <TextField source="full_name" />
     </ReferenceField>
   ),
@@ -257,7 +258,7 @@ const Actions = () => (
       <CreateButton />
     </WithPermissions>
     <WithPermissions resource="taxon_names" action="export">
-      <ExportButton maxResults={MAX_RESULTS} />
+      <BatchExportButton />
     </WithPermissions>
   </TopToolbar>
 );

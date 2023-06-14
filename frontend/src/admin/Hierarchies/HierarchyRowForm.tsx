@@ -1,31 +1,16 @@
 import { RowForm, RowFormProps } from '@react-admin/ra-editable-datagrid';
-import {
-  FormDataConsumer,
-  ReferenceInput,
-  required,
-  SelectInput,
-} from 'react-admin';
+import { FormDataConsumer, SelectInput } from 'react-admin';
 import React from 'react';
 
 import { dependentNameInput } from './DependentNameInput';
 import TaxonRank from '../Taxon_names/TaxonRank';
+import { ClassificationReference } from '../Classification_systems';
 
 export const HierarchyRowForm = (props: RowFormProps) => (
   <RowForm warnWhenUnsavedChanges {...props}>
-    <ReferenceInput
-      source="classification_system_id"
-      reference="classification_systems"
-      filter={{ class_type: 'hierarchical' }}
-    >
-      <SelectInput
-        optionText="class_desc"
-        validate={required()}
-        helperText="Choose a classification system"
-      />
-    </ReferenceInput>
-    <FormDataConsumer>{dependentNameInput}</FormDataConsumer>
+    <ClassificationReference />
     <SelectInput
-      source="taxon_rank"
+      source="taxon_rank_name"
       label="Filter parent rank"
       choices={TaxonRank}
       fullWidth
@@ -33,5 +18,6 @@ export const HierarchyRowForm = (props: RowFormProps) => (
       allowEmpty
       resettable
     />
+    <FormDataConsumer>{dependentNameInput}</FormDataConsumer>
   </RowForm>
 );

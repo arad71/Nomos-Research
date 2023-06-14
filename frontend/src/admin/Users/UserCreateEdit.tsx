@@ -69,6 +69,13 @@ export const UserCreateEdit: FC = (props) => {
             />
           </ReferenceArrayInput>
         </Box>
+        <Box className={classes.twoColSpan}>
+          <BooleanInput
+            source="deleted"
+            /* eslint-disable-next-line max-len */
+            helperText="Toggle to mark the user as deleted (inactive) or not (active)"
+          />
+        </Box>
       </Box>
     </SimpleForm>
   );
