@@ -48,37 +48,43 @@ const Dashboard = () => {
           <Typography variant="h4" className={classes.cardtitle}>
             Welcome to Nomos taxonomic names register
           </Typography>
-          <Button
-            href="/#/taxon_names"
-            variant="contained"
-            color="secondary"
-            className={classes.cardbutton}
-          >
-            View Names
-          </Button>
-          <Button
-            href="/#/publications"
-            variant="contained"
-            color="secondary"
-            className={classes.cardbutton}
-          >
-            View Publications
-          </Button>
+          <WithPermissions resource="taxon_names" action="list">
+            <Button
+              href="/#/taxon_names"
+              variant="contained"
+              color="secondary"
+              className={classes.cardbutton}
+            >
+              View Names
+            </Button>
+          </WithPermissions>
+          <WithPermissions resource="publications" action="list">
+            <Button
+              href="/#/publications"
+              variant="contained"
+              color="secondary"
+              className={classes.cardbutton}
+            >
+              View Publications
+            </Button>
+          </WithPermissions>
         </CardContent>
       </Card>
-      <div className={classes.wrapper}>
-        <CardWithIcon
-          icon={
-            <ArrowForwardIcon
-              fontSize={'large'}
-              className={classes.arrowPadding}
-            />
-          }
-          to={'/users/create'}
-          title="Add User"
-          subtitle="Create a new Nomos user"
-        />
-      </div>
+      <WithPermissions resource="users" action="create">
+        <div className={classes.wrapper}>
+          <CardWithIcon
+            icon={
+              <ArrowForwardIcon
+                fontSize={'large'}
+                className={classes.arrowPadding}
+              />
+            }
+            to={'/users/create'}
+            title="Add User"
+            subtitle="Create a new Nomos user"
+          />
+        </div>
+      </WithPermissions>
       <WithPermissions resource="taxon_names" action="create">
         <div className={classes.wrapper}>
           <CardWithIcon
