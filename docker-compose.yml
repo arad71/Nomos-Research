@@ -51,7 +51,6 @@ services:
       DB_PORT: ${DB_PORT:-5432}
       DB_NAME: ${DB_NAME:-taxman}
       ENVIRONMENT: ${ENVIRONMENT:-local}
-      DATABASE_URL: 'postgresql://${DB_USER:-taxman}:${DB_PASSWORD:-password}@${DB_HOST:-postgres}:${DB_PORT:-5432}/${DB_NAME:-taxman}'
       API_KEY_CHECKLIST: ${API_KEY_CHECKLIST:-password}
       IMPORT_API_KEY_WACENSUS:  ${IMPORT_API_KEY_WACENSUS:-password}
       WACENSUS_DATA_FILE_URL: ${WACENSUS_DATA_FILE_URL:-https://example.org/datafile.zip}
