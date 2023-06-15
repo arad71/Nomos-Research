@@ -2,7 +2,7 @@ import json
 from operator import itemgetter
 from typing import Any, List, Optional, Tuple
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from app.db.taxon_rank.enums import RankAbbreviationVals
 
@@ -44,11 +44,11 @@ class InfraGenericNames(BaseModel):
     def __init__(self, **data: Any):
         super().__init__(**data)
         # Canonical Name: Verticordia staminosa var. erecta
-        # self.name_definitions = name_combinations
+        self.name_definitions = name_combinations
 
         # print(canonical)
 
-        self.name_definitions = [{
+        self.old_name_definitions = [{
             "name_version": "canonical_without_rank",
             "name_components": [
                 {
@@ -295,18 +295,32 @@ class InfraGenericNames(BaseModel):
                 name_component.info = "Mandatory name component does not exist"
                 return name_component
 
-        name_component_source = sorted(name_component_list,
-                                       key=lambda x: x.preference_tuple)[0]
+        action = "Source sorting"
+        try:
+            name_component_source = sorted(name_component_list,
+                                           key=lambda x: x.preference_tuple)[0]
+            action = "Value setting"
+            name_component.taxon_name_id = name_component_source.taxon_name_id
+            action = "Name value string"
+            name_value = name_component_source.value.strip().rstrip()
+            if definition_component["rank_abbreviation"]["has_abbreviation"]:
+                action = "Rank abbreviation"
+                name_abbreviation = name_component_source.rank_abbreviation.strip().rstrip()
+                rank_abbreviation = RankAbbreviationVals[name_abbreviation].strip().rstrip()
+                name_value = rank_abbreviation + " " + name_value
+            if definition_component["has_parentheses"]:
+                action = "Parentheses"
+                name_value = "(" + name_value + ")"
+            name_component.name_value = name_value + " "
 
-        name_value = name_component_source.value.strip().rstrip()
-        if definition_component["rank_abbreviation"]["has_abbreviation"]:
-            name_abbreviation = name_component_source.rank_abbreviation.strip().rstrip()
-            rank_abbreviation = RankAbbreviationVals[name_abbreviation].strip().rstrip()
-            name_value = rank_abbreviation + " " + name_value
-        if definition_component["has_parentheses"]:
-            name_value = "(" + name_value + ")"
-        name_component.name_value = name_value + " "
-        name_component.taxon_name_id = name_component_source.taxon_name_id
+        except AttributeError:
+            name_component.info = \
+                f"Attribute Error encountered with component [{action}]"
+
+        except Exception as e:
+            name_component.info = \
+                f"Unexpected Error [{e}] encountered with component [{action}]"
+
         return name_component
 
 
