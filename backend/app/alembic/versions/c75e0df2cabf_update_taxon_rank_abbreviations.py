@@ -53,8 +53,8 @@ def upgrade():
 
 def downgrade():
     """
-    Downgrade actions have not been added for this migration as deleting individual
-    values from an enum type is not supported.
+    Downgrade actions to remove the three new enum values have not been added for this
+    migration as deleting individual values from an enum type is not supported.
 
     Official documentation: https://www.postgresql.org/docs/current/datatype-enum.html
     'Although enum types are primarily intended for static sets of values,
