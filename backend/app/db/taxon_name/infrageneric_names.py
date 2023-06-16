@@ -1,12 +1,10 @@
-import json
-from operator import itemgetter
 from typing import Any, List, Optional, Tuple
-
 from pydantic import BaseModel
-
+from app.db.taxon_name.infrageneric_name_definitions.infrageneric_name import \
+    SubGeneraNameDefinitions, Source, NameComponent
+from app.db.taxon_name.infrageneric_name_definitions.infrageneric_name_format_definitions import \
+    all_name_combinations
 from app.db.taxon_rank.enums import RankAbbreviationVals
-
-from app.db.taxon_name.Infrageneric_name_definitions import name_combinations
 
 
 class InfraGenericNameModel(BaseModel):
@@ -37,212 +35,32 @@ class DefinitionComponentsListModel(BaseModel):
 
 
 class InfraGenericNames(BaseModel):
-    name_definitions: List[dict] = []
+    name_definitions: SubGeneraNameDefinitions = None
     formatted_names: List[InfraGenericNameModel] = []
-    old_name_definitions: List[dict] = []
 
     def __init__(self, **data: Any):
         super().__init__(**data)
-        # Canonical Name: Verticordia staminosa var. erecta
-        self.name_definitions = name_combinations
-
-        # print(canonical)
-
-        self.old_name_definitions = [{
-            "name_version": "canonical_without_rank",
-            "name_components": [
-                {
-                    "word_order_placement": 1,
-                    "is_optional": False,
-                    "static_string": {"is_static": False, "value": ""},
-                    "rank_abbreviation": {"has_abbreviation": False},
-                    "source": [
-                        {
-                            "hierarchy_rank": "Genus",
-                            "preference": 1,
-                            "field": [
-                                {"label": "uninomial", "preference": 1}
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "word_order_placement": 2,
-                    "is_optional": False,
-                    "static_string": {"is_static": False, "value": ""},
-                    "rank_abbreviation": {"has_abbreviation": False},
-                    "source": [
-                        {
-                            "hierarchy_rank": "Species",
-                            "preference": 1,
-                            "field": [
-                                {"label": "specific_epithet", "preference": 1},
-                                {"label": "uninomial", "preference": 2}
-                            ]
-                        }
-                    ],
-                },
-                {
-                    "word_order_placement": 3,
-                    "is_optional": False,
-                    "static_string": {"is_static": False, "value": ""},
-                    "rank_abbreviation": {"has_abbreviation": False},
-                    "source": [
-                        {
-                            "hierarchy_rank": "Sub-variety",
-                            "preference": 1,
-                            "field": [
-                                {"label": "infraspecific_epithet", "preference": 1},
-                                {"label": "uninomial", "preference": 2}]},
-                        {
-                            "hierarchy_rank": "Variety",
-                            "preference": 2,
-                            "field": [
-                                {"label": "infraspecific_epithet", "preference": 1},
-                                {"label": "uninomial", "preference": 2}]}
-                    ],
-                }
-                ]
-            },
-            {
-            "name_version": "canonical",
-            "name_components": [
-                    {
-                        "word_order_placement": 1,
-                        "is_optional": False,
-                        "static_string": {"is_static": False, "value": ""},
-                        "rank_abbreviation": {"has_abbreviation": False},
-                        "source": [
-                            {
-                                "hierarchy_rank": "Genus",
-                                "preference": 1,
-                                "field": [
-                                    {"label": "uninomial", "preference": 1}
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        "word_order_placement": 2,
-                        "is_optional": False,
-                        "static_string": {"is_static": False, "value": ""},
-                        "rank_abbreviation": {"has_abbreviation": False},
-                        "source": [
-                            {
-                                "hierarchy_rank": "Species",
-                                "preference": 1,
-                                "field": [
-                                    {"label": "specific_epithet", "preference": 1},
-                                    {"label": "uninomial", "preference": 2}
-                                ]
-                            }
-                        ],
-                    },
-                    {
-                        "word_order_placement": 3,
-                        "is_optional": False,
-                        "static_string": {"is_static": False, "value": ""},
-                        "rank_abbreviation": {"has_abbreviation": True},
-                        "source": [
-                            {
-                                "hierarchy_rank": "Sub-variety",
-                                "preference": 1,
-                                "field": [
-                                    {"label": "infraspecific_epithet", "preference": 1},
-                                    {"label": "uninomial", "preference": 2}]},
-                            {
-                                "hierarchy_rank": "Variety",
-                                "preference": 2,
-                                "field": [
-                                    {"label": "infraspecific_epithet", "preference": 1},
-                                    {"label": "uninomial", "preference": 2}]}
-                        ],
-                    }
-                ]
-            },
-            {
-                "name_version": "canonical_that_fails",
-                "name_components": [
-                    {
-                        "word_order_placement": 1,
-                        "is_optional": False,
-                        "static_string": {"is_static": False, "value": ""},
-                        "rank_abbreviation": {"has_abbreviation": False},
-                        "source": [
-                            {
-                                "hierarchy_rank": "Genus",
-                                "preference": 1,
-                                "field": [
-                                    {"label": "specific_epithet", "preference": 1}
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        "word_order_placement": 2,
-                        "is_optional": False,
-                        "static_string": {"is_static": False, "value": ""},
-                        "rank_abbreviation": {"has_abbreviation": False},
-                        "source": [
-                            {
-                                "hierarchy_rank": "Species",
-                                "preference": 1,
-                                "field": [
-                                    {"label": "specific_epithet", "preference": 1},
-                                    {"label": "uninomial", "preference": 2}
-                                ]
-                            }
-                        ],
-                    },
-                    {
-                        "word_order_placement": 3,
-                        "is_optional": False,
-                        "static_string": {"is_static": False, "value": ""},
-                        "rank_abbreviation": {"has_abbreviation": False},
-                        "source": [
-                            {
-                                "hierarchy_rank": "Sub-variety",
-                                "preference": 1,
-                                "field": [
-                                    {"label": "infraspecific_epithet", "preference": 1},
-                                    {"label": "uninomial", "preference": 2}]},
-                            {
-                                "hierarchy_rank": "Variety",
-                                "preference": 2,
-                                "field": [
-                                    {"label": "infraspecific_epithet", "preference": 1},
-                                    {"label": "uninomial", "preference": 2}]}
-                        ],
-                    }
-                ]
-            },
-        ]
-
-        result = [{"version": "canonical_with_rank", "name": "Verticordia staminosa var. erecta"},
-            {"version": "canonical", "name": "Verticordia staminosa subvar. erecta"}]
-
-    def get_source_data(self):
-        pass
+        self.name_definitions = SubGeneraNameDefinitions(definitions_list=all_name_combinations)
 
     def generate_names(self, searched_taxon_id: int, taxon_info: List[dict]):
-        for definition in self.name_definitions:
+        for definition in self.name_definitions.definitions_list:
 
-            name_definition_components_sorted = sorted(definition["name_components"],
-                                            key=itemgetter("word_order_placement"))
+            name_definition_components_sorted = sorted(definition.name_components,
+                                            key=lambda x: x.word_order_placement)
             new_name = InfraGenericNameModel()
-            new_name.name_version = definition["name_version"]
+            new_name.name_version = definition.name_version
             new_name.searched_taxon_id = searched_taxon_id
 
             generated_name = ""
             for definition_component in name_definition_components_sorted:
-                if definition_component["static_string"]["is_static"]:
-                    generated_name += definition_component["static_string"]["value"] + " "
+                if definition_component.static_string.is_static:
+                    generated_name += definition_component.static_string.value + " "
                     continue
-                name_component_list = self._get_name_components(definition_component["source"], taxon_info)
+                name_component_list = self._get_name_components(definition_component.source, taxon_info)
                 name_component = self._select_name_component(definition_component, name_component_list)
                 if name_component.info is not None:
-                    placement = definition_component["word_order_placement"]
-                    new_name.info = f"{name_component.info}: Component [{placement}]" \
+                    new_name.info = f"{name_component.info}: Component " \
+                                    f"[{definition_component.word_order_placement}]" \
                                     f", reference Taxon name ID " \
                                     f"[{name_component.taxon_name_id}]"
                     generated_name = ""
@@ -256,16 +74,16 @@ class InfraGenericNames(BaseModel):
 
 
     @staticmethod
-    def _get_name_components(component_sources: List[dict],
+    def _get_name_components(component_sources: List[Source],
                              taxon_info: List[dict]) -> List[NameComponentsListModel]:
         definition_components_list = [
             DefinitionComponentsListModel(
-                hierarchy_rank=source["hierarchy_rank"],
-                column_label=field["label"],
-                preference_tuple=(source["preference"], field["preference"])
+                hierarchy_rank=source.hierarchy_rank,
+                column_label=field.label,
+                preference_tuple=(source.preference, field.preference)
             )
             for source in component_sources
-            for field in source["field"]
+            for field in source.field
         ]
         name_components_list = [
             NameComponentsListModel(
@@ -283,12 +101,12 @@ class InfraGenericNames(BaseModel):
         return name_components_list
 
     @staticmethod
-    def _select_name_component(definition_component: dict,
+    def _select_name_component(definition_component: NameComponent,
                                name_component_list: List[NameComponentsListModel],
                                ) -> NameComponentModel:
         name_component = NameComponentModel()
         if not name_component_list:
-            if definition_component["is_optional"]:
+            if definition_component.is_optional:
                 name_component.name_value = ""
                 return name_component
             else:
@@ -303,12 +121,15 @@ class InfraGenericNames(BaseModel):
             name_component.taxon_name_id = name_component_source.taxon_name_id
             action = "Name value string"
             name_value = name_component_source.value.strip().rstrip()
-            if definition_component["rank_abbreviation"]["has_abbreviation"]:
+            if definition_component.name_is_abbreviated:
+                action = "Name value abbreviation"
+                name_value = name_value[0]
+            if definition_component.use_rank_abbreviation:
                 action = "Rank abbreviation"
                 name_abbreviation = name_component_source.rank_abbreviation.strip().rstrip()
                 rank_abbreviation = RankAbbreviationVals[name_abbreviation].strip().rstrip()
                 name_value = rank_abbreviation + " " + name_value
-            if definition_component["has_parentheses"]:
+            if definition_component.has_parentheses:
                 action = "Parentheses"
                 name_value = "(" + name_value + ")"
             name_component.name_value = name_value + " "
