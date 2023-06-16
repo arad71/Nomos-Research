@@ -5,6 +5,11 @@ from app.db.taxon_name.infrageneric_name_definitions.\
     sources_below_species, \
     sources_between_genus_and_species
 
+"""
+JSON name descriptions for defining displayed names of taxon entries.
+See SubGeneraNameDefinitions class description for details on how to define a new name.
+"""
+
 name_format_canonical = {
                 "name_version": "Canonical",
                 "example": "Verticordia staminosa var. erecta",
@@ -238,9 +243,9 @@ name_format_abbreviated_genus = {
 
 name_format_the_lot = "TODO"
 
-all_name_combinations = [name_format_canonical]
-# name_format_canonical_without_rank,
-# name_format_infragenus,
-# name_format_infragenus_with_rank,
-# name_format_infragenus_without_parentheses,
-# name_format_abbreviated_genus]
+all_name_combinations = [name_format_canonical,
+                         name_format_canonical_without_rank,
+                         name_format_infragenus,
+                         name_format_infragenus_with_rank,
+                         name_format_infragenus_without_parentheses,
+                         name_format_abbreviated_genus]

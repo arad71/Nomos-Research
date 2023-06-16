@@ -8,6 +8,11 @@ from app.db.taxon_rank.enums import RankAbbreviationVals
 
 
 class InfraGenericNameModel(BaseModel):
+    """
+    Represents an infra-generic name model.
+
+    This class holds the result of a single formatted name
+    """
     formatted_name: str = ""
     name_version: str = ""
     contributing_taxon_ids: List[int] = []
@@ -16,12 +21,27 @@ class InfraGenericNameModel(BaseModel):
 
 
 class NameComponentModel(BaseModel):
+    """
+    Represents a name component model.
+
+    This class holds an individual word during the name creation process.
+    Storing the word that was selected, the id of the taxon entry that contained the
+    word, and error information logged during the selection of the word.
+    """
     name_value: str = ""
     taxon_name_id: Optional[int] = None
     info: Optional[str] = None
 
 
 class NameComponentsListModel(BaseModel):
+    """
+    Represents a list of name components.
+
+    This class holds a combination of definition and query information.
+    When a word is identified as being a possible name component, the word information
+    is stored here. The value, rank abbreviation, and taxon id are stored from the
+    query, the word preference is stored from the definition.
+    """
     value: Optional[str] = None
     rank_abbreviation: Optional[str] = None
     preference_tuple: Optional[Tuple[int, int]] = None
@@ -29,53 +49,152 @@ class NameComponentsListModel(BaseModel):
 
 
 class DefinitionComponentsListModel(BaseModel):
+    """
+    Represents a list of definition components.
+
+    This class holds a definition word option. The defined hierarchy rank and column
+    label are used to select a word from the query data (i.e. Genus.uninomial) and the
+    preference is used for later word option selection.
+    """
     hierarchy_rank: Optional[str] = None
     column_label: Optional[str] = None
     preference_tuple: Optional[Tuple[int, int]] = None
 
 
 class InfraGenericNames(BaseModel):
+    """
+    Generates defined InfraGeneric names.
+
+    This class uses pre-defined name definitions to generate a series of names from a
+    single taxon id query where the full taxon hierarchy information is provided.
+    """
     name_definitions: SubGeneraNameDefinitions = None
     formatted_names: List[InfraGenericNameModel] = []
 
     def __init__(self, **data: Any):
+        """
+        Initializes an instance of InfraGenericNames.
+
+        Args:
+            **data (Any): Additional data for initialization.
+        """
         super().__init__(**data)
+        # parse the json names list as the pydantic class to ensure conformity
         self.name_definitions = SubGeneraNameDefinitions(definitions_list=all_name_combinations)
 
-    def generate_names(self, searched_taxon_id: int, taxon_info: List[dict]):
-        for definition in self.name_definitions.definitions_list:
+    @staticmethod
+    def _validate_taxon_info(taxon_info: List[dict]) -> bool:
+        """
+        Validates that all expected fields exist in the taxon_info dictionary.
 
+        Args:
+            taxon_info (List[Dict[str, Any]]): Information about the taxon.
+
+        Returns:
+            bool: True if all expected fields exist, False otherwise.
+        """
+        expected_fields = {
+            "taxon_name_id",
+            "rank_name",
+            "rank_abbrev",
+            "uninomial",
+            "specific_epithet",
+            "infraspecific_epithet",
+        }
+
+        for taxon in taxon_info:
+            if not all(field in taxon for field in expected_fields):
+                return False
+
+        return True
+
+    def generate_names(self, searched_taxon_id: int, taxon_info: List[dict]) -> List[InfraGenericNameModel]:
+        """
+        Generates infra-generic names based on the provided query results and the
+        specified name format definitions.
+
+        Args:
+            searched_taxon_id (int): The ID of the searched taxon.
+            taxon_info (List[dict]): Query result from the taxon_id entry
+
+        Returns:
+            List[InfraGenericNameModel]: The generated infra-generic names.
+        """
+
+        # abort the process if something somehow went wrong with the query data
+        if not self._validate_taxon_info(taxon_info):
+            new_name = InfraGenericNameModel()
+            new_name.info = "Error: Query information is missing required fields."
+            new_name.formatted_name = ""
+            self.formatted_names.append(new_name)
+            return self.formatted_names
+
+        # process each defined name included in the "all_names" list
+        for definition in self.name_definitions.definitions_list:
+            # make sure the name components are processed in order
             name_definition_components_sorted = sorted(definition.name_components,
                                             key=lambda x: x.word_order_placement)
+
+            # set generic new name attributes
             new_name = InfraGenericNameModel()
             new_name.name_version = definition.name_version
             new_name.searched_taxon_id = searched_taxon_id
-
             generated_name = ""
+
+            # process all the individual components of the name to build it up
             for definition_component in name_definition_components_sorted:
+                # Static words are set first
                 if definition_component.static_string.is_static:
                     generated_name += definition_component.static_string.value + " "
+                    # Move on to the next component if we just processed a static word
                     continue
+                # Get all the possible options for the component word
                 name_component_list = self._get_name_components(definition_component.source, taxon_info)
+                # Select one single word from all possible components
                 name_component = self._select_name_component(definition_component, name_component_list)
+                # Handle errors in the component selection process
+                # the info field should only be populated if there was a problem
                 if name_component.info is not None:
                     new_name.info = f"{name_component.info}: Component " \
                                     f"[{definition_component.word_order_placement}]" \
                                     f", reference Taxon name ID " \
                                     f"[{name_component.taxon_name_id}]"
+                    # erase the name progress, don't return names with problems
                     generated_name = ""
                     break
                 else:
+                    # record the taxon id that is contributing this word
                     new_name.contributing_taxon_ids.append(name_component.taxon_name_id)
+                    # update the in-progress name
                     generated_name = generated_name + name_component.name_value
+            # remove any leading/trailing white space and add the formatted name
             new_name.formatted_name = generated_name.strip().rstrip()
             self.formatted_names.append(new_name)
         return self.formatted_names
 
-
     @staticmethod
     def _get_name_components(component_sources: List[Source],
                              taxon_info: List[dict]) -> List[NameComponentsListModel]:
+        """
+        Gets the name components based on the component sources and taxon info.
+
+        A name component is the row from the query result where the taxon rank name
+        matches a rank name specified in the sources list. All matches are returned,
+        match selection logic is performed elsewhere.
+
+        Args:
+            component_sources (List[Source]): The component sources
+            taxon_info (List[dict]): Information about the taxon.
+
+        Returns:
+            List[NameComponentsListModel]: The name components.
+        """
+        # this section creates a flat list of preference sources from the definition
+        # json. This is required because there could be multiple valid sources to choose
+        # from, and each source could have multiple valid fields to choose from.
+        # In order to keep track of the priority for each item, the two preferences are
+        # treated as a major/minor preference indicator as a tuple. This way, preference
+        # (1,7) will be chosen over preference (2,1) when selecting word preferences.
         definition_components_list = [
             DefinitionComponentsListModel(
                 hierarchy_rank=source.hierarchy_rank,
@@ -85,6 +204,12 @@ class InfraGenericNames(BaseModel):
             for source in component_sources
             for field in source.field
         ]
+
+        # This section creates a list of the word options that can be used for word
+        # selection in later steps. If the hierarchy rank was defined as a valid option
+        # in the definition, and the hierarchy rank exists in the taxon query data,
+        # and the field for that rank (uninomial, etc) is populated,
+        # then the information is saved to the list.
         name_components_list = [
             NameComponentsListModel(
                 value=taxon[definition.column_label],
@@ -102,9 +227,26 @@ class InfraGenericNames(BaseModel):
 
     @staticmethod
     def _select_name_component(definition_component: NameComponent,
-                               name_component_list: List[NameComponentsListModel],
-                               ) -> NameComponentModel:
+                               name_component_list: List[NameComponentsListModel]) -> NameComponentModel:
+        """
+        Selects the name component based on the definition component and name component list.
+
+        A single word component for the name is selected and modified as defined in the
+        NameComponent attributes.
+
+        Errors encountered during name selection are documented in the info attribute.
+
+        Args:
+            definition_component (NameComponent): The definition component
+            name_component_list (List[NameComponentsListModel]): The name component list
+
+        Returns:
+            NameComponentModel: The selected name component.
+        """
         name_component = NameComponentModel()
+
+        # There might not be any possible options.
+        # If the word is optional, return an empty string and keep going, else, abort.
         if not name_component_list:
             if definition_component.is_optional:
                 name_component.name_value = ""
@@ -113,14 +255,21 @@ class InfraGenericNames(BaseModel):
                 name_component.info = "Mandatory name component does not exist"
                 return name_component
 
+        # recording what we're doing for error logging
         action = "Source sorting"
         try:
+            # sort the list by major/minor preference and select the top entry
             name_component_source = sorted(name_component_list,
                                            key=lambda x: x.preference_tuple)[0]
+            # record the taxon id selected for this component
             action = "Value setting"
             name_component.taxon_name_id = name_component_source.taxon_name_id
+
+            # remove any leading or trailing white space
             action = "Name value string"
             name_value = name_component_source.value.strip().rstrip()
+
+            # handle the definition word manipulation settings
             if definition_component.name_is_abbreviated:
                 action = "Name value abbreviation"
                 name_value = name_value[0]
@@ -134,16 +283,9 @@ class InfraGenericNames(BaseModel):
                 name_value = "(" + name_value + ")"
             name_component.name_value = name_value + " "
 
-        except AttributeError:
-            name_component.info = \
-                f"Attribute Error encountered with component [{action}]"
-
         except Exception as e:
-            name_component.info = \
-                f"Unexpected Error [{e}] encountered with component [{action}]"
+            # It's unlikely anything could happen, but this is the only place we
+            # manipulate data that came from the query so this is a catch-all.
+            name_component.info = f"Unexpected Error [{e}] encountered with component [{action}]"
 
         return name_component
-
-
-
-

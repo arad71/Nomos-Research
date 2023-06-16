@@ -1,3 +1,8 @@
+"""
+JSON source descriptions for defining displayed names of taxon entries.
+See SubGeneraNameDefinitions class description for details on how to define a new name.
+"""
+
 sources_below_species = [
                             {
                                 "hierarchy_rank": "Form",
