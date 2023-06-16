@@ -6,4 +6,5 @@ export interface HierarchyFilterType {
   classification_system_id?: number;
   path__lquery?: string;
   path__ltxtquery?: string;
+  taxon_name___deleted?: boolean;
 }
