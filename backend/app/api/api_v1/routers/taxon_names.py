@@ -54,7 +54,6 @@ async def taxon_name_list(
 ):
 
     result = TaxonNameCrud.generate_infrageneric_names(db,taxon_name_id)
-    print(result)
     return result
 
 

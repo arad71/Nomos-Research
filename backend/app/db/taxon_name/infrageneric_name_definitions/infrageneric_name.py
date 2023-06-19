@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 
 
 class SourceField(BaseModel):
@@ -57,14 +57,23 @@ class NameComponent(BaseModel):
     name_is_abbreviated: replace the word with the fist letter:  Name -> N.
     has_parentheses: surround with (): abbr. N. -> (abbr. N.)
     source: source used to select the word. See class definition.
+
+    The name component has an additional optional configuration to convert the word into
+    an abbreviation. This feature is not recommended for production use or for name
+    matching as false positive matches are possible and confusion between similar taxa
+    are highly likely possibilities.
     """
     word_order_placement: int
     is_optional: bool
     static_string: StaticString
     use_rank_abbreviation: bool
-    name_is_abbreviated: bool
+    name_is_abbreviated: Optional[bool] = None
     has_parentheses: bool
     source: List[Source]
+
+    @property
+    def sources_summary(self) -> List[str]:
+        return [source.hierarchy_rank for source in self.source]
 
 
 class NameFormat(BaseModel):

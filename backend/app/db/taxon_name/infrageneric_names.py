@@ -15,7 +15,9 @@ class InfraGenericNameModel(BaseModel):
     """
     formatted_name: str = ""
     name_version: str = ""
-    contributing_taxon_ids: List[int] = []
+    author: Optional[str] = None
+    formatted_name_with_author: Optional[str] = None
+    contributing_taxons: List[Tuple[int, str]] = []
     info: Optional[str] = None
     searched_taxon_id: int = None
 
@@ -29,6 +31,7 @@ class NameComponentModel(BaseModel):
     word, and error information logged during the selection of the word.
     """
     name_value: str = ""
+    source_name_value: Optional[str] = None
     taxon_name_id: Optional[int] = None
     info: Optional[str] = None
 
@@ -129,6 +132,10 @@ class InfraGenericNames(BaseModel):
             self.formatted_names.append(new_name)
             return self.formatted_names
 
+        # record author information for later use
+        searched_taxon_dict = next(filter(lambda d: d.get('taxon_name_id') == searched_taxon_id, taxon_info), None)
+        taxon_author = searched_taxon_dict.get('author') if searched_taxon_dict else None
+
         # process each defined name included in the "all_names" list
         for definition in self.name_definitions.definitions_list:
             # make sure the name components are processed in order
@@ -155,20 +162,24 @@ class InfraGenericNames(BaseModel):
                 # Handle errors in the component selection process
                 # the info field should only be populated if there was a problem
                 if name_component.info is not None:
-                    new_name.info = f"{name_component.info}: Component " \
-                                    f"[{definition_component.word_order_placement}]" \
-                                    f", reference Taxon name ID " \
-                                    f"[{name_component.taxon_name_id}]"
+                    new_name.info = f"{name_component.info}: Component number " \
+                                  f"[{definition_component.word_order_placement}], " \
+                                  f"Defined source options [{definition_component.sources_summary}, " \
+                                  f"Reference Taxon name ID [{name_component.taxon_name_id}]."
                     # erase the name progress, don't return names with problems
                     generated_name = ""
                     break
                 else:
                     # record the taxon id that is contributing this word
-                    new_name.contributing_taxon_ids.append(name_component.taxon_name_id)
+                    new_name.contributing_taxons.append(
+                        (name_component.taxon_name_id, name_component.source_name_value))
                     # update the in-progress name
                     generated_name = generated_name + name_component.name_value
             # remove any leading/trailing white space and add the formatted name
             new_name.formatted_name = generated_name.strip().rstrip()
+            if taxon_author:
+                new_name.author = taxon_author
+                new_name.formatted_name_with_author = new_name.formatted_name + " " + taxon_author
             self.formatted_names.append(new_name)
         return self.formatted_names
 
@@ -267,12 +278,13 @@ class InfraGenericNames(BaseModel):
 
             # remove any leading or trailing white space
             action = "Name value string"
+            name_component.source_name_value = name_component_source.value
             name_value = name_component_source.value.strip().rstrip()
 
             # handle the definition word manipulation settings
             if definition_component.name_is_abbreviated:
                 action = "Name value abbreviation"
-                name_value = name_value[0]
+                name_value = name_value[0] + "."
             if definition_component.use_rank_abbreviation:
                 action = "Rank abbreviation"
                 name_abbreviation = name_component_source.rank_abbreviation.strip().rstrip()

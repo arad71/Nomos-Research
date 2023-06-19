@@ -37,7 +37,7 @@ def upgrade():
 
     # Add the new enum values if they don't already exist to protect against repeated
     # upgrade actions
-    for enum_value in ['subg', 'sect', 'subsect']:
+    for enum_value in ['subg', 'sect', 'subsect', 'ser', 'subser', 'superser', 'subforma']:
         if enum_value not in current_enum_values:
             op.execute(f"ALTER TYPE taxon_rank__rank_abbrev ADD VALUE '{enum_value}'")
             op.execute("COMMIT")
@@ -49,11 +49,19 @@ def upgrade():
         "UPDATE taxon_rank SET rank_abbrev = 'sect' WHERE rank_name = 'Section'")
     op.execute(
         "UPDATE taxon_rank SET rank_abbrev = 'subsect' WHERE rank_name = 'Subsection'")
+    op.execute(
+        "UPDATE taxon_rank SET rank_abbrev = 'ser' WHERE rank_name = 'Series'")
+    op.execute(
+        "UPDATE taxon_rank SET rank_abbrev = 'subser' WHERE rank_name = 'Subseries'")
+    op.execute(
+        "UPDATE taxon_rank SET rank_abbrev = 'superser' WHERE rank_name = 'Superseries'")
+    op.execute(
+        "UPDATE taxon_rank SET rank_abbrev = 'subforma' WHERE rank_name = 'Subform'")
 
 
 def downgrade():
     """
-    Downgrade actions to remove the three new enum values have not been added for this
+    Downgrade actions to remove the new enum values have not been added for this
     migration as deleting individual values from an enum type is not supported.
 
     Official documentation: https://www.postgresql.org/docs/current/datatype-enum.html
@@ -87,4 +95,12 @@ def downgrade():
         "UPDATE taxon_rank SET rank_abbrev = null WHERE rank_name = 'Section'")
     op.execute(
         "UPDATE taxon_rank SET rank_abbrev = null WHERE rank_name = 'Subsection'")
+    op.execute(
+        "UPDATE taxon_rank SET rank_abbrev = null WHERE rank_name = 'Series'")
+    op.execute(
+        "UPDATE taxon_rank SET rank_abbrev = null WHERE rank_name = 'Subseries'")
+    op.execute(
+        "UPDATE taxon_rank SET rank_abbrev = null WHERE rank_name = 'Superseries'")
+    op.execute(
+        "UPDATE taxon_rank SET rank_abbrev = null WHERE rank_name = 'Subform'")
 

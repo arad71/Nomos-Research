@@ -11,7 +11,8 @@ from app.db.taxon_name.model import TaxonName
 from app.db.user.model import User
 from app.db.hierarchy.model import Hierarchy
 from app.db.taxon_rank.model import TaxonRank
-from app.db.taxon_name.infrageneric_names import InfraGenericNames
+from app.db.taxon_name.infrageneric_names import InfraGenericNames, \
+    InfraGenericNameModel
 
 
 class TaxonNameCrud(crud.Crud):
@@ -96,7 +97,7 @@ class TaxonNameCrud(crud.Crud):
         db: Session,
         taxon_name_id: int,
         **kwargs,
-    ) -> List[dict]:
+    ) -> List[InfraGenericNameModel]:
         hierarchy = aliased(Hierarchy)
         taxon_name = aliased(TaxonName)
         taxon_rank = aliased(TaxonRank)
@@ -112,6 +113,7 @@ class TaxonNameCrud(crud.Crud):
             taxon_name.uninomial,
             taxon_name.specific_epithet,
             taxon_name.infraspecific_epithet,
+            taxon_name.author,
             taxon_rank.rank_name,
             taxon_rank.rank_abbrev,
             hierarchy.parent_nid

@@ -12,6 +12,10 @@ class RankAbbreviation(str, Enum):
     subg = "subg"
     sect = "sect"
     subsect = "subsect"
+    ser = "ser"
+    subser = "subser"
+    superser = "superser"
+    subforma = "subforma"
 
 
 RankAbbreviationVals = {
@@ -25,4 +29,8 @@ RankAbbreviationVals = {
     "subg": "subg.",
     "sect": "sect.",
     "subsect": "subsect.",
+    "ser": "ser.",
+    "subser": "subser.",
+    "superser": "superser.",
+    "subforma": "subforma",
 }
