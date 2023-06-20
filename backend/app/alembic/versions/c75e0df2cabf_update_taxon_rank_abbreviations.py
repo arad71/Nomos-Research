@@ -37,7 +37,7 @@ def upgrade():
 
     # Add the new enum values if they don't already exist to protect against repeated
     # upgrade actions
-    for enum_value in ['subg', 'sect', 'subsect', 'ser', 'subser', 'superser', 'subforma']:
+    for enum_value in ['subg', 'sect', 'subsect', 'ser', 'subser', 'supersp', 'subforma']:
         if enum_value not in current_enum_values:
             op.execute(f"ALTER TYPE taxon_rank__rank_abbrev ADD VALUE '{enum_value}'")
             op.execute("COMMIT")
@@ -54,7 +54,7 @@ def upgrade():
     op.execute(
         "UPDATE taxon_rank SET rank_abbrev = 'subser' WHERE rank_name = 'Subseries'")
     op.execute(
-        "UPDATE taxon_rank SET rank_abbrev = 'superser' WHERE rank_name = 'Superseries'")
+        "UPDATE taxon_rank SET rank_abbrev = 'supersp' WHERE rank_name = 'Superspecies'")
     op.execute(
         "UPDATE taxon_rank SET rank_abbrev = 'subforma' WHERE rank_name = 'Subform'")
 
@@ -100,7 +100,7 @@ def downgrade():
     op.execute(
         "UPDATE taxon_rank SET rank_abbrev = null WHERE rank_name = 'Subseries'")
     op.execute(
-        "UPDATE taxon_rank SET rank_abbrev = null WHERE rank_name = 'Superseries'")
+        "UPDATE taxon_rank SET rank_abbrev = null WHERE rank_name = 'Superspecies'")
     op.execute(
         "UPDATE taxon_rank SET rank_abbrev = null WHERE rank_name = 'Subform'")
 
