@@ -123,6 +123,8 @@ class InfraGenericNames(BaseModel):
         Returns:
             List[InfraGenericNameModel]: The generated infra-generic names.
         """
+        # start with an empty results list
+        self.formatted_names = []
 
         # abort the process if something somehow went wrong with the query data
         if not self._validate_taxon_info(taxon_info):
