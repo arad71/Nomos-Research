@@ -98,6 +98,7 @@ class TaxonNameCrud(crud.Crud):
         taxon_name_id: int,
         **kwargs,
     ) -> List[InfraGenericNameModel]:
+        # This query returns a result with a full hierarchy list for a single taxon_id
         hierarchy = aliased(Hierarchy)
         taxon_name = aliased(TaxonName)
         taxon_rank = aliased(TaxonRank)
@@ -132,24 +133,11 @@ class TaxonNameCrud(crud.Crud):
             hierarchy.path
         )
 
-        class CustomJSONEncoder(json.JSONEncoder):
-            def default(self, obj):
-                if isinstance(obj.__class__, DeclarativeMeta):
-                    # If the object is an SQLAlchemy model, convert it to a dictionary
-                    return {c.name: getattr(obj, c.name) for c in obj.__table__.columns}
-                if isinstance(obj, Ltree):
-                    # If the object is an Ltree, convert it to a string
-                    return str(obj)
-                return super().default(obj)
-
         result = query.all()
 
-        # Convert the result to a list of dictionaries
+        # Convert the result to a list of dictionaries for script ingestion
         rows = [dict(row) for row in result]
-
-        # Convert the list to JSON using the custom encoder
-        json_result = json.dumps(rows, cls=CustomJSONEncoder)
-        if json_result:
+        if rows:
             infrageneric_names_helper = InfraGenericNames()
             infrageneric_names = infrageneric_names_helper.generate_names(taxon_name_id, rows)
 

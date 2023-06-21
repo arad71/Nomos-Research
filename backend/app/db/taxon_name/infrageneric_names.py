@@ -172,11 +172,13 @@ class InfraGenericNames(BaseModel):
                     generated_name = ""
                     break
                 else:
-                    # record the taxon id that is contributing this word
-                    new_name.contributing_taxons.append(
-                        (name_component.taxon_name_id, name_component.source_name_value))
-                    # update the in-progress name
-                    generated_name = generated_name + name_component.name_value
+                    # Optional componentes that don't exist won't have a contribution
+                    if name_component.taxon_name_id and name_component.source_name_value:
+                        # record the taxon id that is contributing this word
+                        new_name.contributing_taxons.append(
+                            (name_component.taxon_name_id, name_component.source_name_value))
+                        # update the in-progress name
+                        generated_name = generated_name + name_component.name_value
             # remove any leading/trailing white space and add the formatted name
             new_name.formatted_name = generated_name.strip().rstrip()
             if taxon_author:
@@ -289,9 +291,12 @@ class InfraGenericNames(BaseModel):
                 name_value = name_value[0] + "."
             if definition_component.use_rank_abbreviation:
                 action = "Rank abbreviation"
-                name_abbreviation = name_component_source.rank_abbreviation.strip().rstrip()
-                rank_abbreviation = RankAbbreviationVals[name_abbreviation].strip().rstrip()
-                name_value = rank_abbreviation + " " + name_value
+                # only a subset of kingdoms should have rank abbreviations defined
+                # skip the rank abbreviation task if none exists in the query data
+                if name_component_source.rank_abbreviation:
+                    name_abbreviation = name_component_source.rank_abbreviation.strip().rstrip()
+                    rank_abbreviation = RankAbbreviationVals[name_abbreviation].strip().rstrip()
+                    name_value = rank_abbreviation + " " + name_value
             if definition_component.has_parentheses:
                 action = "Parentheses"
                 name_value = "(" + name_value + ")"

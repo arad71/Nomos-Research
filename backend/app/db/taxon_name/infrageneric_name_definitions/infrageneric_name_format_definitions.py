@@ -205,6 +205,45 @@ name_format_infragenus_without_parentheses = {
                     ]
                 }
 
+name_format_infragenus_without_parentheses_without_rank = {
+                "name_version": "Infragenus without parentheses without rank",
+                "example": "Verticordia Veryfrillycordia staminosa erecta",
+                "name_components": [
+                        {
+                            "word_order_placement": 1,
+                            "is_optional": False,
+                            "static_string": {"is_static": False, "value": ""},
+                            "use_rank_abbreviation": False,
+                            "has_parentheses":  False,
+                            "source": source_genus
+                        },
+                        {
+                            "word_order_placement": 2,
+                            "is_optional": False,
+                            "static_string": {"is_static": False, "value": ""},
+                            "use_rank_abbreviation": False,
+                            "has_parentheses":  False,
+                            "source": sources_between_genus_and_species,
+                        },
+                        {
+                            "word_order_placement": 3,
+                            "is_optional": False,
+                            "static_string": {"is_static": False, "value": ""},
+                            "use_rank_abbreviation": False,
+                            "has_parentheses":  False,
+                            "source": source_species,
+                        },
+                        {
+                            "word_order_placement": 4,
+                            "is_optional": False,
+                            "static_string": {"is_static": False, "value": ""},
+                            "use_rank_abbreviation": False,
+                            "has_parentheses":  False,
+                            "source": sources_below_species,
+                        }
+                    ]
+                }
+
 name_format_full_hierarchy = {
                 "name_version": "Full hierarchy",
                 "example": "Verticordia subg. Frillycordia sect. Veryfrillycordia staminosa subsp. staminosa var. erecta",
@@ -321,4 +360,5 @@ all_name_combinations = [name_format_canonical,
                          name_format_infragenus,
                          name_format_infragenus_with_rank,
                          name_format_infragenus_without_parentheses,
+                         name_format_infragenus_without_parentheses_without_rank,
                          name_format_full_hierarchy]

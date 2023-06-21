@@ -48,7 +48,7 @@ sources_below_species = [
 
 sources_between_genus_and_species = [
                                         {
-                                            "hierarchy_rank": "Superseries",
+                                            "hierarchy_rank": "Superspecies",
                                             "preference": 1,
                                             "field": [
                                                 {"label": "uninomial", "preference": 1}

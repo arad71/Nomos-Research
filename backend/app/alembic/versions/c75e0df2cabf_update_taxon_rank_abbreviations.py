@@ -15,6 +15,10 @@ down_revision = '72e7aaa2faa2'
 branch_labels = None
 depends_on = None
 
+# rank abbreviations are not used in all kingdoms.
+# the following subquery is used for targeting only applicable taxon_rank entries
+subquery = "SELECT kingdom_id FROM kingdom WHERE kingdom_name IN ('Plantae', 'Fungi')"
+
 
 def upgrade():
     """
@@ -42,21 +46,23 @@ def upgrade():
             op.execute(f"ALTER TYPE taxon_rank__rank_abbrev ADD VALUE '{enum_value}'")
             op.execute("COMMIT")
 
-    # All enum types are defined, update or populate the values
-    op.execute(
-        "UPDATE taxon_rank SET rank_abbrev = 'subg' WHERE rank_name = 'Subgenus'")
-    op.execute(
-        "UPDATE taxon_rank SET rank_abbrev = 'sect' WHERE rank_name = 'Section'")
-    op.execute(
-        "UPDATE taxon_rank SET rank_abbrev = 'subsect' WHERE rank_name = 'Subsection'")
-    op.execute(
-        "UPDATE taxon_rank SET rank_abbrev = 'ser' WHERE rank_name = 'Series'")
-    op.execute(
-        "UPDATE taxon_rank SET rank_abbrev = 'subser' WHERE rank_name = 'Subseries'")
-    op.execute(
-        "UPDATE taxon_rank SET rank_abbrev = 'supersp' WHERE rank_name = 'Superspecies'")
-    op.execute(
-        "UPDATE taxon_rank SET rank_abbrev = 'subforma' WHERE rank_name = 'Subform'")
+
+
+    # All enum types are defined, update or populate the values for new enums
+    op.execute(f"UPDATE taxon_rank SET rank_abbrev = 'subg' WHERE rank_name = 'Subgenus' AND kingdom_id IN ({subquery})")
+    op.execute(f"UPDATE taxon_rank SET rank_abbrev = 'sect' WHERE rank_name = 'Section' AND kingdom_id IN ({subquery})")
+    op.execute(f"UPDATE taxon_rank SET rank_abbrev = 'subsect' WHERE rank_name = 'Subsection' AND kingdom_id IN ({subquery})")
+    op.execute(f"UPDATE taxon_rank SET rank_abbrev = 'ser' WHERE rank_name = 'Series' AND kingdom_id IN ({subquery})")
+    op.execute(f"UPDATE taxon_rank SET rank_abbrev = 'subser' WHERE rank_name = 'Subseries' AND kingdom_id IN ({subquery})")
+    op.execute(f"UPDATE taxon_rank SET rank_abbrev = 'supersp' WHERE rank_name = 'Superspecies' AND kingdom_id IN ({subquery})")
+    op.execute(f"UPDATE taxon_rank SET rank_abbrev = 'subforma' WHERE rank_name = 'Subform' AND kingdom_id IN ({subquery})")
+
+    # Ensure all existing abbreviations are correctly set for all ranks in applicable
+    # kingdoms as missing enum values will cause name generation to be inaccurate
+    op.execute(f"UPDATE taxon_rank SET rank_abbrev = 'subsp' WHERE rank_name = 'Subspecies' AND kingdom_id IN ({subquery})")
+    op.execute(f"UPDATE taxon_rank SET rank_abbrev = 'var' WHERE rank_name = 'Variety' AND kingdom_id IN ({subquery})")
+    op.execute(f"UPDATE taxon_rank SET rank_abbrev = 'subvar' WHERE rank_name = 'Subvariety' AND kingdom_id IN ({subquery})")
+    op.execute(f"UPDATE taxon_rank SET rank_abbrev = 'forma' WHERE rank_name = 'Form' AND kingdom_id IN ({subquery})")
 
 
 def downgrade():
@@ -89,18 +95,11 @@ def downgrade():
     """
     # Remove the rank abbreviations from entries that would not have been populated
     # before this migration had been run.
-    op.execute(
-        "UPDATE taxon_rank SET rank_abbrev = null WHERE rank_name = 'Subgenus'")
-    op.execute(
-        "UPDATE taxon_rank SET rank_abbrev = null WHERE rank_name = 'Section'")
-    op.execute(
-        "UPDATE taxon_rank SET rank_abbrev = null WHERE rank_name = 'Subsection'")
-    op.execute(
-        "UPDATE taxon_rank SET rank_abbrev = null WHERE rank_name = 'Series'")
-    op.execute(
-        "UPDATE taxon_rank SET rank_abbrev = null WHERE rank_name = 'Subseries'")
-    op.execute(
-        "UPDATE taxon_rank SET rank_abbrev = null WHERE rank_name = 'Superspecies'")
-    op.execute(
-        "UPDATE taxon_rank SET rank_abbrev = null WHERE rank_name = 'Subform'")
+    op.execute("UPDATE taxon_rank SET rank_abbrev = null WHERE rank_name = 'Subgenus' AND kingdom_id IN ({subquery})")
+    op.execute("UPDATE taxon_rank SET rank_abbrev = null WHERE rank_name = 'Section' AND kingdom_id IN ({subquery})")
+    op.execute("UPDATE taxon_rank SET rank_abbrev = null WHERE rank_name = 'Subsection' AND kingdom_id IN ({subquery})")
+    op.execute("UPDATE taxon_rank SET rank_abbrev = null WHERE rank_name = 'Series' AND kingdom_id IN ({subquery})")
+    op.execute("UPDATE taxon_rank SET rank_abbrev = null WHERE rank_name = 'Subseries' AND kingdom_id IN ({subquery})")
+    op.execute("UPDATE taxon_rank SET rank_abbrev = null WHERE rank_name = 'Superspecies' AND kingdom_id IN ({subquery})")
+    op.execute("UPDATE taxon_rank SET rank_abbrev = null WHERE rank_name = 'Subform' AND kingdom_id IN ({subquery})")
 

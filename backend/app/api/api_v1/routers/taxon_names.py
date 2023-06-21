@@ -11,6 +11,7 @@ from app.db.hierarchy.model import Hierarchy
 from app.db.role.constants import Role
 from app.db.session import get_db
 from app.db.taxon_name.crud import TaxonNameCrud
+from app.db.taxon_name.infrageneric_names import InfraGenericNameModel
 from app.db.taxon_name.model import TaxonName as TaxonNameModel
 from app.db.taxon_name.schema import TaxonName, TaxonNameCreate, TaxonNameEdit
 from app.db.taxon_rank.model import TaxonRank
@@ -45,10 +46,10 @@ async def taxon_name_list(
 
 
 @r.get(
-    "/infrageneric_names/{taxon_name_id}"
+    "/infrageneric_names/{taxon_name_id}",
+    response_model=List[InfraGenericNameModel]
 )
 async def taxon_name_list(
-    response: Response,
     taxon_name_id: int = None,
     db=Depends(get_db),
 ):
