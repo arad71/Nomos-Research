@@ -6,7 +6,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Typography, Button } from '@material-ui/core';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import CardWithIcon from './CardWithIcon';
-import { WithPermissions } from '@react-admin/ra-rbac';
+import { usePermissions } from 'react-admin';
 
 const useStyles = makeStyles(() => ({
   cardtitle: {
@@ -40,6 +40,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 const Dashboard = () => {
+  const { permissions } = usePermissions();
   const classes = useStyles();
   return (
     <div>
@@ -48,7 +49,11 @@ const Dashboard = () => {
           <Typography variant="h4" className={classes.cardtitle}>
             Welcome to Nomos taxonomic names register
           </Typography>
-          <WithPermissions resource="taxon_names" action="list">
+          {permissions?.roles === 'SUPER_ADMIN' ||
+          'APPLICATION_SUPPORT' ||
+          'MANAGER' ||
+          'OFFICER' ||
+          'READER' ? (
             <Button
               href="/#/taxon_names"
               variant="contained"
@@ -57,8 +62,13 @@ const Dashboard = () => {
             >
               View Names
             </Button>
-          </WithPermissions>
-          <WithPermissions resource="publications" action="list">
+          ) : (
+            ''
+          )}
+          {permissions?.roles === 'SUPER_ADMIN' ||
+          'APPLICATION_SUPPORT' ||
+          'MANAGER' ||
+          'OFFICER' ? (
             <Button
               href="/#/publications"
               variant="contained"
@@ -67,10 +77,12 @@ const Dashboard = () => {
             >
               View Publications
             </Button>
-          </WithPermissions>
+          ) : (
+            ''
+          )}
         </CardContent>
       </Card>
-      <WithPermissions resource="users" action="create">
+      {permissions?.roles === 'SUPER_ADMIN' || 'APPLICATION_SUPPORT' ? (
         <div className={classes.wrapper}>
           <CardWithIcon
             icon={
@@ -84,8 +96,13 @@ const Dashboard = () => {
             subtitle="Create a new Nomos user"
           />
         </div>
-      </WithPermissions>
-      <WithPermissions resource="taxon_names" action="create">
+      ) : (
+        ''
+      )}
+      {permissions?.roles === 'SUPER_ADMIN' ||
+      'APPLICATION_SUPPORT' ||
+      'MANAGER' ||
+      'OFFICER' ? (
         <div className={classes.wrapper}>
           <CardWithIcon
             icon={
@@ -99,8 +116,13 @@ const Dashboard = () => {
             subtitle="Create a new Taxon name"
           />
         </div>
-      </WithPermissions>
-      <WithPermissions resource="authors" action="create">
+      ) : (
+        ''
+      )}
+      {permissions?.roles === 'SUPER_ADMIN' ||
+      'APPLICATION_SUPPORT' ||
+      'MANAGER' ||
+      'OFFICER' ? (
         <div className={classes.wrapper}>
           <CardWithIcon
             icon={
@@ -114,8 +136,13 @@ const Dashboard = () => {
             subtitle="Create a new Author"
           />
         </div>
-      </WithPermissions>
-      <WithPermissions resource="publications" action="create">
+      ) : (
+        ''
+      )}
+      {permissions?.roles === 'SUPER_ADMIN' ||
+      'APPLICATION_SUPPORT' ||
+      'MANAGER' ||
+      'OFFICER' ? (
         <div className={classes.wrapper}>
           <CardWithIcon
             icon={
@@ -129,7 +156,9 @@ const Dashboard = () => {
             subtitle="Create a new Publication"
           />
         </div>
-      </WithPermissions>
+      ) : (
+        ''
+      )}
     </div>
   );
 };
