@@ -138,29 +138,29 @@ def downgrade():
     # before this migration had been run.
     op.execute(
         "UPDATE taxon_rank SET rank_abbrev = null WHERE rank_name = 'Subgenus' AND"
-        " kingdom_id IN ({subquery})"
+        f" kingdom_id IN ({subquery})"
     )
     op.execute(
         "UPDATE taxon_rank SET rank_abbrev = null WHERE rank_name = 'Section' AND"
-        " kingdom_id IN ({subquery})"
+        f" kingdom_id IN ({subquery})"
     )
     op.execute(
         "UPDATE taxon_rank SET rank_abbrev = null WHERE rank_name = 'Subsection' AND"
-        " kingdom_id IN ({subquery})"
+        f" kingdom_id IN ({subquery})"
     )
     op.execute(
         "UPDATE taxon_rank SET rank_abbrev = null WHERE rank_name = 'Series' AND"
-        " kingdom_id IN ({subquery})"
+        f" kingdom_id IN ({subquery})"
     )
     op.execute(
         "UPDATE taxon_rank SET rank_abbrev = null WHERE rank_name = 'Subseries' AND"
-        " kingdom_id IN ({subquery})"
+        f" kingdom_id IN ({subquery})"
     )
     op.execute(
         "UPDATE taxon_rank SET rank_abbrev = null WHERE rank_name = 'Superspecies' AND"
-        " kingdom_id IN ({subquery})"
+        f" kingdom_id IN ({subquery})"
     )
     op.execute(
         "UPDATE taxon_rank SET rank_abbrev = null WHERE rank_name = 'Subform' AND"
-        " kingdom_id IN ({subquery})"
+        f" kingdom_id IN ({subquery})"
     )
