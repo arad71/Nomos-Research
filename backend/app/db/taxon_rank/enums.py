@@ -1,8 +1,10 @@
 from enum import Enum
+
 """
 Rank abbreviations are not listed in hierarchical order.
 Rank abbreviation enums are used for restricting entries on the rank_abbrev column
 """
+
 
 class RankAbbreviation(str, Enum):
     subsp = "subsp"

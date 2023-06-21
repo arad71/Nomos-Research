@@ -46,15 +46,13 @@ async def taxon_name_list(
 
 
 @r.get(
-    "/infrageneric_names/{taxon_name_id}",
-    response_model=List[InfraGenericNameModel]
+    "/infrageneric_names/{taxon_name_id}", response_model=List[InfraGenericNameModel]
 )
 async def taxon_name_list(
     taxon_name_id: int = None,
     db=Depends(get_db),
 ):
-
-    result = TaxonNameCrud.generate_infrageneric_names(db,taxon_name_id)
+    result = TaxonNameCrud.generate_infrageneric_names(db, taxon_name_id)
     return result
 
 

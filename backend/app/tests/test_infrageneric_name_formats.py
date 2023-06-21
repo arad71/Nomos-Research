@@ -1,22 +1,25 @@
 import pytest
 from black import List
 
-from app.db.taxon_name.infrageneric_name_definitions.infrageneric_name_format_definitions import \
-    all_name_combinations
-from app.db.taxon_name.infrageneric_names import InfraGenericNames, \
-    InfraGenericNameModel
-from app.tests.infrageneric_name_test_data import \
-    query_set_full_hierarchy_162767, \
-    query_set_minimum_lowest_hierarchy_162767, \
-    query_set_minimum_highest_hierarchy_162763, \
-    query_set_mixed_medium_hierarchy_162765, \
-    query_set_invalid_minimum_lowest_hierarchy_162767, \
-    name_set_full_hierarchy_162767, \
-    name_set_minimum_lowest_hierarchy_162767, \
-    name_set_minimum_highest_hierarchy_162763, \
-    name_set_mixed_medium_hierarchy_162765, \
-    name_set_invalid_minimum_lowest_hierarchy_162767
-
+from app.db.taxon_name.infrageneric_name_definitions.infrageneric_name_format_definitions import (
+    all_name_combinations,
+)
+from app.db.taxon_name.infrageneric_names import (
+    InfraGenericNameModel,
+    InfraGenericNames,
+)
+from app.tests.infrageneric_name_test_data import (
+    name_set_full_hierarchy_162767,
+    name_set_invalid_minimum_lowest_hierarchy_162767,
+    name_set_minimum_highest_hierarchy_162763,
+    name_set_minimum_lowest_hierarchy_162767,
+    name_set_mixed_medium_hierarchy_162765,
+    query_set_full_hierarchy_162767,
+    query_set_invalid_minimum_lowest_hierarchy_162767,
+    query_set_minimum_highest_hierarchy_162763,
+    query_set_minimum_lowest_hierarchy_162767,
+    query_set_mixed_medium_hierarchy_162765,
+)
 
 """
 These unit tests assure that the infrageneric name generating class logic functions
@@ -35,34 +38,64 @@ NUMBER_OF_DEFINED_NAME_FORMATS = len(all_name_combinations)
 # sets of mock test data input and expected results for pytest parameterization
 test_data = [
     (162767, query_set_full_hierarchy_162767, name_set_full_hierarchy_162767),
-    (162767, query_set_minimum_lowest_hierarchy_162767, name_set_minimum_lowest_hierarchy_162767),
-    (162763, query_set_minimum_highest_hierarchy_162763, name_set_minimum_highest_hierarchy_162763),
-    (162765, query_set_mixed_medium_hierarchy_162765, name_set_mixed_medium_hierarchy_162765),
-    (162767, query_set_invalid_minimum_lowest_hierarchy_162767, name_set_invalid_minimum_lowest_hierarchy_162767)]
+    (
+        162767,
+        query_set_minimum_lowest_hierarchy_162767,
+        name_set_minimum_lowest_hierarchy_162767,
+    ),
+    (
+        162763,
+        query_set_minimum_highest_hierarchy_162763,
+        name_set_minimum_highest_hierarchy_162763,
+    ),
+    (
+        162765,
+        query_set_mixed_medium_hierarchy_162765,
+        name_set_mixed_medium_hierarchy_162765,
+    ),
+    (
+        162767,
+        query_set_invalid_minimum_lowest_hierarchy_162767,
+        name_set_invalid_minimum_lowest_hierarchy_162767,
+    ),
+]
 
 
-def check_results(expected_results: List[dict], generated_results: List[InfraGenericNameModel]):
+def check_results(
+    expected_results: List[dict], generated_results: List[InfraGenericNameModel]
+):
     for expected in expected_results:
-        target_result = next((name_result for name_result in generated_results if name_result.name_version == expected["name_version"]), None)
-        assert target_result.formatted_name == expected["formatted_name"], \
-            f"Name generation failed: Expected [{expected['formatted_name']}], " \
-            f"Generated [{target_result.formatted_name}], " \
+        target_result = next(
+            (
+                name_result
+                for name_result in generated_results
+                if name_result.name_version == expected["name_version"]
+            ),
+            None,
+        )
+        assert target_result.formatted_name == expected["formatted_name"], (
+            f"Name generation failed: Expected [{expected['formatted_name']}], "
+            f"Generated [{target_result.formatted_name}], "
             f"Name version [{target_result.name_version}]."
+        )
 
 
 @pytest.mark.parametrize("mock_query_parameter, mock_query_data, expected", test_data)
-def test_infrageneric_name_formats(mock_query_parameter: int, mock_query_data: List[dict], expected: List[dict]):
-
-    assert NUMBER_OF_DEFINED_NAME_FORMATS == len(expected), \
-        f"{NUMBER_OF_DEFINED_NAME_FORMATS} name formats defined in the project, " \
-        f"{len(expected)} name formats defined in the test set. " \
-        f"All name formats must be tested. "
+def test_infrageneric_name_formats(
+    mock_query_parameter: int, mock_query_data: List[dict], expected: List[dict]
+):
+    assert NUMBER_OF_DEFINED_NAME_FORMATS == len(expected), (
+        f"{NUMBER_OF_DEFINED_NAME_FORMATS} name formats defined in the project, "
+        f"{len(expected)} name formats defined in the test set. "
+        "All name formats must be tested. "
+    )
 
     helper = InfraGenericNames()
     output_names = helper.generate_names(mock_query_parameter, mock_query_data)
-    assert len(output_names) == NUMBER_OF_DEFINED_NAME_FORMATS, \
-        f"Expected {NUMBER_OF_DEFINED_NAME_FORMATS} results, " \
-        f"{len(output_names)} generated.\nExpected results list[{expected}].\n" \
+    assert len(output_names) == NUMBER_OF_DEFINED_NAME_FORMATS, (
+        f"Expected {NUMBER_OF_DEFINED_NAME_FORMATS} results, "
+        f"{len(output_names)} generated.\nExpected results list[{expected}].\n"
         f"Generated results list [{output_names}].\n "
+    )
 
     check_results(expected, output_names)

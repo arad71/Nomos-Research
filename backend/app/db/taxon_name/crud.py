@@ -1,18 +1,20 @@
 import json
 from typing import List
 
-from sqlalchemy.orm import Session, aliased, DeclarativeMeta
+from sqlalchemy.orm import DeclarativeMeta, Session, aliased
 from sqlalchemy_utils import Ltree
 
 import app.db.crud as crud
 import app.db.taxon_name.schema as schema
-from app.db.informal_group.model import InformalGroup
-from app.db.taxon_name.model import TaxonName
-from app.db.user.model import User
 from app.db.hierarchy.model import Hierarchy
+from app.db.informal_group.model import InformalGroup
+from app.db.taxon_name.infrageneric_names import (
+    InfraGenericNameModel,
+    InfraGenericNames,
+)
+from app.db.taxon_name.model import TaxonName
 from app.db.taxon_rank.model import TaxonRank
-from app.db.taxon_name.infrageneric_names import InfraGenericNames, \
-    InfraGenericNameModel
+from app.db.user.model import User
 
 
 class TaxonNameCrud(crud.Crud):
@@ -103,34 +105,32 @@ class TaxonNameCrud(crud.Crud):
         taxon_name = aliased(TaxonName)
         taxon_rank = aliased(TaxonRank)
 
-        subquery = db.query(hierarchy.path, hierarchy.parent_nid).filter(
-            hierarchy.taxon_name_id == taxon_name_id).subquery()
+        subquery = (
+            db.query(hierarchy.path, hierarchy.parent_nid)
+            .filter(hierarchy.taxon_name_id == taxon_name_id)
+            .subquery()
+        )
         sub = aliased(Hierarchy, subquery)
 
-        query = db.query(
-            taxon_name.taxon_name_id,
-            hierarchy.path,
-            taxon_name.scientific_name,
-            taxon_name.uninomial,
-            taxon_name.specific_epithet,
-            taxon_name.infraspecific_epithet,
-            taxon_name.author,
-            taxon_rank.rank_name,
-            taxon_rank.rank_abbrev,
-            hierarchy.parent_nid
-        ).distinct(). \
-            join(
-            hierarchy, taxon_name.taxon_name_id == hierarchy.taxon_name_id
-        ).join(
-            sub, hierarchy.path.op('@>')(sub.path)
-        ).join(
-            taxon_rank, taxon_name.rank_id == taxon_rank.taxon_rank_id
-        ). \
-            filter(
-            taxon_name.deleted == False
-        ). \
-            order_by(
-            hierarchy.path
+        query = (
+            db.query(
+                taxon_name.taxon_name_id,
+                hierarchy.path,
+                taxon_name.scientific_name,
+                taxon_name.uninomial,
+                taxon_name.specific_epithet,
+                taxon_name.infraspecific_epithet,
+                taxon_name.author,
+                taxon_rank.rank_name,
+                taxon_rank.rank_abbrev,
+                hierarchy.parent_nid,
+            )
+            .distinct()
+            .join(hierarchy, taxon_name.taxon_name_id == hierarchy.taxon_name_id)
+            .join(sub, hierarchy.path.op("@>")(sub.path))
+            .join(taxon_rank, taxon_name.rank_id == taxon_rank.taxon_rank_id)
+            .filter(taxon_name.deleted == False)
+            .order_by(hierarchy.path)
         )
 
         result = query.all()
@@ -139,6 +139,8 @@ class TaxonNameCrud(crud.Crud):
         rows = [dict(row) for row in result]
         if rows:
             infrageneric_names_helper = InfraGenericNames()
-            infrageneric_names = infrageneric_names_helper.generate_names(taxon_name_id, rows)
+            infrageneric_names = infrageneric_names_helper.generate_names(
+                taxon_name_id, rows
+            )
 
             return infrageneric_names

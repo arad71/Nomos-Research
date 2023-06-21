@@ -1,5 +1,6 @@
-from pydantic import BaseModel
 from typing import List, Optional
+
+from pydantic import BaseModel
 
 
 class SourceField(BaseModel):
@@ -12,6 +13,7 @@ class SourceField(BaseModel):
 
     See source definitions for examples.
     """
+
     label: str
     preference: int
 
@@ -27,6 +29,7 @@ class Source(BaseModel):
 
     See source definitions for examples.
     """
+
     hierarchy_rank: str
     preference: int
     field: List[SourceField]
@@ -39,6 +42,7 @@ class StaticString(BaseModel):
     This segment is for defining name elements that will never change (if they exist).
     If set to true, this word will not have any consideration for the taxon query.
     """
+
     is_static: bool
     value: str
 
@@ -63,6 +67,7 @@ class NameComponent(BaseModel):
     matching as false positive matches are possible and confusion between similar taxa
     are highly likely possibilities.
     """
+
     word_order_placement: int
     is_optional: bool
     static_string: StaticString
@@ -88,6 +93,7 @@ class NameFormat(BaseModel):
     element in the name. Ranks associated with a name element are part of that element
     and do not get their own component entry in the list.
     """
+
     name_version: str
     example: str
     name_components: List[NameComponent]
@@ -105,4 +111,5 @@ class SubGeneraNameDefinitions(BaseModel):
     are properly formatted before being accepted into the code base.
     Any additional fields added to a name definition must be applied to all names.
     """
+
     definitions_list: List[NameFormat]

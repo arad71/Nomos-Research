@@ -1,9 +1,15 @@
 from typing import Any, List, Optional, Tuple
+
 from pydantic import BaseModel
-from app.db.taxon_name.infrageneric_name_definitions.infrageneric_name import \
-    SubGeneraNameDefinitions, Source, NameComponent
-from app.db.taxon_name.infrageneric_name_definitions.infrageneric_name_format_definitions import \
-    all_name_combinations
+
+from app.db.taxon_name.infrageneric_name_definitions.infrageneric_name import (
+    NameComponent,
+    Source,
+    SubGeneraNameDefinitions,
+)
+from app.db.taxon_name.infrageneric_name_definitions.infrageneric_name_format_definitions import (
+    all_name_combinations,
+)
 from app.db.taxon_rank.enums import RankAbbreviationVals
 
 
@@ -13,6 +19,7 @@ class InfraGenericNameModel(BaseModel):
 
     This class holds the result of a single formatted name
     """
+
     formatted_name: str = ""
     name_version: str = ""
     author: Optional[str] = None
@@ -30,6 +37,7 @@ class NameComponentModel(BaseModel):
     Storing the word that was selected, the id of the taxon entry that contained the
     word, and error information logged during the selection of the word.
     """
+
     name_value: str = ""
     source_name_value: Optional[str] = None
     taxon_name_id: Optional[int] = None
@@ -45,6 +53,7 @@ class NameComponentsListModel(BaseModel):
     is stored here. The value, rank abbreviation, and taxon id are stored from the
     query, the word preference is stored from the definition.
     """
+
     value: Optional[str] = None
     rank_abbreviation: Optional[str] = None
     preference_tuple: Optional[Tuple[int, int]] = None
@@ -59,6 +68,7 @@ class DefinitionComponentsListModel(BaseModel):
     label are used to select a word from the query data (i.e. Genus.uninomial) and the
     preference is used for later word option selection.
     """
+
     hierarchy_rank: Optional[str] = None
     column_label: Optional[str] = None
     preference_tuple: Optional[Tuple[int, int]] = None
@@ -71,6 +81,7 @@ class InfraGenericNames(BaseModel):
     This class uses pre-defined name definitions to generate a series of names from a
     single taxon id query where the full taxon hierarchy information is provided.
     """
+
     name_definitions: SubGeneraNameDefinitions = None
     formatted_names: List[InfraGenericNameModel] = []
 
@@ -83,7 +94,9 @@ class InfraGenericNames(BaseModel):
         """
         super().__init__(**data)
         # parse the json names list as the pydantic class to ensure conformity
-        self.name_definitions = SubGeneraNameDefinitions(definitions_list=all_name_combinations)
+        self.name_definitions = SubGeneraNameDefinitions(
+            definitions_list=all_name_combinations
+        )
 
     @staticmethod
     def _validate_taxon_info(taxon_info: List[dict]) -> bool:
@@ -111,7 +124,9 @@ class InfraGenericNames(BaseModel):
 
         return True
 
-    def generate_names(self, searched_taxon_id: int, taxon_info: List[dict]) -> List[InfraGenericNameModel]:
+    def generate_names(
+        self, searched_taxon_id: int, taxon_info: List[dict]
+    ) -> List[InfraGenericNameModel]:
         """
         Generates infra-generic names based on the provided query results and the
         specified name format definitions.
@@ -135,14 +150,20 @@ class InfraGenericNames(BaseModel):
             return self.formatted_names
 
         # record author information for later use
-        searched_taxon_dict = next(filter(lambda d: d.get('taxon_name_id') == searched_taxon_id, taxon_info), None)
-        taxon_author = searched_taxon_dict.get('author') if searched_taxon_dict else None
+        searched_taxon_dict = next(
+            filter(lambda d: d.get("taxon_name_id") == searched_taxon_id, taxon_info),
+            None,
+        )
+        taxon_author = (
+            searched_taxon_dict.get("author") if searched_taxon_dict else None
+        )
 
         # process each defined name included in the "all_names" list
         for definition in self.name_definitions.definitions_list:
             # make sure the name components are processed in order
-            name_definition_components_sorted = sorted(definition.name_components,
-                                            key=lambda x: x.word_order_placement)
+            name_definition_components_sorted = sorted(
+                definition.name_components, key=lambda x: x.word_order_placement
+            )
 
             # set generic new name attributes
             new_name = InfraGenericNameModel()
@@ -158,38 +179,54 @@ class InfraGenericNames(BaseModel):
                     # Move on to the next component if we just processed a static word
                     continue
                 # Get all the possible options for the component word
-                name_component_list = self._get_name_components(definition_component.source, taxon_info)
+                name_component_list = self._get_name_components(
+                    definition_component.source, taxon_info
+                )
                 # Select one single word from all possible components
-                name_component = self._select_name_component(definition_component, name_component_list)
+                name_component = self._select_name_component(
+                    definition_component, name_component_list
+                )
                 # Handle errors in the component selection process
                 # the info field should only be populated if there was a problem
                 if name_component.info is not None:
-                    new_name.info = f"{name_component.info}: Component number " \
-                                  f"[{definition_component.word_order_placement}], " \
-                                  f"Defined source options [{definition_component.sources_summary}, " \
-                                  f"Reference Taxon name ID [{name_component.taxon_name_id}]."
+                    new_name.info = (
+                        f"{name_component.info}: Component number"
+                        f" [{definition_component.word_order_placement}], Defined"
+                        f" source options [{definition_component.sources_summary},"
+                        f" Reference Taxon name ID [{name_component.taxon_name_id}]."
+                    )
                     # erase the name progress, don't return names with problems
                     generated_name = ""
                     break
                 else:
                     # Optional componentes that don't exist won't have a contribution
-                    if name_component.taxon_name_id and name_component.source_name_value:
+                    if (
+                        name_component.taxon_name_id
+                        and name_component.source_name_value
+                    ):
                         # record the taxon id that is contributing this word
                         new_name.contributing_taxons.append(
-                            (name_component.taxon_name_id, name_component.source_name_value))
+                            (
+                                name_component.taxon_name_id,
+                                name_component.source_name_value,
+                            )
+                        )
                         # update the in-progress name
                         generated_name = generated_name + name_component.name_value
             # remove any leading/trailing white space and add the formatted name
             new_name.formatted_name = generated_name.strip().rstrip()
             if taxon_author:
                 new_name.author = taxon_author
-                new_name.formatted_name_with_author = new_name.formatted_name + " " + taxon_author
+                new_name.formatted_name_with_author = (
+                    new_name.formatted_name + " " + taxon_author
+                )
             self.formatted_names.append(new_name)
         return self.formatted_names
 
     @staticmethod
-    def _get_name_components(component_sources: List[Source],
-                             taxon_info: List[dict]) -> List[NameComponentsListModel]:
+    def _get_name_components(
+        component_sources: List[Source], taxon_info: List[dict]
+    ) -> List[NameComponentsListModel]:
         """
         Gets the name components based on the component sources and taxon info.
 
@@ -214,7 +251,7 @@ class InfraGenericNames(BaseModel):
             DefinitionComponentsListModel(
                 hierarchy_rank=source.hierarchy_rank,
                 column_label=field.label,
-                preference_tuple=(source.preference, field.preference)
+                preference_tuple=(source.preference, field.preference),
             )
             for source in component_sources
             for field in source.field
@@ -230,19 +267,21 @@ class InfraGenericNames(BaseModel):
                 value=taxon[definition.column_label],
                 rank_abbreviation=taxon["rank_abbrev"],
                 preference_tuple=definition.preference_tuple,
-                taxon_name_id=taxon["taxon_name_id"]
+                taxon_name_id=taxon["taxon_name_id"],
             )
             for definition in definition_components_list
             for taxon in taxon_info
             if taxon["rank_name"] == definition.hierarchy_rank
-               and taxon[definition.column_label]
+            and taxon[definition.column_label]
         ]
 
         return name_components_list
 
     @staticmethod
-    def _select_name_component(definition_component: NameComponent,
-                               name_component_list: List[NameComponentsListModel]) -> NameComponentModel:
+    def _select_name_component(
+        definition_component: NameComponent,
+        name_component_list: List[NameComponentsListModel],
+    ) -> NameComponentModel:
         """
         Selects the name component based on the definition component and name component list.
 
@@ -274,8 +313,9 @@ class InfraGenericNames(BaseModel):
         action = "Source sorting"
         try:
             # sort the list by major/minor preference and select the top entry
-            name_component_source = sorted(name_component_list,
-                                           key=lambda x: x.preference_tuple)[0]
+            name_component_source = sorted(
+                name_component_list, key=lambda x: x.preference_tuple
+            )[0]
             # record the taxon id selected for this component
             action = "Value setting"
             name_component.taxon_name_id = name_component_source.taxon_name_id
@@ -294,8 +334,12 @@ class InfraGenericNames(BaseModel):
                 # only a subset of kingdoms should have rank abbreviations defined
                 # skip the rank abbreviation task if none exists in the query data
                 if name_component_source.rank_abbreviation:
-                    name_abbreviation = name_component_source.rank_abbreviation.strip().rstrip()
-                    rank_abbreviation = RankAbbreviationVals[name_abbreviation].strip().rstrip()
+                    name_abbreviation = (
+                        name_component_source.rank_abbreviation.strip().rstrip()
+                    )
+                    rank_abbreviation = (
+                        RankAbbreviationVals[name_abbreviation].strip().rstrip()
+                    )
                     name_value = rank_abbreviation + " " + name_value
             if definition_component.has_parentheses:
                 action = "Parentheses"
@@ -305,6 +349,8 @@ class InfraGenericNames(BaseModel):
         except Exception as e:
             # It's unlikely anything could happen, but this is the only place we
             # manipulate data that came from the query so this is a catch-all.
-            name_component.info = f"Unexpected Error [{e}] encountered with component [{action}]"
+            name_component.info = (
+                f"Unexpected Error [{e}] encountered with component [{action}]"
+            )
 
         return name_component
