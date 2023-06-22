@@ -1,8 +1,7 @@
-import json
 from typing import List
 
-from sqlalchemy.orm import DeclarativeMeta, Session, aliased
-from sqlalchemy_utils import Ltree
+from fastapi import HTTPException, status
+from sqlalchemy.orm import Session, aliased
 
 import app.db.crud as crud
 import app.db.taxon_name.schema as schema
@@ -134,6 +133,11 @@ class TaxonNameCrud(crud.Crud):
         )
 
         result = query.all()
+
+        if not result:
+            raise HTTPException(
+                status.HTTP_404_NOT_FOUND, detail=f"Taxon ID {taxon_name_id} not found"
+            )
 
         # Convert the result to a list of dictionaries for script ingestion
         rows = [dict(row) for row in result]
