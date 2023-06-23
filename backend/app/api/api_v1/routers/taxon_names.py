@@ -49,8 +49,8 @@ async def taxon_name_list(
     "/infrageneric_names/{taxon_name_id}", response_model=List[InfraGenericNameModel]
 )
 async def taxon_name_list(
-    taxon_name_id: int = None,
-    db=Depends(get_db),
+    taxon_name_id: int,
+    db: Session = Depends(get_db),
 ):
     result = TaxonNameCrud.generate_infrageneric_names(db, taxon_name_id)
     return result

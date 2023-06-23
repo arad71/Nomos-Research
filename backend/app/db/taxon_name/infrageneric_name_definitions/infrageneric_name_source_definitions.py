@@ -81,10 +81,8 @@ source_species = [
 ]
 
 
-"""
-Independent sources between genus and species, and below species.
-Used exclusively for the full hierarchy name.
-"""
+# Independent sources between genus and species, and below species.
+# Used exclusively for the full hierarchy name.
 source_superspecies = [
     {
         "hierarchy_rank": "Superspecies",

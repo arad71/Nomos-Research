@@ -97,7 +97,6 @@ class TaxonNameCrud(crud.Crud):
         cls,
         db: Session,
         taxon_name_id: int,
-        **kwargs,
     ) -> List[InfraGenericNameModel]:
         # This query returns a result with a full hierarchy list for a single taxon_id
         hierarchy = aliased(Hierarchy)
@@ -141,10 +140,9 @@ class TaxonNameCrud(crud.Crud):
 
         # Convert the result to a list of dictionaries for script ingestion
         rows = [dict(row) for row in result]
-        if rows:
-            infrageneric_names_helper = InfraGenericNames()
-            infrageneric_names = infrageneric_names_helper.generate_names(
-                taxon_name_id, rows
-            )
 
-            return infrageneric_names
+        infrageneric_names = InfraGenericNames.generate_names(
+            taxon_name_id, rows
+        )
+
+        return infrageneric_names

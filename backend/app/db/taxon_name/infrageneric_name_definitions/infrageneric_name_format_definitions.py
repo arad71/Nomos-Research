@@ -1,3 +1,8 @@
+"""
+JSON name descriptions for defining displayed names of taxon entries.
+See SubGeneraNameDefinitions class description for details on how to define a new name.
+"""
+
 from app.db.taxon_name.infrageneric_name_definitions.infrageneric_name_source_definitions import (
     source_form,
     source_genus,
@@ -16,10 +21,6 @@ from app.db.taxon_name.infrageneric_name_definitions.infrageneric_name_source_de
     sources_between_genus_and_species,
 )
 
-"""
-JSON name descriptions for defining displayed names of taxon entries.
-See SubGeneraNameDefinitions class description for details on how to define a new name.
-"""
 
 name_format_canonical = {
     "name_version": "Canonical",

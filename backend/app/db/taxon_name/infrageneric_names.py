@@ -1,4 +1,4 @@
-from typing import Any, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 from pydantic import BaseModel
 
@@ -74,7 +74,7 @@ class DefinitionComponentsListModel(BaseModel):
     preference_tuple: Optional[Tuple[int, int]] = None
 
 
-class InfraGenericNames(BaseModel):
+class InfraGenericNames:
     """
     Generates defined InfraGeneric names.
 
@@ -82,21 +82,9 @@ class InfraGenericNames(BaseModel):
     single taxon id query where the full taxon hierarchy information is provided.
     """
 
-    name_definitions: SubGeneraNameDefinitions = None
-    formatted_names: List[InfraGenericNameModel] = []
-
-    def __init__(self, **data: Any):
-        """
-        Initializes an instance of InfraGenericNames.
-
-        Args:
-            **data (Any): Additional data for initialization.
-        """
-        super().__init__(**data)
-        # parse the json names list as the pydantic class to ensure conformity
-        self.name_definitions = SubGeneraNameDefinitions(
-            definitions_list=all_name_combinations
-        )
+    name_definitions = SubGeneraNameDefinitions(
+        definitions_list=all_name_combinations
+    )
 
     @staticmethod
     def _validate_taxon_info(taxon_info: List[dict]) -> bool:
@@ -124,8 +112,9 @@ class InfraGenericNames(BaseModel):
 
         return True
 
+    @classmethod
     def generate_names(
-        self, searched_taxon_id: int, taxon_info: List[dict]
+        cls, searched_taxon_id: int, taxon_info: List[dict]
     ) -> List[InfraGenericNameModel]:
         """
         Generates infra-generic names based on the provided query results and the
@@ -139,15 +128,15 @@ class InfraGenericNames(BaseModel):
             List[InfraGenericNameModel]: The generated infra-generic names.
         """
         # start with an empty results list
-        self.formatted_names = []
+        formatted_names = []
 
         # abort the process if something somehow went wrong with the query data
-        if not self._validate_taxon_info(taxon_info):
-            new_name = InfraGenericNameModel()
-            new_name.info = "Error: Query information is missing required fields."
-            new_name.formatted_name = ""
-            self.formatted_names.append(new_name)
-            return self.formatted_names
+        if not cls._validate_taxon_info(taxon_info):
+            new_name = InfraGenericNameModel(
+                info="Error: Query information is missing required fields.",
+                formatted_name="")
+            formatted_names.append(new_name)
+            return formatted_names
 
         # record author information for later use
         searched_taxon_dict = next(
@@ -159,16 +148,16 @@ class InfraGenericNames(BaseModel):
         )
 
         # process each defined name included in the "all_names" list
-        for definition in self.name_definitions.definitions_list:
+        for definition in cls.name_definitions.definitions_list:
             # make sure the name components are processed in order
             name_definition_components_sorted = sorted(
                 definition.name_components, key=lambda x: x.word_order_placement
             )
 
             # set generic new name attributes
-            new_name = InfraGenericNameModel()
-            new_name.name_version = definition.name_version
-            new_name.searched_taxon_id = searched_taxon_id
+            new_name = InfraGenericNameModel(
+                name_version=definition.name_version,
+                searched_taxon_id=searched_taxon_id)
             generated_name = ""
 
             # process all the individual components of the name to build it up
@@ -179,11 +168,11 @@ class InfraGenericNames(BaseModel):
                     # Move on to the next component if we just processed a static word
                     continue
                 # Get all the possible options for the component word
-                name_component_list = self._get_name_components(
+                name_component_list = cls._get_name_components(
                     definition_component.source, taxon_info
                 )
                 # Select one single word from all possible components
-                name_component = self._select_name_component(
+                name_component = cls._select_name_component(
                     definition_component, name_component_list
                 )
                 # Handle errors in the component selection process
@@ -214,14 +203,14 @@ class InfraGenericNames(BaseModel):
                         # update the in-progress name
                         generated_name = generated_name + name_component.name_value
             # remove any leading/trailing white space and add the formatted name
-            new_name.formatted_name = generated_name.strip().rstrip()
+            new_name.formatted_name = generated_name.strip()
             if taxon_author:
                 new_name.author = taxon_author
                 new_name.formatted_name_with_author = (
                     new_name.formatted_name + " " + taxon_author
                 )
-            self.formatted_names.append(new_name)
-        return self.formatted_names
+            formatted_names.append(new_name)
+        return formatted_names
 
     @staticmethod
     def _get_name_components(
@@ -323,7 +312,7 @@ class InfraGenericNames(BaseModel):
             # remove any leading or trailing white space
             action = "Name value string"
             name_component.source_name_value = name_component_source.value
-            name_value = name_component_source.value.strip().rstrip()
+            name_value = name_component_source.value.strip()
 
             # handle the definition word manipulation settings
             if definition_component.name_is_abbreviated:
@@ -335,10 +324,10 @@ class InfraGenericNames(BaseModel):
                 # skip the rank abbreviation task if none exists in the query data
                 if name_component_source.rank_abbreviation:
                     name_abbreviation = (
-                        name_component_source.rank_abbreviation.strip().rstrip()
+                        name_component_source.rank_abbreviation.strip()
                     )
                     rank_abbreviation = (
-                        RankAbbreviationVals[name_abbreviation].strip().rstrip()
+                        RankAbbreviationVals[name_abbreviation].strip()
                     )
                     name_value = rank_abbreviation + " " + name_value
             if definition_component.has_parentheses:

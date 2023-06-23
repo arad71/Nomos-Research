@@ -1,5 +1,16 @@
+"""
+These unit tests assure that the infrageneric name generating class logic functions
+as designed, and that the infrageneric name definitions are correctly structured.
+
+These tests uses a mock database query result object in place of setting up a complex
+hierarchy result in the test database. The mock result was initially created by making
+a partial hierarchy in the real database and recording the query result. Additional
+rows were added to the column to account for possible hierarchy ranks that have not
+been implemented at the time of task development.
+"""
+
 import pytest
-from black import List
+from typing import List
 
 from app.db.taxon_name.infrageneric_name_definitions.infrageneric_name_format_definitions import (
     all_name_combinations,
@@ -20,17 +31,6 @@ from app.tests.infrageneric_name_test_data import (
     query_set_minimum_lowest_hierarchy_162767,
     query_set_mixed_medium_hierarchy_162765,
 )
-
-"""
-These unit tests assure that the infrageneric name generating class logic functions
-as designed, and that the infrageneric name definitions are correctly structured.
-
-This test uses a mock database query result object in place of setting up a complex
-hierarchy result in the test database. The mock result was initially created by making
-a partial hierarchy in the real database and recording the query result. Additional
-rows were added to the column to account for possible hierarchy ranks that have not
-been implemented at the time of task development.
-"""
 
 # ensure that every name format used by the system is represented in the tests
 NUMBER_OF_DEFINED_NAME_FORMATS = len(all_name_combinations)
