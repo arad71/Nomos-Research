@@ -21,7 +21,6 @@ from app.db.taxon_name.infrageneric_name_definitions.infrageneric_name_source_de
     sources_between_genus_and_species,
 )
 
-
 name_format_canonical = {
     "name_version": "Canonical",
     "example": "Verticordia staminosa var. erecta",

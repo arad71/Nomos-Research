@@ -141,8 +141,6 @@ class TaxonNameCrud(crud.Crud):
         # Convert the result to a list of dictionaries for script ingestion
         rows = [dict(row) for row in result]
 
-        infrageneric_names = InfraGenericNames.generate_names(
-            taxon_name_id, rows
-        )
+        infrageneric_names = InfraGenericNames.generate_names(taxon_name_id, rows)
 
         return infrageneric_names

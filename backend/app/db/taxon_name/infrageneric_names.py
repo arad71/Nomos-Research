@@ -82,9 +82,7 @@ class InfraGenericNames:
     single taxon id query where the full taxon hierarchy information is provided.
     """
 
-    name_definitions = SubGeneraNameDefinitions(
-        definitions_list=all_name_combinations
-    )
+    name_definitions = SubGeneraNameDefinitions(definitions_list=all_name_combinations)
 
     @staticmethod
     def _validate_taxon_info(taxon_info: List[dict]) -> bool:
@@ -134,7 +132,8 @@ class InfraGenericNames:
         if not cls._validate_taxon_info(taxon_info):
             new_name = InfraGenericNameModel(
                 info="Error: Query information is missing required fields.",
-                formatted_name="")
+                formatted_name="",
+            )
             formatted_names.append(new_name)
             return formatted_names
 
@@ -157,7 +156,8 @@ class InfraGenericNames:
             # set generic new name attributes
             new_name = InfraGenericNameModel(
                 name_version=definition.name_version,
-                searched_taxon_id=searched_taxon_id)
+                searched_taxon_id=searched_taxon_id,
+            )
             generated_name = ""
 
             # process all the individual components of the name to build it up
@@ -323,12 +323,8 @@ class InfraGenericNames:
                 # only a subset of kingdoms should have rank abbreviations defined
                 # skip the rank abbreviation task if none exists in the query data
                 if name_component_source.rank_abbreviation:
-                    name_abbreviation = (
-                        name_component_source.rank_abbreviation.strip()
-                    )
-                    rank_abbreviation = (
-                        RankAbbreviationVals[name_abbreviation].strip()
-                    )
+                    name_abbreviation = name_component_source.rank_abbreviation.strip()
+                    rank_abbreviation = RankAbbreviationVals[name_abbreviation].strip()
                     name_value = rank_abbreviation + " " + name_value
             if definition_component.has_parentheses:
                 action = "Parentheses"

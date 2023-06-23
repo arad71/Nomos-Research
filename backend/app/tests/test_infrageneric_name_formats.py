@@ -9,8 +9,9 @@ rows were added to the column to account for possible hierarchy ranks that have 
 been implemented at the time of task development.
 """
 
-import pytest
 from typing import List
+
+import pytest
 
 from app.db.taxon_name.infrageneric_name_definitions.infrageneric_name_format_definitions import (
     all_name_combinations,
