@@ -15,7 +15,9 @@ import WebIcon from '@material-ui/icons/Web';
 import SettingsIcon from '@material-ui/icons/Settings';
 import GroupWorkIcon from '@material-ui/icons/GroupWork';
 import LinkIcon from '@material-ui/icons/Link';
+import { usePermissions } from 'react-admin';
 const Menu = () => {
+  const { permissions } = usePermissions();
   return (
     <MultiLevelMenu initialOpen>
       <MenuItem
@@ -25,80 +27,129 @@ const Menu = () => {
         to="/"
       />
       <MenuItem name="Nomos" label="Nomos" icon={<WebIcon />}>
-        <MenuItem
-          name="Taxon Names"
-          label="Taxon Names"
-          icon={<BookIcon />}
-          to="/taxon_names"
-        />
-        <MenuItem
-          name="Publications"
-          label="Publications"
-          to="/publications"
-          icon={<SubjectIcon />}
-        />
-        <MenuItem
-          name="Authors"
-          label="Authors"
-          icon={<PeopleIcon />}
-          to="/authors"
-        />
+        {permissions?.roles !== undefined ? (
+          <MenuItem
+            name="Taxon Names"
+            label="Taxon Names"
+            icon={<BookIcon />}
+            to="/taxon_names"
+          />
+        ) : (
+          ''
+        )}
+        {permissions?.roles !== undefined ? (
+          <MenuItem
+            name="Publications"
+            label="Publications"
+            to="/publications"
+            icon={<SubjectIcon />}
+          />
+        ) : (
+          ''
+        )}
+        {permissions?.roles !== undefined ? (
+          <MenuItem
+            name="Authors"
+            label="Authors"
+            icon={<PeopleIcon />}
+            to="/authors"
+          />
+        ) : (
+          ''
+        )}
       </MenuItem>
       <MenuItem name="Admin" label="Admin" icon={<SettingsIcon />}>
-        <MenuItem
-          name="Citations"
-          label="Citations"
-          icon={<MenuBookIcon />}
-          to="/citations"
-        />
-        <MenuItem
-          name="Classification Systems"
-          label="Classification Types"
-          icon={<FiberManualRecordOutlinedIcon />}
-          to="/classification_systems"
-        />
-        <MenuItem
-          name="Hierarchies"
-          label="Hierarchies"
-          to="/hierarchies"
-          icon={<ChangeHistoryIcon />}
-        />
-        <MenuItem
-          name="Informal Groups"
-          label="Informal Groups"
-          to="/informal_groups"
-          icon={<LinkIcon />}
-        />
-        <MenuItem
-          name="Kingdoms"
-          label="Kingdoms"
-          icon={<FiberManualRecordIcon />}
-          to="/kingdoms"
-        />
-        <MenuItem
-          name="Related Names"
-          label="Related Names"
-          icon={<CompareArrowsIcon />}
-          to="/cross_references"
-        />
-        <MenuItem
-          name="Taxon Ranks"
-          label="Taxon Ranks"
-          to="/taxon_ranks"
-          icon={<GroupWorkIcon />}
-        />
-        <MenuItem
-          name="Users"
-          label="Users"
-          icon={<PeopleIcon />}
-          to="/users"
-        />
-        <MenuItem
-          name="Vernacular Names"
-          label="Vernacular Names"
-          to="/vernaculars"
-          icon={<CallSplitIcon />}
-        />
+        {permissions?.roles !== undefined ? (
+          <MenuItem
+            name="Citations"
+            label="Citations"
+            icon={<MenuBookIcon />}
+            to="/citations"
+          />
+        ) : (
+          ''
+        )}
+        {permissions?.roles !== undefined ? (
+          <MenuItem
+            name="Classification Systems"
+            label="Classification Types"
+            icon={<FiberManualRecordOutlinedIcon />}
+            to="/classification_systems"
+          />
+        ) : (
+          ''
+        )}
+        {permissions?.roles !== undefined ? (
+          <MenuItem
+            name="Hierarchies"
+            label="Hierarchies"
+            to="/hierarchies"
+            icon={<ChangeHistoryIcon />}
+          />
+        ) : (
+          ''
+        )}
+        {permissions?.roles !== undefined ? (
+          <MenuItem
+            name="Informal Groups"
+            label="Informal Groups"
+            to="/informal_groups"
+            icon={<LinkIcon />}
+          />
+        ) : (
+          ''
+        )}
+        {permissions?.roles !== undefined ? (
+          <MenuItem
+            name="Kingdoms"
+            label="Kingdoms"
+            icon={<FiberManualRecordIcon />}
+            to="/kingdoms"
+          />
+        ) : (
+          ''
+        )}
+        {permissions?.roles !== undefined ? (
+          <MenuItem
+            name="Related Names"
+            label="Related Names"
+            icon={<CompareArrowsIcon />}
+            to="/cross_references"
+          />
+        ) : (
+          ''
+        )}
+        {permissions?.roles !== undefined ? (
+          <MenuItem
+            name="Taxon Ranks"
+            label="Taxon Ranks"
+            to="/taxon_ranks"
+            icon={<GroupWorkIcon />}
+          />
+        ) : (
+          ''
+        )}
+        {permissions?.roles === 'SUPER_ADMIN' ||
+        permissions?.roles === 'APPLICATION_SUPPORT' ? (
+          <MenuItem
+            name="Users"
+            label="Users"
+            icon={<PeopleIcon />}
+            to="/users"
+          />
+        ) : (
+          ''
+        )}
+        {permissions?.roles !== undefined ? (
+          <MenuItem
+            name="Vernacular Names"
+            label="Vernacular Names"
+            to="/vernaculars"
+            icon={<CallSplitIcon />}
+          />
+        ) : (
+          ''
+        )}
       </MenuItem>
     </MultiLevelMenu>
   );
