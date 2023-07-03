@@ -40,9 +40,9 @@ const useStyles = makeStyles(() => ({
 }));
 
 const Dashboard = () => {
-  const { permissions } = usePermissions();
+  const { loaded, permissions } = usePermissions();
   const classes = useStyles();
-  return (
+  return loaded ? (
     <div>
       <Card className={classes.card}>
         <CardContent>
@@ -50,10 +50,10 @@ const Dashboard = () => {
             Welcome to Nomos taxonomic names register
           </Typography>
           {permissions?.roles === 'SUPER_ADMIN' ||
-          'APPLICATION_SUPPORT' ||
-          'MANAGER' ||
-          'OFFICER' ||
-          'READER' ? (
+          permissions?.roles === 'APPLICATION_SUPPORT' ||
+          permissions?.roles === 'MANAGER' ||
+          permissions?.roles === 'OFFICER' ||
+          permissions?.roles === 'READER' ? (
             <Button
               href="/#/taxon_names"
               variant="contained"
@@ -66,9 +66,8 @@ const Dashboard = () => {
             ''
           )}
           {permissions?.roles === 'SUPER_ADMIN' ||
-          'APPLICATION_SUPPORT' ||
-          'MANAGER' ||
-          'OFFICER' ? (
+          permissions?.roles === 'APPLICATION_SUPPORT' ||
+          permissions?.roles === 'MANAGER' ? (
             <Button
               href="/#/publications"
               variant="contained"
@@ -82,7 +81,8 @@ const Dashboard = () => {
           )}
         </CardContent>
       </Card>
-      {permissions?.roles === 'SUPER_ADMIN' || 'APPLICATION_SUPPORT' ? (
+      {permissions?.roles === 'SUPER_ADMIN' ||
+      permissions?.roles === 'APPLICATION_SUPPORT' ? (
         <div className={classes.wrapper}>
           <CardWithIcon
             icon={
@@ -100,9 +100,9 @@ const Dashboard = () => {
         ''
       )}
       {permissions?.roles === 'SUPER_ADMIN' ||
-      'APPLICATION_SUPPORT' ||
-      'MANAGER' ||
-      'OFFICER' ? (
+      permissions?.roles === 'APPLICATION_SUPPORT' ||
+      permissions?.roles === 'MANAGER' ||
+      permissions?.roles === 'OFFICER' ? (
         <div className={classes.wrapper}>
           <CardWithIcon
             icon={
@@ -120,9 +120,9 @@ const Dashboard = () => {
         ''
       )}
       {permissions?.roles === 'SUPER_ADMIN' ||
-      'APPLICATION_SUPPORT' ||
-      'MANAGER' ||
-      'OFFICER' ? (
+      permissions?.roles === 'APPLICATION_SUPPORT' ||
+      permissions?.roles === 'MANAGER' ||
+      permissions?.roles === 'OFFICER' ? (
         <div className={classes.wrapper}>
           <CardWithIcon
             icon={
@@ -140,9 +140,9 @@ const Dashboard = () => {
         ''
       )}
       {permissions?.roles === 'SUPER_ADMIN' ||
-      'APPLICATION_SUPPORT' ||
-      'MANAGER' ||
-      'OFFICER' ? (
+      permissions?.roles === 'APPLICATION_SUPPORT' ||
+      permissions?.roles === 'MANAGER' ||
+      permissions?.roles === 'OFFICER' ? (
         <div className={classes.wrapper}>
           <CardWithIcon
             icon={
@@ -160,6 +160,8 @@ const Dashboard = () => {
         ''
       )}
     </div>
+  ) : (
+    ''
   );
 };
 

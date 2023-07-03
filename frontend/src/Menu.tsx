@@ -17,8 +17,8 @@ import GroupWorkIcon from '@material-ui/icons/GroupWork';
 import LinkIcon from '@material-ui/icons/Link';
 import { usePermissions } from 'react-admin';
 const Menu = () => {
-  const { permissions } = usePermissions();
-  return (
+  const { loaded, permissions } = usePermissions();
+  return loaded ? (
     <MultiLevelMenu initialOpen>
       <MenuItem
         name="Dashboard"
@@ -152,6 +152,8 @@ const Menu = () => {
         )}
       </MenuItem>
     </MultiLevelMenu>
+  ) : (
+    ''
   );
 };
 
