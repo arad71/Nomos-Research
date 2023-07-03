@@ -119,6 +119,7 @@ const dataProvider = restDataProvider(
     vernaculars: 'vernacular_id',
     user_roles: 'user_role_id',
     roles: 'role_id',
+    taxon_names_infrageneric_names: 'taxon_name_id',
   },
   {},
   httpClient
@@ -239,6 +240,7 @@ export const Admin: FC = () => {
       <Resource name="taxon_names_ancestors/Subgenus" />
       <Resource name="taxon_names_ancestors/Species" />
       <Resource name="taxon_names_ancestors/Subspecies" />
+      <Resource name="taxon_names_infrageneric_names" />
       <Resource
         name="informal_groups"
         list={InformalGroupList}

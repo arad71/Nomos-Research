@@ -13,7 +13,7 @@ import {
   TextField,
   useRecordContext,
 } from 'react-admin';
-import { Show } from '@react-admin/ra-rbac';
+import { Datagrid, Show } from '@react-admin/ra-rbac';
 import Aside from '../shared/Aside';
 import NaturalisedStatus from './NaturalisedStatus';
 import PublicationStatus from './PublicationStatus';
@@ -146,6 +146,34 @@ export const TaxonNameShow: FC = (props) => {
                 </Labeled>
               </Box>
             </Box>
+            {/*Sub genera name*/}
+            <Box className={globalClasses.sectionMargin}>
+              <Typography
+                variant="h5"
+                className={globalClasses.bold}
+                gutterBottom
+              >
+                Subgenera Name
+              </Typography>
+            </Box>
+            <Datagrid
+              empty={<Empty />}
+              className={globalClasses.equalColumnWidth}
+            >
+              <ReferenceField
+                source="searched_taxon_id"
+                reference="taxon_names_infrageneric_names"
+              >
+                <TextField source="name_version" />
+              </ReferenceField>
+              <TextField source="name_version" />
+              <ReferenceField
+                fullWidth
+                label="Sub genera"
+                reference="taxon_names_infrageneric_names"
+                source="taxon_id"
+              ></ReferenceField>
+            </Datagrid>
             {/* Authors Section */}
             <Box className={globalClasses.sectionMargin}>
               <Typography
