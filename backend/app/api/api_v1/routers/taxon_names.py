@@ -46,7 +46,7 @@ async def taxon_name_list(
 
 
 @r.get(
-    "_infrageneric_names/", response_model=List[InfraGenericNameModel]
+    "_infrageneric_names/{taxon_name_id}", response_model=List[InfraGenericNameModel]
 )
 async def taxon_name_list(
     taxon_name_id: int,

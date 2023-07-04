@@ -13,7 +13,7 @@ import {
   TextField,
   useRecordContext,
 } from 'react-admin';
-import { Datagrid, Show } from '@react-admin/ra-rbac';
+import { Show } from '@react-admin/ra-rbac';
 import Aside from '../shared/Aside';
 import NaturalisedStatus from './NaturalisedStatus';
 import PublicationStatus from './PublicationStatus';
@@ -29,6 +29,8 @@ import { NamePageSummary } from './NamePageSummary';
 import PostShowActions from '../shared/PostShowActions';
 import NestedLinkField from '../shared/NestedLinkField';
 import { HierarchyGrid } from './HierarchyGrid';
+import { useParams } from 'react-router-dom';
+import { InfragenericNamesGrid } from './InfragenericNamesGrid';
 
 const useStyles = makeStyles(() => ({
   bottomPadding: {
@@ -51,6 +53,8 @@ const Empty = () => {
 export const TaxonNameShow: FC = (props) => {
   const classes = useStyles();
   const globalClasses = GlobalTheme();
+  // @ts-ignore
+  const { id } = useParams();
 
   return (
     <Show
@@ -156,24 +160,10 @@ export const TaxonNameShow: FC = (props) => {
                 Subgenera Name
               </Typography>
             </Box>
-            <Datagrid
-              empty={<Empty />}
-              className={globalClasses.equalColumnWidth}
-            >
-              <ReferenceField
-                source="searched_taxon_id"
-                reference="taxon_names_infrageneric_names"
-              >
-                <TextField source="name_version" />
-              </ReferenceField>
-              <TextField source="name_version" />
-              <ReferenceField
-                fullWidth
-                label="Sub genera"
-                reference="taxon_names_infrageneric_names"
-                source="taxon_id"
-              ></ReferenceField>
-            </Datagrid>
+            <InfragenericNamesGrid
+              props={props}
+              id={id}
+            ></InfragenericNamesGrid>
             {/* Authors Section */}
             <Box className={globalClasses.sectionMargin}>
               <Typography
