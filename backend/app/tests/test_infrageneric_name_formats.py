@@ -100,3 +100,10 @@ def test_infrageneric_name_formats(
     )
 
     check_results(expected, output_names)
+
+
+def test_infrageneric_name_format_ids():
+    all_ids = set([definition["id"] for definition in all_name_combinations])
+    assert (
+        len(all_ids) == NUMBER_OF_DEFINED_NAME_FORMATS
+    ), "All name definitions must have a unique ID."
