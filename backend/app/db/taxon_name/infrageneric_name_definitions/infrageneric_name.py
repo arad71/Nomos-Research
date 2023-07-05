@@ -97,6 +97,7 @@ class NameFormat(BaseModel):
     name_version: str
     example: str
     name_components: List[NameComponent]
+    id: int
 
 
 class SubGeneraNameDefinitions(BaseModel):

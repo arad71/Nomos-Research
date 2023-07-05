@@ -22,6 +22,7 @@ from app.db.taxon_name.infrageneric_name_definitions.infrageneric_name_source_de
 )
 
 name_format_canonical = {
+    "id": 1,
     "name_version": "Canonical",
     "example": "Verticordia staminosa var. erecta",
     "name_components": [
@@ -53,6 +54,7 @@ name_format_canonical = {
 }
 
 name_format_canonical_without_rank = {
+    "id": 2,
     "name_version": "Canonical without rank",
     "example": "Verticordia staminosa erecta",
     "name_components": [
@@ -84,6 +86,7 @@ name_format_canonical_without_rank = {
 }
 
 name_format_infragenus = {
+    "id": 3,
     "name_version": "Infragenus",
     "example": "Verticordia (Veryfrillycordia) staminosa var. erecta",
     "name_components": [
@@ -123,6 +126,7 @@ name_format_infragenus = {
 }
 
 name_format_infragenus_with_rank = {
+    "id": 4,
     "name_version": "Infragenus with rank",
     "example": "Verticordia (sect. Veryfrillycordia) staminosa var. erecta",
     "name_components": [
@@ -162,6 +166,7 @@ name_format_infragenus_with_rank = {
 }
 
 name_format_infragenus_without_parentheses = {
+    "id": 5,
     "name_version": "Infragenus without parentheses",
     "example": "Verticordia sect. Veryfrillycordia staminosa var. erecta",
     "name_components": [
@@ -201,6 +206,7 @@ name_format_infragenus_without_parentheses = {
 }
 
 name_format_infragenus_without_parentheses_without_rank = {
+    "id": 6,
     "name_version": "Infragenus without parentheses without rank",
     "example": "Verticordia Veryfrillycordia staminosa erecta",
     "name_components": [
@@ -240,6 +246,7 @@ name_format_infragenus_without_parentheses_without_rank = {
 }
 
 name_format_full_hierarchy = {
+    "id": 7,
     "name_version": "Full hierarchy",
     "example": (
         "Verticordia subg. Frillycordia sect. Veryfrillycordia staminosa subsp."

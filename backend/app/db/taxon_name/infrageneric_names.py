@@ -20,6 +20,7 @@ class InfraGenericNameModel(BaseModel):
     This class holds the result of a single formatted name
     """
 
+    id: int
     formatted_name: str = ""
     name_version: str = ""
     author: Optional[str] = None
@@ -155,6 +156,7 @@ class InfraGenericNames:
 
             # set generic new name attributes
             new_name = InfraGenericNameModel(
+                id=definition.id,
                 name_version=definition.name_version,
                 searched_taxon_id=searched_taxon_id,
             )
