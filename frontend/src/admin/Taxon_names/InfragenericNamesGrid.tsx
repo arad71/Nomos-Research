@@ -9,18 +9,17 @@ export const InfragenericNamesGrid = (props: {
     'taxon_names_infrageneric_names',
     props.id
   );
-  return loading ? (
-    null ? (
-      error
-    ) : (
-      <span>Failed to load Infrageneric names</span>
-    )
-  ) : (
-    <Datagrid
-      data={data}
-      currentSort={'name_version, ASC'}
-      ids={loading ? data.map(({ id }: { id: number }) => id) : []}
-    >
+
+  if (loading) {
+    return <span>Loading...</span>;
+  }
+
+  if (error) {
+    return <span>Error: {error.message}</span>;
+  }
+
+  return (
+    <Datagrid data={[data]} currentSort={'name_version, ASC'}>
       <TextField source="name_version" />
       <TextField source="formatted_name" />
       <TextField source="author" />
