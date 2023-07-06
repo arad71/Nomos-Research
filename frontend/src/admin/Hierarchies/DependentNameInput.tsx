@@ -19,6 +19,7 @@ export const dependentNameInput = ({
     const taxon = formData.taxon_name_id;
     // Don't load the current name
     filter.taxon_name_id__ne = taxon;
+    filter.taxon_name___deleted = false;
     filter.classification_system_id = formData.classification_system_id;
     filter.path__ltxtquery = `!${taxon}`;
   }
