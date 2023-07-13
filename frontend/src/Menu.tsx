@@ -129,8 +129,8 @@ const Menu = () => {
         ) : (
           ''
         )}
-        {permissions?.roles === 'SUPER_ADMIN' ||
-        permissions?.roles === 'APPLICATION_SUPPORT' ? (
+        {permissions?.roles.includes('SUPER_ADMIN') ||
+        permissions?.roles.includes('APPLICATION_SUPPORT') ? (
           <MenuItem
             name="Users"
             label="Users"
