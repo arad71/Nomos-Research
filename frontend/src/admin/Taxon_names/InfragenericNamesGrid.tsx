@@ -14,7 +14,6 @@ export const InfragenericNamesGrid = (props: {
   id: number;
 }) => {
   const dispatch = useDispatch();
-  const notify = useNotify();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [gridData, setGridData] = useState([]);
@@ -48,7 +47,7 @@ export const InfragenericNamesGrid = (props: {
   }
 
   if (error) {
-    return <span>There was an issue loading the Infrageneric Names Grid</span>;
+    return <span>There was an issue loading Infrageneric Names</span>;
   }
 
   return (
