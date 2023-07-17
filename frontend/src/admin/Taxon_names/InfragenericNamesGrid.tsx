@@ -64,36 +64,42 @@ export const InfragenericNamesGrid = (props: {
             </TableRow>
           </TableHead>
           <TableBody>
-            {gridData.map(
-              (row: {
-                id: number;
-                name_version: string;
-                formatted_name: string;
-                author: string;
-                formatted_name_with_author: string;
-                contributing_taxons: [[number, string]];
-              }) => (
-                <TableRow key={row.id}>
-                  <TableCell component="th" scope="row">
-                    {row.name_version}
-                  </TableCell>
-                  <TableCell align="right">{row.formatted_name}</TableCell>
-                  <TableCell align="right">{row.author}</TableCell>
-                  <TableCell align="right">
-                    {row.formatted_name_with_author}
-                  </TableCell>
-                  <TableCell align="right">
-                    {row.contributing_taxons.map((item: [number, string]) => {
-                      return (
-                        <span>
-                          {item[1]} {'\n'}
-                        </span>
-                      );
-                    })}
-                  </TableCell>
-                </TableRow>
-              )
-            )}
+            {gridData
+              ? gridData.map(
+                  (row: {
+                    id: number;
+                    name_version: string;
+                    formatted_name: string;
+                    author: string;
+                    formatted_name_with_author: string;
+                    contributing_taxons: [[number, string]];
+                  }) => (
+                    <TableRow key={row.id}>
+                      <TableCell component="th" scope="row">
+                        {row.name_version}
+                      </TableCell>
+                      <TableCell align="right">{row.formatted_name}</TableCell>
+                      <TableCell align="right">{row.author}</TableCell>
+                      <TableCell align="right">
+                        {row.formatted_name_with_author}
+                      </TableCell>
+                      <TableCell align="right">
+                        {row.contributing_taxons.map(
+                          (item: [number, string], index: number) => {
+                            return (
+                              <span>
+                                {item[1]}
+                                {index + 1 < row.contributing_taxons.length &&
+                                  ', '}
+                              </span>
+                            );
+                          }
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  )
+                )
+              : 'No Subgenera Names exist'}
           </TableBody>
         </Table>
       </TableContainer>
