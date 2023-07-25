@@ -3,6 +3,7 @@ import React from 'react';
 import { TaxonNameStatus } from './TaxonNameStatus';
 import { makeStyles } from '@material-ui/core/styles';
 import { GlobalTheme } from '../../GlobalTheme';
+import { InfragengerenicData } from './TaxonTypes';
 
 const useStyles = makeStyles({
   title: {
@@ -11,15 +12,23 @@ const useStyles = makeStyles({
   },
 });
 
-export const FormattedScientificNameWithStatus = () => {
+export const FormattedScientificNameWithStatus = (
+  infragenus?: InfragengerenicData | {}
+) => {
   const classes = useStyles();
   const globalClasses = GlobalTheme();
   return (
     <>
-      <RichTextField
-        source="formatted_scientific_name"
-        className={`${classes.title} ${globalClasses.titleTruncation}`}
-      />
+      <span className={globalClasses.titleTruncation}>
+        <RichTextField
+          source="formatted_scientific_name"
+          className={classes.title}
+        />
+        {infragenus && (
+          // @ts-ignore
+          <span className={classes.title}>({infragenus?.formatted_name})</span>
+        )}
+      </span>
       <TaxonNameStatus />
     </>
   );

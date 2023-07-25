@@ -1,7 +1,9 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import {
   BooleanField,
   ChipField,
+  fetchEnd,
+  fetchStart,
   Labeled,
   NumberField,
   ReferenceField,
@@ -31,6 +33,7 @@ import NestedLinkField from '../shared/NestedLinkField';
 import { HierarchyGrid } from './HierarchyGrid';
 import { useParams } from 'react-router-dom';
 import { InfragenericNamesGrid } from './InfragenericNamesGrid';
+import { useDispatch } from 'react-redux';
 
 const useStyles = makeStyles(() => ({
   bottomPadding: {
@@ -55,16 +58,53 @@ export const TaxonNameShow: FC = (props) => {
   const globalClasses = GlobalTheme();
   // @ts-ignore
   const { id } = useParams();
+  const dispatch = useDispatch();
+  const [infraLoading, setInfraLoading] = useState(false);
+  const [infraError, setInfraError] = useState(false);
+  const [infraData, setInfraData] = useState([]);
+  useEffect(() => {
+    setInfraLoading(true);
+    dispatch(fetchStart());
+    fetch(`/api/v1/taxon_names_infrageneric_names/${id}`, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        Authorization: 'Bearer ' + localStorage.getItem('token'),
+      },
+    })
+      .then((r) => {
+        return r.json();
+      })
+      .then((data) => {
+        setInfraData(data);
+      })
+      .catch(() => {
+        setInfraError(true);
+      })
+      .finally(() => {
+        setInfraLoading(false);
+        dispatch(fetchEnd());
+      });
+  }, [id]);
+
+  const infraGenericName = infraData?.find(
+    // @ts-ignore
+    (d) => d.name_version === 'Infragenus'
+  );
 
   return (
     <Show
       actions={<PostShowActions />}
-      title={<FormattedScientificNameWithStatus />}
+      title={
+        // @ts-ignore
+        <FormattedScientificNameWithStatus infragenus={infraGenericName} />
+      }
       aside={<Aside />}
       {...props}
     >
       <>
-        <NamePageSummary />
+        {/* @ts-ignore*/}
+        <NamePageSummary infragenus={infraGenericName} />
         <TabbedShowLayout>
           <Tab label="Name" className={globalClasses.bold}>
             <Box className={globalClasses.sectionMargin}>
@@ -150,20 +190,6 @@ export const TaxonNameShow: FC = (props) => {
                 </Labeled>
               </Box>
             </Box>
-            {/*Sub genera name*/}
-            <Box className={globalClasses.sectionMargin}>
-              <Typography
-                variant="h5"
-                className={globalClasses.bold}
-                gutterBottom
-              >
-                Subgenera Name
-              </Typography>
-            </Box>
-            <InfragenericNamesGrid
-              props={props}
-              id={id}
-            ></InfragenericNamesGrid>
             {/* Authors Section */}
             <Box className={globalClasses.sectionMargin}>
               <Typography
@@ -352,6 +378,33 @@ export const TaxonNameShow: FC = (props) => {
                 <TextField source="comments" />
               </Labeled>
             </Box>
+          </Tab>
+          <Tab
+            label="Infrageneric name formats"
+            path="infrageneric"
+            className={globalClasses.bold}
+          >
+            {/*Sub genera name*/}
+            <Box className={globalClasses.sectionMargin}>
+              <Typography
+                variant="h5"
+                className={globalClasses.bold}
+                gutterBottom
+              >
+                Infrageneric name formats
+              </Typography>
+            </Box>
+            {infraLoading && <span>Loading...</span>}
+            {infraError && (
+              <span>There was an issue loading Infrageneric Names</span>
+            )}
+            {infraData.length > 0 && (
+              <InfragenericNamesGrid
+                props={props}
+                id={id}
+                infraData={infraData}
+              ></InfragenericNamesGrid>
+            )}
           </Tab>
         </TabbedShowLayout>
       </>

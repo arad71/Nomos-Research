@@ -1,55 +1,28 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { fetchStart, fetchEnd, useNotify } from 'react-admin';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import { InfragengerenicData } from './TaxonTypes';
 
 export const InfragenericNamesGrid = (props: {
   props: React.PropsWithChildren<{}>;
   id: number;
+  infraData:
+    | never[]
+    | [
+        {
+          id: number;
+          name_version: string;
+          formatted_name: string;
+          author: string;
+          formatted_name_with_author: string;
+          contributing_taxons: [[number, string]];
+        }
+      ];
 }) => {
-  const dispatch = useDispatch();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
-  const [gridData, setGridData] = useState([]);
-  useEffect(() => {
-    setLoading(true);
-    dispatch(fetchStart());
-    fetch(`/api/v1/taxon_names_infrageneric_names/${props.id}`, {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        Authorization: 'Bearer ' + localStorage.getItem('token'),
-      },
-    })
-      .then((r) => {
-        return r.json();
-      })
-      .then((data) => {
-        setGridData(data);
-      })
-      .catch(() => {
-        setError(true);
-      })
-      .finally(() => {
-        setLoading(false);
-        dispatch(fetchEnd());
-      });
-  }, [props.id]);
-
-  if (loading) {
-    return <span>Loading...</span>;
-  }
-
-  if (error) {
-    return <span>There was an issue loading Infrageneric Names</span>;
-  }
-
   return (
     <div>
       <TableContainer>
@@ -64,41 +37,32 @@ export const InfragenericNamesGrid = (props: {
             </TableRow>
           </TableHead>
           <TableBody>
-            {gridData
-              ? gridData.map(
-                  (row: {
-                    id: number;
-                    name_version: string;
-                    formatted_name: string;
-                    author: string;
-                    formatted_name_with_author: string;
-                    contributing_taxons: [[number, string]];
-                  }) => (
-                    <TableRow key={row.id}>
-                      <TableCell component="th" scope="row">
-                        {row.name_version}
-                      </TableCell>
-                      <TableCell align="right">{row.formatted_name}</TableCell>
-                      <TableCell align="right">{row.author}</TableCell>
-                      <TableCell align="right">
-                        {row.formatted_name_with_author}
-                      </TableCell>
-                      <TableCell align="right">
-                        {row.contributing_taxons.map(
-                          (item: [number, string], index: number) => {
-                            return (
-                              <span>
-                                {item[1]}
-                                {index + 1 < row.contributing_taxons.length &&
-                                  ', '}
-                              </span>
-                            );
-                          }
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  )
-                )
+            {props.infraData
+              ? props.infraData.map((row: InfragengerenicData) => (
+                  <TableRow key={row.id}>
+                    <TableCell component="th" scope="row">
+                      {row.name_version}
+                    </TableCell>
+                    <TableCell align="right">{row.formatted_name}</TableCell>
+                    <TableCell align="right">{row.author}</TableCell>
+                    <TableCell align="right">
+                      {row.formatted_name_with_author}
+                    </TableCell>
+                    <TableCell align="right">
+                      {row.contributing_taxons.map(
+                        (item: [number, string], index: number) => {
+                          return (
+                            <span>
+                              {item[1]}
+                              {index + 1 < row.contributing_taxons.length &&
+                                ', '}
+                            </span>
+                          );
+                        }
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))
               : 'No Subgenera Names exist'}
           </TableBody>
         </Table>
