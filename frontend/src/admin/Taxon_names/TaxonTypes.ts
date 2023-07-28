@@ -4,5 +4,5 @@ export type InfragengerenicData = {
   formatted_name: string;
   author: string;
   formatted_name_with_author: string;
-  contributing_taxons: [[number, string]];
+  contributing_taxon_names: [[number, string]];
 };

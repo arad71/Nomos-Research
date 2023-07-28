@@ -19,7 +19,7 @@ export const InfragenericNamesGrid = (props: {
           formatted_name: string;
           author: string;
           formatted_name_with_author: string;
-          contributing_taxons: [[number, string]];
+          contributing_taxon_names: [[number, string]];
         }
       ];
 }) => {
@@ -33,7 +33,7 @@ export const InfragenericNamesGrid = (props: {
               <TableCell align="right">Formatted Name</TableCell>
               <TableCell align="right">Author</TableCell>
               <TableCell align="right">Formatted Name with Author</TableCell>
-              <TableCell align="right">Contributing Taxons</TableCell>
+              <TableCell align="right">Contributing Taxon Names</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -49,13 +49,13 @@ export const InfragenericNamesGrid = (props: {
                       {row.formatted_name_with_author}
                     </TableCell>
                     <TableCell align="right">
-                      {row.contributing_taxons.map(
+                      {row.contributing_taxon_names.map(
                         (item: [number, string], index: number) => {
                           return (
                             <span>
                               {item[1]}
-                              {index + 1 < row.contributing_taxons.length &&
-                                ', '}
+                              {index + 1 <
+                                row.contributing_taxon_names.length && ', '}
                             </span>
                           );
                         }
