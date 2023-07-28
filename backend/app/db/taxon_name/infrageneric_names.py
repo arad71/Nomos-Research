@@ -25,7 +25,7 @@ class InfraGenericNameModel(BaseModel):
     name_version: str = ""
     author: Optional[str] = None
     formatted_name_with_author: Optional[str] = None
-    contributing_taxons: List[Tuple[int, str]] = []
+    contributing_taxon_names: List[Tuple[int, str]] = []
     info: Optional[str] = None
     searched_taxon_id: int = None
 
@@ -196,7 +196,7 @@ class InfraGenericNames:
                         and name_component.source_name_value
                     ):
                         # record the taxon id that is contributing this word
-                        new_name.contributing_taxons.append(
+                        new_name.contributing_taxon_names.append(
                             (
                                 name_component.taxon_name_id,
                                 name_component.source_name_value,
