@@ -29,26 +29,26 @@ export const InfragenericNamesGrid = (props: {
         <Table aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell>Name Version</TableCell>
-              <TableCell align="right">Formatted Name</TableCell>
-              <TableCell align="right">Author</TableCell>
-              <TableCell align="right">Formatted Name with Author</TableCell>
-              <TableCell align="right">Contributing Taxon Names</TableCell>
+              <TableCell variant="head">Name Version</TableCell>
+              <TableCell variant="head">Formatted Name</TableCell>
+              <TableCell variant="head">Author</TableCell>
+              <TableCell variant="head">Formatted Name with Author</TableCell>
+              <TableCell variant="head">Contributing Taxon Names</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {props.infraData
               ? props.infraData.map((row: InfragengerenicData) => (
                   <TableRow key={row.id}>
-                    <TableCell component="th" scope="row">
+                    <TableCell variant="head" scope="row">
                       {row.name_version}
                     </TableCell>
-                    <TableCell align="right">{row.formatted_name}</TableCell>
-                    <TableCell align="right">{row.author}</TableCell>
-                    <TableCell align="right">
+                    <TableCell variant="head">{row.formatted_name}</TableCell>
+                    <TableCell variant="head">{row.author}</TableCell>
+                    <TableCell variant="head">
                       {row.formatted_name_with_author}
                     </TableCell>
-                    <TableCell align="right">
+                    <TableCell variant="head">
                       {row.contributing_taxon_names.map(
                         (item: [number, string], index: number) => {
                           return (
