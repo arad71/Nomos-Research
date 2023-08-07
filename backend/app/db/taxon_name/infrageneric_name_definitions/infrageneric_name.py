@@ -30,7 +30,8 @@ class Source(BaseModel):
     See source definitions for examples.
     """
 
-    hierarchy_rank: str
+    hierarchy_rank: Optional[str]
+    use_searched_name: bool = False
     preference: int
     field: List[SourceField]
 

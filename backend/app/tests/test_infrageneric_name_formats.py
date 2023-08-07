@@ -20,6 +20,7 @@ from app.db.taxon_name.infrageneric_names import (
     InfraGenericNameModel,
     InfraGenericNames,
 )
+from app.db.taxon_name.schema import TaxonNameRow
 from app.tests.infrageneric_name_test_data import (
     name_set_full_hierarchy_162767,
     name_set_invalid_minimum_lowest_hierarchy_162767,
@@ -83,7 +84,7 @@ def check_results(
 
 @pytest.mark.parametrize("mock_query_parameter, mock_query_data, expected", test_data)
 def test_infrageneric_name_formats(
-    mock_query_parameter: int, mock_query_data: List[dict], expected: List[dict]
+    mock_query_parameter: int, mock_query_data: List[TaxonNameRow], expected: List[dict]
 ):
     assert NUMBER_OF_DEFINED_NAME_FORMATS == len(expected), (
         f"{NUMBER_OF_DEFINED_NAME_FORMATS} name formats defined in the project, "

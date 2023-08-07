@@ -13,184 +13,201 @@ Infragenus              | Subsection  | Subsection | --               | --      
 Infragenus              | Series      | Series     | --               | --                    | Series                 | ser.         | 3               | --                | --                 | --          | valid      | --
 Infragenus              | Subseries   | Subseries  | --               | --                    | Subseries              | subser.      | 2               | --                | --                 | --          | valid      | --
 Infragenus              | Superspecies| Superspecies | --             | --                    | Superspecies           | supersp.     | 1               | valid             | --                 | --          | valid      | valid
-Species                 | Species     | Fail       | species          | --                    | species                | --           | 1               | valid             | valid              | valid       | valid      | valid
-Infraspecies            | Subspecies  | Fail       | fail             | subspecies            | subspecies             | subsp.       | 5               | --                | valid              | valid       | valid      | --
-Infraspecies            | Variety     | Fail       | fail             | variety               | variety                | var.         | 4               | --                | --                 | valid       | valid      | --
-Infraspecies            | Subvariety  | Fail       | fail             | subvariety            | subvariety             | subvar.      | 3               | --                | --                 | valid       | valid      | --
-Infraspecies            | Form        | Fail       | fail             | form                  | form                   | forma        | 2               | --                | --                 | --          | valid      | --
-Infraspecies            | Subform     | Fail       | fail             | subform               | subform                | subforma     | 1               | valid             | --                 | --          | valid      | invalid
+Species                 | Species     | Genus      | species          | --                    | species                | --           | 1               | valid             | valid              | valid       | valid      | valid
+Infraspecies            | Subspecies  | Genus      | species          | subspecies            | subspecies             | subsp.       | 5               | --                | valid              | valid       | valid      | --
+Infraspecies            | Variety     | Genus      | species          | variety               | variety                | var.         | 4               | --                | --                 | valid       | valid      | --
+Infraspecies            | Subvariety  | Genus      | species          | subvariety            | subvariety             | subvar.      | 3               | --                | --                 | valid       | valid      | --
+Infraspecies            | Form        | Genus      | species          | form                  | form                   | forma        | 2               | --                | --                 | --          | valid      | --
+Infraspecies            | Subform     | Genus      | species          | subform               | subform                | subforma     | 1               | valid             | --                 | --          | valid      | invalid
 
 """
-
 
 """
 All individual taxon entries for the full hierarchy.
 These individual elements are used for creating mock sql query results with smaller
 hierarchy paths.
 """
-Division = {
-    "taxon_name_id": 26680,
-    "uninomial": "Magnoliophyta",
-    "specific_epithet": None,
-    "infraspecific_epithet": None,
-    "author": None,
-    "rank_name": "Division",
-    "rank_abbrev": None,
-}
-Class = {
-    "taxon_name_id": 26690,
-    "uninomial": "Magnoliopsida",
-    "specific_epithet": None,
-    "infraspecific_epithet": None,
-    "author": None,
-    "rank_name": "Class",
-    "rank_abbrev": None,
-}
-Order = {
-    "taxon_name_id": 26700,
-    "uninomial": "Asterales",
-    "specific_epithet": None,
-    "infraspecific_epithet": None,
-    "author": None,
-    "rank_name": "Order",
-    "rank_abbrev": None,
-}
-Family = {
-    "taxon_name_id": 16441,
-    "uninomial": "Asteraceae",
-    "specific_epithet": None,
-    "infraspecific_epithet": None,
-    "author": "Bercht. & J.Presl",
-    "rank_name": "Family",
-    "rank_abbrev": None,
-}
-Genus = {
-    "taxon_name_id": 13483,
-    "uninomial": "Genus",
-    "specific_epithet": None,
-    "infraspecific_epithet": None,
-    "author": None,
-    "rank_name": "Genus",
-    "rank_abbrev": None,
-}
-Subgenus = {
-    "taxon_name_id": 162756,
-    "uninomial": "Subgenus",
-    "specific_epithet": None,
-    "infraspecific_epithet": None,
-    "author": None,
-    "rank_name": "Subgenus",
-    "rank_abbrev": "subg",
-}
-Section = {
-    "taxon_name_id": 162757,
-    "uninomial": "Section",
-    "specific_epithet": None,
-    "infraspecific_epithet": None,
-    "author": None,
-    "rank_name": "Section",
-    "rank_abbrev": "sect",
-}
-Subsection = {
-    "taxon_name_id": 162758,
-    "uninomial": "Subsection",
-    "specific_epithet": None,
-    "infraspecific_epithet": None,
-    "author": None,
-    "rank_name": "Subsection",
-    "rank_abbrev": "subsect",
-}
-Series = {
-    "taxon_name_id": 162759,
-    "uninomial": "Series",
-    "specific_epithet": None,
-    "infraspecific_epithet": None,
-    "author": None,
-    "rank_name": "Series",
-    "rank_abbrev": "ser",
-}
-Subseries = {
-    "taxon_name_id": 162760,
-    "uninomial": "Subseries",
-    "specific_epithet": None,
-    "infraspecific_epithet": None,
-    "author": None,
-    "rank_name": "Subseries",
-    "rank_abbrev": "subser",
-}
-Superspecies = {
-    "taxon_name_id": 162761,
-    "uninomial": "Superspecies",
-    "specific_epithet": None,
-    "infraspecific_epithet": None,
-    "author": None,
-    "rank_name": "Superspecies",
-    "rank_abbrev": "supersp",
-}
-Species = {
-    "taxon_name_id": 162762,
-    "uninomial": "Fail",
-    "specific_epithet": "species",
-    "infraspecific_epithet": None,
-    "author": None,
-    "rank_name": "Species",
-    "rank_abbrev": None,
-}
-Subspecies = {
-    "taxon_name_id": 162763,
-    "uninomial": "Fail",
-    "specific_epithet": "fail",
-    "infraspecific_epithet": "subspecies",
-    "author": "(S A) F A",
-    "rank_name": "Subspecies",
-    "rank_abbrev": "subsp",
-}
-Variety = {
-    "taxon_name_id": 162764,
-    "uninomial": "Fail",
-    "specific_epithet": "fail",
-    "infraspecific_epithet": "variety",
-    "author": None,
-    "rank_name": "Variety",
-    "rank_abbrev": "var",
-}
-Subvariety = {
-    "taxon_name_id": 162765,
-    "uninomial": "Fail",
-    "specific_epithet": "fail",
-    "infraspecific_epithet": "subvariety",
-    "author": None,
-    "rank_name": "Subvariety",
-    "rank_abbrev": "subvar",
-}
-Form = {
-    "taxon_name_id": 162766,
-    "uninomial": "Fail",
-    "specific_epithet": "fail",
-    "infraspecific_epithet": "form",
-    "author": "(F A)",
-    "rank_name": "Form",
-    "rank_abbrev": "forma",
-}
-Subform = {
-    "taxon_name_id": 162767,
-    "uninomial": "Fail",
-    "specific_epithet": "fail",
-    "infraspecific_epithet": "subform",
-    "author": "(SF A)",
-    "rank_name": "Subform",
-    "rank_abbrev": "subforma",
-}
-Invalid_subform = {
-    "taxon_name_id": 162767,
-    "uninomial": "Fail",
-    "specific_epithet": "subform",
-    "infraspecific_epithet": None,
-    "author": "(SF A)",
-    "rank_name": "Subform",
-    "rank_abbrev": "subforma",
-}
+from app.db.taxon_name.schema import TaxonNameRow
 
+Division = TaxonNameRow(
+    taxon_name_id=26680,
+    uninomial="Magnoliophyta",
+    specific_epithet=None,
+    infraspecific_epithet=None,
+    author=None,
+    rank_name="Division",
+    rank_abbrev=None,
+)
+
+Class = TaxonNameRow(
+    taxon_name_id=26690,
+    uninomial="Magnoliopsida",
+    specific_epithet=None,
+    infraspecific_epithet=None,
+    author=None,
+    rank_name="Class",
+    rank_abbrev=None,
+)
+
+Order = TaxonNameRow(
+    taxon_name_id=26700,
+    uninomial="Asterales",
+    specific_epithet=None,
+    infraspecific_epithet=None,
+    author=None,
+    rank_name="Order",
+    rank_abbrev=None,
+)
+
+Family = TaxonNameRow(
+    taxon_name_id=16441,
+    uninomial="Asteraceae",
+    specific_epithet=None,
+    infraspecific_epithet=None,
+    author="Bercht. & J.Presl",
+    rank_name="Family",
+    rank_abbrev=None,
+)
+
+Genus = TaxonNameRow(
+    taxon_name_id=13483,
+    uninomial="Genus",
+    specific_epithet=None,
+    infraspecific_epithet=None,
+    author=None,
+    rank_name="Genus",
+    rank_abbrev=None,
+)
+
+Subgenus = TaxonNameRow(
+    taxon_name_id=162756,
+    uninomial="Subgenus",
+    specific_epithet=None,
+    infraspecific_epithet=None,
+    author=None,
+    rank_name="Subgenus",
+    rank_abbrev="subg",
+)
+
+Section = TaxonNameRow(
+    taxon_name_id=162757,
+    uninomial="Section",
+    specific_epithet=None,
+    infraspecific_epithet=None,
+    author=None,
+    rank_name="Section",
+    rank_abbrev="sect",
+)
+
+Subsection = TaxonNameRow(
+    taxon_name_id=162758,
+    uninomial="Subsection",
+    specific_epithet=None,
+    infraspecific_epithet=None,
+    author=None,
+    rank_name="Subsection",
+    rank_abbrev="subsect",
+)
+
+Series = TaxonNameRow(
+    taxon_name_id=162759,
+    uninomial="Series",
+    specific_epithet=None,
+    infraspecific_epithet=None,
+    author=None,
+    rank_name="Series",
+    rank_abbrev="ser",
+)
+
+Subseries = TaxonNameRow(
+    taxon_name_id=162760,
+    uninomial="Subseries",
+    specific_epithet=None,
+    infraspecific_epithet=None,
+    author=None,
+    rank_name="Subseries",
+    rank_abbrev="subser",
+)
+
+Superspecies = TaxonNameRow(
+    taxon_name_id=162761,
+    uninomial="Superspecies",
+    specific_epithet=None,
+    infraspecific_epithet=None,
+    author=None,
+    rank_name="Superspecies",
+    rank_abbrev="supersp",
+)
+
+Species = TaxonNameRow(
+    taxon_name_id=162762,
+    uninomial="Genus",
+    specific_epithet="species",
+    infraspecific_epithet=None,
+    author=None,
+    rank_name="Species",
+    rank_abbrev=None,
+)
+
+Subspecies = TaxonNameRow(
+    taxon_name_id=162763,
+    uninomial="Genus",
+    specific_epithet="species",
+    infraspecific_epithet="subspecies",
+    author="(S A) F A",
+    rank_name="Subspecies",
+    rank_abbrev="subsp",
+)
+
+Variety = TaxonNameRow(
+    taxon_name_id=162764,
+    uninomial="Genus",
+    specific_epithet="species",
+    infraspecific_epithet="variety",
+    author=None,
+    rank_name="Variety",
+    rank_abbrev="var",
+)
+
+Subvariety = TaxonNameRow(
+    taxon_name_id=162765,
+    uninomial="Genus",
+    specific_epithet="species",
+    infraspecific_epithet="subvariety",
+    author=None,
+    rank_name="Subvariety",
+    rank_abbrev="subvar",
+)
+
+Form = TaxonNameRow(
+    taxon_name_id=162766,
+    uninomial="Genus",
+    specific_epithet="species",
+    infraspecific_epithet="form",
+    author="(F A)",
+    rank_name="Form",
+    rank_abbrev="forma",
+)
+
+Subform = TaxonNameRow(
+    taxon_name_id=162767,
+    uninomial="Genus",
+    specific_epithet="species",
+    infraspecific_epithet="subform",
+    author="(SF A)",
+    rank_name="Subform",
+    rank_abbrev="subforma",
+)
+
+Invalid_subform = TaxonNameRow(
+    taxon_name_id=162767,
+    uninomial="Genus",
+    specific_epithet="subform",
+    infraspecific_epithet=None,
+    author="(SF A)",
+    rank_name="Subform",
+    rank_abbrev="subforma",
+)
 # all valid contributing words in hierarchical order for simplified formatting
 # full_hierarchy test results
 # Genus
@@ -374,14 +391,20 @@ name_set_mixed_medium_hierarchy_162765 = [
     },
 ]
 name_set_invalid_minimum_lowest_hierarchy_162767 = [
-    {"name_version": "Canonical", "formatted_name": ""},
-    {"name_version": "Canonical without rank", "formatted_name": ""},
-    {"name_version": "Infragenus", "formatted_name": ""},
-    {"name_version": "Infragenus with rank", "formatted_name": ""},
-    {"name_version": "Infragenus without parentheses", "formatted_name": ""},
+    {"name_version": "Canonical", "formatted_name": "Genus species"},
+    {"name_version": "Canonical without rank", "formatted_name": "Genus species"},
+    {"name_version": "Infragenus", "formatted_name": "Genus (Superspecies) species"},
+    {
+        "name_version": "Infragenus with rank",
+        "formatted_name": "Genus (supersp. Superspecies) species",
+    },
+    {
+        "name_version": "Infragenus without parentheses",
+        "formatted_name": "Genus supersp. Superspecies species",
+    },
     {
         "name_version": "Infragenus without parentheses without rank",
-        "formatted_name": "",
+        "formatted_name": "Genus Superspecies species",
     },
     {
         "name_version": "Full hierarchy",

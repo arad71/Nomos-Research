@@ -97,3 +97,15 @@ class TaxonName(TaxonNameBase, TableBase):
     class Config:
         orm_mode = True
         schema_extra = {"description": TABLE_DESCRIPTION}
+
+
+class TaxonNameRow(BaseModel):
+    taxon_name_id: int
+    uninomial: str
+    scientific_name: Optional[str]
+    specific_epithet: Optional[str]
+    infraspecific_epithet: Optional[str]
+    author: Optional[str]
+    rank_name: Optional[str]
+    rank_abbrev: Optional[str]
+    parent_nid: Optional[int]
