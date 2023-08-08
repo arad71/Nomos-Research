@@ -15,7 +15,7 @@ from app.db.taxon_name.infrageneric_name_definitions.infrageneric_name_source_de
     source_subspecies,
     source_subvariety,
     source_superspecies,
-    source_uninomial,
+    source_genus_or_uninomial,
     source_variety,
     sources_below_species,
     sources_between_genus_and_species,
@@ -32,7 +32,7 @@ name_format_canonical = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": False,
             "has_parentheses": False,
-            "source": source_uninomial,
+            "source": source_genus_or_uninomial,
         },
         {
             "word_order_placement": 2,
@@ -64,7 +64,7 @@ name_format_canonical_without_rank = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": False,
             "has_parentheses": False,
-            "source": source_uninomial,
+            "source": source_genus_or_uninomial,
         },
         {
             "word_order_placement": 2,
@@ -96,7 +96,7 @@ name_format_infragenus = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": False,
             "has_parentheses": False,
-            "source": source_uninomial,
+            "source": source_genus_or_uninomial,
         },
         {
             "word_order_placement": 2,
@@ -136,7 +136,7 @@ name_format_infragenus_with_rank = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": False,
             "has_parentheses": False,
-            "source": source_uninomial,
+            "source": source_genus_or_uninomial,
         },
         {
             "word_order_placement": 2,
@@ -176,7 +176,7 @@ name_format_infragenus_without_parentheses = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": False,
             "has_parentheses": False,
-            "source": source_uninomial,
+            "source": source_genus_or_uninomial,
         },
         {
             "word_order_placement": 2,
@@ -216,7 +216,7 @@ name_format_infragenus_without_parentheses_without_rank = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": False,
             "has_parentheses": False,
-            "source": source_uninomial,
+            "source": source_genus_or_uninomial,
         },
         {
             "word_order_placement": 2,
@@ -259,7 +259,7 @@ name_format_full_hierarchy = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": False,
             "has_parentheses": False,
-            "source": source_uninomial,
+            "source": source_genus_or_uninomial,
         },
         {
             "word_order_placement": 2,

@@ -63,12 +63,17 @@ sources_between_genus_and_species = [
         "field": [{"label": "uninomial", "preference": 1}],
     },
 ]
-source_uninomial = [
+source_genus_or_uninomial = [
     {
+        "hierarchy_rank": "Genus",
         "preference": 1,
+        "field": [{"label": "uninomial", "preference": 1}],
+    },
+    {
+        "preference": 2,
         "use_searched_name": True,
         "field": [{"label": "uninomial", "preference": 1}],
-    }
+    },
 ]
 
 source_species = [
