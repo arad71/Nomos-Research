@@ -5,6 +5,7 @@ See SubGeneraNameDefinitions class description for details on how to define a ne
 
 from app.db.taxon_name.infrageneric_name_definitions.infrageneric_name_source_definitions import (
     source_form,
+    source_genus_or_uninomial,
     source_section,
     source_series,
     source_species,
@@ -15,7 +16,6 @@ from app.db.taxon_name.infrageneric_name_definitions.infrageneric_name_source_de
     source_subspecies,
     source_subvariety,
     source_superspecies,
-    source_genus_or_uninomial,
     source_variety,
     sources_below_species,
     sources_between_genus_and_species,
