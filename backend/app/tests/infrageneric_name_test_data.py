@@ -13,12 +13,12 @@ Infragenus              | Subsection  | Subsection | --               | --      
 Infragenus              | Series      | Series     | --               | --                    | Series                 | ser.         | 3               | --                | --                 | --          | valid      | --
 Infragenus              | Subseries   | Subseries  | --               | --                    | Subseries              | subser.      | 2               | --                | --                 | --          | valid      | --
 Infragenus              | Superspecies| Superspecies | --             | --                    | Superspecies           | supersp.     | 1               | valid             | --                 | --          | valid      | valid
-Species                 | Species     | Genus      | species          | --                    | species                | --           | 1               | valid             | valid              | valid       | valid      | valid
-Infraspecies            | Subspecies  | Genus      | species          | subspecies            | subspecies             | subsp.       | 5               | --                | valid              | valid       | valid      | --
-Infraspecies            | Variety     | Genus      | species          | variety               | variety                | var.         | 4               | --                | --                 | valid       | valid      | --
-Infraspecies            | Subvariety  | Genus      | species          | subvariety            | subvariety             | subvar.      | 3               | --                | --                 | valid       | valid      | --
-Infraspecies            | Form        | Genus      | species          | form                  | form                   | forma        | 2               | --                | --                 | --          | valid      | --
-Infraspecies            | Subform     | Genus      | species          | subform               | subform                | subforma     | 1               | valid             | --                 | --          | valid      | invalid
+Species                 | Species     | Genus2      | species         | --                    | species                | --           | 1               | valid             | valid              | valid       | valid      | valid
+Infraspecies            | Subspecies  | Genus3      | species3        | subspecies            | subspecies             | subsp.       | 5               | --                | valid              | valid       | valid      | --
+Infraspecies            | Variety     | Genus4      | species4        | variety               | variety                | var.         | 4               | --                | --                 | valid       | valid      | --
+Infraspecies            | Subvariety  | Genus5      | species5        | subvariety            | subvariety             | subvar.      | 3               | --                | --                 | valid       | valid      | --
+Infraspecies            | Form        | Genus6      | species6        | form                  | form                   | forma        | 2               | --                | --                 | --          | valid      | --
+Infraspecies            | Subform     | Genus7      | species7        | subform               | subform                | subforma     | 1               | valid             | --                 | --          | valid      | invalid
 
 """
 
@@ -141,7 +141,7 @@ Superspecies = TaxonNameRow(
 
 Species = TaxonNameRow(
     taxon_name_id=162762,
-    uninomial="Genus",
+    uninomial="Genus2",
     specific_epithet="species",
     infraspecific_epithet=None,
     author=None,
@@ -151,8 +151,8 @@ Species = TaxonNameRow(
 
 Subspecies = TaxonNameRow(
     taxon_name_id=162763,
-    uninomial="Genus",
-    specific_epithet="species",
+    uninomial="Genus3",
+    specific_epithet="species3",
     infraspecific_epithet="subspecies",
     author="(S A) F A",
     rank_name="Subspecies",
@@ -161,8 +161,8 @@ Subspecies = TaxonNameRow(
 
 Variety = TaxonNameRow(
     taxon_name_id=162764,
-    uninomial="Genus",
-    specific_epithet="species",
+    uninomial="Genus4",
+    specific_epithet="species4",
     infraspecific_epithet="variety",
     author=None,
     rank_name="Variety",
@@ -171,8 +171,8 @@ Variety = TaxonNameRow(
 
 Subvariety = TaxonNameRow(
     taxon_name_id=162765,
-    uninomial="Genus",
-    specific_epithet="species",
+    uninomial="Genus5",
+    specific_epithet="species5",
     infraspecific_epithet="subvariety",
     author=None,
     rank_name="Subvariety",
@@ -181,8 +181,8 @@ Subvariety = TaxonNameRow(
 
 Form = TaxonNameRow(
     taxon_name_id=162766,
-    uninomial="Genus",
-    specific_epithet="species",
+    uninomial="Genus6",
+    specific_epithet="species6",
     infraspecific_epithet="form",
     author="(F A)",
     rank_name="Form",
@@ -191,8 +191,8 @@ Form = TaxonNameRow(
 
 Subform = TaxonNameRow(
     taxon_name_id=162767,
-    uninomial="Genus",
-    specific_epithet="species",
+    uninomial="Genus7",
+    specific_epithet="species7",
     infraspecific_epithet="subform",
     author="(SF A)",
     rank_name="Subform",
