@@ -268,6 +268,21 @@ query_set_invalid_minimum_lowest_hierarchy_162767 = [
     Invalid_subform,
 ]
 
+# tests the use of use_searched_name in source_genus_or_uninomial
+query_set_higher_taxa_uninomial_16441 = [
+    Division,
+    Class,
+    Order,
+    Family
+]
+
+query_set_infragenus_uninomial_162764 = [
+    Series,
+    Subspecies,
+    Variety
+]
+
+
 
 """
 The 'name_set' items in this section are representation of the expected name outputs for
@@ -276,26 +291,29 @@ each defined name format in the project, for each hierarchy scenario defined in 
 """
 
 name_set_full_hierarchy_162767 = [
-    {"name_version": "Canonical", "formatted_name": "Genus species subforma subform"},
+    {
+        "name_version": "Canonical",
+        "formatted_name": "Genus species subforma subform"
+    },
     {
         "name_version": "Canonical without rank",
-        "formatted_name": "Genus species subform",
+        "formatted_name": "Genus species subform"
     },
     {
         "name_version": "Infragenus",
-        "formatted_name": "Genus (Superspecies) species subforma subform",
+        "formatted_name": "Genus (Superspecies) species subforma subform"
     },
     {
         "name_version": "Infragenus with rank",
-        "formatted_name": "Genus (supersp. Superspecies) species subforma subform",
+        "formatted_name": "Genus (supersp. Superspecies) species subforma subform"
     },
     {
         "name_version": "Infragenus without parentheses",
-        "formatted_name": "Genus supersp. Superspecies species subforma subform",
+        "formatted_name": "Genus supersp. Superspecies species subforma subform"
     },
     {
         "name_version": "Infragenus without parentheses without rank",
-        "formatted_name": "Genus Superspecies species subform",
+        "formatted_name": "Genus Superspecies species subform"
     },
     {
         "name_version": "Full hierarchy",
@@ -303,111 +321,191 @@ name_set_full_hierarchy_162767 = [
             "Genus subg. Subgenus sect. Section subsect. Subsection ser. Series subser."
             " Subseries supersp. Superspecies species subsp. subspecies var. variety"
             " subvar. subvariety forma form subforma subform"
-        ),
-    },
+        )
+    }
 ]
 name_set_minimum_lowest_hierarchy_162767 = [
-    {"name_version": "Canonical", "formatted_name": "Genus species subforma subform"},
+    {
+        "name_version": "Canonical",
+        "formatted_name": "Genus species subforma subform"
+    },
     {
         "name_version": "Canonical without rank",
-        "formatted_name": "Genus species subform",
+        "formatted_name": "Genus species subform"
     },
     {
         "name_version": "Infragenus",
-        "formatted_name": "Genus (Superspecies) species subforma subform",
+        "formatted_name": "Genus (Superspecies) species subforma subform"
     },
     {
         "name_version": "Infragenus with rank",
-        "formatted_name": "Genus (supersp. Superspecies) species subforma subform",
+        "formatted_name": "Genus (supersp. Superspecies) species subforma subform"
     },
     {
         "name_version": "Infragenus without parentheses",
-        "formatted_name": "Genus supersp. Superspecies species subforma subform",
+        "formatted_name": "Genus supersp. Superspecies species subforma subform"
     },
     {
         "name_version": "Infragenus without parentheses without rank",
-        "formatted_name": "Genus Superspecies species subform",
+        "formatted_name": "Genus Superspecies species subform"
     },
     {
         "name_version": "Full hierarchy",
-        "formatted_name": "Genus supersp. Superspecies species subforma subform",
+        "formatted_name": "Genus supersp. Superspecies species subforma subform"
     },
 ]
 name_set_minimum_highest_hierarchy_162763 = [
-    {"name_version": "Canonical", "formatted_name": "Genus species subsp. subspecies"},
+    {
+        "name_version": "Canonical",
+        "formatted_name": "Genus species subsp. subspecies"
+    },
     {
         "name_version": "Canonical without rank",
-        "formatted_name": "Genus species subspecies",
+        "formatted_name": "Genus species subspecies"
     },
     {
         "name_version": "Infragenus",
-        "formatted_name": "Genus (Subgenus) species subsp. subspecies",
+        "formatted_name": "Genus (Subgenus) species subsp. subspecies"
     },
     {
         "name_version": "Infragenus with rank",
-        "formatted_name": "Genus (subg. Subgenus) species subsp. subspecies",
+        "formatted_name": "Genus (subg. Subgenus) species subsp. subspecies"
     },
     {
         "name_version": "Infragenus without parentheses",
-        "formatted_name": "Genus subg. Subgenus species subsp. subspecies",
+        "formatted_name": "Genus subg. Subgenus species subsp. subspecies"
     },
     {
         "name_version": "Infragenus without parentheses without rank",
-        "formatted_name": "Genus Subgenus species subspecies",
+        "formatted_name": "Genus Subgenus species subspecies"
     },
     {
         "name_version": "Full hierarchy",
-        "formatted_name": "Genus subg. Subgenus species subsp. subspecies",
-    },
+        "formatted_name": "Genus subg. Subgenus species subsp. subspecies"
+    }
 ]
 name_set_mixed_medium_hierarchy_162765 = [
-    {"name_version": "Canonical", "formatted_name": "Genus species subvar. subvariety"},
+    {
+        "name_version": "Canonical",
+        "formatted_name": "Genus species subvar. subvariety"
+    },
     {
         "name_version": "Canonical without rank",
-        "formatted_name": "Genus species subvariety",
+        "formatted_name": "Genus species subvariety"
     },
     {
         "name_version": "Infragenus",
-        "formatted_name": "Genus (Subsection) species subvar. subvariety",
+        "formatted_name": "Genus (Subsection) species subvar. subvariety"
     },
     {
         "name_version": "Infragenus with rank",
-        "formatted_name": "Genus (subsect. Subsection) species subvar. subvariety",
+        "formatted_name": "Genus (subsect. Subsection) species subvar. subvariety"
     },
     {
         "name_version": "Infragenus without parentheses",
-        "formatted_name": "Genus subsect. Subsection species subvar. subvariety",
+        "formatted_name": "Genus subsect. Subsection species subvar. subvariety"
     },
     {
         "name_version": "Infragenus without parentheses without rank",
-        "formatted_name": "Genus Subsection species subvariety",
+        "formatted_name": "Genus Subsection species subvariety"
     },
     {
         "name_version": "Full hierarchy",
         "formatted_name": (
             "Genus subg. Subgenus sect. Section subsect. Subsection species subsp."
             " subspecies var. variety subvar. subvariety"
-        ),
-    },
+        )
+    }
 ]
 name_set_invalid_minimum_lowest_hierarchy_162767 = [
-    {"name_version": "Canonical", "formatted_name": "Genus species"},
-    {"name_version": "Canonical without rank", "formatted_name": "Genus species"},
-    {"name_version": "Infragenus", "formatted_name": "Genus (Superspecies) species"},
+    {
+        "name_version": "Canonical",
+        "formatted_name": "Genus species"
+    },
+    {
+        "name_version": "Canonical without rank",
+        "formatted_name": "Genus species"
+    },
+    {
+        "name_version": "Infragenus",
+        "formatted_name": "Genus (Superspecies) species"
+    },
     {
         "name_version": "Infragenus with rank",
-        "formatted_name": "Genus (supersp. Superspecies) species",
+        "formatted_name": "Genus (supersp. Superspecies) species"
     },
     {
         "name_version": "Infragenus without parentheses",
-        "formatted_name": "Genus supersp. Superspecies species",
+        "formatted_name": "Genus supersp. Superspecies species"
     },
     {
         "name_version": "Infragenus without parentheses without rank",
-        "formatted_name": "Genus Superspecies species",
+        "formatted_name": "Genus Superspecies species"
     },
     {
         "name_version": "Full hierarchy",
-        "formatted_name": "Genus supersp. Superspecies species",
+        "formatted_name": "Genus supersp. Superspecies species"
+    }
+]
+
+name_set_higher_taxa_uninomial_16441 = [
+    {
+        "name_version": "Canonical",
+        "formatted_name": "Asteraceae"
     },
+    {
+        "name_version": "Canonical without rank",
+        "formatted_name": "Asteraceae"
+    },
+    {
+        "name_version": "Infragenus",
+        "formatted_name": "Asteraceae"
+    },
+    {
+        "name_version": "Infragenus with rank",
+        "formatted_name": "Asteraceae"
+    },
+    {
+        "name_version": "Infragenus without parentheses",
+        "formatted_name": "Asteraceae"
+    },
+    {
+        "name_version": "Infragenus without parentheses without rank",
+        "formatted_name": "Asteraceae"
+    },
+    {
+        "name_version": "Full hierarchy",
+        "formatted_name": "Asteraceae"
+    }
+]
+
+name_set_infragenus_uninomial_162764 = [
+    {
+        "name_version": "Canonical",
+        "formatted_name": "Genus4 var. variety"
+    },
+    {
+        "name_version": "Canonical without rank",
+        "formatted_name": "Genus4 variety"
+    },
+    {
+        "name_version": "Infragenus",
+        "formatted_name": "Genus4 (Series) var. variety"
+    },
+    {
+        "name_version": "Infragenus with rank",
+        "formatted_name": "Genus4 (ser. Series) var. variety"
+    },
+    {
+        "name_version": "Infragenus without parentheses",
+        "formatted_name": "Genus4 ser. Series var. variety"
+    },
+    {
+        "name_version": "Infragenus without parentheses without rank",
+        "formatted_name": "Genus4 Series variety"
+    },
+    {
+        "name_version": "Full hierarchy",
+        "formatted_name": "Genus4 ser. Series subsp. subspecies var. variety"
+    }
 ]
