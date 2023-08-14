@@ -23,19 +23,19 @@ from app.db.taxon_name.infrageneric_names import (
 from app.db.taxon_name.schema import TaxonNameRow
 from app.tests.infrageneric_name_test_data import (
     name_set_full_hierarchy_162767,
+    name_set_higher_taxa_uninomial_16441,
+    name_set_infragenus_uninomial_162764,
     name_set_invalid_minimum_lowest_hierarchy_162767,
     name_set_minimum_highest_hierarchy_162763,
     name_set_minimum_lowest_hierarchy_162767,
     name_set_mixed_medium_hierarchy_162765,
-    name_set_higher_taxa_uninomial_16441,
-    name_set_infragenus_uninomial_162764,
     query_set_full_hierarchy_162767,
+    query_set_higher_taxa_uninomial_16441,
+    query_set_infragenus_uninomial_162764,
     query_set_invalid_minimum_lowest_hierarchy_162767,
     query_set_minimum_highest_hierarchy_162763,
     query_set_minimum_lowest_hierarchy_162767,
     query_set_mixed_medium_hierarchy_162765,
-    query_set_higher_taxa_uninomial_16441,
-    query_set_infragenus_uninomial_162764
 )
 
 # ensure that every name format used by the system is represented in the tests
@@ -67,13 +67,13 @@ test_data = [
     (
         16441,
         query_set_higher_taxa_uninomial_16441,
-        name_set_higher_taxa_uninomial_16441
+        name_set_higher_taxa_uninomial_16441,
     ),
     (
         162764,
         query_set_infragenus_uninomial_162764,
         name_set_infragenus_uninomial_162764,
-    )
+    ),
 ]
 
 
