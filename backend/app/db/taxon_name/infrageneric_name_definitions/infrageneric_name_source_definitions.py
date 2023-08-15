@@ -76,6 +76,14 @@ source_genus_or_uninomial = [
     },
 ]
 
+source_uninomial = [
+    {
+        "preference": 1,
+        "use_searched_name": True,
+        "field": [{"label": "uninomial", "preference": 1}],
+    },
+]
+
 source_species = [
     {
         "hierarchy_rank": "Species",
