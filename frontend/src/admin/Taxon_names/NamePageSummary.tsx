@@ -4,7 +4,6 @@ import { FormattedScientificNameWithStatus } from './FormattedScientificNameWith
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import NestedLinkField from '../shared/NestedLinkField';
-import { InfragengerenicData } from './TaxonTypes';
 const useStyles = makeStyles({
   title: {
     fontSize: '1.5em',
@@ -18,13 +17,12 @@ const useStyles = makeStyles({
     fontSize: '1em',
   },
 });
-export const NamePageSummary = (infragenus?: InfragengerenicData | {}) => {
+export const NamePageSummary = () => {
   const classes = useStyles();
   return (
     <Box className={classes.titlePos}>
       <Box className={classes.title}>
-        {/* @ts-ignore */}
-        <FormattedScientificNameWithStatus infragenus={infragenus} />
+        <FormattedScientificNameWithStatus />
       </Box>
       <NestedLinkField
         source="taxon_rank"

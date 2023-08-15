@@ -1,9 +1,7 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC } from 'react';
 import {
   BooleanField,
   ChipField,
-  fetchEnd,
-  fetchStart,
   Labeled,
   NumberField,
   ReferenceField,
@@ -31,9 +29,8 @@ import { NamePageSummary } from './NamePageSummary';
 import PostShowActions from '../shared/PostShowActions';
 import NestedLinkField from '../shared/NestedLinkField';
 import { HierarchyGrid } from './HierarchyGrid';
-import { useParams } from 'react-router-dom';
 import { InfragenericNamesGrid } from './InfragenericNamesGrid';
-import { useDispatch } from 'react-redux';
+import { TaxonName } from './TaxonName';
 
 const useStyles = makeStyles(() => ({
   bottomPadding: {
@@ -42,7 +39,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 const Empty = () => {
-  const record = useRecordContext();
+  const record: TaxonName = useRecordContext();
   if (record.classification_system_ids.length != 0) return null;
   return (
     <Box>
@@ -56,55 +53,16 @@ const Empty = () => {
 export const TaxonNameShow: FC = (props) => {
   const classes = useStyles();
   const globalClasses = GlobalTheme();
-  // @ts-ignore
-  const { id } = useParams();
-  const dispatch = useDispatch();
-  const [infraLoading, setInfraLoading] = useState(false);
-  const [infraError, setInfraError] = useState(false);
-  const [infraData, setInfraData] = useState([]);
-  useEffect(() => {
-    setInfraLoading(true);
-    dispatch(fetchStart());
-    fetch(`/api/v1/taxon_names_infrageneric_names/${id}`, {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        Authorization: 'Bearer ' + localStorage.getItem('token'),
-      },
-    })
-      .then((r) => {
-        return r.json();
-      })
-      .then((data) => {
-        setInfraData(data);
-      })
-      .catch(() => {
-        setInfraError(true);
-      })
-      .finally(() => {
-        setInfraLoading(false);
-        dispatch(fetchEnd());
-      });
-  }, [id]);
-
-  const infraGenericName = infraData?.find(
-    // @ts-ignore
-    (d) => d.name_version === 'Infragenus'
-  );
 
   return (
     <Show
       actions={<PostShowActions />}
-      title={
-        // @ts-ignore
-        <FormattedScientificNameWithStatus infragenus={infraGenericName} />
-      }
+      title={<FormattedScientificNameWithStatus truncate />}
       aside={<Aside />}
       {...props}
     >
       <>
-        {/* @ts-ignore*/}
-        <NamePageSummary infragenus={infraGenericName} />
+        <NamePageSummary />
         <TabbedShowLayout>
           <Tab label="Name" className={globalClasses.bold}>
             <Box className={globalClasses.sectionMargin}>
@@ -115,25 +73,29 @@ export const TaxonNameShow: FC = (props) => {
               >
                 Taxon Name
               </Typography>
-              <Box className={globalClasses.fieldMargin}>
-                <Labeled label="Kingdom" {...props}>
-                  <NestedLinkField
-                    source="kingdom"
-                    reference="kingdoms"
-                    sortBy="kingdom___kingdom_name"
-                    idKey="kingdom_id"
-                    labelKey="kingdom_name"
-                  />
-                </Labeled>
-                <Labeled label="Rank">
-                  <NestedLinkField
-                    source="taxon_rank"
-                    reference="taxon_ranks"
-                    sortBy="taxon_rank___rank_name"
-                    idKey="taxon_rank_id"
-                    labelKey="rank_name"
-                  />
-                </Labeled>
+              <Box className={globalClasses.formRow}>
+                <Box className={globalClasses.fieldMargin}>
+                  <Labeled label="Kingdom" {...props}>
+                    <NestedLinkField
+                      source="kingdom"
+                      reference="kingdoms"
+                      sortBy="kingdom___kingdom_name"
+                      idKey="kingdom_id"
+                      labelKey="kingdom_name"
+                    />
+                  </Labeled>
+                </Box>
+                <Box className={globalClasses.fieldMargin}>
+                  <Labeled label="Rank">
+                    <NestedLinkField
+                      source="taxon_rank"
+                      reference="taxon_ranks"
+                      sortBy="taxon_rank___rank_name"
+                      idKey="taxon_rank_id"
+                      labelKey="rank_name"
+                    />
+                  </Labeled>
+                </Box>
               </Box>
             </Box>
             <Box className={globalClasses.formRow}>
@@ -380,8 +342,8 @@ export const TaxonNameShow: FC = (props) => {
             </Box>
           </Tab>
           <Tab
-            label="Infrageneric name formats"
-            path="infrageneric"
+            label="Name formats"
+            path="formats"
             className={globalClasses.bold}
           >
             {/*Sub genera name*/}
@@ -391,20 +353,10 @@ export const TaxonNameShow: FC = (props) => {
                 className={globalClasses.bold}
                 gutterBottom
               >
-                Infrageneric name formats
+                Taxon Name - Name formats
               </Typography>
             </Box>
-            {infraLoading && <span>Loading...</span>}
-            {infraError && (
-              <span>There was an issue loading Infrageneric Names</span>
-            )}
-            {infraData.length > 0 && (
-              <InfragenericNamesGrid
-                props={props}
-                id={id}
-                infraData={infraData}
-              ></InfragenericNamesGrid>
-            )}
+            <InfragenericNamesGrid {...props} />
           </Tab>
         </TabbedShowLayout>
       </>
