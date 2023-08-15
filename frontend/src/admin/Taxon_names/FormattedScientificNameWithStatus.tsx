@@ -15,7 +15,6 @@ const useStyles = makeStyles({
 });
 type FormattedScientificNameWithStatusProps = {
   id?: number;
-  forTitle?: boolean;
   truncate?: boolean;
   record?: TaxonName;
 };
