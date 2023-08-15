@@ -1,9 +1,18 @@
-from sqlalchemy.orm import Session
+from typing import List
+
+from fastapi import HTTPException, status
+from sqlalchemy.orm import Session, aliased
 
 import app.db.crud as crud
 import app.db.taxon_name.schema as schema
+from app.db.hierarchy.model import Hierarchy
 from app.db.informal_group.model import InformalGroup
+from app.db.taxon_name.infrageneric_names import (
+    InfraGenericNameModel,
+    InfraGenericNames,
+)
 from app.db.taxon_name.model import TaxonName
+from app.db.taxon_rank.model import TaxonRank
 from app.db.user.model import User
 
 
@@ -82,3 +91,56 @@ class TaxonNameCrud(crud.Crud):
             delattr(taxon_name, "classification_system_ids")
         db_taxon_name = super().edit_item(db, current_user, taxon_name_id, taxon_name)
         return db_taxon_name
+
+    @classmethod
+    def generate_infrageneric_names(
+        cls,
+        db: Session,
+        taxon_name_id: int,
+    ) -> List[InfraGenericNameModel]:
+        # This query returns a result with a full hierarchy list for a single taxon_id
+        hierarchy = aliased(Hierarchy)
+        taxon_name = aliased(TaxonName)
+        taxon_rank = aliased(TaxonRank)
+
+        subquery = (
+            db.query(hierarchy.path, hierarchy.parent_nid)
+            .filter(hierarchy.taxon_name_id == taxon_name_id)
+            .subquery()
+        )
+        sub = aliased(Hierarchy, subquery)
+
+        query = (
+            db.query(
+                taxon_name.taxon_name_id,
+                hierarchy.path,
+                taxon_name.scientific_name,
+                taxon_name.uninomial,
+                taxon_name.specific_epithet,
+                taxon_name.infraspecific_epithet,
+                taxon_name.author,
+                taxon_rank.rank_name,
+                taxon_rank.rank_abbrev,
+                hierarchy.parent_nid,
+            )
+            .distinct()
+            .join(hierarchy, taxon_name.taxon_name_id == hierarchy.taxon_name_id)
+            .join(sub, hierarchy.path.op("@>")(sub.path))
+            .join(taxon_rank, taxon_name.rank_id == taxon_rank.taxon_rank_id)
+            .filter(taxon_name.deleted == False)
+            .order_by(hierarchy.path)
+        )
+
+        result = query.all()
+
+        if not result:
+            raise HTTPException(
+                status.HTTP_404_NOT_FOUND, detail=f"Taxon ID {taxon_name_id} not found"
+            )
+
+        # Convert the result to a list of dictionaries for script ingestion
+        rows = [dict(row) for row in result]
+
+        infrageneric_names = InfraGenericNames.generate_names(taxon_name_id, rows)
+
+        return infrageneric_names

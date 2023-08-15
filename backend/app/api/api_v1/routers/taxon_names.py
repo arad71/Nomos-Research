@@ -11,6 +11,7 @@ from app.db.hierarchy.model import Hierarchy
 from app.db.role.constants import Role
 from app.db.session import get_db
 from app.db.taxon_name.crud import TaxonNameCrud
+from app.db.taxon_name.infrageneric_names import InfraGenericNameModel
 from app.db.taxon_name.model import TaxonName as TaxonNameModel
 from app.db.taxon_name.schema import TaxonName, TaxonNameCreate, TaxonNameEdit
 from app.db.taxon_rank.model import TaxonRank
@@ -42,6 +43,17 @@ async def taxon_name_list(
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = content_range
     return taxon_names
+
+
+@r.get(
+    "_infrageneric_names/{taxon_name_id}", response_model=List[InfraGenericNameModel]
+)
+async def taxon_infrageneric_name_list(
+    taxon_name_id: int,
+    db: Session = Depends(get_db),
+):
+    result = TaxonNameCrud.generate_infrageneric_names(db, taxon_name_id)
+    return result
 
 
 @r.get(
