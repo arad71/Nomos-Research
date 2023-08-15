@@ -16,10 +16,10 @@ from app.db.taxon_name.infrageneric_name_definitions.infrageneric_name_source_de
     source_subspecies,
     source_subvariety,
     source_superspecies,
+    source_uninomial,
     source_variety,
     sources_below_species,
     sources_between_genus_and_species,
-    source_uninomial,
 )
 
 name_format_canonical = {
