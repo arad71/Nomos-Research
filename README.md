@@ -288,6 +288,39 @@ docker compose logs -f name_of_service # frontend|backend|db
 
 The app is deployed using GitHub actions configured through [.github/workflows/cicd.yml](.github/workflows/cicd.yml).
 
+## Creating a release
+
+1. Get all merge requests relating to a release merged into the `develop` branch.
+2. Change version numbers in:
+   1. backend/pypropject.toml
+   2. frontend/package.json
+3. Update lock versions
+   ```shell
+   scripts/update-locks.sh
+   ```
+4. Commit changes to:
+   1. backend/poetry.lock
+   2. backend/pyproject.toml
+   3. frontend/package.json
+   4. frontend/package-lock.json
+5. Push to github and merge into `develop`
+6. Create a release tag in GitHub:
+   1. https://github.com/BIO-WA/BDRTaxMan/releases
+   2. Draft a new release
+   3. Choose a tag
+   4. enter new tag in format v1.x.x
+   5. Click generate release notes
+   6. Include a list of User Stories and tasks at the top of these release notes
+      ```markdown
+      ## User Stories
+      * https://dev.azure.com/BIO-WA/Nomos/_workitems/edit/nnn
+
+      ## Tasks
+      * https://dev.azure.com/BIO-WA/Nomos/_workitems/edit/nnn
+      ```
+   7. Publish release
+7. Post update into the Slack [staging-deployments](https://join.slack.com/share/enQtNTc0NDIxODE2MjUzMy1kZTkwNjdhNTk0YWVlY2Q0N2RmNGY1YWVmMjViZTMzMmFiNDdkODdkNjg2ZDZlMjk2YTY4ZWVhMmYzNjNmNTcw) channel including these release notes and get BIO technical team to run deployment into staging environment.
+
 ### Deployment Process
 
 - Process captured in wiki: https://dev.azure.com/BIO-WA/WA-BDR/_wiki/wikis/BDR-WA.wiki/96/Developer-information
