@@ -10,7 +10,7 @@
 - SqlAlchemy with Alembic for migrations
 - Pytest for backend tests
 - Jest for frontend tests
-- Perttier/Eslint (with Airbnb style guide)
+- Prettier/Eslint (with Airbnb style guide)
 - Docker compose for easier development
 - Nginx as a reverse proxy to allow backend and frontend on the same port
 
@@ -70,7 +70,7 @@ Starting the project
 scripts/build.sh
 ```
 
-This will start up your containers and create the super user if it does not already exist.
+This will start up your containers and create the superuser if it does not already exist.
 
 And navigate to http://localhost:8000
 
@@ -292,7 +292,7 @@ The app is deployed using GitHub actions configured through [.github/workflows/c
 
 1. Get all merge requests relating to a release merged into the `develop` branch.
 2. Change version numbers in:
-   1. backend/pypropject.toml
+   1. backend/pyproject.toml
    2. frontend/package.json
 3. Update lock versions
    ```shell
