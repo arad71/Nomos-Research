@@ -1,6 +1,7 @@
 from typing import List
 
 from fastapi import HTTPException, status
+from pydantic import parse_obj_as
 from sqlalchemy.orm import Session, aliased
 
 import app.db.crud as crud
@@ -139,8 +140,6 @@ class TaxonNameCrud(crud.Crud):
             )
 
         # Convert the result to a list of dictionaries for script ingestion
-        rows = [dict(row) for row in result]
-
+        rows = parse_obj_as(List[schema.TaxonNameRow], result)
         infrageneric_names = InfraGenericNames.generate_names(taxon_name_id, rows)
-
         return infrageneric_names

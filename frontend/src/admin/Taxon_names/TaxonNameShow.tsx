@@ -29,6 +29,8 @@ import { NamePageSummary } from './NamePageSummary';
 import PostShowActions from '../shared/PostShowActions';
 import NestedLinkField from '../shared/NestedLinkField';
 import { HierarchyGrid } from './HierarchyGrid';
+import { InfragenericNamesGrid } from './InfragenericNamesGrid';
+import { TaxonName } from './TaxonName';
 
 const useStyles = makeStyles(() => ({
   bottomPadding: {
@@ -37,7 +39,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 const Empty = () => {
-  const record = useRecordContext();
+  const record: TaxonName = useRecordContext();
   if (record.classification_system_ids.length != 0) return null;
   return (
     <Box>
@@ -55,7 +57,7 @@ export const TaxonNameShow: FC = (props) => {
   return (
     <Show
       actions={<PostShowActions />}
-      title={<FormattedScientificNameWithStatus />}
+      title={<FormattedScientificNameWithStatus truncate />}
       aside={<Aside />}
       {...props}
     >
@@ -71,25 +73,29 @@ export const TaxonNameShow: FC = (props) => {
               >
                 Taxon Name
               </Typography>
-              <Box className={globalClasses.fieldMargin}>
-                <Labeled label="Kingdom" {...props}>
-                  <NestedLinkField
-                    source="kingdom"
-                    reference="kingdoms"
-                    sortBy="kingdom___kingdom_name"
-                    idKey="kingdom_id"
-                    labelKey="kingdom_name"
-                  />
-                </Labeled>
-                <Labeled label="Rank">
-                  <NestedLinkField
-                    source="taxon_rank"
-                    reference="taxon_ranks"
-                    sortBy="taxon_rank___rank_name"
-                    idKey="taxon_rank_id"
-                    labelKey="rank_name"
-                  />
-                </Labeled>
+              <Box className={globalClasses.formRow}>
+                <Box className={globalClasses.fieldMargin}>
+                  <Labeled label="Kingdom" {...props}>
+                    <NestedLinkField
+                      source="kingdom"
+                      reference="kingdoms"
+                      sortBy="kingdom___kingdom_name"
+                      idKey="kingdom_id"
+                      labelKey="kingdom_name"
+                    />
+                  </Labeled>
+                </Box>
+                <Box className={globalClasses.fieldMargin}>
+                  <Labeled label="Rank">
+                    <NestedLinkField
+                      source="taxon_rank"
+                      reference="taxon_ranks"
+                      sortBy="taxon_rank___rank_name"
+                      idKey="taxon_rank_id"
+                      labelKey="rank_name"
+                    />
+                  </Labeled>
+                </Box>
               </Box>
             </Box>
             <Box className={globalClasses.formRow}>
@@ -334,6 +340,23 @@ export const TaxonNameShow: FC = (props) => {
                 <TextField source="comments" />
               </Labeled>
             </Box>
+          </Tab>
+          <Tab
+            label="Name formats"
+            path="formats"
+            className={globalClasses.bold}
+          >
+            {/*Sub genera name*/}
+            <Box className={globalClasses.sectionMargin}>
+              <Typography
+                variant="h5"
+                className={globalClasses.bold}
+                gutterBottom
+              >
+                Taxon Name - Name formats
+              </Typography>
+            </Box>
+            <InfragenericNamesGrid {...props} />
           </Tab>
         </TabbedShowLayout>
       </>

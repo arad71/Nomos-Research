@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { fetchUtils, Admin as ReactAdmin } from 'react-admin';
+import { Admin as ReactAdmin, fetchUtils } from 'react-admin';
 import { Resource } from '@react-admin/ra-rbac';
 import restDataProvider from 'ra-data-rest-client';
 import { AUTH_PROVIDER, BACKEND_URL } from '../config';
@@ -11,67 +11,67 @@ import Dashboard from '../Dashboard';
 import BookIcon from '@material-ui/icons/Book';
 import { LogoutButton } from '../LogoutButton';
 
-import { UserList, UserShow, UserEdit, UserCreate } from './Users';
+import { UserCreate, UserEdit, UserList, UserShow } from './Users';
 import {
+  KingdomCreate,
+  KingdomEdit,
   KingdomList,
   KingdomShow,
-  KingdomEdit,
-  KingdomCreate,
 } from './Kingdoms';
 import {
   ClassificationSystemCreate,
-  ClassificationSystemShow,
   ClassificationSystemEdit,
   ClassificationSystemList,
+  ClassificationSystemShow,
 } from './Classification_systems';
-import { AuthorCreate, AuthorShow, AuthorEdit, AuthorList } from './Authors';
+import { AuthorCreate, AuthorEdit, AuthorList, AuthorShow } from './Authors';
 import {
   TaxonRankCreate,
-  TaxonRankShow,
   TaxonRankEdit,
   TaxonRankList,
+  TaxonRankShow,
 } from './Taxon_rank';
 import {
   PublicationCreate,
-  PublicationShow,
   PublicationEdit,
   PublicationList,
+  PublicationShow,
 } from './Publication';
 import {
   CitationCreate,
-  CitationShow,
   CitationEdit,
   CitationList,
+  CitationShow,
 } from './Citations';
 import {
   TaxonNameCreate,
-  TaxonNameShow,
   TaxonNameEdit,
   TaxonNameList,
+  TaxonNameShow,
 } from './Taxon_names';
 import {
   InformalGroupCreate,
-  InformalGroupShow,
   InformalGroupEdit,
   InformalGroupList,
+  InformalGroupShow,
 } from './Informal_groups';
 import {
   HierarchyCreate,
-  HierarchyShow,
   HierarchyEdit,
   HierarchyList,
+  HierarchyShow,
 } from './Hierarchies';
 import {
   CrossReferenceCreate,
-  CrossReferenceShow,
   CrossReferenceEdit,
   CrossReferenceList,
+  CrossReferenceShow,
 } from './Cross_references';
 import {
   VernacularCreate,
-  VernacularShow,
   VernacularEdit,
   VernacularList,
+  VernacularShow,
 } from './Vernaculars';
 import { RolesShow } from './Roles/RolesShow';
 import { RolesList } from './Roles/RolesList';
@@ -80,12 +80,13 @@ import { UserRoleShow } from './User_Role/UserRoleShow';
 import {
   DataProvider,
   GetListParams,
-  GetOneParams,
   GetManyParams,
   GetManyReferenceParams,
+  GetOneParams,
 } from 'ra-core/lib/types';
+import { InfragenericData } from './Taxon_names/TaxonTypes';
 
-const httpClient = (url: any, options: any) => {
+const httpClient = (url: any, options?: any) => {
   if (!options) {
     options = {};
   }
@@ -119,6 +120,7 @@ const dataProvider = restDataProvider(
     vernaculars: 'vernacular_id',
     user_roles: 'user_role_id',
     roles: 'role_id',
+    taxon_names_infrageneric_names: 'taxon_name_id',
   },
   {},
   httpClient
@@ -127,6 +129,20 @@ interface CacheDataProviderProxyParams {
   dataProvider: DataProvider;
   duration?: number;
 }
+
+const myDataProvider: DataProvider = {
+  ...dataProvider,
+  getOne: (resource: string, params: GetOneParams) => {
+    if (resource === 'taxon_names_infrageneric_names') {
+      const url = `${BACKEND_URL}/${resource}/${params.id}`;
+      return httpClient(url).then(({ json }: { json: [InfragenericData] }) => ({
+        data: { id: params.id, infrageneric_names: json },
+      }));
+    }
+    // For other resources, fallback to the default implementation
+    return dataProvider.getOne(resource, params);
+  },
+};
 
 // Add cacheing to requests as per https://marmelab.com/react-admin/doc/3.19/Caching.html#application-cache
 const cacheDataProviderProxy = ({
@@ -168,8 +184,7 @@ export const Admin: FC = () => {
       layout={MyLayout}
       theme={theme}
       authProvider={authProvider}
-      dataProvider={cacheDataProviderProxy({ dataProvider: dataProvider })}
-      // dataProvider={dataProvider}
+      dataProvider={cacheDataProviderProxy({ dataProvider: myDataProvider })}
       logoutButton={LogoutButton}
     >
       <Resource
@@ -239,6 +254,7 @@ export const Admin: FC = () => {
       <Resource name="taxon_names_ancestors/Subgenus" />
       <Resource name="taxon_names_ancestors/Species" />
       <Resource name="taxon_names_ancestors/Subspecies" />
+      <Resource name="taxon_names_infrageneric_names" />
       <Resource
         name="informal_groups"
         list={InformalGroupList}

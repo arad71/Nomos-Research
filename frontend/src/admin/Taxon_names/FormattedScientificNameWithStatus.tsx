@@ -1,8 +1,11 @@
-import { RichTextField } from 'react-admin';
+import { RichTextField, useRecordContext } from 'react-admin';
 import React from 'react';
 import { TaxonNameStatus } from './TaxonNameStatus';
 import { makeStyles } from '@material-ui/core/styles';
 import { GlobalTheme } from '../../GlobalTheme';
+import { TaxonName } from './TaxonName';
+import { InfragenericData } from './TaxonTypes';
+import useFetchInfragenericNames from './useFetchInfragenericNames';
 
 const useStyles = makeStyles({
   title: {
@@ -10,16 +13,38 @@ const useStyles = makeStyles({
     fontSize: '1em',
   },
 });
-
-export const FormattedScientificNameWithStatus = () => {
+type FormattedScientificNameWithStatusProps = {
+  id?: number;
+  truncate?: boolean;
+  record?: TaxonName;
+};
+export const FormattedScientificNameWithStatus = ({
+  truncate = false,
+}: FormattedScientificNameWithStatusProps) => {
+  const record = useRecordContext();
+  const id = parseInt(record.id);
   const classes = useStyles();
   const globalClasses = GlobalTheme();
+
+  const { loading, infragenericNames } = useFetchInfragenericNames(id);
+  if (loading) return null;
+  const infragenus = infragenericNames?.infrageneric_names.find(
+    (d: InfragenericData) => d.name_version === 'Infragenus with rank'
+  );
   return (
     <>
-      <RichTextField
-        source="formatted_scientific_name"
-        className={`${classes.title} ${globalClasses.titleTruncation}`}
-      />
+      <span className={truncate ? globalClasses.titleTruncation : ''}>
+        {(infragenus && (
+          <span className={classes.title}>
+            <em>{infragenus.formatted_name}</em> {infragenus.author}
+          </span>
+        )) || (
+          <RichTextField
+            source="formatted_scientific_name"
+            className={classes.title}
+          />
+        )}
+      </span>
       <TaxonNameStatus />
     </>
   );
