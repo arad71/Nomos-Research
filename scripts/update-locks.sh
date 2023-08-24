@@ -3,8 +3,8 @@ set -x
 # Exit in case of error
 set -e
 pushd backend
-poetry lock --no-update
+poetry install
 popd
 pushd frontend
-npm install --package-lock-only
+npm install
 popd
