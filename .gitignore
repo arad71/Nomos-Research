@@ -17,3 +17,9 @@ __pycache__/
 wacensus-table-data
 frontend/.npmrc
 .DS_Store
+
+# Ingore backup files part of the test data import
+backup/*
+
+# Do not store React Admin Private Token in Repo
+.npmrc
