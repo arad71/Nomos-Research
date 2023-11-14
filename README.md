@@ -79,6 +79,38 @@ http://localhost:8000/api/docs
 
 You will be able to log into http://localhost:8000/admin using: username "admin@taxman.com" password "password"
 
+### Makefile
+There's a [Makefile](Makefile) included for the most common commands. To use it on ubuntu you need to have build-essential installed:
+```shell
+sudo apt install build-essential
+```
+
+Starting up the stack should be a matter of running:
+
+```shell
+make
+```
+
+Running `make help` will give you a list of possible commands:
+```shell
+ help:          Print commands help.
+ build:         Build Docker containers
+ up:            Up Docker containers
+ down:          Down Docker containers
+ kill-it-with-fire: Delete everything
+ restart:       Restart Docker containers
+ test:          Run tests
+ test_frontend: Test frontend
+ test_backend:  Test backend
+ restore:       Restore database snapshot and restart
+ restore_db:    Restore database snapshot
+ logs:          View containers logs.
+                You can optionally pass an argument with the service name to limit logs
+                logs backend: View `backend` container logs.
+                logs nginx frontend: View `nginx` and `frontend` containers logs.
+ upgrade:       Upgrade database with migrations
+ shell:         Run bash in the backend
+```
 ### Sample data seed
 
 There are snapshots of the production database
@@ -89,6 +121,8 @@ into the `backup` folder. Note that this will restore the most recent file.
 ```shell
 docker compose exec backend restore
 docker compose restart # generates users and runs database migrations
+# or
+make restore
 ```
 
 Note that repeated errors at the end of the restore as follows can be safely ignored because these only exist in Azure
@@ -136,12 +170,16 @@ The example data file [backend/nomos_sample_data.xlsx](backend/nomos_sample_data
 
 ```
 docker compose build
+# or
+make build
 ```
 
 ### Restarting containers:
 
 ```
 docker compose restart
+# or
+make restart
 ```
 
 ### Bringing containers down:
@@ -150,7 +188,10 @@ Note that this will delete the containers themselves
 
 ```
 docker compose down
+# or
+make down
 ```
+
 
 ### Kill it with fire
 
@@ -158,7 +199,8 @@ In order to nuke your database and everything in it use:
 
 ```bash
 docker compose down -v
-scripts/build.sh
+# or
+make kill-it-with-fire
 ```
 
 ### Logging
