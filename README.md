@@ -53,7 +53,7 @@ Data for this application lives in a BIO DB instance:
 | Production  | [nomos-prod-db.postgres.database.azure.com](https://start.1password.com/open/i?a=NDOPYIX54ZELTLEXLCRF2UQINA&v=qv2jh4w2fasw37noy7d4jdeopi&i=72fvyio5crsu7p6klpb53fjyhq&h=my.1password.com)    |
 
 ### Sample data
-There is a snapshot of the production database at https://drive.google.com/file/d/1rmjuG73CI1J_-edj-za_lvhvuHdWNjwL/view?usp=share_link. You can restore this into a local database called `taxman` using psql. Place this file
+There are snapshots of the production database in https://drive.google.com/drive/u/1/folders/1uWIq2wpWmwLseFeAC6CFOfMkU1IrDKL8 the relevant (most recent) one and download it. You can restore this into a local database called `taxman` using psql. Place this file
 into the `backup` folder. Note that this will restore the most recent file.
 
 ```shell
