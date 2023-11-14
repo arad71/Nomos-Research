@@ -16,54 +16,28 @@ from sqlalchemy.schema import Index
 from sqlalchemy.types import Enum
 
 from app.db.models import BaseModel, TableMixin
-from app.db.taxon_name import enums
-from app.db.taxon_name.calculated import calculate_fields
-from app.db.taxon_name.constants import (
-    AUTHOR,
-    COMMENTS,
-    CONTRIBUTED_BY,
-    CONTRIBUTED_ON,
-    EXTERNAL_ID,
-    FAMILY_CODE,
-    FAMILY_NID,
-    FORM_DESC_DY,
-    FORM_DESC_MN,
-    FORM_DESC_YR,
-    IS_CURRENT,
-    IS_ERADICATED,
-    KINGDOM_ID,
-    LINEAR_SEQUENCE,
-    NATURALISED_COMMENTS,
-    ORIGIN,
-    PUBLICATION_ID,
-    RANK_ID,
-    SOURCE,
-    TABLE_DESCRIPTION,
-    TAXON_NAME_ID,
-    VALIDATED,
-    VERNACULAR,
-    VOLUME_INFORMATION,
-)
+
+from . import calculated, constants, enums
 
 
 class TaxonName(BaseModel, TableMixin):
     __tablename__ = "taxon_name"
     name_plural = "taxon_names"
-    taxon_name_id = Column(Integer, primary_key=True, comment=TAXON_NAME_ID)
+    taxon_name_id = Column(Integer, primary_key=True, comment=constants.TAXON_NAME_ID)
     kingdom_id = Column(
         Integer,
         ForeignKey("kingdom.kingdom_id"),
         nullable=False,
-        comment=KINGDOM_ID,
-        doc=KINGDOM_ID,
+        comment=constants.KINGDOM_ID,
+        doc=constants.KINGDOM_ID,
     )
     kingdom = relationship("Kingdom", backref=name_plural)
     rank_id = Column(
         Integer,
         ForeignKey("taxon_rank.taxon_rank_id"),
         nullable=False,
-        comment=RANK_ID,
-        doc=RANK_ID,
+        comment=constants.RANK_ID,
+        doc=constants.RANK_ID,
     )
     taxon_rank = relationship("TaxonRank", backref=name_plural)
     uninomial = Column(String, index=True)
@@ -75,56 +49,63 @@ class TaxonName(BaseModel, TableMixin):
     publication_id = Column(
         Integer,
         ForeignKey("publication.publication_id"),
-        comment=PUBLICATION_ID,
-        doc=PUBLICATION_ID,
+        comment=constants.PUBLICATION_ID,
+        doc=constants.PUBLICATION_ID,
     )
     publication = relationship("Publication", backref=name_plural)
     volume_information = Column(
-        String(100), comment=VOLUME_INFORMATION, doc=VOLUME_INFORMATION, index=True
+        String(100),
+        comment=constants.VOLUME_INFORMATION,
+        doc=constants.VOLUME_INFORMATION,
+        index=True,
     )
     is_current = Column(
         Boolean,
         nullable=False,
-        comment=IS_CURRENT,
-        doc=IS_CURRENT,
+        comment=constants.IS_CURRENT,
+        doc=constants.IS_CURRENT,
     )
     origin = Column(
         String(1),
-        comment=ORIGIN,
-        doc=ORIGIN,
+        comment=constants.ORIGIN,
+        doc=constants.ORIGIN,
     )
     publication_status = Column(
         Enum(enums.PublicationStatus, name=__tablename__ + "__publication_status")
     )
-    form_desc_yr = Column(Integer, comment=FORM_DESC_YR, index=True)
-    form_desc_mn = Column(Integer, comment=FORM_DESC_MN)
-    form_desc_dy = Column(Integer, comment=FORM_DESC_DY)
-    comments = Column(String(1000), comment=COMMENTS)
+    form_desc_yr = Column(Integer, comment=constants.FORM_DESC_YR, index=True)
+    form_desc_mn = Column(Integer, comment=constants.FORM_DESC_MN)
+    form_desc_dy = Column(Integer, comment=constants.FORM_DESC_DY)
+    comments = Column(String(1000), comment=constants.COMMENTS)
     contributed_by = Column(
         String(16),
-        comment=CONTRIBUTED_BY,
-        doc=CONTRIBUTED_BY,
+        comment=constants.CONTRIBUTED_BY,
+        doc=constants.CONTRIBUTED_BY,
     )
-    contributed_on = Column(DateTime, comment=CONTRIBUTED_ON)
+    contributed_on = Column(DateTime, comment=constants.CONTRIBUTED_ON)
     validated = Column(
         Boolean,
         nullable=False,
-        comment=VALIDATED,
-        doc=VALIDATED,
+        comment=constants.VALIDATED,
+        doc=constants.VALIDATED,
     )
     source = Column(
         String(10),
-        comment=SOURCE,
-        doc=SOURCE,
+        comment=constants.SOURCE,
+        doc=constants.SOURCE,
     )
     external_id = Column(
         String(10),
-        comment=EXTERNAL_ID,
-        doc=EXTERNAL_ID,
+        comment=constants.EXTERNAL_ID,
+        doc=constants.EXTERNAL_ID,
     )
-    family_code = Column(String(5), comment=FAMILY_CODE, doc=FAMILY_CODE)
-    author = Column(String(180), comment=AUTHOR, doc=AUTHOR)
-    vernacular = Column(String(100), comment=VERNACULAR, doc=VERNACULAR, index=True)
+    family_code = Column(
+        String(5), comment=constants.FAMILY_CODE, doc=constants.FAMILY_CODE
+    )
+    author = Column(String(180), comment=constants.AUTHOR, doc=constants.AUTHOR)
+    vernacular = Column(
+        String(100), comment=constants.VERNACULAR, doc=constants.VERNACULAR, index=True
+    )
     editor = Column(String(60))
     naturalised_status = Column(
         Enum(enums.NaturalisedStatus, name=__tablename__ + "__naturalised_status")
@@ -132,20 +113,22 @@ class TaxonName(BaseModel, TableMixin):
     naturalised_certainty = Column(Boolean)
     is_eradicated = Column(
         String(1),
-        comment=IS_ERADICATED,
-        doc=IS_ERADICATED,
+        comment=constants.IS_ERADICATED,
+        doc=constants.IS_ERADICATED,
     )
     naturalised_comments = Column(
         String(400),
-        comment=NATURALISED_COMMENTS,
-        doc=NATURALISED_COMMENTS,
+        comment=constants.NATURALISED_COMMENTS,
+        doc=constants.NATURALISED_COMMENTS,
     )
-    linear_sequence = Column(Integer, comment=LINEAR_SEQUENCE, doc=LINEAR_SEQUENCE)
+    linear_sequence = Column(
+        Integer, comment=constants.LINEAR_SEQUENCE, doc=constants.LINEAR_SEQUENCE
+    )
     family_nid = Column(
         Integer,
         ForeignKey("taxon_name.taxon_name_id"),
-        comment=FAMILY_NID,
-        doc=FAMILY_NID,
+        comment=constants.FAMILY_NID,
+        doc=constants.FAMILY_NID,
     )
     family_relationship = relationship(
         "TaxonName",
@@ -175,7 +158,7 @@ class TaxonName(BaseModel, TableMixin):
             unique=True,
             postgresql_where="deleted = FALSE",
         ),
-        {"comment": TABLE_DESCRIPTION},
+        {"comment": constants.TABLE_DESCRIPTION},
     )
 
     @hybrid_property
@@ -190,5 +173,5 @@ class TaxonName(BaseModel, TableMixin):
         ]
 
 
-event.listen(TaxonName, "before_insert", calculate_fields)
-event.listen(TaxonName, "before_update", calculate_fields)
+event.listen(TaxonName, "before_insert", calculated.calculate_fields)
+event.listen(TaxonName, "before_update", calculated.calculate_fields)
