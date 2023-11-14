@@ -6,19 +6,22 @@ ARG GROUP_ID=1000
 
 RUN mkdir /app /legacy_data
 WORKDIR /app
-COPY poetry.lock pyproject.toml ./
-COPY . .
 
 RUN \
   addgroup --gid $GROUP_ID app && \
   adduser --disabled-password --gecos '' --uid $USER_ID --gid $GROUP_ID app && \
   apt update && \
   apt install -y postgresql-client wait-for-it && \
-  chown -R app:app ./ && \
-  chown -R app:app /legacy_data && \
   pip install --no-cache-dir --upgrade pip && \
   pip install poetry && \
-  poetry config virtualenvs.create false  && \
+  poetry config virtualenvs.create false
+
+COPY poetry.lock pyproject.toml ./
+COPY app/__init__.py ./app/__init__.py
+
+RUN \
+  chown -R app:app ./ && \
+  chown -R app:app /legacy_data && \
   poetry install --no-dev
 
 USER app
