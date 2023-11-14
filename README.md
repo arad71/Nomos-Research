@@ -52,16 +52,6 @@ Data for this application lives in a BIO DB instance:
 | Staging     | [nomos-staging-db.postgres.database.azure.com](https://start.1password.com/open/i?a=NDOPYIX54ZELTLEXLCRF2UQINA&v=qv2jh4w2fasw37noy7d4jdeopi&i=zzgpz7s7ldvzc5eervj3oa5va4&h=my.1password.com) |
 | Production  | [nomos-prod-db.postgres.database.azure.com](https://start.1password.com/open/i?a=NDOPYIX54ZELTLEXLCRF2UQINA&v=qv2jh4w2fasw37noy7d4jdeopi&i=72fvyio5crsu7p6klpb53fjyhq&h=my.1password.com)    |
 
-### Sample data
-There are snapshots of the production database in https://drive.google.com/drive/u/1/folders/1uWIq2wpWmwLseFeAC6CFOfMkU1IrDKL8 the relevant (most recent) one and download it. You can restore this into a local database called `taxman` using psql. Place this file
-into the `backup` folder. Note that this will restore the most recent file.
-
-```shell
-docker compose exec backend restore
-docker compose restart # generates users and runs database migrations
-```
-
-
 ### Quick Start
 
 Starting the project
@@ -81,10 +71,31 @@ http://localhost:8000/api/docs
 
 You will be able to log into http://localhost:8000/admin using: username "admin@taxman.com" password "password"
 
-### Initial data load
+### Sample data seed
+There are snapshots of the production database in https://drive.google.com/drive/u/1/folders/1uWIq2wpWmwLseFeAC6CFOfMkU1IrDKL8 the relevant (most recent) one and download it. You can restore this into a local database called `taxman` using psql. Place this file
+into the `backup` folder. Note that this will restore the most recent file.
+
+```shell
+docker compose exec backend restore
+docker compose restart # generates users and runs database migrations
+```
+
+Note that repeated errors at the end of the restore as follows can be safely ignored because these only exist in Azure Cloud:
+
+```
+psql:/backup/taxman.sql:252493: ERROR:  role "azure_pg_admin" does not exist
+psql:/backup/taxman.sql:252507: ERROR:  role "admin_main_" does not exist
+```
+
+### Legacy data import (Deprecated - use a database seed)
+
+---
+
+**Note**
+
+this section is now deprecated although the import mechanism still works. Use a database seed as above.
 
 Once you have set up the initial database you can import the data from WA Census data supply:
-
 - Copy the **Raw data file URL** from https://dev.azure.com/BIO-WA/WA-BDR/_wiki/wikis/BDR-WA.wiki/19/WA-Herbarium-WACensus-DF
 - Add it as `WACENSUS_DATA_FILE_URL` in your local .env file
 - Run scripts/build.sh to ensure this setting is set
@@ -93,6 +104,7 @@ Once you have set up the initial database you can import the data from WA Census
 ```
 docker compose run --rm backend python app/import.py
 ```
+---
 
 ### Example data
 
