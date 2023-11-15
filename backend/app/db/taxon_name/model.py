@@ -35,6 +35,7 @@ class TaxonName(BaseModel, TableMixin):
     taxon_rank = relationship("TaxonRank", backref=name_plural)
     uninomial = sqlalchemy.Column(sqlalchemy.String, index=True)
     canonical_name = sqlalchemy.Column(sqlalchemy.String, index=True)
+    canonical_name_without_rank = sqlalchemy.Column(sqlalchemy.String, index=True)
     scientific_name = sqlalchemy.Column(sqlalchemy.String, index=True)
     formatted_scientific_name = sqlalchemy.Column(sqlalchemy.String)
     specific_epithet = sqlalchemy.Column(sqlalchemy.String(70), index=True)
@@ -146,12 +147,7 @@ class TaxonName(BaseModel, TableMixin):
     authorised_by = sqlalchemy.Column(sqlalchemy.String(16))
     authorised_on = sqlalchemy.Column(sqlalchemy.DateTime)
     legacy_id = sqlalchemy.Column(sqlalchemy.String)
-    canonical_name_without_rank = column_property(
-        sqlalchemy.func.CONCAT_WS(
-            " ", uninomial, specific_epithet, infraspecific_epithet
-        ),
-        deferred=True,
-    )
+
     admin_comment = sqlalchemy.Column(sqlalchemy.String)
     kingdom_name = association_proxy("kingdom", "kingdom_name")
     rank_name = association_proxy("taxon_rank", "rank_name")
