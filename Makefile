@@ -1,4 +1,4 @@
-.PHONY: build up down restart test_frontend test_backend upgrade_db logs
+.PHONY: build up down restart test_frontend test_backend upgrade_db logs autogenerate
 
 default: up
 
@@ -66,6 +66,13 @@ logs:
 # upgrade:	Upgrade database with migrations
 upgrade:
 	docker compose run --rm backend alembic upgrade head
+
+# downgrade:	Downgrade database with migrations
+downgrade:
+	docker compose run --rm backend alembic downgrade -1
+
+autogenerate:
+	docker compose run --rm backend alembic revision --autogenerate -m "$(MAKECMDGOALS)"
 
 # shell:		Run bash in the backend
 shell:
