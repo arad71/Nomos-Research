@@ -128,7 +128,7 @@ class TaxonNameCrud(crud.Crud):
             subquery = subquery.filter(hierarchy.taxon_name_id == taxon_name_id)
         subquery = subquery.subquery()
         sub = orm.aliased(Hierarchy, subquery)
-        query = (
+        return (
             db.query(
                 taxon_name.taxon_name_id,
                 hierarchy.path,
@@ -141,11 +141,10 @@ class TaxonNameCrud(crud.Crud):
                 taxon_rank.rank_abbrev,
                 hierarchy.parent_nid,
             )
-            .distinct()
+            .join(taxon_rank, taxon_name.rank_id == taxon_rank.taxon_rank_id)
+            .filter(taxon_name.deleted == False)  # noqa: E712
             .join(hierarchy, taxon_name.taxon_name_id == hierarchy.taxon_name_id)
             .join(sub, hierarchy.path.op("@>")(sub.path))
-            .join(taxon_rank, taxon_name.rank_id == taxon_rank.taxon_rank_id)
-            .filter(taxon_name.deleted == False)
+            .distinct()
             .order_by(hierarchy.path)
         )
-        return query

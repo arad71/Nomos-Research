@@ -26,7 +26,7 @@ def calculate_fields(
         target.vernacular = map_vernacular(target)
         target.all_vernaculars = map_vernaculars(target)
 
-    if any([target.canonical_name, target.author]):
+    if any([target.canonical_name, target.author]) and target.calculate_name:
         target.scientific_name = " ".join(
             filter(None, [target.canonical_name, target.author])
         )
