@@ -21,7 +21,7 @@ class UserCrud(crud.Crud):
     def get_user_by_email(cls, db: Session, email: str) -> User:
         return (
             db.query(User)
-            .filter(User.email == email, User.deleted == False)
+            .filter(User.email == email, User.deleted == False)  # noqa: E712
             .one_or_none()
         )
 

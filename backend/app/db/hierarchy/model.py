@@ -165,7 +165,9 @@ class Hierarchy(BaseModel, TableMixin):
         logger.info("Rebuilding hierarchy paths")
         done = set()
         hierarchy: Hierarchy
-        for hierarchy in db.query(Hierarchy).filter(Hierarchy.deleted == False):
+        for hierarchy in db.query(Hierarchy).filter(
+            Hierarchy.deleted == False  # noqa: E712
+        ):
             root = hierarchy.find_root_parent()
             if root not in done:
                 Hierarchy.rebuild_hierarchy_for_root(db, root)

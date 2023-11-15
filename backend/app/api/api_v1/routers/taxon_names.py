@@ -131,11 +131,11 @@ async def taxon_name_ancestors(
                         statement = statement.filter(field == filter_value)
     statement = statement.filter(
         and_(
-            taxon_name.deleted == False,
-            hierarchy.deleted == False,
-            ancestor.deleted == False,
-            ancestor_name.deleted == False,
-            taxon_rank.deleted == False,
+            taxon_name.deleted == False,  # noqa: E712
+            hierarchy.deleted == False,  # noqa: E712
+            ancestor.deleted == False,  # noqa: E712
+            ancestor_name.deleted == False,  # noqa: E712
+            taxon_rank.deleted == False,  # noqa: E712
         )
     )
 
