@@ -297,13 +297,11 @@ def test_super_admin_permissions(
     assert response.status_code == status.HTTP_200_OK
     hierarchy_json = response.json()
     hierarchy_id = hierarchy_json["hierarchy_id"]
-    hierarchy_json.update(
-        {
-            "parent_nid": test_taxon_name_3.taxon_name_id,
-            "updated_by": test_superuser.user_id,
-            "updated_on": test_hierarchy.updated_on.isoformat(),
-        }
-    )
+    hierarchy_json.update({
+        "parent_nid": test_taxon_name_3.taxon_name_id,
+        "updated_by": test_superuser.user_id,
+        "updated_on": test_hierarchy.updated_on.isoformat(),
+    })
     response = client.put(
         f"/api/v1/hierarchies/{hierarchy_id}",
         headers=superuser_token_headers,
@@ -354,11 +352,9 @@ def test_manager_permissions(
     assert response.status_code == status.HTTP_200_OK
     saved_hierarchy = response.json()
     hierarchy_id = saved_hierarchy["hierarchy_id"]
-    saved_hierarchy.update(
-        {
-            "parent_nid": test_taxon_name_3.taxon_name_id,
-        }
-    )
+    saved_hierarchy.update({
+        "parent_nid": test_taxon_name_3.taxon_name_id,
+    })
     response = client.put(
         f"/api/v1/hierarchies/{hierarchy_id}",
         headers=manager_token_headers,

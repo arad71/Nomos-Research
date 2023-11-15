@@ -181,12 +181,10 @@ def test_super_admin_permissions(
     assert response.status_code == status.HTTP_200_OK
 
     informal_group_id = response.json()["informal_group_id"]
-    json.update(
-        {
-            "updated_by": test_superuser.user_id,
-            "updated_on": test_informal_group.updated_on.isoformat(),
-        }
-    )
+    json.update({
+        "updated_by": test_superuser.user_id,
+        "updated_on": test_informal_group.updated_on.isoformat(),
+    })
     response = client.put(
         f"api/v1/informal_groups/{informal_group_id}",
         headers=superuser_token_headers,
@@ -232,12 +230,10 @@ def test_manager_permissions(
     assert response.status_code == status.HTTP_200_OK
 
     informal_group_id = response.json()["informal_group_id"]
-    json.update(
-        {
-            "updated_by": test_manager.user_id,
-            "updated_on": test_informal_group.updated_on.isoformat(),
-        }
-    )
+    json.update({
+        "updated_by": test_manager.user_id,
+        "updated_on": test_informal_group.updated_on.isoformat(),
+    })
     response = client.put(
         f"api/v1/informal_groups/{informal_group_id}",
         headers=manager_token_headers,

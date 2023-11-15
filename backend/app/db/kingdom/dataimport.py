@@ -20,16 +20,14 @@ class ImportKingdom(DataImportBase):
         )
 
     def import_row(self, row):
-        self.values.append(
-            {
-                "kingdom_name": row["KINGDOM_NAME"],
-                "kingdom_desc": row["KINGDOM_DESC"],
-                "legacy_id": row["KINGDOM_ID"],
-                "created_by": self.current_user,
-                "updated_by": self.map_row_by_unique_key(
-                    UserModel, "legacy_id_name", row["UPDATED_BY"], "user_id"
-                ),
-                "updated_on": row["UPDATED_ON"] or datetime.datetime.now(),
-                "created_on": row["UPDATED_ON"] or datetime.datetime.now(),
-            }
-        )
+        self.values.append({
+            "kingdom_name": row["KINGDOM_NAME"],
+            "kingdom_desc": row["KINGDOM_DESC"],
+            "legacy_id": row["KINGDOM_ID"],
+            "created_by": self.current_user,
+            "updated_by": self.map_row_by_unique_key(
+                UserModel, "legacy_id_name", row["UPDATED_BY"], "user_id"
+            ),
+            "updated_on": row["UPDATED_ON"] or datetime.datetime.now(),
+            "created_on": row["UPDATED_ON"] or datetime.datetime.now(),
+        })

@@ -272,15 +272,13 @@ def test_officer_permissions(
     )
     assert response.status_code == status.HTTP_200_OK
 
-    author_json.update(
-        {
-            "abbreviation": "Tet Another Author",
-            "first_names": "Yet Another",
-            "initials": "YAA",
-            "updated_by": test_officer.user_id,
-            "updated_on": test_author.updated_on.isoformat(),
-        }
-    )
+    author_json.update({
+        "abbreviation": "Tet Another Author",
+        "first_names": "Yet Another",
+        "initials": "YAA",
+        "updated_by": test_officer.user_id,
+        "updated_on": test_author.updated_on.isoformat(),
+    })
     response = client.put(
         f"/api/v1/authors/{test_author.author_id}",
         headers=officer_token_headers,

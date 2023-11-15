@@ -201,12 +201,10 @@ def test_super_admin_permissions(
     )
     assert response.status_code == status.HTTP_200_OK
 
-    cross_reference_json.update(
-        {
-            "updated_by": test_superuser.user_id,
-            "updated_on": test_cross_reference.updated_on.isoformat(),
-        }
-    )
+    cross_reference_json.update({
+        "updated_by": test_superuser.user_id,
+        "updated_on": test_cross_reference.updated_on.isoformat(),
+    })
     response = client.put(
         f"/api/v1/cross_references/{test_cross_reference.cross_reference_id}",
         headers=superuser_token_headers,
@@ -252,12 +250,10 @@ def test_manager_permissions(
     )
     assert response.status_code == status.HTTP_200_OK
 
-    cross_reference_json.update(
-        {
-            "updated_by": test_manager.user_id,
-            "updated_on": test_cross_reference.updated_on.isoformat(),
-        }
-    )
+    cross_reference_json.update({
+        "updated_by": test_manager.user_id,
+        "updated_on": test_cross_reference.updated_on.isoformat(),
+    })
     response = client.put(
         f"/api/v1/cross_references/{test_cross_reference.cross_reference_id}",
         headers=manager_token_headers,
@@ -309,12 +305,10 @@ def test_officer_permissions(
     )
     assert response.status_code == status.HTTP_200_OK
 
-    cross_reference_json.update(
-        {
-            "updated_by": test_officer.user_id,
-            "updated_on": test_cross_reference.updated_on.isoformat(),
-        }
-    )
+    cross_reference_json.update({
+        "updated_by": test_officer.user_id,
+        "updated_on": test_cross_reference.updated_on.isoformat(),
+    })
     response = client.put(
         f"/api/v1/cross_references/{test_cross_reference.cross_reference_id}",
         headers=officer_token_headers,

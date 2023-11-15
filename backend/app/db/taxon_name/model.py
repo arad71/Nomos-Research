@@ -13,7 +13,9 @@ from . import calculated, constants, enums
 class TaxonName(BaseModel, TableMixin):
     __tablename__ = "taxon_name"
     name_plural = "taxon_names"
-    taxon_name_id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, comment=constants.TAXON_NAME_ID)
+    taxon_name_id = sqlalchemy.Column(
+        sqlalchemy.Integer, primary_key=True, comment=constants.TAXON_NAME_ID
+    )
     kingdom_id = sqlalchemy.Column(
         sqlalchemy.Integer,
         sqlalchemy.ForeignKey("kingdom.kingdom_id"),
@@ -63,7 +65,9 @@ class TaxonName(BaseModel, TableMixin):
     publication_status = sqlalchemy.Column(
         Enum(enums.PublicationStatus, name=__tablename__ + "__publication_status")
     )
-    form_desc_yr = sqlalchemy.Column(sqlalchemy.Integer, comment=constants.FORM_DESC_YR, index=True)
+    form_desc_yr = sqlalchemy.Column(
+        sqlalchemy.Integer, comment=constants.FORM_DESC_YR, index=True
+    )
     form_desc_mn = sqlalchemy.Column(sqlalchemy.Integer, comment=constants.FORM_DESC_MN)
     form_desc_dy = sqlalchemy.Column(sqlalchemy.Integer, comment=constants.FORM_DESC_DY)
     comments = sqlalchemy.Column(sqlalchemy.String(1000), comment=constants.COMMENTS)
@@ -72,7 +76,9 @@ class TaxonName(BaseModel, TableMixin):
         comment=constants.CONTRIBUTED_BY,
         doc=constants.CONTRIBUTED_BY,
     )
-    contributed_on = sqlalchemy.Column(sqlalchemy.DateTime, comment=constants.CONTRIBUTED_ON)
+    contributed_on = sqlalchemy.Column(
+        sqlalchemy.DateTime, comment=constants.CONTRIBUTED_ON
+    )
     validated = sqlalchemy.Column(
         sqlalchemy.Boolean,
         nullable=False,
@@ -92,9 +98,14 @@ class TaxonName(BaseModel, TableMixin):
     family_code = sqlalchemy.Column(
         sqlalchemy.String(5), comment=constants.FAMILY_CODE, doc=constants.FAMILY_CODE
     )
-    author = sqlalchemy.Column(sqlalchemy.String(180), comment=constants.AUTHOR, doc=constants.AUTHOR)
+    author = sqlalchemy.Column(
+        sqlalchemy.String(180), comment=constants.AUTHOR, doc=constants.AUTHOR
+    )
     vernacular = sqlalchemy.Column(
-        sqlalchemy.String(100), comment=constants.VERNACULAR, doc=constants.VERNACULAR, index=True
+        sqlalchemy.String(100),
+        comment=constants.VERNACULAR,
+        doc=constants.VERNACULAR,
+        index=True,
     )
     editor = sqlalchemy.Column(sqlalchemy.String(60))
     naturalised_status = sqlalchemy.Column(
@@ -112,7 +123,9 @@ class TaxonName(BaseModel, TableMixin):
         doc=constants.NATURALISED_COMMENTS,
     )
     linear_sequence = sqlalchemy.Column(
-        sqlalchemy.Integer, comment=constants.LINEAR_SEQUENCE, doc=constants.LINEAR_SEQUENCE
+        sqlalchemy.Integer,
+        comment=constants.LINEAR_SEQUENCE,
+        doc=constants.LINEAR_SEQUENCE,
     )
     family_nid = sqlalchemy.Column(
         sqlalchemy.Integer,
@@ -133,7 +146,9 @@ class TaxonName(BaseModel, TableMixin):
     authorised_on = sqlalchemy.Column(sqlalchemy.DateTime)
     legacy_id = sqlalchemy.Column(sqlalchemy.String)
     canonical_name_without_rank = column_property(
-        sqlalchemy.func.CONCAT_WS(" ", uninomial, specific_epithet, infraspecific_epithet),
+        sqlalchemy.func.CONCAT_WS(
+            " ", uninomial, specific_epithet, infraspecific_epithet
+        ),
         deferred=True,
     )
     admin_comment = sqlalchemy.Column(sqlalchemy.String)

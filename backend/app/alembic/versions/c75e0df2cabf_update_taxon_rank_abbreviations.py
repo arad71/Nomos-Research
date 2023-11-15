@@ -7,6 +7,7 @@ Create Date: 2023-06-15 12:46:21.437363+08:00
 Add enums [subg, sect, subsect] as valid entries for the taxon_rank.rank_abbrev column.
 
 """
+
 from alembic import op
 
 # revision identifiers, used by Alembic.

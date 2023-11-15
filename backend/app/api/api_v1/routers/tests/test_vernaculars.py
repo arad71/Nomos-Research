@@ -166,12 +166,10 @@ def test_super_admin_permissions(
     assert response.status_code == status.HTTP_200_OK
 
     vernacular_id = response.json()["vernacular_id"]
-    vernacular_json.update(
-        {
-            "updated_by": test_superuser.user_id,
-            "updated_on": test_vernacular.created_on.isoformat(),
-        }
-    )
+    vernacular_json.update({
+        "updated_by": test_superuser.user_id,
+        "updated_on": test_vernacular.created_on.isoformat(),
+    })
     response = client.put(
         f"/api/v1/vernaculars/{vernacular_id}",
         headers=superuser_token_headers,
@@ -220,12 +218,10 @@ def test_manager_permissions(
     assert response.status_code == status.HTTP_200_OK
 
     vernacular_id = response.json()["vernacular_id"]
-    vernacular_json.update(
-        {
-            "updated_by": test_manager.user_id,
-            "updated_on": test_vernacular.created_on.isoformat(),
-        }
-    )
+    vernacular_json.update({
+        "updated_by": test_manager.user_id,
+        "updated_on": test_vernacular.created_on.isoformat(),
+    })
     response = client.put(
         f"/api/v1/vernaculars/{vernacular_id}",
         headers=manager_token_headers,
@@ -274,12 +270,10 @@ def test_officer_permissions(
     assert response.status_code == status.HTTP_200_OK
 
     vernacular_id = response.json()["vernacular_id"]
-    vernacular_json.update(
-        {
-            "updated_by": test_officer.user_id,
-            "updated_on": test_vernacular.created_on.isoformat(),
-        }
-    )
+    vernacular_json.update({
+        "updated_by": test_officer.user_id,
+        "updated_on": test_vernacular.created_on.isoformat(),
+    })
     response = client.put(
         f"/api/v1/vernaculars/{vernacular_id}",
         headers=officer_token_headers,

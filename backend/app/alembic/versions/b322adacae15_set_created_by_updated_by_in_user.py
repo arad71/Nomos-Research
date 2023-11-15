@@ -5,6 +5,7 @@ Revises: 07b9b3d96e16
 Create Date: 2022-07-29 15:14:41.417853+08:00
 
 """
+
 from os import getenv
 
 import sqlalchemy as sa
