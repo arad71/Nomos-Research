@@ -14,6 +14,18 @@ build:
 up:
 	scripts/build.sh
 
+# lint:		Run lint on backend
+lint:
+	scripts/lint.sh
+
+# format:	Reformat code in the backend
+format:
+	scripts/format.sh
+
+# update-locks:	Update lockfile pre-release
+update-locks:
+	scripts/update-locks.sh
+
 # down:		Down Docker containers
 down:
 	docker compose down

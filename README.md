@@ -96,6 +96,9 @@ Running `make help` will give you a list of possible commands:
  help:          Print commands help.
  build:         Build Docker containers
  up:            Up Docker containers
+ lint:          Run lint on backend
+ format:        Reformat code in the backend
+ update-locks:  Update lockfile pre-release
  down:          Down Docker containers
  kill-it-with-fire: Delete everything
  restart:       Restart Docker containers
