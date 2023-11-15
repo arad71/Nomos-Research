@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 from typing import List
 
+import sqlalchemy.orm as orm
 from fastapi import HTTPException, status
 from pydantic import parse_obj_as
-from sqlalchemy.orm import Session, aliased
 
 import app.db.crud as crud
 import app.db.taxon_name.schema as schema
@@ -31,7 +33,7 @@ class TaxonNameCrud(crud.Crud):
     @classmethod
     def create_item(
         cls,
-        db: Session,
+        db: orm.Session,
         taxon_name: schema.TaxonNameCreate,
         current_user: int = None,
     ) -> TaxonName:
@@ -56,7 +58,7 @@ class TaxonNameCrud(crud.Crud):
     @classmethod
     def edit_item(
         cls,
-        db: Session,
+        db: orm.Session,
         current_user: User,
         taxon_name_id: int,
         taxon_name: schema.TaxonNameEdit,
@@ -96,21 +98,36 @@ class TaxonNameCrud(crud.Crud):
     @classmethod
     def generate_infrageneric_names(
         cls,
-        db: Session,
+        db: orm.Session,
         taxon_name_id: int,
     ) -> List[InfraGenericNameModel]:
         # This query returns a result with a full hierarchy list for a single taxon_id
-        hierarchy = aliased(Hierarchy)
-        taxon_name = aliased(TaxonName)
-        taxon_rank = aliased(TaxonRank)
+        query = cls.get_infrageneric_name_query(db, taxon_name_id)
 
-        subquery = (
-            db.query(hierarchy.path, hierarchy.parent_nid)
-            .filter(hierarchy.taxon_name_id == taxon_name_id)
-            .subquery()
-        )
-        sub = aliased(Hierarchy, subquery)
+        result = query.all()
 
+        if not result:
+            raise HTTPException(
+                status.HTTP_404_NOT_FOUND, detail=f"Taxon ID {taxon_name_id} not found"
+            )
+
+        # Convert the result to a list of dictionaries for script ingestion
+        rows = parse_obj_as(List[schema.TaxonNameRow], result)
+        infrageneric_names = InfraGenericNames.generate_names(taxon_name_id, rows)
+        return infrageneric_names
+
+    @classmethod
+    def get_infrageneric_name_query(
+        cls, db: orm.Session, taxon_name_id: int | None
+    ) -> orm.Query:
+        hierarchy = orm.aliased(Hierarchy)
+        taxon_name = orm.aliased(TaxonName)
+        taxon_rank = orm.aliased(TaxonRank)
+        subquery = db.query(hierarchy.path, hierarchy.parent_nid)
+        if taxon_name_id:
+            subquery = subquery.filter(hierarchy.taxon_name_id == taxon_name_id)
+        subquery = subquery.subquery()
+        sub = orm.aliased(Hierarchy, subquery)
         query = (
             db.query(
                 taxon_name.taxon_name_id,
@@ -131,15 +148,4 @@ class TaxonNameCrud(crud.Crud):
             .filter(taxon_name.deleted == False)
             .order_by(hierarchy.path)
         )
-
-        result = query.all()
-
-        if not result:
-            raise HTTPException(
-                status.HTTP_404_NOT_FOUND, detail=f"Taxon ID {taxon_name_id} not found"
-            )
-
-        # Convert the result to a list of dictionaries for script ingestion
-        rows = parse_obj_as(List[schema.TaxonNameRow], result)
-        infrageneric_names = InfraGenericNames.generate_names(taxon_name_id, rows)
-        return infrageneric_names
+        return query
