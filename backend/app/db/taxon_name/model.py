@@ -13,6 +13,13 @@ from . import calculated, constants, enums
 class TaxonName(BaseModel, TableMixin):
     __tablename__ = "taxon_name"
     name_plural = "taxon_names"
+    __repr_attrs__ = [
+        "taxon_name_id",
+        "scientific_name",
+        "canonical_name",
+        "vernacular",
+        "legacy_id",
+    ]
     calculate_name: bool = True
     taxon_name_id = sqlalchemy.Column(
         sqlalchemy.Integer, primary_key=True, comment=constants.TAXON_NAME_ID
