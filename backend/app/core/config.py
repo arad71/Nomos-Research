@@ -38,7 +38,9 @@ class Settings(BaseSettings):
     SQLALCHEMY_DATABASE_URI: Optional[PostgresDsn] = None
     SQLALCHEMY_SESSION_POOL_SIZE: int = getenv("SQLALCHEMY_SESSION_POOL_SIZE", 50)
     SQLALCHEMY_SESSION_MAX_OVERFLOW: int = getenv("SQLALCHEMY_SESSION_MAX_OVERFLOW", 0)
-    UVICORN_WORKERS: int = getenv("UVICORN_WORKERS", 2)
+    UVICORN_RELOAD: bool = bool(getenv("UVICORN_RELOAD", False))
+    WEB_CONCURRENCY: int = int(getenv("WEB_CONCURRENCY", 1))
+
     # Set this to True to enable printing db queries to the log
     ECHO_DB: bool = False
 
