@@ -4,7 +4,7 @@ import typing as t
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, event
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy_utils import create_database, database_exists, drop_database
 
 from app.core import config, security
@@ -464,6 +464,7 @@ def test_infrageneric_hierarchies(
         test_superuser,
         test_db,
     )
+    return test_hierarchies
 
 
 @pytest.fixture
@@ -714,9 +715,9 @@ def test_panthera_leo(
 @pytest.fixture
 def test_panthera_leo_subsp_barbarensis(
     test_db,
+    test_superuser,
     test_kingdom,
     test_publication,
-    test_superuser,
     test_rank_subspecies,
     test_author,
 ) -> TaxonName:

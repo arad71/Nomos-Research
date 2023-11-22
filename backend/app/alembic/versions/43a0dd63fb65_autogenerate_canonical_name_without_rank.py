@@ -29,7 +29,6 @@ def upgrade():
         ["canonical_name_without_rank"],
         unique=False,
     )
-    # ### end Alembic commands ###
 
 
 def downgrade():
