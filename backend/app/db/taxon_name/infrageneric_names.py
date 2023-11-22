@@ -177,6 +177,8 @@ class InfraGenericNames:
                 new_name.formatted_name_with_author = (
                     new_name.formatted_name + " " + taxon_author
                 )
+            else:
+                new_name.formatted_name_with_author = new_name.formatted_name
             formatted_names.append(new_name)
         return formatted_names
 
