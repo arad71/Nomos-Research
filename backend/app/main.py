@@ -202,7 +202,7 @@ if __name__ == "__main__":
     uvicorn.run(
         "main:app",
         host="0.0.0.0",
-        reload=True,
+        reload=config.settings.UVICORN_RELOAD,
         port=8888,
-        workers=config.settings.UVICORN_WORKERS,
+        workers=config.settings.WEB_CONCURRENCY,
     )
