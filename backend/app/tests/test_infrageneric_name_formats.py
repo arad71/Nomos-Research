@@ -13,6 +13,7 @@ from typing import List
 
 import pytest
 
+import app.db.taxon_name.crud as crud
 from app.db.taxon_name.infrageneric_name_definitions.infrageneric_name_format_definitions import (
     all_name_combinations,
 )
@@ -122,3 +123,17 @@ def test_infrageneric_name_format_ids():
     assert (
         len(all_ids) == NUMBER_OF_DEFINED_NAME_FORMATS
     ), "All name definitions must have a unique ID."
+
+
+def test_calculation_of_infrageneric_formats(
+    test_db,
+    test_infrageneric_hierarchies,
+    test_panthera_subg_eupanthera,
+    test_panthera_leo,
+    test_panthera_leo_subsp_barbarensis,
+):
+    crud.TaxonNameCrud().calculate_name_formats(test_db)
+    test_db.refresh(test_panthera_subg_eupanthera)
+    assert test_panthera_subg_eupanthera.scientific_name == "Panthera (Eupanthera)"
+    test_db.refresh(test_panthera_leo)
+    assert test_panthera_leo.scientific_name == "Panthera (Eupanthera) leo"

@@ -1,6 +1,7 @@
 import datetime
 import typing as t
 
+import loguru
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, event
@@ -443,6 +444,7 @@ def test_infrageneric_hierarchies(
     test_panthera_leo,
     test_panthera_leo_subsp_barbarensis,
 ):
+    loguru.logger.debug(test_db)
     test_hierarchies["subg_eupanthera"] = create_hierarchy(
         test_panthera_subg_eupanthera,
         test_panthera,

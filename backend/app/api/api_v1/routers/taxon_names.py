@@ -1,7 +1,8 @@
 import json
 from typing import List, Optional, overload
 
-from fastapi import APIRouter, Depends, Response
+import fastapi.responses as responses
+from fastapi import APIRouter, BackgroundTasks, Depends, Response
 from sqlalchemy import and_, func, select
 from sqlalchemy.orm import Session, aliased
 
@@ -10,7 +11,7 @@ from app.core.auth import authorize, get_current_active_user
 from app.db.hierarchy.model import Hierarchy
 from app.db.role.constants import Role
 from app.db.session import get_db
-from app.db.taxon_name.crud import TaxonNameCrud
+from app.db.taxon_name.crud import CALCULATE_LOG, TaxonNameCrud
 from app.db.taxon_name.infrageneric_names import InfraGenericNameModel
 from app.db.taxon_name.model import TaxonName as TaxonNameModel
 from app.db.taxon_name.schema import TaxonName, TaxonNameCreate, TaxonNameEdit
@@ -260,3 +261,52 @@ async def taxon_name_delete(
     Delete existing taxon_name
     """
     return TaxonNameCrud.delete_item(db, current_user, taxon_name_id, True)
+
+
+@r.get(
+    "_calculate",
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.MANAGER["name"],
+                Role.OFFICER["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+    response_class=responses.FileResponse,
+)
+def get_calculation_log():
+    return responses.FileResponse(CALCULATE_LOG)
+
+
+@r.post(
+    "_calculate",
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.MANAGER["name"],
+                Role.OFFICER["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+    response_class=responses.FileResponse,
+)
+def recalculate_name_formats(
+    background_tasks: BackgroundTasks,
+    taxon_name_id: Optional[int] = None,
+    limit: Optional[int] = None,
+    offset: Optional[int] = 0,
+    current_user: User = Depends(get_current_active_user),
+    db=Depends(get_db),
+):
+    background_tasks.add_task(
+        TaxonNameCrud.calculate_name_formats,
+        db,
+        taxon_name_id,
+        current_user.user_id,
+        limit,
+        offset,
+    )
+    return responses.FileResponse(CALCULATE_LOG)

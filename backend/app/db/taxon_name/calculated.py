@@ -19,25 +19,22 @@ def calculate_fields(
     connection: sqlalchemy.orm.Session,
     target: model.TaxonName,
 ):
-    target.canonical_name = map_canonical_name(target)
-    target.canonical_name_without_rank = map_canonical_name(target, False)
-
     # If we don't have an ID yet, we cannot have relationships
     if hasattr(target, "taxon_name_id") and target.taxon_name_id:
         target.author = map_authors(target)
         target.vernacular = map_vernacular(target)
         target.all_vernaculars = map_vernaculars(target)
-
-    if any([target.canonical_name, target.author]) and target.calculate_name:
-        target.scientific_name = " ".join(
-            filter(None, [target.canonical_name, target.author])
-        )
-        target.formatted_scientific_name = calculate_formatted_scientific_name(
-            target.canonical_name, target.author
-        )
-
-    if hasattr(target, "taxon_name_id") and target.taxon_name_id:
         target.editor = map_editors(target)
+    if target.calculate_name:
+        target.canonical_name = map_canonical_name(target)
+        target.canonical_name_without_rank = map_canonical_name(target, False)
+        if any([target.canonical_name, target.author]):
+            target.scientific_name = " ".join(
+                filter(None, [target.canonical_name, target.author])
+            )
+            target.formatted_scientific_name = calculate_formatted_scientific_name(
+                target.canonical_name, target.author
+            )
 
 
 def calculate_formatted_scientific_name(canonical_name: str, author: str) -> str:

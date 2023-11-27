@@ -1,7 +1,7 @@
 import sqlalchemy
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import backref, column_property, relationship
+from sqlalchemy.orm import backref, relationship
 from sqlalchemy.schema import Index
 from sqlalchemy.types import Enum
 

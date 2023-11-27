@@ -4,7 +4,7 @@ FROM python:3.9
 ARG USER_ID=1000
 ARG GROUP_ID=1000
 
-RUN mkdir /app /legacy_data
+RUN mkdir -p /app/log /legacy_data
 WORKDIR /app
 
 RUN \

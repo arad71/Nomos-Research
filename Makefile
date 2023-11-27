@@ -95,6 +95,10 @@ downgrade:
 autogenerate:
 	docker compose run --rm backend alembic revision --autogenerate -m "$(MAKECMDGOALS)"
 
+# calculate_names:	Calculate taxon name versions
+calculate_names:
+	docker compose run --rm backend app/tools/taxon_name_calculation.py
+
 # shell:		Run bash in the backend
 shell:
 	@docker compose exec backend bash
