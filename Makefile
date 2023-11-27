@@ -26,7 +26,7 @@ start:
 pause:
 	docker compose pause
 
-# unpause:		Unpause the stack
+# unpause:	Unpause the stack
 unpause:
 	docker compose unpause
 
@@ -95,7 +95,7 @@ downgrade:
 autogenerate:
 	docker compose run --rm backend alembic revision --autogenerate -m "$(MAKECMDGOALS)"
 
-# calculate_names:	Calculate taxon name versions
+# calculate_names: Calculate taxon name versions
 calculate_names:
 	docker compose run --rm backend app/tools/taxon_name_calculation.py
 
