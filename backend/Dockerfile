@@ -26,5 +26,5 @@ RUN \
 
 USER app
 COPY . .
-RUN mkdir -p /app/log
+RUN mkdir -p /app/log/calculate.log
 ENV PATH="$PATH:/app/bin"
