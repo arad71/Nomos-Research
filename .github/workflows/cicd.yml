@@ -77,7 +77,7 @@ jobs:
       - name: Build the docker compose stack
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: scripts/build.sh
+        run: USER_ID=$(id -u) GROUP_ID=$(id -g) scripts/build.sh
       - name: Run test suite
         run: scripts/test.sh
       - name: Run downgrade migrations
