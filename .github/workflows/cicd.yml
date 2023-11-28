@@ -5,7 +5,6 @@ name: Continuous Integration / Continuous Delivery
 
 on:
   - push
-  - pull_request
 
 jobs:
   lint-backend:
