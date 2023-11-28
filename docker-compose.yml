@@ -34,6 +34,8 @@ services:
       - |
         set -e
         wait-for-it -t 0 ${DB_HOST:-postgres}:${DB_PORT:-5432}
+        mkdir -p /app/log
+        touch /app/log/calculate.log
         alembic upgrade head
         python app/main.py
     tty: true
