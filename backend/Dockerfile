@@ -26,4 +26,5 @@ RUN \
 
 USER app
 COPY . .
+RUN mkdir -p /app/log
 ENV PATH="$PATH:/app/bin"
