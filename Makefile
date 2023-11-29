@@ -1,4 +1,4 @@
-.PHONY: build up down restart test_frontend test_backend upgrade_db logs autogenerate
+.PHONY: build up down restart test_frontend test_backend logs autogenerate
 
 default: up
 

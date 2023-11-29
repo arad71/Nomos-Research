@@ -14,7 +14,11 @@ def recalculate_taxon_names_with_session(
 ):
     db: Session = get_db().__next__()
     crud.TaxonNameCrud.calculate_name_formats(
-        db=db, taxon_name_id=taxon_name_id, limit=limit, offset=offset
+        db=db,
+        taxon_name_id=taxon_name_id,
+        limit=limit,
+        offset=offset,
+        use_fallback=True,
     )
 
     db.commit()

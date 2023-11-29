@@ -9,10 +9,10 @@ from fastapi import HTTPException, status
 from pydantic import parse_obj_as
 
 import app.db.crud as crud
+import app.db.taxon_name.calculated as calculated
 import app.db.taxon_name.schema as schema
 from app.db.hierarchy.model import Hierarchy
 from app.db.informal_group.model import InformalGroup
-from app.db.taxon_name.calculated import calculate_formatted_scientific_name
 from app.db.taxon_name.infrageneric_names import (
     InfraGenericNameModel,
     InfraGenericNames,
@@ -46,7 +46,6 @@ class TaxonNameCrud(crud.Crud):
         "all_vernaculars",
         "cross_referenced_old_name___new_name___scientific_name",
     ]
-    taxon_name_query: orm.Query = None
     calculation_modified: int = 0
     calculation_unmodified: int = 0
     calculation_count: int = 0
@@ -257,8 +256,10 @@ class TaxonNameCrud(crud.Crud):
         current_user: int = None,
         limit: Optional[int] = None,
         offset: int = 0,
+        use_fallback: bool = False,
     ):
         """
+        :param use_fallback: Whether to use the fallback method of name generation.
         :param db: The SQLAlchemy session object used for database operations.
         :param taxon_name_id: The ID of the taxon name for which to calculate name
          formats. Default is None.
@@ -301,12 +302,11 @@ class TaxonNameCrud(crud.Crud):
         """
         log = loguru.logger.add(CALCULATE_LOG, retention="1 day")
         loguru.logger.info("Calculation started")
-        cls.taxon_name_query = db.query(TaxonName)
         cls.reset_counts()
-        query: orm.Query = db.query(Hierarchy.taxon_name_id).distinct()
-        query = query.where(Hierarchy.deleted == False)  # noqa: E712
+        query: orm.Query = db.query(TaxonName.taxon_name_id).distinct()
+        query = query.where(TaxonName.deleted == False)  # noqa: E712
         if taxon_name_id:
-            query = query.where(Hierarchy.taxon_name_id == taxon_name_id)
+            query = query.where(TaxonName.taxon_name_id == taxon_name_id)
         if offset:
             query = query.offset(offset)
         if limit:
@@ -316,27 +316,81 @@ class TaxonNameCrud(crud.Crud):
         for row in rich.progress.track(
             query, total=query.count(), description="Calculating name formats"
         ):
-            cls.calculate_names_for_row(db, row, current_user)
+            cls.calculate_names_for_row(db, row, current_user, use_fallback)
         db.flush()
         loguru.logger.debug(cls.format_message())
         loguru.logger.info("Calculation completed")
         loguru.logger.remove(log)
 
     @classmethod
-    def calculate_names_for_row(cls, db: orm.Session, row, current_user: int = None):
+    def calculate_names_for_row(
+        cls, db: orm.Session, row, current_user: int = None, use_fallback: bool = False
+    ):
+        """
+        :param db: The database session object.
+        :param row: The row containing the taxon name information.
+        :param current_user: The ID of the current user (optional).
+        :param use_fallback: Whether to use a fallback method if no infrageneric names
+        are found (default: False).
+        :return: None
+
+        This method calculates and updates the taxon names for a given row in the
+        database. It takes in the database session object, the row containing the
+        taxon name information, the ID of the current user (optional), and a flag
+        indicating whether to use a fallback method if no infrageneric names are
+        found (default: False).
+
+        The method first queries the taxon name object from the database using the
+        provided taxon name ID. It then retrieves the infrageneric name rows
+        associated with the taxon name using the `get_infrageneric_name_query`
+        method. If no rows are found and the `use_fallback` flag is True, the taxon
+        name is marked for recalculation.
+
+        Next, the method generates the infrageneric names using the
+        `InfraGenericNames.generate_names` method and iterates over each name entry.
+        If the name version is "CANONICAL" and a formatted name is available,
+        the taxon name's `canonical_name` is updated. If the name version is
+        "CANONICAL_WITHOUT_RANK" and a formatted name is available, the taxon name's
+        `canonical_name_without_rank` is updated. If the name version is
+        "INFRAGENUS_WITH_RANK" and a formatted name with author is available,
+        the taxon name's `scientific_name` is updated and the calculated formatted
+        scientific name is assigned to `formatted_scientific_name`.
+
+        If any changes were made to the taxon name object, it is marked as not
+        requiring further calculation and is added to the database session. The
+        method also updates the calculation statistics (count of modified/unmodified
+        calculations) and logs a debug message for every 100th calculation.
+
+        Note: This method is part of the `TaxonNameCrud` class, which extends the
+        `Crud` class.
+        """
         taxon_name_id = row.taxon_name_id
-        taxon_name: TaxonName = cls.taxon_name_query.get(taxon_name_id)
+        taxon_name: TaxonName = (
+            db.query(TaxonName)
+            .options(orm.joinedload(TaxonName.kingdom))
+            .get(taxon_name_id)
+        )
+
         rows = cls.get_infrageneric_name_query(db, taxon_name_id)
+        if rows.count() == 0 and use_fallback:
+            # mark this record for recalculation
+            orm.attributes.flag_dirty(taxon_name)
         infrageneric_names = InfraGenericNames.generate_names(row.taxon_name_id, rows)
         for name_entry in infrageneric_names:
-            if name_entry.name_version == CANONICAL:
+            if name_entry.name_version == CANONICAL and name_entry.formatted_name:
                 taxon_name.canonical_name = name_entry.formatted_name
-            elif name_entry.name_version == CANONICAL_WITHOUT_RANK:
+            elif (
+                name_entry.name_version == CANONICAL_WITHOUT_RANK
+                and name_entry.formatted_name
+            ):
                 taxon_name.canonical_name_without_rank = name_entry.formatted_name
-            elif name_entry.name_version == INFRAGENUS_WITH_RANK:
+            elif (
+                name_entry.name_version == INFRAGENUS_WITH_RANK
+                and name_entry.formatted_name_with_author
+            ):
                 taxon_name.scientific_name = name_entry.formatted_name_with_author
                 taxon_name.formatted_scientific_name = (
-                    calculate_formatted_scientific_name(
+                    calculated.calculate_formatted_scientific_name(
                         name_entry.formatted_name, name_entry.author
                     )
                 )
@@ -344,17 +398,30 @@ class TaxonNameCrud(crud.Crud):
             taxon_name.calculate_name = False
             if current_user:
                 taxon_name.updated_by = current_user
-            db.add(taxon_name)
-            db.commit()
             cls.calculation_modified += 1
         else:
             cls.calculation_unmodified += 1
+        db.add(taxon_name)
         cls.calculation_count += 1
         if cls.calculation_count % 100 == 0:
             loguru.logger.debug(cls.format_message())
 
     @classmethod
     def format_message(cls):
+        """
+        The `format_message` method is a class method of the `TaxonNameCrud` class.
+        It is used to format a message containing various statistics related to
+        calculation.
+
+        :param: None
+
+        :return: A dictionary containing the following keys and their corresponding
+        values: - `count`: The number of calculations performed (
+        `cls.calculation_count`) - `total`: The total number of calculations (
+        `cls.calculation_total`) - `modified`: The number of calculations that were
+        modified (`cls.calculation_modified`) - `unmodified`: The number of
+        calculations that were not modified (`cls.calculation_unmodified`)
+        """
         return {
             "count": cls.calculation_count,
             "total": cls.calculation_total,
@@ -364,6 +431,12 @@ class TaxonNameCrud(crud.Crud):
 
     @classmethod
     def reset_counts(cls):
+        """Reset the calculation counts for TaxonNameCrud.
+
+        This method resets the calculation counts for TaxonNameCrud to zero.
+
+        :return: None
+        """
         cls.calculation_count = 0
         cls.calculation_total = 0
         cls.calculation_modified = 0
