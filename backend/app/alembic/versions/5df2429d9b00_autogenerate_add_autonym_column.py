@@ -38,9 +38,23 @@ def upgrade():
             ),
         ),
     )
-
-
-#     TODO populate this value using a rule: comment on https://dev.azure.com/BIO-WA/Nomos/_workitems/edit/5841
+    op.execute(
+        "UPDATE taxon_name"
+        "   SET is_autonym = TRUE"
+        "    WHERE taxon_name_id IN ("
+        "        SELECT taxon_name_id"
+        "    FROM taxon_name tn"
+        "    JOIN taxon_rank tr ON tn.rank_id = tr.taxon_rank_id"
+        "    JOIN kingdom k ON tn.kingdom_id = k.kingdom_id"
+        "    WHERE specific_epithet = infraspecific_epithet"
+        "    AND specific_epithet IS NOT NULL"
+        "    AND specific_epithet != ''"
+        "    AND NOT tn.deleted"
+        "    AND NOT k.deleted"
+        "    AND NOT tr.deleted"
+        "    AND kingdom_name IN ('Plantae', 'Fungi')"
+        ")"
+    )
 
 
 def downgrade():
