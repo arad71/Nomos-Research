@@ -3,67 +3,45 @@ from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
+import app.db.taxon_name.constants as constants
 from app.db.kingdom.schema import Kingdom
 from app.db.schemas import TableBase
 from app.db.taxon_name import enums
-from app.db.taxon_name.constants import (
-    AUTHOR,
-    COMMENTS,
-    CONTRIBUTED_BY,
-    CONTRIBUTED_ON,
-    EXTERNAL_ID,
-    FAMILY_CODE,
-    FAMILY_NID,
-    FORM_DESC_DY,
-    FORM_DESC_MN,
-    FORM_DESC_YR,
-    IS_CURRENT,
-    IS_ERADICATED,
-    KINGDOM_ID,
-    LINEAR_SEQUENCE,
-    NATURALISED_COMMENTS,
-    ORIGIN,
-    PUBLICATION_ID,
-    RANK_ID,
-    SOURCE,
-    TABLE_DESCRIPTION,
-    TAXON_NAME_ID,
-    VALIDATED,
-    VERNACULAR,
-    VOLUME_INFORMATION,
-)
 from app.db.taxon_rank.schema import TaxonRank
 
 
 class TaxonNameBase(BaseModel):
-    kingdom_id: int = Field(description=KINGDOM_ID)
-    rank_id: int = Field(description=RANK_ID)
+    kingdom_id: int = Field(description=constants.KINGDOM_ID)
+    rank_id: int = Field(description=constants.RANK_ID)
     uninomial: Optional[str]
     specific_epithet: Optional[str]
     infraspecific_epithet: Optional[str]
-    publication_id: Optional[int] = Field(description=PUBLICATION_ID)
-    volume_information: Optional[str] = Field(description=VOLUME_INFORMATION)
-    is_current: bool = Field(description=IS_CURRENT)
-    origin: Optional[str] = Field(description=ORIGIN)
+    is_autonym: Optional[bool] = Field(description=constants.AUTONYM)
+    publication_id: Optional[int] = Field(description=constants.PUBLICATION_ID)
+    volume_information: Optional[str] = Field(description=constants.VOLUME_INFORMATION)
+    is_current: bool = Field(description=constants.IS_CURRENT)
+    origin: Optional[str] = Field(description=constants.ORIGIN)
     publication_status: Optional[enums.PublicationStatus]
-    form_desc_yr: Optional[int] = Field(description=FORM_DESC_YR)
-    form_desc_mn: Optional[int] = Field(description=FORM_DESC_MN)
-    form_desc_dy: Optional[int] = Field(description=FORM_DESC_DY)
-    comments: Optional[str] = Field(description=COMMENTS)
-    contributed_by: Optional[str] = Field(description=CONTRIBUTED_BY)
-    contributed_on: Optional[datetime] = Field(description=CONTRIBUTED_ON)
-    validated: bool = Field(description=VALIDATED)
-    source: Optional[str] = Field(description=SOURCE)
-    external_id: Optional[str] = Field(description=EXTERNAL_ID)
-    family_code: Optional[str] = Field(description=FAMILY_CODE)
-    vernacular: Optional[str] = Field(description=VERNACULAR)
+    form_desc_yr: Optional[int] = Field(description=constants.FORM_DESC_YR)
+    form_desc_mn: Optional[int] = Field(description=constants.FORM_DESC_MN)
+    form_desc_dy: Optional[int] = Field(description=constants.FORM_DESC_DY)
+    comments: Optional[str] = Field(description=constants.COMMENTS)
+    contributed_by: Optional[str] = Field(description=constants.CONTRIBUTED_BY)
+    contributed_on: Optional[datetime] = Field(description=constants.CONTRIBUTED_ON)
+    validated: bool = Field(description=constants.VALIDATED)
+    source: Optional[str] = Field(description=constants.SOURCE)
+    external_id: Optional[str] = Field(description=constants.EXTERNAL_ID)
+    family_code: Optional[str] = Field(description=constants.FAMILY_CODE)
+    vernacular: Optional[str] = Field(description=constants.VERNACULAR)
     editor: Optional[str]
     naturalised_status: Optional[enums.NaturalisedStatus]
     naturalised_certainty: Optional[bool]
-    is_eradicated: Optional[str] = Field(description=IS_ERADICATED)
-    naturalised_comments: Optional[str] = Field(description=NATURALISED_COMMENTS)
-    linear_sequence: Optional[int] = Field(description=LINEAR_SEQUENCE)
-    family_nid: Optional[int] = Field(description=FAMILY_NID)
+    is_eradicated: Optional[str] = Field(description=constants.IS_ERADICATED)
+    naturalised_comments: Optional[str] = Field(
+        description=constants.NATURALISED_COMMENTS
+    )
+    linear_sequence: Optional[int] = Field(description=constants.LINEAR_SEQUENCE)
+    family_nid: Optional[int] = Field(description=constants.FAMILY_NID)
     all_vernaculars: Optional[str]
     notes: Optional[str]
     reference: Optional[str]
@@ -83,11 +61,11 @@ class TaxonNameEdit(TaxonNameBase):
 
 
 class TaxonName(TaxonNameBase, TableBase):
-    taxon_name_id: int = Field(description=TAXON_NAME_ID)
+    taxon_name_id: int = Field(description=constants.TAXON_NAME_ID)
     kingdom: Kingdom
     taxon_rank: TaxonRank
     canonical_name: Optional[str]
-    author: Optional[str] = Field(description=AUTHOR)
+    author: Optional[str] = Field(description=constants.AUTHOR)
     scientific_name: Optional[str]
     formatted_scientific_name: Optional[str]
     canonical_name_without_rank: Optional[str]
@@ -96,7 +74,7 @@ class TaxonName(TaxonNameBase, TableBase):
 
     class Config:
         orm_mode = True
-        schema_extra = {"description": TABLE_DESCRIPTION}
+        schema_extra = {"description": constants.TABLE_DESCRIPTION}
 
 
 class TaxonNameRow(BaseModel):

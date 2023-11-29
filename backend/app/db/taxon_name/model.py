@@ -47,6 +47,15 @@ class TaxonName(BaseModel, TableMixin):
     formatted_scientific_name = sqlalchemy.Column(sqlalchemy.String)
     specific_epithet = sqlalchemy.Column(sqlalchemy.String(70), index=True)
     infraspecific_epithet = sqlalchemy.Column(sqlalchemy.String(70), index=True)
+
+    is_autonym = sqlalchemy.Column(
+        sqlalchemy.Boolean,
+        nullable=False,
+        default=False,
+        server_default=sqlalchemy.text("false"),
+        comment=constants.AUTONYM,
+        doc=constants.AUTONYM,
+    )
     publication_id = sqlalchemy.Column(
         sqlalchemy.Integer,
         sqlalchemy.ForeignKey("publication.publication_id"),

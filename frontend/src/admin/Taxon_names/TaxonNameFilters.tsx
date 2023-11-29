@@ -87,6 +87,7 @@ export const TaxonNameFilters = () => {
     </ReferenceArrayInput>,
     <BooleanInput label="Is current?" source="is_current" />,
     <BooleanInput label="Is validated?" source="validated" />,
+    <BooleanInput label="Is autonym?" source="is_autonym" />,
     <SelectArrayInput
       source="publication_status"
       choices={PublicationStatus}

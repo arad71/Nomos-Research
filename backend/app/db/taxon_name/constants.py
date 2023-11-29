@@ -49,3 +49,12 @@ TABLE_DESCRIPTION = (
 ANIMAL_KINGDOM_NAME = "Animalia"
 PLANTAE_KINGDOM_NAME = "Plantae"
 FUNGI_KINGDOM_NAME = "Fungi"
+AUTONYM = (
+    "An autonym is a taxon name where the infraspecific epithet is a repetition "
+    "of the specific epithet. The Internation Code of Nomenclature for algae, "
+    'fungi, and plants (article 22) states that "The name of any subdivision '
+    "of a genus that includes the type of the adopted, legitimate name of the "
+    "genus to which it is assigned is to repeat that generic name unaltered as "
+    "its epithet, not followed by an author citation (see Art. 46). Such names "
+    'are autonyms."'
+)

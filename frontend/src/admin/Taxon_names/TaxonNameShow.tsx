@@ -114,6 +114,11 @@ export const TaxonNameShow: FC = (props) => {
                   <TextField source="infraspecific_epithet" />
                 </Labeled>
               </Box>
+              <Box className={globalClasses.fieldMargin}>
+                <Labeled label="Is autonym?">
+                  <BooleanField source="is_autonym" />
+                </Labeled>
+              </Box>
             </Box>
             <Box className={globalClasses.formRow}>
               <Box className={globalClasses.fieldMargin}>
