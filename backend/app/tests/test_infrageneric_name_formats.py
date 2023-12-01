@@ -133,9 +133,9 @@ def test_calculation_of_infrageneric_formats(
     test_panthera_leo_subsp_barbarensis,
 ):
     test_db.refresh(test_panthera_subg_eupanthera)
-    assert test_panthera_subg_eupanthera.scientific_name == "Panthera"
+    assert test_panthera_subg_eupanthera.scientific_name == "Eupanthera"
     test_db.refresh(test_panthera_leo)
-    assert test_panthera_leo.scientific_name == "Panthera leo"
+    assert test_panthera_leo.scientific_name == "Eupanthera leo"
     crud.TaxonNameCrud().calculate_name_formats(test_db)
     test_db.refresh(test_panthera_subg_eupanthera)
     assert test_panthera_subg_eupanthera.scientific_name == "Panthera (Eupanthera)"
