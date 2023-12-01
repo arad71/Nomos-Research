@@ -359,13 +359,11 @@ def test_super_admin_permissions(
     )
     assert response.status_code == status.HTTP_200_OK
 
-    taxon_json.update(
-        {
-            "canonical_name": test_taxon_name_2.canonical_name,
-            "updated_by": test_manager.user_id,
-            "updated_on": test_taxon_name.created_on.isoformat(),
-        }
-    )
+    taxon_json.update({
+        "canonical_name": test_taxon_name_2.canonical_name,
+        "updated_by": test_manager.user_id,
+        "updated_on": test_taxon_name.created_on.isoformat(),
+    })
     response = client.put(
         f"/api/v1/taxon_names/{test_taxon_name_2.taxon_name_id}",
         headers=superuser_token_headers,
@@ -413,13 +411,11 @@ def test_manager_permissions(
     )
     assert response.status_code == status.HTTP_200_OK
 
-    taxon_json.update(
-        {
-            "canonical_name": test_taxon_name_2.canonical_name,
-            "updated_by": test_manager.user_id,
-            "updated_on": test_taxon_name.created_on.isoformat(),
-        }
-    )
+    taxon_json.update({
+        "canonical_name": test_taxon_name_2.canonical_name,
+        "updated_by": test_manager.user_id,
+        "updated_on": test_taxon_name.created_on.isoformat(),
+    })
     response = client.put(
         f"/api/v1/taxon_names/{test_taxon_name_2.taxon_name_id}",
         headers=manager_token_headers,
@@ -467,13 +463,11 @@ def test_officer_permissions(
     )
     assert response.status_code == status.HTTP_200_OK
 
-    taxon_json.update(
-        {
-            "canonical_name": test_taxon_name_2.canonical_name,
-            "updated_by": test_manager.user_id,
-            "updated_on": test_taxon_name.created_on.isoformat(),
-        }
-    )
+    taxon_json.update({
+        "canonical_name": test_taxon_name_2.canonical_name,
+        "updated_by": test_manager.user_id,
+        "updated_on": test_taxon_name.created_on.isoformat(),
+    })
     response = client.put(
         f"/api/v1/taxon_names/{test_taxon_name_2.taxon_name_id}",
         headers=officer_token_headers,

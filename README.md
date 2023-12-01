@@ -223,6 +223,14 @@ from loguru import logger
 logger.info("The meaning of life: {}", 42)
 ```
 
+For debugging local variables it's handy to use the [rich.console](https://rich.readthedocs.io/en/stable/console.html) functionality:
+
+```python
+from app.console import console
+console.print({"some": "interesting", "data": "structure"})
+console.log({"some": "interesting", "data": "structure"})
+```
+
 You can view logs using the docker logs as specified elsewhere in this file.
 
 ### Frontend Development

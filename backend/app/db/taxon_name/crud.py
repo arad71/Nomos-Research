@@ -390,8 +390,10 @@ class TaxonNameCrud(crud.Crud):
             ):
                 taxon_name.scientific_name = name_entry.formatted_name_with_author
                 taxon_name.formatted_scientific_name = (
-                    calculated.calculate_formatted_scientific_name(
-                        name_entry.formatted_name, name_entry.author
+                    calculated.calculate_scientific_name_string(
+                        schema.NameStringComponents(
+                            binomial=name_entry.formatted_name, author=name_entry.author
+                        )
                     )
                 )
         if db.is_modified(taxon_name):

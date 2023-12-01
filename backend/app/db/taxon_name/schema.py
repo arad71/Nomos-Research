@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import datetime
 from typing import List, Optional
 
@@ -102,3 +104,10 @@ class TaxonNameRow(BaseModel):
     rank_name: Optional[str]
     rank_abbrev: Optional[str]
     parent_nid: Optional[int]
+
+
+class NameStringComponents(BaseModel):
+    binomial: Optional[str] = None
+    rank_abbreviation: Optional[str] = None
+    infraspecific_epithet: Optional[str] = None
+    author: Optional[str] = None

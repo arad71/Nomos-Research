@@ -3,11 +3,16 @@ import datetime
 import functools
 import os
 
+import pytest
+
+from app.console import console
 from app.db.author.crud import AuthorCrud
 from app.db.author.model import Author
 from app.db.citation.model import Citation
 from app.db.kingdom.crud import KingdomCrud
 from app.db.kingdom.model import Kingdom
+from app.db.taxon_name import schema
+from app.db.taxon_name.calculated import calculate_scientific_name_string
 from app.db.taxon_name.model import TaxonName
 from app.db.taxon_rank.model import TaxonRank
 
@@ -85,6 +90,7 @@ def create_taxon_name(test_db, row, kingdom, taxon_rank, user_id):
         specific_epithet=row["specific_epithet"] or None,
         infraspecific_epithet=row["infraspecific_epithet"] or None,
         form_desc_yr=row["form_desc_yr"] or None,
+        is_autonym=row["is_autonym"].lower() == "true",
         updated_by=None,
         updated_on=None,
         created_by=user_id,
@@ -151,28 +157,84 @@ def update_taxon_name(test_db, taxon_name, user_id):
     test_db.commit()
 
 
-def test_calculated_fields(test_db, test_superuser):
+# A helper function to read the csv data
+def get_data():
     path = os.getcwd() + f"/app/tests/taxon_name_test_data.csv"
     with open(path, mode="r", encoding="utf-8") as csv_file:
         csv_reader = csv.DictReader(csv_file)
-        for row in csv_reader:
-            user_id = test_superuser.user_id
-            kingdom = get_kingdom(test_db, row["kingdom_name"], user_id)
-            taxon_rank = create_taxon_rank(test_db, row, kingdom.kingdom_id, user_id)
-            taxon_name = create_taxon_name(test_db, row, kingdom, taxon_rank, user_id)
-            authors = get_authors(test_db, row, user_id)
-            create_citations(test_db, authors, taxon_name, user_id)
-            update_taxon_name(test_db, taxon_name, user_id)
-            author = row["author"] or None
-            assert taxon_name.author == author
-            editor = row["editor"] or None
-            assert taxon_name.editor == editor
-            assert taxon_name.canonical_name == row["canonical_name"]
-            assert (
-                taxon_name.canonical_name_without_rank
-                == row["canonical_name_without_rank"]
+        return [row for row in csv_reader]
+
+
+# Use pytest.mark.parametrize to feed the data to test function
+@pytest.mark.parametrize("row", get_data())
+def test_calculated_fields(test_db, test_superuser, row):
+    user_id = test_superuser.user_id
+    kingdom = get_kingdom(test_db, row["kingdom_name"], user_id)
+    taxon_rank = create_taxon_rank(test_db, row, kingdom.kingdom_id, user_id)
+    taxon_name = create_taxon_name(test_db, row, kingdom, taxon_rank, user_id)
+    authors = get_authors(test_db, row, user_id)
+    create_citations(test_db, authors, taxon_name, user_id)
+    update_taxon_name(test_db, taxon_name, user_id)
+    author = row["author"] or None
+    assert taxon_name.author == author
+    editor = row["editor"] or None
+    assert taxon_name.editor == editor
+    assert taxon_name.canonical_name == row["canonical_name"]
+    assert taxon_name.canonical_name_without_rank == row["canonical_name_without_rank"]
+    assert taxon_name.scientific_name == row["scientific_name"]
+    assert taxon_name.formatted_scientific_name == row["formatted_scientific_name"]
+
+
+def test_calculate_formatted_scientific_name():
+    assert (
+        calculate_scientific_name_string(
+            schema.NameStringComponents(
+                binomial="Mus musculus", author="Linnaeus, 1758"
             )
-            assert taxon_name.scientific_name == row["scientific_name"]
-            assert (
-                taxon_name.formatted_scientific_name == row["formatted_scientific_name"]
-            )
+        )
+        == "<i class='canonical-name'>Mus musculus</i> Linnaeus, 1758"
+    )
+    assert (
+        calculate_scientific_name_string(
+            schema.NameStringComponents(binomial="Felis catus", author="")
+        )
+        == "<i class='canonical-name'>Felis catus</i>"
+    )
+
+    # testing with None author
+    assert (
+        calculate_scientific_name_string(
+            schema.NameStringComponents(binomial="Canis lupus", author=None)
+        )
+        == "<i class='canonical-name'>Canis lupus</i>"
+    )
+
+    # testing with None name
+    with pytest.raises(TypeError) as exec_info:
+        calculate_scientific_name_string(None)
+        assert (
+            str(exec_info.value)
+            == "components must be an instance of NameStringComponents"
+        )
+
+    autonym = schema.NameStringComponents()
+    autonym.binomial = "Poa annua"
+    autonym.author = "L."
+    autonym.rank_abbreviation = "subsp."
+    autonym.infraspecific_epithet = "annua"
+    assert (
+        calculate_scientific_name_string(autonym, is_autonym=True, italicize=False)
+        == "Poa annua L. subsp. annua"
+    )
+    assert (
+        calculate_scientific_name_string(autonym, is_autonym=False, italicize=False)
+        == "Poa annua subsp. annua L."
+    )
+    assert (
+        calculate_scientific_name_string(autonym, is_autonym=True)
+        == "<i class='canonical-name'>Poa annua</i> L. subsp. <i class='canonical-name'>annua</i>"  # noqa: E501
+    )
+    assert (
+        calculate_scientific_name_string(autonym, is_autonym=False)
+        == "<i class='canonical-name'>Poa annua</i> subsp. <i class='canonical-name'>annua</i> L."  # noqa: E501
+    )
