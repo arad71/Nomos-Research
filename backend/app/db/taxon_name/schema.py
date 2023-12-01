@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 
 import app.db.taxon_name.constants as constants
 from app.db.kingdom.schema import Kingdom
@@ -17,6 +17,21 @@ class TaxonNameBase(BaseModel):
     specific_epithet: Optional[str]
     infraspecific_epithet: Optional[str]
     is_autonym: Optional[bool] = Field(description=constants.AUTONYM)
+
+    @validator("is_autonym")
+    def validate_autonym(cls, is_autonym, values):
+        if "specific_epithet" in values and "infraspecific_epithet" in values:
+            if (
+                is_autonym
+                and values["specific_epithet"]
+                and values["specific_epithet"] != values["infraspecific_epithet"]
+            ):
+                raise ValueError(
+                    "If is_autonym is true, specific_epithet and "
+                    "infraspecific_epithet must be set and the same"
+                )
+        return is_autonym
+
     publication_id: Optional[int] = Field(description=constants.PUBLICATION_ID)
     volume_information: Optional[str] = Field(description=constants.VOLUME_INFORMATION)
     is_current: bool = Field(description=constants.IS_CURRENT)
