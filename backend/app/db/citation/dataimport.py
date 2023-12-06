@@ -39,28 +39,26 @@ class ImportCitation(DataImportBase):
             if row["UPDATED_ON"]
             else datetime.datetime.now()
         )
-        self.values.append(
-            {
-                "taxon_name_id": self.map_row_by_unique_key(
-                    TaxonName,
-                    "legacy_id",
-                    self.legacy_id_prefix + row["NAME_ID"] if row["NAME_ID"] else None,
-                    "taxon_name_id",
-                ),
-                "author_id": self.map_row_by_unique_key(
-                    Author, "abbreviation", row["AUTHOR"], "author_id"
-                ),
-                "author_type": self.map_enum_base(row["AUTHOR_TYPE"]),
-                "author_order": row["AUTHOR_ORD"],
-                "legacy_id_name": row["AUTHOR"],
-                "created_by": self.current_user,
-                "updated_by": self.map_row_by_unique_key(
-                    UserModel, "legacy_id_name", row["UPDATED_BY"], "user_id"
-                ),
-                "updated_on": timestamp,
-                "created_on": timestamp,
-            }
-        )
+        self.values.append({
+            "taxon_name_id": self.map_row_by_unique_key(
+                TaxonName,
+                "legacy_id",
+                self.legacy_id_prefix + row["NAME_ID"] if row["NAME_ID"] else None,
+                "taxon_name_id",
+            ),
+            "author_id": self.map_row_by_unique_key(
+                Author, "abbreviation", row["AUTHOR"], "author_id"
+            ),
+            "author_type": self.map_enum_base(row["AUTHOR_TYPE"]),
+            "author_order": row["AUTHOR_ORD"],
+            "legacy_id_name": row["AUTHOR"],
+            "created_by": self.current_user,
+            "updated_by": self.map_row_by_unique_key(
+                UserModel, "legacy_id_name", row["UPDATED_BY"], "user_id"
+            ),
+            "updated_on": timestamp,
+            "created_on": timestamp,
+        })
 
 
 class ImportCitationUpload(ImportCitation):
@@ -105,19 +103,17 @@ class ImportCitationUpload(ImportCitation):
                         )
                     author_id = db_author.author_id
 
-                    self.values.append(
-                        {
-                            "taxon_name_id": taxon_name_id,
-                            "author_id": author_id,
-                            "author_type": author_type,
-                            "author_order": i + 1,
-                            "legacy_id_name": f"{legacy_id}:{author}" or None,
-                            "created_by": self.current_user,
-                            "updated_by": self.current_user,
-                            "updated_on": timestamp,
-                            "created_on": timestamp,
-                        }
-                    )
+                    self.values.append({
+                        "taxon_name_id": taxon_name_id,
+                        "author_id": author_id,
+                        "author_type": author_type,
+                        "author_order": i + 1,
+                        "legacy_id_name": f"{legacy_id}:{author}" or None,
+                        "created_by": self.current_user,
+                        "updated_by": self.current_user,
+                        "updated_on": timestamp,
+                        "created_on": timestamp,
+                    })
 
     def ingest(self):
         with open(self.csvfile) as csv_file:

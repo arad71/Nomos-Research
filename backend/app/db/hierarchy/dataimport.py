@@ -22,35 +22,33 @@ class ImportHierarchy(DataImportBase):
         )
 
     def import_row(self, row):
-        self.values.append(
-            {
-                "taxon_name_id": self.map_row_by_unique_key(
-                    TaxonName,
-                    "legacy_id",
-                    self.legacy_id_prefix + row["NAME_ID"] if row["NAME_ID"] else None,
-                    "taxon_name_id",
+        self.values.append({
+            "taxon_name_id": self.map_row_by_unique_key(
+                TaxonName,
+                "legacy_id",
+                self.legacy_id_prefix + row["NAME_ID"] if row["NAME_ID"] else None,
+                "taxon_name_id",
+            ),
+            "classification_system_id": self.map_row_by_unique_key(
+                ClassificationSystem,
+                "legacy_id_name",
+                row["CLASS_ID"],
+                "classification_system_id",
+            ),
+            "parent_nid": self.map_row_by_unique_key(
+                TaxonName,
+                "legacy_id",
+                (
+                    self.legacy_id_prefix + row["PARENT_NID"]
+                    if row["PARENT_NID"]
+                    else None
                 ),
-                "classification_system_id": self.map_row_by_unique_key(
-                    ClassificationSystem,
-                    "legacy_id_name",
-                    row["CLASS_ID"],
-                    "classification_system_id",
-                ),
-                "parent_nid": self.map_row_by_unique_key(
-                    TaxonName,
-                    "legacy_id",
-                    (
-                        self.legacy_id_prefix + row["PARENT_NID"]
-                        if row["PARENT_NID"]
-                        else None
-                    ),
-                    "taxon_name_id",
-                ),
-                "created_by": self.current_user,
-                "updated_by": self.map_row_by_unique_key(
-                    UserModel, "legacy_id_name", row["UPDATED_BY"], "user_id"
-                ),
-                "updated_on": row["UPDATED_ON"] or datetime.datetime.now(),
-                "created_on": row["UPDATED_ON"] or datetime.datetime.now(),
-            }
-        )
+                "taxon_name_id",
+            ),
+            "created_by": self.current_user,
+            "updated_by": self.map_row_by_unique_key(
+                UserModel, "legacy_id_name", row["UPDATED_BY"], "user_id"
+            ),
+            "updated_on": row["UPDATED_ON"] or datetime.datetime.now(),
+            "created_on": row["UPDATED_ON"] or datetime.datetime.now(),
+        })

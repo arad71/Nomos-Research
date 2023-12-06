@@ -92,16 +92,14 @@ class DataImportBase:
         return True
 
     def report_complete(self):
-        logger.info(
-            {
-                "Completed": self.import_name,
-                "rows": self.total_rows,
-                "success": self.success_count,
-                "validation": self.validation_count,
-                "errors": self.error_count,
-                "skipped": self.skip_count,
-            }
-        )
+        logger.info({
+            "Completed": self.import_name,
+            "rows": self.total_rows,
+            "success": self.success_count,
+            "validation": self.validation_count,
+            "errors": self.error_count,
+            "skipped": self.skip_count,
+        })
 
     def import_row(self, row):
         raise Exception(f"function import_data not implemented for {self.__name__}")

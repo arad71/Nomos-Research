@@ -290,13 +290,11 @@ def test_officer_permissions(
     )
     assert response.status_code == status.HTTP_200_OK
 
-    publication_json.update(
-        {
-            **UPDATE_PUBLICATION,
-            "updated_by": test_officer.user_id,
-            "updated_on": test_publication.updated_on.isoformat(),
-        }
-    )
+    publication_json.update({
+        **UPDATE_PUBLICATION,
+        "updated_by": test_officer.user_id,
+        "updated_on": test_publication.updated_on.isoformat(),
+    })
     response = client.put(
         f"/api/v1/publications/{test_publication.publication_id}",
         headers=officer_token_headers,

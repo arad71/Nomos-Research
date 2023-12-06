@@ -5,6 +5,7 @@ Revises: a61b3b720423
 Create Date: 2022-03-15 05:56:41.672526-07:00
 
 """
+
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
@@ -144,10 +145,8 @@ def upgrade():
     )
     op.create_table_comment(
         "citation",
-        (
-            "A list of all authors associated with this name,  including basionym /"
-            " original authors and editors"
-        ),
+        "A list of all authors associated with this name,  including basionym /"
+        " original authors and editors",
         existing_comment=None,
         schema=None,
     )
@@ -348,10 +347,8 @@ def upgrade():
     )
     op.create_table_comment(
         "cross_reference",
-        (
-            "All active and non-active transactions which change the usage of a name,"
-            " usually resulting in a reference to one or more other taxa "
-        ),
+        "All active and non-active transactions which change the usage of a name,"
+        " usually resulting in a reference to one or more other taxa ",
         existing_comment=None,
         schema=None,
     )
