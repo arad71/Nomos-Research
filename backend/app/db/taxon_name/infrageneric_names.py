@@ -3,16 +3,16 @@ from typing import List, Optional, Tuple
 from loguru import logger
 from pydantic import BaseModel
 
-from app.db.taxon_name.infrageneric_name_definitions.infrageneric_name import (
+from ..taxon_rank.enums import RankAbbreviationVals
+from .infrageneric_name_definitions.infrageneric_name import (
     NameComponent,
     Source,
     SubGeneraNameDefinitions,
 )
-from app.db.taxon_name.infrageneric_name_definitions.infrageneric_name_format_definitions import (
+from .infrageneric_name_definitions.infrageneric_name_format_definitions import (
     all_name_combinations,
 )
-from app.db.taxon_name.schema import TaxonNameRow
-from app.db.taxon_rank.enums import RankAbbreviationVals
+from .schema import TaxonNameRow
 
 
 class InfraGenericNameModel(BaseModel):
@@ -177,6 +177,8 @@ class InfraGenericNames:
                 new_name.formatted_name_with_author = (
                     new_name.formatted_name + " " + taxon_author
                 )
+            else:
+                new_name.formatted_name_with_author = new_name.formatted_name
             formatted_names.append(new_name)
         return formatted_names
 
@@ -221,9 +223,9 @@ class InfraGenericNames:
         # This section creates a list of the word options that can be used for word
         # selection in later steps. If the definition specifies to use the searched
         # name and the name is the searched name and the taxon has a value for the
-        # defined field, return that field. If the hierarchy rank was defined as a valid option
-        # in the definition, and the hierarchy rank exists in the taxon query data,
-        # and the field for that rank (uninomial, etc.) is populated,
+        # defined field, return that field. If the hierarchy rank was defined as a
+        # valid option in the definition, and the hierarchy rank exists in the taxon
+        # query data, and the field for that rank (uninomial, etc.) is populated,
         # then the information is saved to the list.
         name_components_list = [
             NameComponentsListModel(
@@ -255,7 +257,7 @@ class InfraGenericNames:
         name_component_list: List[NameComponentsListModel],
     ) -> NameComponentModel:
         """
-        Selects the name component based on the definition component and name component list.
+        Selects the name component based on the definition component and component list.
 
         A single word component for the name is selected and modified as defined in the
         NameComponent attributes.

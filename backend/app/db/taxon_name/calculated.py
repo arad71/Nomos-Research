@@ -19,38 +19,41 @@ def calculate_fields(
     connection: sqlalchemy.orm.Session,
     target: model.TaxonName,
 ):
-    target.canonical_name = map_canonical_name(target)
-    # If we don't have an ID yet we cannot have relationships
+    # If we don't have an ID yet, we cannot have relationships
     if hasattr(target, "taxon_name_id") and target.taxon_name_id:
-        target.author = map_authors(mapper, connection, target)
+        target.author = map_authors(target)
         target.vernacular = map_vernacular(target)
         target.all_vernaculars = map_vernaculars(target)
-
-    if any([target.canonical_name, target.author]):
-        target.scientific_name = " ".join(
-            filter(None, [target.canonical_name, target.author])
-        )
-
-        target.formatted_scientific_name = " ".join(
-            filter(
-                None,
-                [
-                    f"<i class='canonical-name'>{target.canonical_name}</i>",
-                    target.author,
-                ],
-            )
-        )
-
-    if hasattr(target, "taxon_name_id") and target.taxon_name_id:
         target.editor = map_editors(target)
+    if target.calculate_name:
+        target.canonical_name = map_canonical_name(target)
+        target.canonical_name_without_rank = map_canonical_name(target, False)
+        if any([target.canonical_name, target.author]):
+            target.scientific_name = " ".join(
+                filter(None, [target.canonical_name, target.author])
+            )
+            target.formatted_scientific_name = calculate_formatted_scientific_name(
+                target.canonical_name, target.author
+            )
 
 
-def map_canonical_name(
-    target: model.TaxonName,
-):
+def calculate_formatted_scientific_name(canonical_name: str, author: str) -> str:
+    return " ".join(
+        filter(
+            None,
+            [
+                f"<i class='canonical-name'>{canonical_name}</i>",
+                author,
+            ],
+        )
+    )
+
+
+def map_canonical_name(target: model.TaxonName, include_rank: bool = True):
     vals = [target.uninomial, target.specific_epithet]
     if (
-        target.kingdom
+        include_rank
+        and target.kingdom
         and target.kingdom.kingdom_name
         == app.db.taxon_name.constants.PLANTAE_KINGDOM_NAME
     ):
@@ -61,8 +64,6 @@ def map_canonical_name(
 
 
 def map_authors(
-    mapper: sqlalchemy.orm.mapper,
-    connection: sqlalchemy.orm.Session,
     target: model.TaxonName,
 ):
     citations = target.citations.filter_by(deleted=False)\

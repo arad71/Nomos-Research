@@ -3,22 +3,8 @@ JSON name descriptions for defining displayed names of taxon entries.
 See SubGeneraNameDefinitions class description for details on how to define a new name.
 """
 
-from app.db.taxon_name.infrageneric_name_definitions.infrageneric_name_source_definitions import (
-    source_form,
-    source_genus_or_uninomial,
-    source_section,
-    source_series,
-    source_species,
-    source_subform,
-    source_subgenus,
-    source_subsection,
-    source_subseries,
-    source_subspecies,
-    source_subvariety,
-    source_superspecies,
-    source_variety,
-    sources_below_species,
-    sources_between_genus_and_species,
+from ..infrageneric_name_definitions import (
+    infrageneric_name_source_definitions as definitions,
 )
 
 name_format_canonical = {
@@ -32,7 +18,7 @@ name_format_canonical = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": False,
             "has_parentheses": False,
-            "source": source_genus_or_uninomial,
+            "source": definitions.source_genus_or_uninomial,
         },
         {
             "word_order_placement": 2,
@@ -40,7 +26,7 @@ name_format_canonical = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": False,
             "has_parentheses": False,
-            "source": source_species,
+            "source": definitions.source_species,
         },
         {
             "word_order_placement": 3,
@@ -48,7 +34,7 @@ name_format_canonical = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": True,
             "has_parentheses": False,
-            "source": sources_below_species,
+            "source": definitions.sources_below_species,
         },
     ],
 }
@@ -64,7 +50,7 @@ name_format_canonical_without_rank = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": False,
             "has_parentheses": False,
-            "source": source_genus_or_uninomial,
+            "source": definitions.source_genus_or_uninomial,
         },
         {
             "word_order_placement": 2,
@@ -72,7 +58,7 @@ name_format_canonical_without_rank = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": False,
             "has_parentheses": False,
-            "source": source_species,
+            "source": definitions.source_species,
         },
         {
             "word_order_placement": 3,
@@ -80,7 +66,7 @@ name_format_canonical_without_rank = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": False,
             "has_parentheses": False,
-            "source": sources_below_species,
+            "source": definitions.sources_below_species,
         },
     ],
 }
@@ -96,7 +82,7 @@ name_format_infragenus = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": False,
             "has_parentheses": False,
-            "source": source_genus_or_uninomial,
+            "source": definitions.source_genus_or_uninomial,
         },
         {
             "word_order_placement": 2,
@@ -104,7 +90,7 @@ name_format_infragenus = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": False,
             "has_parentheses": True,
-            "source": sources_between_genus_and_species,
+            "source": definitions.sources_between_genus_and_species,
         },
         {
             "word_order_placement": 3,
@@ -112,7 +98,7 @@ name_format_infragenus = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": False,
             "has_parentheses": False,
-            "source": source_species,
+            "source": definitions.source_species,
         },
         {
             "word_order_placement": 4,
@@ -120,7 +106,7 @@ name_format_infragenus = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": True,
             "has_parentheses": False,
-            "source": sources_below_species,
+            "source": definitions.sources_below_species,
         },
     ],
 }
@@ -136,7 +122,7 @@ name_format_infragenus_with_rank = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": False,
             "has_parentheses": False,
-            "source": source_genus_or_uninomial,
+            "source": definitions.source_genus_or_uninomial,
         },
         {
             "word_order_placement": 2,
@@ -144,7 +130,7 @@ name_format_infragenus_with_rank = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": True,
             "has_parentheses": True,
-            "source": sources_between_genus_and_species,
+            "source": definitions.sources_between_genus_and_species,
         },
         {
             "word_order_placement": 3,
@@ -152,7 +138,7 @@ name_format_infragenus_with_rank = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": False,
             "has_parentheses": False,
-            "source": source_species,
+            "source": definitions.source_species,
         },
         {
             "word_order_placement": 4,
@@ -160,7 +146,7 @@ name_format_infragenus_with_rank = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": True,
             "has_parentheses": False,
-            "source": sources_below_species,
+            "source": definitions.sources_below_species,
         },
     ],
 }
@@ -176,7 +162,7 @@ name_format_infragenus_without_parentheses = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": False,
             "has_parentheses": False,
-            "source": source_genus_or_uninomial,
+            "source": definitions.source_genus_or_uninomial,
         },
         {
             "word_order_placement": 2,
@@ -184,7 +170,7 @@ name_format_infragenus_without_parentheses = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": True,
             "has_parentheses": False,
-            "source": sources_between_genus_and_species,
+            "source": definitions.sources_between_genus_and_species,
         },
         {
             "word_order_placement": 3,
@@ -192,7 +178,7 @@ name_format_infragenus_without_parentheses = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": False,
             "has_parentheses": False,
-            "source": source_species,
+            "source": definitions.source_species,
         },
         {
             "word_order_placement": 4,
@@ -200,7 +186,7 @@ name_format_infragenus_without_parentheses = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": True,
             "has_parentheses": False,
-            "source": sources_below_species,
+            "source": definitions.sources_below_species,
         },
     ],
 }
@@ -216,7 +202,7 @@ name_format_infragenus_without_parentheses_without_rank = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": False,
             "has_parentheses": False,
-            "source": source_genus_or_uninomial,
+            "source": definitions.source_genus_or_uninomial,
         },
         {
             "word_order_placement": 2,
@@ -224,7 +210,7 @@ name_format_infragenus_without_parentheses_without_rank = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": False,
             "has_parentheses": False,
-            "source": sources_between_genus_and_species,
+            "source": definitions.sources_between_genus_and_species,
         },
         {
             "word_order_placement": 3,
@@ -232,7 +218,7 @@ name_format_infragenus_without_parentheses_without_rank = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": False,
             "has_parentheses": False,
-            "source": source_species,
+            "source": definitions.source_species,
         },
         {
             "word_order_placement": 4,
@@ -240,7 +226,7 @@ name_format_infragenus_without_parentheses_without_rank = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": False,
             "has_parentheses": False,
-            "source": sources_below_species,
+            "source": definitions.sources_below_species,
         },
     ],
 }
@@ -259,7 +245,7 @@ name_format_full_hierarchy = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": False,
             "has_parentheses": False,
-            "source": source_genus_or_uninomial,
+            "source": definitions.source_genus_or_uninomial,
         },
         {
             "word_order_placement": 2,
@@ -267,7 +253,7 @@ name_format_full_hierarchy = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": True,
             "has_parentheses": False,
-            "source": source_subgenus,
+            "source": definitions.source_subgenus,
         },
         {
             "word_order_placement": 3,
@@ -275,7 +261,7 @@ name_format_full_hierarchy = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": True,
             "has_parentheses": False,
-            "source": source_section,
+            "source": definitions.source_section,
         },
         {
             "word_order_placement": 4,
@@ -283,7 +269,7 @@ name_format_full_hierarchy = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": True,
             "has_parentheses": False,
-            "source": source_subsection,
+            "source": definitions.source_subsection,
         },
         {
             "word_order_placement": 5,
@@ -291,7 +277,7 @@ name_format_full_hierarchy = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": True,
             "has_parentheses": False,
-            "source": source_series,
+            "source": definitions.source_series,
         },
         {
             "word_order_placement": 6,
@@ -299,7 +285,7 @@ name_format_full_hierarchy = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": True,
             "has_parentheses": False,
-            "source": source_subseries,
+            "source": definitions.source_subseries,
         },
         {
             "word_order_placement": 7,
@@ -307,7 +293,7 @@ name_format_full_hierarchy = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": True,
             "has_parentheses": False,
-            "source": source_superspecies,
+            "source": definitions.source_superspecies,
         },
         {
             "word_order_placement": 8,
@@ -315,7 +301,7 @@ name_format_full_hierarchy = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": False,
             "has_parentheses": False,
-            "source": source_species,
+            "source": definitions.source_species,
         },
         {
             "word_order_placement": 9,
@@ -323,7 +309,7 @@ name_format_full_hierarchy = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": True,
             "has_parentheses": False,
-            "source": source_subspecies,
+            "source": definitions.source_subspecies,
         },
         {
             "word_order_placement": 10,
@@ -331,7 +317,7 @@ name_format_full_hierarchy = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": True,
             "has_parentheses": False,
-            "source": source_variety,
+            "source": definitions.source_variety,
         },
         {
             "word_order_placement": 11,
@@ -339,7 +325,7 @@ name_format_full_hierarchy = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": True,
             "has_parentheses": False,
-            "source": source_subvariety,
+            "source": definitions.source_subvariety,
         },
         {
             "word_order_placement": 12,
@@ -347,7 +333,7 @@ name_format_full_hierarchy = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": True,
             "has_parentheses": False,
-            "source": source_form,
+            "source": definitions.source_form,
         },
         {
             "word_order_placement": 13,
@@ -355,7 +341,7 @@ name_format_full_hierarchy = {
             "static_string": {"is_static": False, "value": ""},
             "use_rank_abbreviation": True,
             "has_parentheses": False,
-            "source": source_subform,
+            "source": definitions.source_subform,
         },
     ],
 }

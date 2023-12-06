@@ -1,5 +1,6 @@
 /frontend/node_modules/
 /frontend/build/
+backend/log
 
 ### Python ###
 # Byte-compiled / optimized / DLL files

@@ -96,10 +96,14 @@ Running `make help` will give you a list of possible commands:
  help:          Print commands help.
  build:         Build Docker containers
  up:            Up Docker containers
+ stop:          Stop the stack
+ start:         Start the stack
+ pause:         Pause the stack
+ unpause:       Unpause the stack
  lint:          Run lint on backend
  format:        Reformat code in the backend
  update-locks:  Update lockfile pre-release
- down:          Down Docker containers
+ down:          Stop and remove Docker containers. Removes the containers but leaves *persistent* volumes intact. Use kill-it-with fire to remove everything.
  kill-it-with-fire: Delete everything
  restart:       Restart Docker containers
  test:          Run tests
@@ -112,6 +116,9 @@ Running `make help` will give you a list of possible commands:
                 logs backend: View `backend` container logs.
                 logs nginx frontend: View `nginx` and `frontend` containers logs.
  upgrade:       Upgrade database with migrations
+ downgrade:     Downgrade database with migrations
+ autogenerate:  Generate a database migration from the code. eg `make autogenerate "Add New Field"`
+ calculate_names: Calculate taxon name versions
  shell:         Run bash in the backend
 ```
 ### Sample data seed

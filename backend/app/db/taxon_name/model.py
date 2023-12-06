@@ -1,7 +1,7 @@
 import sqlalchemy
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import backref, column_property, relationship
+from sqlalchemy.orm import backref, relationship
 from sqlalchemy.schema import Index
 from sqlalchemy.types import Enum
 
@@ -13,6 +13,14 @@ from . import calculated, constants, enums
 class TaxonName(BaseModel, TableMixin):
     __tablename__ = "taxon_name"
     name_plural = "taxon_names"
+    __repr_attrs__ = [
+        "taxon_name_id",
+        "scientific_name",
+        "canonical_name",
+        "vernacular",
+        "legacy_id",
+    ]
+    calculate_name: bool = True
     taxon_name_id = sqlalchemy.Column(
         sqlalchemy.Integer, primary_key=True, comment=constants.TAXON_NAME_ID
     )
@@ -34,6 +42,7 @@ class TaxonName(BaseModel, TableMixin):
     taxon_rank = relationship("TaxonRank", backref=name_plural)
     uninomial = sqlalchemy.Column(sqlalchemy.String, index=True)
     canonical_name = sqlalchemy.Column(sqlalchemy.String, index=True)
+    canonical_name_without_rank = sqlalchemy.Column(sqlalchemy.String, index=True)
     scientific_name = sqlalchemy.Column(sqlalchemy.String, index=True)
     formatted_scientific_name = sqlalchemy.Column(sqlalchemy.String)
     specific_epithet = sqlalchemy.Column(sqlalchemy.String(70), index=True)
@@ -145,12 +154,7 @@ class TaxonName(BaseModel, TableMixin):
     authorised_by = sqlalchemy.Column(sqlalchemy.String(16))
     authorised_on = sqlalchemy.Column(sqlalchemy.DateTime)
     legacy_id = sqlalchemy.Column(sqlalchemy.String)
-    canonical_name_without_rank = column_property(
-        sqlalchemy.func.CONCAT_WS(
-            " ", uninomial, specific_epithet, infraspecific_epithet
-        ),
-        deferred=True,
-    )
+
     admin_comment = sqlalchemy.Column(sqlalchemy.String)
     kingdom_name = association_proxy("kingdom", "kingdom_name")
     rank_name = association_proxy("taxon_rank", "rank_name")

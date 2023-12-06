@@ -1,10 +1,9 @@
-
 FROM python:3.9
 # If you're using a different user on your system other than the first user you'll have to change these
 ARG USER_ID=1000
 ARG GROUP_ID=1000
 
-RUN mkdir /app /legacy_data
+RUN mkdir -p /app/log /legacy_data
 WORKDIR /app
 
 RUN \
@@ -26,4 +25,5 @@ RUN \
 
 USER app
 COPY . .
+RUN touch /app/log/calculate.log
 ENV PATH="$PATH:/app/bin"

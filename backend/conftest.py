@@ -1,10 +1,11 @@
 import datetime
 import typing as t
 
+import loguru
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, event
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy_utils import create_database, database_exists, drop_database
 
 from app.core import config, security
@@ -242,19 +243,28 @@ def test_citation(test_db, test_taxon_name, test_author, test_superuser) -> Cita
     Citation for testing
     """
 
+    return create_citation(test_author, test_db, test_superuser, test_taxon_name)
+
+
+def create_citation(
+    author: Author,
+    db: Session,
+    user: User,
+    taxon_name: TaxonName,
+) -> Citation:
     now = datetime.datetime.utcnow()
     citation = Citation(
-        taxon_name_id=test_taxon_name.taxon_name_id,
-        author_id=test_author.author_id,
+        taxon_name_id=taxon_name.taxon_name_id,
+        author_id=author.author_id,
         author_type="current",
         author_order=0,
-        updated_by=test_superuser.user_id,
+        updated_by=user.user_id,
         updated_on=now,
-        created_by=test_superuser.user_id,
+        created_by=user.user_id,
         created_on=now,
     )
-    test_db.add(citation)
-    test_db.commit()
+    db.add(citation)
+    db.commit()
     return citation
 
 
@@ -356,8 +366,8 @@ def create_hierarchy(
     name: TaxonName,
     parent: TaxonName,
     test_classification_system: ClassificationSystem,
-    user,
-    test_db,
+    user: User,
+    test_db: Session,
 ) -> Hierarchy:
     hierarchy = Hierarchy(
         parent_nid=parent.taxon_name_id,
@@ -421,6 +431,42 @@ def test_hierarchies(
             test_db,
         ),
     }
+
+
+@pytest.fixture
+def test_infrageneric_hierarchies(
+    test_hierarchies,
+    test_db,
+    test_classification_system,
+    test_superuser,
+    test_panthera,
+    test_panthera_subg_eupanthera,
+    test_panthera_leo,
+    test_panthera_leo_subsp_barbarensis,
+):
+    loguru.logger.debug(test_db)
+    test_hierarchies["subg_eupanthera"] = create_hierarchy(
+        test_panthera_subg_eupanthera,
+        test_panthera,
+        test_classification_system,
+        test_superuser,
+        test_db,
+    )
+    test_hierarchies["panthera_leo"] = create_hierarchy(
+        test_panthera_leo,
+        test_panthera_subg_eupanthera,
+        test_classification_system,
+        test_superuser,
+        test_db,
+    )
+    test_hierarchies["panthera_leo_barbarensis"] = create_hierarchy(
+        test_panthera_leo_subsp_barbarensis,
+        test_panthera_leo,
+        test_classification_system,
+        test_superuser,
+        test_db,
+    )
+    return test_hierarchies
 
 
 @pytest.fixture
@@ -618,8 +664,38 @@ def test_panthera(
 
 
 @pytest.fixture
+def test_panthera_subg_eupanthera(
+    test_db,
+    test_kingdom,
+    test_publication,
+    test_superuser,
+    test_rank_subgenus,
+    test_author,
+) -> TaxonName:
+    """
+    Taxon Name for testing
+    """
+    now = datetime.datetime.utcnow()
+    return create_taxon_name(
+        "Eupanthera",
+        now,
+        test_db,
+        test_kingdom,
+        test_superuser,
+        test_rank_subgenus,
+        author=test_author,
+        year=2012,
+    )
+
+
+@pytest.fixture
 def test_panthera_leo(
-    test_db, test_kingdom, test_publication, test_superuser, test_rank_species
+    test_db,
+    test_kingdom,
+    test_publication,
+    test_superuser,
+    test_rank_species,
+    test_author,
 ) -> TaxonName:
     """
     Taxon Name for testing
@@ -633,26 +709,70 @@ def test_panthera_leo(
         test_superuser,
         test_rank_species,
         specific_epithet="leo",
+        year=1966,
+        author=test_author,
+    )
+
+
+@pytest.fixture
+def test_panthera_leo_subsp_barbarensis(
+    test_db,
+    test_superuser,
+    test_kingdom,
+    test_publication,
+    test_rank_subspecies,
+    test_author,
+) -> TaxonName:
+    """
+    Taxon Name for testing
+    """
+    now = datetime.datetime.utcnow()
+    return create_taxon_name(
+        "Panthera",
+        now,
+        test_db,
+        test_kingdom,
+        test_superuser,
+        test_rank_subspecies,
+        specific_epithet="leo",
+        infraspecific_epithet="barbarensis",
+        year=2023,
+        author=test_author,
     )
 
 
 def create_taxon_name(
-    name, now, test_db, test_kingdom, test_superuser, rank, specific_epithet=None
+    name: str,
+    now: datetime,
+    db: Session,
+    kingdom: Kingdom,
+    user: User,
+    rank: TaxonRank,
+    specific_epithet=None,
+    infraspecific_epithet=None,
+    year: int = None,
+    author: Author = None,
 ):
     taxon_name = TaxonName(
-        kingdom_id=test_kingdom.kingdom_id,
+        kingdom_id=kingdom.kingdom_id,
         rank_id=rank.taxon_rank_id,
         is_current=True,
         validated=True,
         uninomial=name,
+        form_desc_yr=year,
         specific_epithet=specific_epithet,
-        updated_by=test_superuser.user_id,
+        infraspecific_epithet=infraspecific_epithet,
+        updated_by=user.user_id,
         updated_on=now,
-        created_by=test_superuser.user_id,
+        created_by=user.user_id,
         created_on=now,
     )
-    test_db.add(taxon_name)
-    test_db.commit()
+    db.add(taxon_name)
+    db.commit()
+    if author:
+        create_citation(author, db, user, taxon_name)
+    db.refresh(taxon_name)
+
     return taxon_name
 
 
@@ -880,6 +1000,19 @@ def test_rank_genus(
 
 
 @pytest.fixture
+def test_rank_subgenus(
+    test_db, test_kingdom, test_superuser, test_rank_genus
+) -> TaxonRank:
+    """
+    Taxon Rank for testing
+    """
+
+    return create_rank(
+        test_rank_genus, "Subgenus", test_db, test_kingdom, test_superuser
+    )
+
+
+@pytest.fixture
 def test_rank_species(
     test_db, test_kingdom, test_superuser, test_rank_genus
 ) -> TaxonRank:
@@ -889,6 +1022,19 @@ def test_rank_species(
 
     return create_rank(
         test_rank_genus, "Species", test_db, test_kingdom, test_superuser
+    )
+
+
+@pytest.fixture
+def test_rank_subspecies(
+    test_db, test_kingdom, test_superuser, test_rank_species
+) -> TaxonRank:
+    """
+    Taxon Rank for testing
+    """
+
+    return create_rank(
+        test_rank_species, "Subspecies", test_db, test_kingdom, test_superuser
     )
 
 
