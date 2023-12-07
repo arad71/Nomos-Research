@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from itertools import groupby
 from operator import attrgetter
-from typing import Any, Dict, Iterable, Optional
+from typing import Optional
 
 import sqlalchemy.orm
 from sqlalchemy import asc, desc
@@ -178,9 +178,9 @@ def map_authors(
 
     This method maps the authors associated with the taxon by retrieving citations,
     filtering out deleted ones, and grouping them by author type. It then constructs
-    a formatted string containing the authors and the form description year of the taxon.
-    If the taxon doesn't belong to the animal kingdom, it returns a string of basionym
-    and current authors if any, or None if there are no authors.
+    a formatted string containing the authors and the form description year of the
+    taxon. If the taxon doesn't belong to the animal kingdom, it returns a string of
+    basionym and current authors if any, or None if there are no authors.
     """
     citations = target.citations.filter_by(deleted=False) \
         .order_by(asc("author_type")) \
@@ -217,7 +217,8 @@ def map_authors(
 
 
 def stringify_citation_authors(authors: list[author_model.Author]):
-    """Convert a list of Author objects to a string representation of authors for citation.
+    """Convert a list of Author objects to a string representation of authors for
+    citation.
 
     Args:
         authors: A list of Author objects.

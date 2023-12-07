@@ -45,7 +45,7 @@ class StaticString(BaseModel):
     """
 
     is_static: bool
-    value: str
+    value: Optional[str]
 
 
 class NameComponent(BaseModel):
@@ -70,12 +70,12 @@ class NameComponent(BaseModel):
     """
 
     word_order_placement: int
-    is_optional: bool
+    is_optional: Optional[bool] = True
     static_string: StaticString
-    use_rank_abbreviation: bool
-    name_is_abbreviated: Optional[bool] = None
-    has_parentheses: bool
-    source: List[Source]
+    use_rank_abbreviation: bool = False
+    name_is_abbreviated: Optional[bool] = False
+    has_parentheses: bool = False
+    source: Optional[List[Source]] = []
 
     @property
     def sources_summary(self) -> List[str]:

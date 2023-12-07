@@ -100,6 +100,7 @@ class TaxonNameRow(BaseModel):
     scientific_name: Optional[str]
     specific_epithet: Optional[str]
     infraspecific_epithet: Optional[str]
+    is_autonym: Optional[bool]
     author: Optional[str]
     rank_name: Optional[str]
     rank_abbrev: Optional[str]

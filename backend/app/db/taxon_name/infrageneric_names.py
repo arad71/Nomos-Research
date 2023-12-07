@@ -1,18 +1,21 @@
-from typing import List, Optional, Tuple
+from typing import List, Literal, Optional, Tuple
 
 from loguru import logger
 from pydantic import BaseModel
 
+import app.db.taxon_name.calculated as calculated
+
 from ..taxon_rank.enums import RankAbbreviationVals
+from . import schema
 from .infrageneric_name_definitions.infrageneric_name import (
     NameComponent,
     Source,
     SubGeneraNameDefinitions,
 )
 from .infrageneric_name_definitions.infrageneric_name_format_definitions import (
+    PlacementType,
     all_name_combinations,
 )
-from .schema import TaxonNameRow
 
 
 class InfraGenericNameModel(BaseModel):
@@ -31,6 +34,7 @@ class InfraGenericNameModel(BaseModel):
     contributing_taxon_name_ids: List[int] = []
     info: Optional[str] = None
     searched_taxon_id: int = None
+    italicized_name: Optional[str] = None
 
 
 class NameComponentModel(BaseModel):
@@ -91,7 +95,7 @@ class InfraGenericNames:
 
     @classmethod
     def generate_names(
-        cls, searched_taxon_id: int, taxon_info: List[TaxonNameRow]
+        cls, searched_taxon_id: int, taxon_info: List[schema.TaxonNameRow]
     ) -> List[InfraGenericNameModel]:
         """
         Generates infra-generic names based on the provided query results and the
@@ -107,11 +111,11 @@ class InfraGenericNames:
         # start with an empty results list
         formatted_names = []
 
-        searched_taxon_dict: TaxonNameRow = next(
+        searched_taxon_row: schema.TaxonNameRow = next(
             filter(lambda d: d.taxon_name_id == searched_taxon_id, taxon_info),
             None,
         )
-        taxon_author = searched_taxon_dict.author if searched_taxon_dict else None
+        taxon_author = searched_taxon_row.author if searched_taxon_row else None
 
         # process each defined name included in the "all_names" list
         for definition in cls.name_definitions.definitions_list:
@@ -127,12 +131,14 @@ class InfraGenericNames:
                 searched_taxon_id=searched_taxon_id,
             )
             generated_name = ""
-
+            italicized_name = ""
             # process all the individual components of the name to build it up
             for definition_component in name_definition_components_sorted:
                 # Static words are set first
                 if definition_component.static_string.is_static:
                     generated_name += definition_component.static_string.value + " "
+                    italicized_name += definition_component.static_string.value + " "
+
                     # Move on to the next component if we just processed a static word
                     continue
                 # Get all the possible options for the component word
@@ -142,6 +148,9 @@ class InfraGenericNames:
                 # Select one single word from all possible components
                 name_component = cls._select_name_component(
                     definition_component, name_component_list
+                )
+                italicized_name_component = cls._select_name_component(
+                    definition_component, name_component_list, italicize=True
                 )
                 # Handle errors in the component selection process
                 # the info field should only be populated if there was a problem
@@ -154,6 +163,7 @@ class InfraGenericNames:
                     )
                     # erase the name progress, don't return names with problems
                     generated_name = ""
+                    italicized_name = ""
                     break
                 else:
                     # Optional components that don't exist won't have a contribution
@@ -170,22 +180,101 @@ class InfraGenericNames:
                         )
                         # update the in-progress name
                         generated_name = generated_name + name_component.name_value
+                        italicized_name = (
+                            italicized_name + italicized_name_component.name_value
+                        )
             # remove any leading/trailing white space and add the formatted name
             new_name.formatted_name = generated_name.strip()
+            new_name.italicized_name = italicized_name.strip()
+
             if taxon_author:
                 new_name.author = taxon_author
-                new_name.formatted_name_with_author = (
-                    new_name.formatted_name + " " + taxon_author
-                )
+                if searched_taxon_row.is_autonym:
+                    placeholder = PlacementType.AUTONYM
+                else:
+                    placeholder = PlacementType.STANDARD
+                cls.replace_placeholder_authors(new_name, placeholder, taxon_author)
             else:
                 new_name.formatted_name_with_author = new_name.formatted_name
+            cls.strip_placeholders(new_name)
             formatted_names.append(new_name)
         return formatted_names
+
+    @classmethod
+    def replace_placeholder_authors(
+        cls,
+        new_name: InfraGenericNameModel,
+        placeholder: Literal[
+            PlacementType.AUTONYM,
+            PlacementType.STANDARD,
+        ],
+        author: str,
+    ):
+        new_name.formatted_name_with_author = new_name.formatted_name.replace(
+            placeholder.value, author
+        )
+        new_name.italicized_name = new_name.italicized_name.replace(
+            placeholder.value, author
+        )
+
+    @classmethod
+    def strip_placeholders(cls, new_name: InfraGenericNameModel):
+        """
+        Strips the placeholders from a string.
+
+        This class method iterates through all placeholders in
+        the PlacementType enumeration and removes them from the string.
+
+        Args:
+            new_name (str): The string from which to remove placeholders.
+
+        Returns:
+            None.
+
+        Class Attributes:
+            PlacementType: An enumeration of possible placeholders.
+
+        Example:
+            MyClass.strip_placeholders("Hello, {name}")
+
+        Note: This method modifies the new_name input in-place, it does not return a
+        new string.
+
+        """
+        for placeholder in PlacementType:
+            cls.strip_placeholder(new_name, placeholder)
+
+    @classmethod
+    def strip_placeholder(cls, name: InfraGenericNameModel, placeholder: PlacementType):
+        """
+        Strips the predefined placeholder from the given fields in the name model
+        object.
+
+        This class method modifies the following fields of the InfraGenericNameModel
+        instance: 'formatted_name', 'formatted_name_with_author', and 'italicized_name'.
+        It checks each of these fields and if the placeholder string exists,
+        it is removed from the field value.
+
+        Args: name (InfraGenericNameModel): The model instance where placeholder
+        needs to be removed. placeholder (PlacementType): The placeholder string that
+        needs to be removed from the fields.
+
+        Returns:
+            None. This method modifies the 'name' object in-place.
+
+        Example:
+            ```python
+            strip_placeholder(nameInstance, PlacementType('<placeholder>'))
+            ```
+        """
+        for attr in ["formatted_name", "formatted_name_with_author", "italicized_name"]:
+            value = name.__getattribute__(attr)
+            name.__setattr__(attr, value.replace(f" {placeholder.value}", ""))
 
     @staticmethod
     def _get_name_components(
         component_sources: List[Source],
-        taxon_info: List[TaxonNameRow],
+        taxon_info: List[schema.TaxonNameRow],
         searched_taxon_id: int,
     ) -> List[NameComponentsListModel]:
         """
@@ -255,6 +344,7 @@ class InfraGenericNames:
     def _select_name_component(
         definition_component: NameComponent,
         name_component_list: List[NameComponentsListModel],
+        italicize: bool = False,
     ) -> NameComponentModel:
         """
         Selects the name component based on the definition component and component list.
@@ -298,6 +388,8 @@ class InfraGenericNames:
             action = "Name value string"
             name_component.source_name_value = name_component_source.value
             name_value = name_component_source.value.strip()
+            if italicize:
+                name_value = calculated.italicize_name(name_value)
 
             # handle the definition word manipulation settings
             if definition_component.name_is_abbreviated:
@@ -313,7 +405,7 @@ class InfraGenericNames:
                     name_value = rank_abbreviation + " " + name_value
             if definition_component.has_parentheses:
                 action = "Parentheses"
-                name_value = "(" + name_value + ")"
+                name_value = f"({name_value})"
             name_component.name_value = name_value + " "
 
         except Exception as e:
