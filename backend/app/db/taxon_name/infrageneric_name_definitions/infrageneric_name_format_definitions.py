@@ -181,7 +181,7 @@ name_format_infragenus_with_rank = {
             "source": definitions.sources_below_species,
         },
         {
-            "word_order_placement": 4,
+            "word_order_placement": 6,
             "static_string": {
                 "is_static": True,
                 "value": PlacementType.STANDARD.value,
