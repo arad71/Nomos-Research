@@ -6,11 +6,6 @@ Create Date: 2023-11-28 13:13:40.263905+08:00
 
 """
 
-from sqlalchemy.orm import sessionmaker
-
-import app.db.taxon_name.crud as crud
-from alembic import op
-
 # revision identifiers, used by Alembic.
 revision = "afa0642dcf2b"
 down_revision = "958dbfd23694"
@@ -19,13 +14,8 @@ depends_on = None
 
 
 def upgrade():
-    session = sessionmaker(bind=op.get_bind())
-    with session() as db:
-        crud.TaxonNameCrud.calculate_name_formats(
-            db=db,
-            use_fallback=True,
-        )
-        db.commit()
+    # Intentionally blank as this migration is being replaced by a cron job.
+    pass
 
 
 def downgrade():
