@@ -1,4 +1,4 @@
-from typing import List, Literal, Optional, Tuple
+from typing import List, Optional, Tuple
 
 from loguru import logger
 from pydantic import BaseModel
@@ -204,10 +204,7 @@ class InfraGenericNames:
     def replace_placeholder_authors(
         cls,
         new_name: InfraGenericNameModel,
-        placeholder: Literal[
-            PlacementType.AUTONYM,
-            PlacementType.STANDARD,
-        ],
+        placeholder: PlacementType,
         author: str,
     ):
         new_name.formatted_name_with_author = new_name.formatted_name.replace(
