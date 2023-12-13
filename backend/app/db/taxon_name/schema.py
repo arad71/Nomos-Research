@@ -108,7 +108,8 @@ class TaxonNameRow(BaseModel):
 
 
 class NameStringComponents(BaseModel):
-    binomial: Optional[str] = None
+    uninomial: Optional[str] = None
+    specific_epithet: Optional[str] = None
     rank_abbreviation: Optional[str] = None
     infraspecific_epithet: Optional[str] = None
     author: Optional[str] = None

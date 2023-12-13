@@ -4,8 +4,8 @@ import functools
 import os
 
 import pytest
+from sqlalchemy import orm
 
-from app.console import console
 from app.db.author.crud import AuthorCrud
 from app.db.author.model import Author
 from app.db.citation.model import Citation
@@ -15,6 +15,7 @@ from app.db.taxon_name import schema
 from app.db.taxon_name.calculated import calculate_scientific_name_string
 from app.db.taxon_name.model import TaxonName
 from app.db.taxon_rank.model import TaxonRank
+from app.db.user.model import User
 
 NOW = datetime.datetime.utcnow()
 AUTHOR_FIELDS = {
@@ -167,7 +168,7 @@ def get_data():
 
 # Use pytest.mark.parametrize to feed the data to test function
 @pytest.mark.parametrize("row", get_data())
-def test_calculated_fields(test_db, test_superuser, row):
+def test_calculated_fields(test_db: orm.Session, test_superuser: User, row: dict):
     user_id = test_superuser.user_id
     kingdom = get_kingdom(test_db, row["kingdom_name"], user_id)
     taxon_rank = create_taxon_rank(test_db, row, kingdom.kingdom_id, user_id)
@@ -189,36 +190,41 @@ def test_calculate_formatted_scientific_name():
     assert (
         calculate_scientific_name_string(
             schema.NameStringComponents(
-                binomial="Mus musculus", author="Linnaeus, 1758"
+                uninomial="Mus", specific_epithet="musculus", author="Linnaeus, 1758"
             )
         )
-        == "<i class='canonical-name'>Mus musculus</i> Linnaeus, 1758"
+        == "<i>Mus</i> <i>musculus</i> Linnaeus, 1758"
     )
     assert (
         calculate_scientific_name_string(
-            schema.NameStringComponents(binomial="Felis catus", author="")
+            schema.NameStringComponents(
+                uninomial="Felis", specific_epithet="catus", author=""
+            )
         )
-        == "<i class='canonical-name'>Felis catus</i>"
+        == "<i>Felis</i> <i>catus</i>"
     )
 
     # testing with None author
     assert (
         calculate_scientific_name_string(
-            schema.NameStringComponents(binomial="Canis lupus", author=None)
+            schema.NameStringComponents(
+                uninomial="Canis", specific_epithet="lupus", author=None
+            )
         )
-        == "<i class='canonical-name'>Canis lupus</i>"
+        == "<i>Canis</i> <i>lupus</i>"
     )
 
     # testing with None name
     with pytest.raises(TypeError) as exec_info:
-        calculate_scientific_name_string(None)
+        calculate_scientific_name_string(None)  # noqa testing that an error is thrown
         assert (
             str(exec_info.value)
             == "components must be an instance of NameStringComponents"
         )
 
     autonym = schema.NameStringComponents()
-    autonym.binomial = "Poa annua"
+    autonym.uninomial = "Poa"
+    autonym.specific_epithet = "annua"
     autonym.author = "L."
     autonym.rank_abbreviation = "subsp."
     autonym.infraspecific_epithet = "annua"
@@ -232,9 +238,9 @@ def test_calculate_formatted_scientific_name():
     )
     assert (
         calculate_scientific_name_string(autonym, is_autonym=True)
-        == "<i class='canonical-name'>Poa annua</i> L. subsp. <i class='canonical-name'>annua</i>"  # noqa: E501
+        == "<i>Poa</i> <i>annua</i> L. subsp. <i>annua</i>"  # noqa: E501
     )
     assert (
         calculate_scientific_name_string(autonym, is_autonym=False)
-        == "<i class='canonical-name'>Poa annua</i> subsp. <i class='canonical-name'>annua</i> L."  # noqa: E501
+        == "<i>Poa</i> <i>annua</i> subsp. <i>annua</i> L."  # noqa: E501
     )

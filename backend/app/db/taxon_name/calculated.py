@@ -62,12 +62,15 @@ def calculate_name_fields(target: model.TaxonName):
     """
     canonical_parts = get_name_components(target)
     target.canonical_name = filter_join([
-        canonical_parts.binomial,
+        canonical_parts.uninomial,
+        canonical_parts.specific_epithet,
         canonical_parts.rank_abbreviation,
         canonical_parts.infraspecific_epithet,
     ])
     target.canonical_name_without_rank = filter_join([
-        canonical_parts.binomial, canonical_parts.infraspecific_epithet
+        canonical_parts.uninomial,
+        canonical_parts.specific_epithet,
+        canonical_parts.infraspecific_epithet,
     ])
     if any([target.canonical_name, target.author]):
         target.scientific_name = calculate_scientific_name_string(
@@ -100,7 +103,11 @@ def calculate_scientific_name_string(
     """
     if not isinstance(components, schema.NameStringComponents):
         raise TypeError("components must be an instance of NameStringComponents")
-    parts = [italicize_name(components.binomial) if italicize else components.binomial]
+    parts = []
+    for field in ["uninomial", "specific_epithet"]:
+        value = components.__getattribute__(field)
+        if value:
+            parts.append(italicize_name(value) if italicize else value)
     infraspecific_epithet = (
         italicize_name(components.infraspecific_epithet)
         if italicize
@@ -127,9 +134,7 @@ def italicize_name(name: str) -> str | None:
     Returns:
         An html string with the italicized name, or None if the name is None or empty.
     """
-    return (
-        f"<i class='canonical-name'>{name}</i>" if is_not_none_or_empty(name) else None
-    )
+    return f"<i>{name}</i>" if is_not_none_or_empty(name) else None
 
 
 def get_name_components(
@@ -151,7 +156,8 @@ def get_name_components(
     the canonical name for TaxonName objects in the Plantae or Fungi kingdoms.
     """
     vals = schema.NameStringComponents()
-    vals.binomial = filter_join([target.uninomial, target.specific_epithet])
+    vals.uninomial = target.uninomial
+    vals.specific_epithet = target.specific_epithet
     if include_rank and target.kingdom_name in (
         constants.PLANTAE_KINGDOM_NAME,
         constants.FUNGI_KINGDOM_NAME,

@@ -24,7 +24,7 @@ def test_get_hierarchies(
             "created_by": test_hierarchy.created_by,
             "created_on": test_hierarchy.created_on.isoformat(),
             "deleted": False,
-            "formatted_scientific_name": "<i class='canonical-name'>Testuninomial</i>",
+            "formatted_scientific_name": "<i>Testuninomial</i>",
             "path": {
                 "path": "{}.{}".format(
                     test_hierarchy.classification_system_id,
@@ -172,9 +172,7 @@ def test_edit_hierarchy(
     new_hierarchy["taxon_name"] = response.json()["taxon_name"]
     new_hierarchy["classification_system"] = response.json()["classification_system"]
     new_hierarchy["parent_name"] = response.json()["parent_name"]
-    new_hierarchy["formatted_scientific_name"] = (
-        "<i class='canonical-name'>Testuninomial</i>"
-    )
+    new_hierarchy["formatted_scientific_name"] = "<i>Testuninomial</i>"
     new_hierarchy["path"] = {
         "path": "{}.{}".format(
             test_hierarchy.classification_system_id, test_hierarchy.taxon_name_id
@@ -227,7 +225,7 @@ def test_get_hierarchy(
         "updated_on": test_hierarchy.updated_on.isoformat(),
         "created_by": test_hierarchy.created_by,
         "created_on": test_hierarchy.created_on.isoformat(),
-        "formatted_scientific_name": "<i class='canonical-name'>Testuninomial</i>",
+        "formatted_scientific_name": "<i>Testuninomial</i>",
         "path": {
             "path": "{}.{}".format(
                 test_hierarchy.classification_system_id, test_hierarchy.taxon_name_id
