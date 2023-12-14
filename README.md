@@ -121,6 +121,18 @@ Running `make help` will give you a list of possible commands:
  calculate_names: Calculate taxon name versions
  shell:         Run bash in the backend
 ```
+
+### Periodic tasks
+
+A cron job needs to be set up for calculating updated derived taxon names. This task needs to run inside the `backend`
+container, and it needs to call the script:
+
+```shell
+/app/app/tools/taxon_name_calculation.py
+```
+Currently, this script takes approximately 2 hours to run and should be scheduled _before_ any pull from Nomos into the
+curation Taxonomy collection.
+
 ### Sample data seed
 
 There are snapshots of the production database
