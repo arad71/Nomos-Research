@@ -6,13 +6,9 @@ Create Date: 2022-04-28 21:09:00.526974-07:00
 
 """
 
-import importlib
-
 import sqlalchemy as sa
-from sqlalchemy.orm import Session
 
 from alembic import op
-from app.dataimport.wacensus import trigger_calculated_fields
 
 # revision identifiers, used by Alembic.
 revision = "062ebd1f35ba"
