@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "Nomos"
-version = "1.2.1"
+version = "1.3.0"
 description = "Nomos - Taxonomic Names Management Tool"
 authors = [
     "Bri Williams <bri.williams@gaiaresources.com.au>",
