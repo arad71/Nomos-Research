@@ -64,6 +64,9 @@ const useStyles = makeStyles({
 });
 export interface FormData {
   kingdom_id: number;
+  infraspecific_epithet: string | null;
+  specific_epithet: string | null;
+  is_autonym: boolean;
 }
 export interface FormDataProps {
   formData: FormData;
@@ -87,6 +90,12 @@ export const TaxonNameCreateEdit: FC = ({
   };
   const newNameInitialValues = {
     old_name_id: props.record?.id,
+  };
+  const validateInfraspecificEpithet = (value: string, allValues: FormData) => {
+    if (allValues.is_autonym && value !== allValues.specific_epithet) {
+      // eslint-disable-next-line max-len
+      return 'Infraspecific epithet must match with the specific epithet when autonym is true';
+    }
   };
   const { loading, permissions } = usePermissions();
   if (loading) return null;
@@ -152,7 +161,20 @@ export const TaxonNameCreateEdit: FC = ({
             <TextInput
               source="infraspecific_epithet"
               className={gridClasses.EightCol5to7span}
+              validate={validateInfraspecificEpithet}
             />
+            <FormDataConsumer>
+              {({ formData, ...rest }: FormDataProps) =>
+                formData.infraspecific_epithet && (
+                  <BooleanInput
+                    source="is_autonym"
+                    label="Autonym"
+                    className={gridClasses.EightCol7to9span}
+                    {...rest}
+                  />
+                )
+              }
+            </FormDataConsumer>
             <NumberInput
               source="form_desc_dy"
               label="Day"

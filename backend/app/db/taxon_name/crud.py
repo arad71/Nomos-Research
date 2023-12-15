@@ -9,7 +9,6 @@ from fastapi import HTTPException, status
 from pydantic import parse_obj_as
 
 import app.db.crud as crud
-import app.db.taxon_name.calculated as calculated
 import app.db.taxon_name.schema as schema
 from app.db.hierarchy.model import Hierarchy
 from app.db.informal_group.model import InformalGroup
@@ -233,6 +232,7 @@ class TaxonNameCrud(crud.Crud):
                 taxon_name.uninomial,
                 taxon_name.specific_epithet,
                 taxon_name.infraspecific_epithet,
+                taxon_name.is_autonym,
                 taxon_name.author,
                 taxon_rank.rank_name,
                 taxon_rank.rank_abbrev,
@@ -307,11 +307,12 @@ class TaxonNameCrud(crud.Crud):
         query = query.where(TaxonName.deleted == False)  # noqa: E712
         if taxon_name_id:
             query = query.where(TaxonName.taxon_name_id == taxon_name_id)
-        if offset:
-            query = query.offset(offset)
-        if limit:
-            query = query.limit(limit)
-        cls.calculation_total = query.count()
+        else:
+            if offset:
+                query = query.offset(offset)
+            if limit:
+                query = query.limit(limit)
+            cls.calculation_total = query.count()
 
         for row in rich.progress.track(
             query, total=query.count(), description="Calculating name formats"
@@ -389,11 +390,7 @@ class TaxonNameCrud(crud.Crud):
                 and name_entry.formatted_name_with_author
             ):
                 taxon_name.scientific_name = name_entry.formatted_name_with_author
-                taxon_name.formatted_scientific_name = (
-                    calculated.calculate_formatted_scientific_name(
-                        name_entry.formatted_name, name_entry.author
-                    )
-                )
+                taxon_name.formatted_scientific_name = name_entry.italicized_name
         if db.is_modified(taxon_name):
             taxon_name.calculate_name = False
             if current_user:

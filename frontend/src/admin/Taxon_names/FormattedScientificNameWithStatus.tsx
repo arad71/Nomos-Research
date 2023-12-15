@@ -35,9 +35,10 @@ export const FormattedScientificNameWithStatus = ({
     <>
       <span className={truncate ? globalClasses.titleTruncation : ''}>
         {(infragenus && (
-          <span className={classes.title}>
-            <em>{infragenus.formatted_name}</em> {infragenus.author}
-          </span>
+          <span
+            className={classes.title}
+            dangerouslySetInnerHTML={{ __html: infragenus.italicized_name }}
+          />
         )) || (
           <RichTextField
             source="formatted_scientific_name"

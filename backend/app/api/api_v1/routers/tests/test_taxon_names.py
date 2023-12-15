@@ -20,6 +20,7 @@ def test_get_taxon_names(
             "taxon_rank": response_json["taxon_rank"],
             "is_current": True,
             "validated": True,
+            "is_autonym": False,
             "canonical_name": test_taxon_name.canonical_name,
             "canonical_name_without_rank": test_taxon_name.canonical_name_without_rank,
             "updated_by": test_taxon_name.updated_by,
@@ -29,7 +30,7 @@ def test_get_taxon_names(
             "classification_system_ids": [],
             "path": [],
             "scientific_name": "Testuninomial",
-            "formatted_scientific_name": "<i class='canonical-name'>Testuninomial</i>",
+            "formatted_scientific_name": "<i>Testuninomial</i>",
             "uninomial": "Testuninomial",
             "deleted": False,
         }
@@ -84,6 +85,7 @@ def test_edit_taxon_name(
         "rank_id": test_taxon_rank.taxon_rank_id,
         "is_current": test_taxon_name.is_current,
         "validated": test_taxon_name.validated,
+        "is_autonym": True,
         "canonical_name": test_taxon_name.canonical_name,
         "canonical_name_without_rank": test_taxon_name.canonical_name_without_rank,
         "updated_by": test_superuser.user_id,
@@ -91,7 +93,7 @@ def test_edit_taxon_name(
         "created_by": test_superuser.user_id,
         "created_on": test_taxon_name.created_on.isoformat(),
         "classification_system_ids": [],
-        "formatted_scientific_name": "<i class='canonical-name'>Testuninomial</i>",
+        "formatted_scientific_name": "<i>Testuninomial</i>",
         "path": [],
         "scientific_name": "Testuninomial",
         "uninomial": "Testuninomial",
@@ -160,6 +162,7 @@ def test_get_taxon_name(
         "rank_id": test_taxon_name.rank_id,
         "taxon_rank": response_json["taxon_rank"],
         "is_current": test_taxon_name.is_current,
+        "is_autonym": False,
         "validated": test_taxon_name.validated,
         "canonical_name": test_taxon_name.canonical_name,
         "canonical_name_without_rank": test_taxon_name.canonical_name_without_rank,
@@ -168,7 +171,7 @@ def test_get_taxon_name(
         "created_by": test_taxon_name.created_by,
         "created_on": test_taxon_name.created_on.isoformat(),
         "classification_system_ids": [],
-        "formatted_scientific_name": "<i class='canonical-name'>Testuninomial</i>",
+        "formatted_scientific_name": "<i>Testuninomial</i>",
         "path": [],
         "scientific_name": "Testuninomial",
         "uninomial": "Testuninomial",
@@ -207,6 +210,7 @@ def test_canonical_name_1(
         "formatted_scientific_name": (
             test_taxon_name_canonical_name_1.formatted_scientific_name
         ),
+        "is_autonym": False,
         "updated_by": test_taxon_name_canonical_name_1.updated_by,
         "updated_on": test_taxon_name_canonical_name_1.updated_on.isoformat(),
         "created_by": test_taxon_name_canonical_name_1.created_by,
@@ -248,6 +252,7 @@ def test_canonical_name_2(
         "formatted_scientific_name": (
             test_taxon_name_canonical_name_2.formatted_scientific_name
         ),
+        "is_autonym": False,
         "updated_by": test_taxon_name_canonical_name_2.updated_by,
         "updated_on": test_taxon_name_canonical_name_2.updated_on.isoformat(),
         "created_by": test_taxon_name_canonical_name_2.created_by,
@@ -299,6 +304,7 @@ def test_canonical_name_3(
         "classification_system_ids": [],
         "path": [],
         "deleted": False,
+        "is_autonym": False,
     }
 
 

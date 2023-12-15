@@ -163,6 +163,7 @@ const postListColumns = {
   uninomial: <TextField source="uninomial" />,
   specific_epithet: <TextField source="specific_epithet" />,
   infraspecific_epithet: <TextField source="infraspecific_epithet" />,
+  is_autonym: <BooleanField source="is_autonym" label="Is autonym?" />,
   publication_id: (
     <ReferenceField
       source="publication_id"

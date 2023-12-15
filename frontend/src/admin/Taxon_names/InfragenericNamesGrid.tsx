@@ -1,4 +1,10 @@
-import { Datagrid, FunctionField, Loading, TextField } from 'react-admin';
+import {
+  Datagrid,
+  FunctionField,
+  Loading,
+  RichTextField,
+  TextField,
+} from 'react-admin';
 import React, { PropsWithChildren } from 'react';
 import { InfragenericData } from './TaxonTypes';
 import useFetchInfragenericNames from './useFetchInfragenericNames';
@@ -41,6 +47,7 @@ export const InfragenericNamesGrid = (props: PropsWithChildren<any>) => {
       <TextField source="formatted_name" />
       <TextField source="author" />
       <TextField source="formatted_name_with_author" />
+      <RichTextField source="italicized_name" />
       <FunctionField
         source="contributing_taxon_names"
         render={(record: InfragenericData) =>

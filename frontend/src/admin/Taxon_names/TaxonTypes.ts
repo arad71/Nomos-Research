@@ -2,6 +2,7 @@ export type InfragenericData = {
   id: number;
   name_version: string;
   formatted_name: string;
+  italicized_name: string;
   author: string;
   formatted_name_with_author: string;
   contributing_taxon_names: [string];
