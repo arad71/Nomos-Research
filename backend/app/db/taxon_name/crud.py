@@ -318,7 +318,7 @@ class TaxonNameCrud(crud.Crud):
             query, total=query.count(), description="Calculating name formats"
         ):
             cls.calculate_names_for_row(db, row, current_user, use_fallback)
-        db.flush()
+        db.commit()
         loguru.logger.debug(cls.format_message())
         loguru.logger.info("Calculation completed")
         loguru.logger.remove(log)
@@ -401,6 +401,7 @@ class TaxonNameCrud(crud.Crud):
         db.add(taxon_name)
         cls.calculation_count += 1
         if cls.calculation_count % 100 == 0:
+            db.commit()
             loguru.logger.debug(cls.format_message())
 
     @classmethod
