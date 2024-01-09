@@ -58,3 +58,5 @@ AUTONYM = (
     "its epithet, not followed by an author citation (see Art. 46). Such names "
     'are autonyms."'
 )
+REVIEW = "Mark this taxon name for periodic review."
+REVIEW_REASON = "Specify reason for the review of the name."

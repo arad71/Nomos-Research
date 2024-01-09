@@ -21,6 +21,7 @@ def test_get_taxon_names(
             "is_current": True,
             "validated": True,
             "is_autonym": False,
+            "review": False,
             "canonical_name": test_taxon_name.canonical_name,
             "canonical_name_without_rank": test_taxon_name.canonical_name_without_rank,
             "updated_by": test_taxon_name.updated_by,
@@ -97,6 +98,8 @@ def test_edit_taxon_name(
         "path": [],
         "scientific_name": "Testuninomial",
         "uninomial": "Testuninomial",
+        "review": True,
+        "review_reason": "Test Review Reason",
     }
 
     response = client.put(
@@ -176,6 +179,7 @@ def test_get_taxon_name(
         "scientific_name": "Testuninomial",
         "uninomial": "Testuninomial",
         "deleted": False,
+        "review": False,
     }
 
 
@@ -218,6 +222,7 @@ def test_canonical_name_1(
         "classification_system_ids": [],
         "path": [],
         "deleted": False,
+        "review": False,
     }
 
 
@@ -261,6 +266,7 @@ def test_canonical_name_2(
         "path": [],
         "uninomial": "Acanthiza",
         "deleted": False,
+        "review": False,
     }
 
 
@@ -305,6 +311,7 @@ def test_canonical_name_3(
         "path": [],
         "deleted": False,
         "is_autonym": False,
+        "review": False,
     }
 
 

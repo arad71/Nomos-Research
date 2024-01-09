@@ -46,8 +46,6 @@ import { EmbeddedHierarchyShow, HierarchyRowForm } from '../Hierarchies';
 import EditToolbar from '../shared/EditToolbar';
 import { canAccess, usePermissions } from '@react-admin/ra-rbac';
 
-const validateNumber = [number(), minValue(0)];
-
 const useStyles = makeStyles({
   fullWidth: {
     width: '100%',
@@ -67,6 +65,8 @@ export interface FormData {
   infraspecific_epithet: string | null;
   specific_epithet: string | null;
   is_autonym: boolean;
+  review: boolean;
+  review_reason: string | null;
 }
 export interface FormDataProps {
   formData: FormData;
@@ -95,6 +95,14 @@ export const TaxonNameCreateEdit: FC = ({
     if (allValues.is_autonym && value !== allValues.specific_epithet) {
       // eslint-disable-next-line max-len
       return 'Infraspecific epithet must match with the specific epithet when autonym is true';
+    }
+  };
+  const validateReviewReason = (
+    value: Array<string> | undefined,
+    allValues: FormData
+  ) => {
+    if (allValues.review && !value?.length) {
+      return 'A reason must be specified if you flag this taxon for review';
     }
   };
   const { loading, permissions } = usePermissions();
@@ -129,6 +137,26 @@ export const TaxonNameCreateEdit: FC = ({
             >
               <SelectInput optionText="kingdom_name" fullWidth />
             </ReferenceInput>
+            <BooleanInput
+              source="review"
+              label="Review?"
+              className={gridClasses.EightCol4to5span}
+            />
+            <FormDataConsumer>
+              {/* Add  review reason to form if the review flag has been set*/}
+              {({ formData, ...rest }: FormDataProps) =>
+                formData.review && (
+                  <TextInput
+                    source="review_reason"
+                    label="Review reason"
+                    placeholder="Separate multiple reasons with a semicolon (;)"
+                    className={gridClasses.EightCol5to9span}
+                    validate={validateReviewReason}
+                    {...rest}
+                  />
+                )
+              }
+            </FormDataConsumer>
             <FormDataConsumer>
               {({ formData, ...rest }: FormDataProps) => (
                 <ReferenceInput

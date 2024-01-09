@@ -61,6 +61,7 @@ export const TaxonNameFilters = () => {
       source="cross_referenced_old_name___new_name___scientific_name__contains"
       label="Accepted name"
     />,
+    <TextInput source="review_reason__contains" label="Review reason" />,
     <ReferenceArrayInput
       source="kingdom_id"
       reference="kingdoms"
@@ -88,6 +89,7 @@ export const TaxonNameFilters = () => {
     <BooleanInput label="Is current?" source="is_current" />,
     <BooleanInput label="Is validated?" source="validated" />,
     <BooleanInput label="Is autonym?" source="is_autonym" />,
+    <BooleanInput label="Review?" source="review" />,
     <SelectArrayInput
       source="publication_status"
       choices={PublicationStatus}

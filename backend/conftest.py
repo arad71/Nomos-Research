@@ -565,6 +565,8 @@ def test_checklist_name(
     test_db, test_taxon_name, test_informal_group, test_vernacular, test_panthera
 ) -> TaxonName:
     test_taxon_name.naturalised_status = NaturalisedStatus.native
+    test_taxon_name.review = True
+    test_taxon_name.review_reason = "Test review reason"
     test_db.add(test_taxon_name)
     test_vernacular.preferred = True
     test_db.add(test_vernacular)

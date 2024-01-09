@@ -53,6 +53,18 @@ const Empty = () => {
 export const TaxonNameShow: FC = (props) => {
   const classes = useStyles();
   const globalClasses = GlobalTheme();
+  const ReviewReason = () => {
+    // Output review reason if review has been set
+    const record: TaxonName = useRecordContext();
+    if (!record.review) return null;
+    return (
+      <Box className={globalClasses.fieldMargin}>
+        <Labeled label="Review reason">
+          <TextField source="review_reason" />
+        </Labeled>
+      </Box>
+    );
+  };
 
   return (
     <Show
@@ -119,6 +131,12 @@ export const TaxonNameShow: FC = (props) => {
                   <BooleanField source="is_autonym" />
                 </Labeled>
               </Box>
+              <Box className={globalClasses.fieldMargin}>
+                <Labeled label="Review?">
+                  <BooleanField source="review" />
+                </Labeled>
+              </Box>
+              <ReviewReason />
             </Box>
             <Box className={globalClasses.formRow}>
               <Box className={globalClasses.fieldMargin}>
