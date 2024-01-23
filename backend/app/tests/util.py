@@ -1,3 +1,8 @@
+from pprint import pprint
+
+from deepdiff import DeepDiff
+
+
 def assert_list_dict_equal_ignoring(
     expected: list[dict], actual: list[dict], ignore_properties: list[str]
 ):
@@ -20,7 +25,12 @@ def assert_list_dict_equal_ignoring(
         {key: value for key, value in d.items() if key not in ignore_properties}
         for d in actual
     ]
-    assert modified_expected == modified_actual
+    try:
+        assert modified_expected == modified_actual
+    except AssertionError:
+        diff = DeepDiff(modified_expected, modified_actual)
+        pprint(diff)
+        raise
 
 
 def assert_dict_equal_ignoring(

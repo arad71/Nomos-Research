@@ -15,6 +15,8 @@ class ChecklistName(BaseModel):
     infraspecificEpithet: Optional[str]
     nameRepresentations: Optional[List[str]]
     establishmentMeans: Optional[str]
+    review: bool
+    reviewReason: Optional[str]
     vernacularName: Optional[List[str]]
     informalGroups: Optional[List[str]]
     isCurrent: bool
@@ -34,6 +36,8 @@ class ChecklistName(BaseModel):
     acceptedNameCreated: Optional[datetime]
     acceptedNameUpdated: Optional[datetime]
     acceptedNameUsageId: Optional[int]
+    acceptedNameReview: Optional[bool]
+    acceptedNameReviewReason: Optional[str]
     relatedNamesCount: Optional[int]
     kingdom: Optional[str]
     division: Optional[str]
@@ -64,6 +68,8 @@ class ChecklistName(BaseModel):
                 "uninomial": "Dero",
                 "specificEpithet": "furcatus",
                 "infraspecificEpithet": "furcatus",
+                "review": False,
+                "reviewReason": None,
                 "nameRepresentations": [
                     "Dero (Aulophorus) furcatus subsp. furcatus (Müller, 1774)",
                     "Dero (Aulophorus) furcatus furcatus (Müller, 1774)",
@@ -83,6 +89,8 @@ class ChecklistName(BaseModel):
                 "acceptedNameAuthor": None,
                 "acceptedNameCurrent": None,
                 "acceptedNameValidated": None,
+                "acceptedNameReview": True,
+                "acceptedNameReviewReason": "This taxon is subject to CITES controls",
                 "relatedNamesCount": None,
                 "kingdom": "Animalia",
                 "division": None,

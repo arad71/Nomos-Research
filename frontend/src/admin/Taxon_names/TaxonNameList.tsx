@@ -164,6 +164,8 @@ const postListColumns = {
   specific_epithet: <TextField source="specific_epithet" />,
   infraspecific_epithet: <TextField source="infraspecific_epithet" />,
   is_autonym: <BooleanField source="is_autonym" label="Is autonym?" />,
+  review: <BooleanField source="review" label="Review?" />,
+  review_reason: <TextField source="review_reason" />,
   publication_id: (
     <ReferenceField
       source="publication_id"

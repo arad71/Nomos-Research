@@ -28,7 +28,7 @@ export const VernacularReferenceManyGrid = (props: {
         field: 'preferred,sort_order,vernacular_name',
         order: 'ASC,ASC,ASC',
       }}
-      empty="No vernacular name exists"
+      empty={<>No vernacular name exists</>}
       {...props.props}
     >
       <Datagrid

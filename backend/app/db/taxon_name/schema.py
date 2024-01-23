@@ -34,6 +34,18 @@ class TaxonNameBase(BaseModel):
                 )
         return is_autonym
 
+    review: Optional[bool] = Field(description=constants.REVIEW)
+    review_reason: Optional[str] = Field(description=constants.REVIEW_REASON)
+
+    @validator("review_reason")
+    def validate_review_reason(cls, review_reason, values):
+        if "specific_epithet" in values and "infraspecific_epithet" in values:
+            if values["review"] and not review_reason:
+                raise ValueError(
+                    "If review is set then you need to specify a review reason"
+                )
+        return review_reason
+
     publication_id: Optional[int] = Field(description=constants.PUBLICATION_ID)
     volume_information: Optional[str] = Field(description=constants.VOLUME_INFORMATION)
     is_current: bool = Field(description=constants.IS_CURRENT)

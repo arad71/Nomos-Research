@@ -56,6 +56,21 @@ class TaxonName(BaseModel, TableMixin):
         comment=constants.AUTONYM,
         doc=constants.AUTONYM,
     )
+    review = sqlalchemy.Column(
+        sqlalchemy.Boolean,
+        nullable=False,
+        default=False,
+        server_default=sqlalchemy.text("false"),
+        comment=constants.REVIEW,
+        doc=constants.REVIEW,
+    )
+    review_reason = sqlalchemy.Column(
+        sqlalchemy.String(),
+        index=True,
+        nullable=True,
+        comment=constants.REVIEW_REASON,
+        doc=constants.REVIEW_REASON,
+    )
     publication_id = sqlalchemy.Column(
         sqlalchemy.Integer,
         sqlalchemy.ForeignKey("publication.publication_id"),
