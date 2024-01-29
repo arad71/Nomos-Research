@@ -8,5 +8,5 @@ class InformalGroupCrud(crud.Crud):
     name = "Informal Group"
     search_fields = [
         "taxon_name___scientific_name", 
-        "classification_system___class_desc"
+        "classification_system___class_desc",
     ]
