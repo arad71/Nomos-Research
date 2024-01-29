@@ -380,19 +380,21 @@ class TaxonNameCrud(crud.Crud):
         for name_entry in infrageneric_names:
             if name_entry.name_version == CANONICAL and name_entry.formatted_name:
                 taxon_name.canonical_name = name_entry.formatted_name
+                taxon_name.calculate_name = False
             elif (
                 name_entry.name_version == CANONICAL_WITHOUT_RANK
                 and name_entry.formatted_name
             ):
                 taxon_name.canonical_name_without_rank = name_entry.formatted_name
+                taxon_name.calculate_name = False
             elif (
                 name_entry.name_version == INFRAGENUS_WITH_RANK
                 and name_entry.formatted_name_with_author
             ):
                 taxon_name.scientific_name = name_entry.formatted_name_with_author
                 taxon_name.formatted_scientific_name = name_entry.italicized_name
+                taxon_name.calculate_name = False
         if db.is_modified(taxon_name):
-            taxon_name.calculate_name = False
             if current_user:
                 taxon_name.updated_by = current_user
             cls.calculation_modified += 1
