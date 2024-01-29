@@ -10,17 +10,12 @@ import {
 } from 'react-admin';
 //import ConservationType from '../Conservation_codes/ConservationType';
 import { addDeletedFilterIfApplicable } from '../shared/SelectableFilters';
+import ScientificNameReference from '../Taxon_names/ScientificNameReference';
 
 export const InformalGroupFilters = function () {
   const filters = [
     <SearchInput source="q" alwaysOn />,
-    <ReferenceArrayInput
-      source="taxon_name_id"
-      reference="taxon_names"
-      sort={{ field: 'formatted_scientific_name', order: 'ASC' }}
-    >
-      <AutocompleteArrayInput optionText="scientific_name" />
-    </ReferenceArrayInput>,
+    <ScientificNameReference source="taxon_name_id" />,
     <ReferenceArrayInput
       source="classification_system_id"
       reference="classification_systems"
