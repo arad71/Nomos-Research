@@ -8,7 +8,6 @@ import {
   ReferenceArrayInput,
   AutocompleteArrayInput,
 } from 'react-admin';
-//import ConservationType from '../Conservation_codes/ConservationType';
 import { addDeletedFilterIfApplicable } from '../shared/SelectableFilters';
 import ScientificNameReference from '../Taxon_names/ScientificNameReference';
 
@@ -21,7 +20,10 @@ export const InformalGroupFilters = function () {
       reference="classification_systems"
       sort={{ field: 'class_desc', order: 'ASC' }}
     >
-      <AutocompleteArrayInput optionText="class_desc" />
+      <SelectArrayInput
+        optionText="class_desc"
+        filter={{ class_type: 'informal' }}
+      />
     </ReferenceArrayInput>,
   ];
   addDeletedFilterIfApplicable(filters);
