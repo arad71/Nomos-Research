@@ -1,62 +1,136 @@
 import React, { FC } from 'react';
 import {
-  BooleanField,
   Datagrid,
   DateField,
   EditButton,
   ReferenceField,
   RichTextField,
   TextField,
+  BooleanField,
+  TopToolbar,
+  FilterButton,
+  CreateButton,
 } from 'react-admin';
 import { List, WithPermissions } from '@react-admin/ra-rbac';
+import { DefaultPagination, useCanBulkDelete } from '../shared';
 import {
-  DefaultPagination,
-  selectableFilters,
-  useCanBulkDelete,
-} from '../shared';
+  ListProps,
+  SelectColumnsButton,
+  useSelectedColumns,
+} from '@react-admin/ra-preferences';
+import ResetPreferenceButton from '../shared/ResetPreferenceButton';
+
+import { InformalGroupFilters } from './InformalGroupFilters';
 import DeleteIcon from '@material-ui/icons/Delete';
 import VisibilityIcon from '@material-ui/icons/Visibility';
+import BatchExportButton from '../shared/BatchExportButton';
 
-export const InformalGroupList: FC = (props) => (
-  <List
-    {...props}
-    sort={{ field: 'updated_on', order: 'DESC' }}
-    perPage={100}
-    pagination={<DefaultPagination />}
-    filters={selectableFilters()}
-    bulkActionButtons={useCanBulkDelete()}
-  >
-    <Datagrid rowClick="show">
-      <ReferenceField
-        source="classification_system_id"
-        reference="classification_systems"
-        sortBy="classification_system___class_desc"
-        link="show"
-      >
-        <TextField source="class_desc" />
-      </ReferenceField>
-      <ReferenceField
-        source="taxon_name_id"
-        reference="taxon_names"
-        sortBy="taxon_name___scientific_name"
-        link="show"
-      >
-        <RichTextField source="formatted_scientific_name" />
-      </ReferenceField>
-      <ReferenceField source="updated_by" reference="users" link="show">
-        <TextField source="full_name" />
-      </ReferenceField>
-      <DateField source="updated_on" />
-      <WithPermissions resource="informal_groups" action="viewdeleted">
-        <BooleanField
-          source="deleted"
-          TrueIcon={DeleteIcon}
-          FalseIcon={VisibilityIcon}
-        />
-      </WithPermissions>
-      <WithPermissions resource="informal_groups" action="edit">
-        <EditButton />
-      </WithPermissions>
-    </Datagrid>
-  </List>
+const postListColumns = {
+  id: <TextField source="id" />,
+  class_desc: (
+    <ReferenceField
+      source="classification_system_id"
+      reference="classification_systems"
+      label="Classification system"
+      sortBy="classification_system___class_desc"
+      link="show"
+    >
+      <TextField source="class_desc" />
+    </ReferenceField>
+  ),
+  formatted_scientific_name: (
+    <ReferenceField
+      source="taxon_name_id"
+      reference="taxon_names"
+      sortBy="taxon_name___scientific_name"
+      link="show"
+    >
+      <RichTextField source="formatted_scientific_name" />
+    </ReferenceField>
+  ),
+
+  class_type: (
+    <ReferenceField
+      source="classification_system_id"
+      reference="classification_systems"
+      label="Classification"
+      sortBy="classification_system___class_type"
+      link="show"
+    >
+      <TextField source="class_type" />
+    </ReferenceField>
+  ),
+  updated_by: (
+    <ReferenceField source="updated_by" reference="users" link="show">
+      <TextField source="full_name" />
+    </ReferenceField>
+  ),
+  updated_on: <DateField source="updated_on" />,
+};
+
+const includeColumns = new Set([
+  'class_desc',
+  'formatted_scientific_name',
+  'updated_by',
+  'updated_on',
+]);
+const excludeColumns = Object.keys(postListColumns).filter((name: string) => {
+  return !includeColumns.has(name);
+});
+const INFORMAL_GROUP_PREFERENCE = 'informal_group.list.columns';
+
+const Actions = () => (
+  <TopToolbar>
+    <FilterButton />
+    <SelectColumnsButton
+      preference={INFORMAL_GROUP_PREFERENCE}
+      columns={postListColumns}
+    />
+    <ResetPreferenceButton
+      label="Reset"
+      preferenceName={INFORMAL_GROUP_PREFERENCE}
+      defaultValue={Array.from(includeColumns)}
+    />
+    <WithPermissions resource="informal_group" action="create">
+      <CreateButton />
+    </WithPermissions>
+    <WithPermissions resource="informal_group" action="export">
+      <BatchExportButton />
+    </WithPermissions>
+  </TopToolbar>
 );
+
+export const InformalGroupList = (props: ListProps) => {
+  const columns = useSelectedColumns({
+    preferences: INFORMAL_GROUP_PREFERENCE,
+    columns: postListColumns,
+    omit: excludeColumns,
+  });
+
+  return (
+    <List
+      {...props}
+      sort={{ field: 'updated_on', order: 'DESC' }}
+      actions={<Actions />}
+      perPage={100}
+      filters={InformalGroupFilters()}
+      pagination={<DefaultPagination />}
+      bulkActionButtons={useCanBulkDelete()}
+    >
+      <Datagrid rowClick="show">
+        {columns}
+
+        <WithPermissions resource="informal_groups" action="viewdeleted">
+          <BooleanField
+            source="deleted"
+            TrueIcon={DeleteIcon}
+            FalseIcon={VisibilityIcon}
+          />
+        </WithPermissions>
+        <WithPermissions resource="informal_groups" action="edit">
+          <EditButton />
+        </WithPermissions>
+      </Datagrid>
+    </List>
+  );
+};
