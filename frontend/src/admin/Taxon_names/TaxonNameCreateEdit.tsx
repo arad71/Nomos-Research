@@ -36,6 +36,7 @@ import { Box, Typography } from '@material-ui/core';
 import { CitationRowForm } from '../Citations';
 import { ConscodesTaxonRowForm } from '../Conscode_taxons';
 import { ConservationShort } from '../Conservation_codes/ConservationShort';
+// eslint-disable-next-line max-len
 import { ConscodeTaxonReferenceManyGrid } from '../Conscode_taxons/ConscodeTaxonReferenceManyGrid';
 import { EmbeddedVernacularShow, VernacularRowForm } from '../Vernaculars';
 import { GlobalGridTheme, GlobalTheme } from '../../GlobalTheme';
