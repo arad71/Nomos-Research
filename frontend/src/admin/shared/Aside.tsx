@@ -10,6 +10,7 @@ import {
   useResourceContext,
 } from 'react-admin';
 import TaxonNameInformalGroups from '../Taxon_names/TaxonNameInformalGroups';
+import TaxonNameConscode from '../Taxon_names/TaxonNameConscode';
 import TaxonHierarchy from '../Taxon_names/TaxonHierarchy';
 import { useLocation } from 'react-router-dom';
 import { GlobalTheme } from '../../GlobalTheme';
@@ -65,8 +66,12 @@ const Aside = (props: any) => {
   const globalClasses = GlobalTheme();
   const location = useLocation();
   const currPath = location.pathname.split('/')[1];
-  const isTaxonNames = currPath == 'taxon_names';
-  const isHierarchy = currPath == 'taxon_names' || currPath == 'hierarchies';
+  const isTaxonNames =
+    currPath == 'taxon_names' || currPath == 'taxon_names_code';
+  const isHierarchy =
+    currPath == 'taxon_names' ||
+    currPath == 'taxon_names_code' ||
+    currPath == 'hierarchies';
   const record = useRecordContext();
   const resource = useResourceContext();
   const deleted =
@@ -132,6 +137,7 @@ const Aside = (props: any) => {
         </SimpleShowLayout>
       </Card>
       {isTaxonNames && <TaxonNameInformalGroups />}
+      {isTaxonNames && <TaxonNameConscode />}
       {isHierarchy && <TaxonHierarchy {...props} />}
     </Box>
   );

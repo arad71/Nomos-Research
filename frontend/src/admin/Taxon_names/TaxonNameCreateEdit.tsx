@@ -20,6 +20,7 @@ import {
   SelectArrayInput,
   SelectField,
   SelectInput,
+  DateField,
   TabbedForm,
   TextField,
   TextInput,
@@ -33,6 +34,9 @@ import AuthorType from '../Citations/AuthorType';
 import LanguageType from '../Vernaculars/LanguageType';
 import { Box, Typography } from '@material-ui/core';
 import { CitationRowForm } from '../Citations';
+import { ConscodesTaxonRowForm } from '../Conscode_taxons';
+import { ConservationShort } from '../Conservation_codes/ConservationShort';
+import { ConscodeTaxonReferenceManyGrid } from '../Conscode_taxons/ConscodeTaxonReferenceManyGrid';
 import { EmbeddedVernacularShow, VernacularRowForm } from '../Vernaculars';
 import { GlobalGridTheme, GlobalTheme } from '../../GlobalTheme';
 import { NamePageSummary } from './NamePageSummary';
@@ -45,10 +49,12 @@ import { CrossReferenceRowForm } from '../Cross_references/CrossReferenceRowForm
 import { EmbeddedHierarchyShow, HierarchyRowForm } from '../Hierarchies';
 import EditToolbar from '../shared/EditToolbar';
 import { canAccess, usePermissions } from '@react-admin/ra-rbac';
+import { Label } from '@material-ui/icons';
 
 const useStyles = makeStyles({
   fullWidth: {
     width: '100%',
+    gridColumn: '1 / 9',
   },
   bottomMargin: {
     marginBottom: '2em',
@@ -79,6 +85,9 @@ export const TaxonNameCreateEdit: FC = ({
   const globalClasses = GlobalTheme();
   const gridClasses = GlobalGridTheme();
   const citationInitialValues = {
+    taxon_name_id: props.record?.id,
+  };
+  const conscodesTaxonsInitialValues = {
     taxon_name_id: props.record?.id,
   };
   const hierarchyInitialValues = { taxon_name_id: props.record?.id };
@@ -312,6 +321,7 @@ export const TaxonNameCreateEdit: FC = ({
                 </Typography>
               )}
             </Box>
+
             <Box
               /* eslint-disable-next-line max-len */
               className={`${gridClasses.EightCol1to5span} ${globalClasses.sectionMargin}`}
@@ -464,6 +474,29 @@ export const TaxonNameCreateEdit: FC = ({
               />
             </ReferenceArrayInput>
           </Box>
+          {/* Start here */}
+          {/* Conservation Codes Section */}
+          <Box
+            /* eslint-disable-next-line max-len */
+            className={`${gridClasses.EightCol1to5span} ${globalClasses.sectionMargin}`}
+          >
+            <Box className={globalClasses.sectionMargin}>
+              <Typography variant="h5" className={globalClasses.bold}>
+                Conservation codes
+              </Typography>
+            </Box>
+          </Box>
+          <Box
+            className={`${classes.fullWidth} ${globalClasses.sectionMargin}`}
+          >
+            <ConscodeTaxonReferenceManyGrid
+              props={props}
+              source="conscode_taxon_id"
+              target="taxon_name_id"
+              label="Conservation code"
+            />
+          </Box>
+          {/* End here */}
         </FormTab>
         <FormTab
           label="Hierarchy"
@@ -706,7 +739,7 @@ export const TaxonNameCreateEdit: FC = ({
               className={`${gridClasses.EightCol1to5span} ${globalClasses.bold}`}
               gutterBottom
             >
-              Taxon Name - Notes
+              Taxon name - Notes
             </Typography>
             <TextInput
               source="comments"

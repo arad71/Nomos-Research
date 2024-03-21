@@ -22,6 +22,7 @@ import { Box, Typography } from '@material-ui/core';
 import { GlobalTheme } from '../../GlobalTheme';
 import { CrossReferenceManyGrid } from '../Cross_references';
 import { AuthorReferenceManyGrid } from '../Authors';
+import { ConscodeTaxonReferenceManyGrid } from '../Conscode_taxons';
 import { VernacularReferenceManyGrid } from '../Vernaculars';
 // eslint-disable-next-line max-len
 import { FormattedScientificNameWithStatus } from './FormattedScientificNameWithStatus';
@@ -191,6 +192,8 @@ export const TaxonNameShow: FC = (props) => {
               target="taxon_name_id"
               label="Authors"
             />
+
+            {/* Publication Section */}
             <Box className={globalClasses.sectionMargin}>
               <Typography
                 variant="h5"
@@ -211,6 +214,7 @@ export const TaxonNameShow: FC = (props) => {
                 </Labeled>
               </ReferenceField>
             </Box>
+
             {/* Vernacular Section */}
             <Box className={globalClasses.sectionMargin}>
               <Typography
@@ -299,6 +303,25 @@ export const TaxonNameShow: FC = (props) => {
                   </SingleFieldList>
                 </ReferenceManyField>
               </Box>
+            </Box>
+
+            {/* Conservation Codes Section */}
+            <Box className={globalClasses.sectionMargin}>
+              <Typography
+                variant="h5"
+                className={globalClasses.bold}
+                gutterBottom
+              >
+                Conservation codes
+              </Typography>
+            </Box>
+            <Box className={classes.bottomPadding}>
+              <ConscodeTaxonReferenceManyGrid
+                props={props}
+                source="conscode_taxon_id"
+                target="taxon_name_id"
+                label="Conservation code"
+              />
             </Box>
           </Tab>
           <Tab

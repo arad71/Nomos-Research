@@ -8,8 +8,11 @@ import {
   FilterButton,
   NumberField,
   ReferenceField,
+  ReferenceManyField,
   RichTextField,
   SelectField,
+  SingleFieldList,
+  FunctionField,
   TextField,
   TopToolbar,
 } from 'react-admin';
@@ -29,6 +32,7 @@ import ResetPreferenceButton from '../shared/ResetPreferenceButton';
 import { DefaultPagination, useCanBulkDelete } from '../shared';
 import NestedLinkField from '../shared/NestedLinkField';
 import BatchExportButton from '../shared/BatchExportButton';
+import { ConservationShortPill } from '../Conservation_codes';
 
 const postListColumns = {
   id: <TextField source="id" />,
@@ -192,6 +196,36 @@ const postListColumns = {
   external_id: <TextField source="external_id" />,
   family_code: <TextField source="family_code" />,
   vernacular: <TextField source="vernacular" />,
+  cons_code: (
+    <ReferenceManyField
+      reference="conscode_taxons"
+      target="taxon_name_id"
+      label="Conservation codes"
+      link={false}
+      sort={{
+        field: 'conservation_code___code_priority',
+        order: 'ASC',
+      }}
+      filter={{ effective_to: null }}
+    >
+      <SingleFieldList style={{ flexWrap: 'nowrap' }}>
+        <ReferenceField
+          source="conservation_code_id"
+          reference="conservation_codes"
+          link={false}
+          allowEmpty
+        >
+          <FunctionField
+            label="test"
+            style={{ fontSize: '90%' }}
+            render={(record: any) => (
+              <ConservationShortPill source="record.conservation_code_id" />
+            )}
+          />
+        </ReferenceField>
+      </SingleFieldList>
+    </ReferenceManyField>
+  ),
   editor: <TextField source="editor" />,
   naturalised_status: (
     <SelectField source="naturalised_status" choices={NaturalisedStatus} />
