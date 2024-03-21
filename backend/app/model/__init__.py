@@ -14,3 +14,5 @@ from app.db.taxon_rank.model import TaxonRank
 from app.db.user.model import User
 from app.db.user_role.model import UserRole
 from app.db.vernacular.model import Vernacular
+from app.db.conservation_code.model import Conservationcode
+from app.db.conscode_taxon.model import Conscodetaxon

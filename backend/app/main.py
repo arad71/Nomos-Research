@@ -25,6 +25,8 @@ from app.api.api_v1.routers.taxon_ranks import taxon_ranks_router
 from app.api.api_v1.routers.user_roles import user_roles_router
 from app.api.api_v1.routers.users import users_router
 from app.api.api_v1.routers.vernaculars import vernaculars_router
+from app.api.api_v1.routers.conservation_codes import conservation_codes_router
+from app.api.api_v1.routers.conscode_taxons import conscode_taxons_router
 from app.core import config
 from app.core.auth import get_current_active_user
 from app.db.init_db import init_db
@@ -113,6 +115,13 @@ app.include_router(
 )
 
 app.include_router(
+    conscode_taxons_router,
+    prefix=API_V1_URL,
+    tags=["conscode_taxons"],
+    dependencies=[Depends(get_current_active_user)],
+)
+
+app.include_router(
     cross_references_router,
     prefix=API_V1_URL,
     tags=["cross_references"],
@@ -148,6 +157,13 @@ app.include_router(
 )
 
 app.include_router(
+    conservation_codes_router,
+    prefix=API_V1_URL,
+    tags=["conservation_codes"],
+    dependencies=[Depends(get_current_active_user)],
+)
+
+app.include_router(
     taxon_names_router,
     prefix=API_V1_URL,
     tags=["taxon_names"],
@@ -167,6 +183,7 @@ app.include_router(
     tags=["vernaculars"],
     dependencies=[Depends(get_current_active_user)],
 )
+
 
 app.include_router(
     checklist_router,
