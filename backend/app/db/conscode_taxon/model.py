@@ -1,14 +1,15 @@
 from datetime import datetime
-from sqlalchemy import Column, ForeignKey, Integer, String, TIMESTAMP, Date
+
+from sqlalchemy import TIMESTAMP, Column, Date, ForeignKey, Integer, String
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.schema import Index
 
 from app.db.conscode_taxon.constants import (
-  CONSERVATION_CODE_ID, 
-  TABLE_DESCRIPTION, 
-  NOTES,
-  EFFECTIVE_FROM, 
-  EFFECTIVE_TO
+    CONSERVATION_CODE_ID,
+    EFFECTIVE_FROM,
+    EFFECTIVE_TO,
+    NOTES,
+    TABLE_DESCRIPTION,
 )
 from app.db.models import BaseModel, TableMixin
 
@@ -24,7 +25,9 @@ class Conscodetaxon(BaseModel, TableMixin):
         comment=CONSERVATION_CODE_ID,
         doc=CONSERVATION_CODE_ID,
     )
-    conservation_code = relationship("Conservationcode",  foreign_keys=[conservation_code_id], backref=name_plural)
+    conservation_code = relationship(
+        "Conservationcode", foreign_keys=[conservation_code_id], backref=name_plural
+    )
     taxon_name_id = Column(
         Integer, ForeignKey("taxon_name.taxon_name_id"), nullable=False
     )
@@ -33,17 +36,10 @@ class Conscodetaxon(BaseModel, TableMixin):
         foreign_keys=[taxon_name_id],
         backref=backref(name_plural, cascade="all, delete-orphan"),
     )
-    notes = Column(
-        String(3000),
-        nullable=True
-    )
-    
-    source = Column(
-        String(100),
-        nullable=True,
-        default='Test'
-    ) 
-        
+    notes = Column(String(3000), nullable=True)
+
+    source = Column(String(100), nullable=True, default="Test")
+
     legacy_id_columns = ["conservation_code_id", "taxon_name_id"]
     __table_args__ = (
         Index(
@@ -69,4 +65,3 @@ class Conscodetaxon(BaseModel, TableMixin):
         comment=EFFECTIVE_TO,
         doc=EFFECTIVE_TO,
     )
-    

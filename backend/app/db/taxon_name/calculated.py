@@ -336,6 +336,8 @@ def is_not_none_or_empty(s: Optional[str]) -> bool:
         Boolean indicating whether the string is not None or empty.
     """
     return s is not None and s != ""
+
+
 def map_cons_code(target):
     cons_code = (
         target.conservation_code.filter_by(deleted=False, preferred=True)
@@ -343,7 +345,7 @@ def map_cons_code(target):
         .first()
     )
     if cons_code:
-        return cons_code.source+':'+cons_code.cons_code
+        return cons_code.source + ":" + cons_code.cons_code
     return None
 
 
@@ -355,7 +357,10 @@ def map_cons_codes(target):
         return ", ".join(
             filter(
                 None,
-                [cons_code.source+':'+cons_code.cons_code for cons_code in cons_codes],
+                [
+                    cons_code.source + ":" + cons_code.cons_code
+                    for cons_code in cons_codes
+                ],
             )
         )
     return None

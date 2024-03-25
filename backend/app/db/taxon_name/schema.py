@@ -95,7 +95,7 @@ class TaxonName(TaxonNameBase, TableBase):
     taxon_rank: TaxonRank
     canonical_name: Optional[str]
     author: Optional[str] = Field(description=constants.AUTHOR)
-    cons_code: Optional[str] 
+    cons_code: Optional[str]
     scientific_name: Optional[str]
     formatted_scientific_name: Optional[str]
     canonical_name_without_rank: Optional[str]

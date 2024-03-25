@@ -1,13 +1,14 @@
+from datetime import date, datetime
 from typing import Optional
-from datetime import datetime, date
+
 from pydantic import BaseModel, Field
 
 from app.db.conservation_code import enums
 from app.db.conservation_code.constants import (
-    CONSERVATION_CODE_ID,
-    CONSERVATION_CODE_DESCRIPTION,
     AUTHORISING_ORG,
     CODE_PRIORITY,
+    CONSERVATION_CODE_DESCRIPTION,
+    CONSERVATION_CODE_ID,
 )
 from app.db.schemas import TableBase
 

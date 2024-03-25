@@ -5,7 +5,11 @@ from fastapi import APIRouter, Depends, Response
 from app.api.dependencies.range_query import RangeQueryParameter
 from app.core.auth import authorize, get_current_active_user
 from app.db.conscode_taxon.crud import ConscodetaxonCrud
-from app.db.conscode_taxon.schema import Conscodetaxon, ConscodetaxonCreate, ConscodetaxonEdit
+from app.db.conscode_taxon.schema import (
+    Conscodetaxon,
+    ConscodetaxonCreate,
+    ConscodetaxonEdit,
+)
 from app.db.role.constants import Role
 from app.db.session import get_db
 from app.db.user.schema import User
@@ -104,7 +108,9 @@ async def conscode_taxon_edit(
     """
     Update existing cons
     """
-    return ConscodetaxonCrud.edit_item(db, current_user, conscode_taxon_id, conscode_taxon)
+    return ConscodetaxonCrud.edit_item(
+        db, current_user, conscode_taxon_id, conscode_taxon
+    )
 
 
 @overload

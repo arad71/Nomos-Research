@@ -1,15 +1,16 @@
+from datetime import date, datetime
 from typing import Optional
-from datetime import datetime, date
+
 from pydantic import BaseModel, Field
 
-from app.db.conservation_code.schema import Conservationcode
 from app.db.conscode_taxon.constants import (
-  CONSERVATION_CODE_ID, 
-  NOTES,
-  TABLE_DESCRIPTION,
-  EFFECTIVE_FROM,
-  EFFECTIVE_TO
+    CONSERVATION_CODE_ID,
+    EFFECTIVE_FROM,
+    EFFECTIVE_TO,
+    NOTES,
+    TABLE_DESCRIPTION,
 )
+from app.db.conservation_code.schema import Conservationcode
 from app.db.schemas import TableBase
 
 

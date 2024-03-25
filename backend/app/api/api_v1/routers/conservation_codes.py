@@ -5,7 +5,11 @@ from fastapi import APIRouter, Depends, Response
 from app.api.dependencies.range_query import RangeQueryParameter
 from app.core.auth import authorize, get_current_active_user
 from app.db.conservation_code.crud import ConservationcodeCrud
-from app.db.conservation_code.schema import Conservationcode, ConservationcodeCreate, ConservationcodeEdit
+from app.db.conservation_code.schema import (
+    Conservationcode,
+    ConservationcodeCreate,
+    ConservationcodeEdit,
+)
 from app.db.role.constants import Role
 from app.db.session import get_db
 from app.db.user.schema import User
@@ -52,7 +56,9 @@ async def Conservation_code_details(
     """
     Get any  details
     """
-    conservationcode = ConservationcodeCrud.get_item(db, current_user, conservation_code_id)
+    conservationcode = ConservationcodeCrud.get_item(
+        db, current_user, conservation_code_id
+    )
     return conservationcode
 
 
@@ -106,7 +112,9 @@ async def Conservation_code_edit(
     """
     Update existing code
     """
-    return ConservationcodeCrud.edit_item(db, current_user, conservation_code_id, conservationcode)
+    return ConservationcodeCrud.edit_item(
+        db, current_user, conservation_code_id, conservationcode
+    )
 
 
 @overload
@@ -150,4 +158,6 @@ async def Conservation_code_delete(
     """
     Delete existing code
     """
-    return ConservationcodeCrud.delete_item(db, current_user, conservation_code_id, True)
+    return ConservationcodeCrud.delete_item(
+        db, current_user, conservation_code_id, True
+    )

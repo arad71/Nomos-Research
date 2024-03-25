@@ -23,17 +23,15 @@ class ImportPublication(DataImportBase):
         )
 
     def import_row(self, row):
-        self.values.append(
-            {
-                "deleted": self.map_y_n_to_bool(row["BAD_PUBLICATION"]) or False,
-                "abbreviated_title": row["PUBLICATION"],
-                "title": row["PUBLICATION_NAME"],
-                "legacy_id": row["PUB_ID"],
-                "created_by": self.current_user,
-                "updated_by": self.map_row_by_unique_key(
-                    UserModel, "legacy_id_name", row["UPDATED_BY"], "user_id"
-                ),
-                "updated_on": row["UPDATED_ON"] or datetime.datetime.now(),
-                "created_on": row["UPDATED_ON"] or datetime.datetime.now(),
-            }
-        )
+        self.values.append({
+            "deleted": self.map_y_n_to_bool(row["BAD_PUBLICATION"]) or False,
+            "abbreviated_title": row["PUBLICATION"],
+            "title": row["PUBLICATION_NAME"],
+            "legacy_id": row["PUB_ID"],
+            "created_by": self.current_user,
+            "updated_by": self.map_row_by_unique_key(
+                UserModel, "legacy_id_name", row["UPDATED_BY"], "user_id"
+            ),
+            "updated_on": row["UPDATED_ON"] or datetime.datetime.now(),
+            "created_on": row["UPDATED_ON"] or datetime.datetime.now(),
+        })

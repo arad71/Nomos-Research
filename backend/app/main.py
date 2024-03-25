@@ -12,6 +12,8 @@ from app.api.api_v1.routers.authors import authors_router
 from app.api.api_v1.routers.checklist import checklist_router
 from app.api.api_v1.routers.citations import citations_router
 from app.api.api_v1.routers.classification_systems import classification_systems_router
+from app.api.api_v1.routers.conscode_taxons import conscode_taxons_router
+from app.api.api_v1.routers.conservation_codes import conservation_codes_router
 from app.api.api_v1.routers.cross_references import cross_references_router
 from app.api.api_v1.routers.dataimport import data_import_router
 from app.api.api_v1.routers.extract import extract_router
@@ -25,8 +27,6 @@ from app.api.api_v1.routers.taxon_ranks import taxon_ranks_router
 from app.api.api_v1.routers.user_roles import user_roles_router
 from app.api.api_v1.routers.users import users_router
 from app.api.api_v1.routers.vernaculars import vernaculars_router
-from app.api.api_v1.routers.conservation_codes import conservation_codes_router
-from app.api.api_v1.routers.conscode_taxons import conscode_taxons_router
 from app.core import config
 from app.core.auth import get_current_active_user
 from app.db.init_db import init_db

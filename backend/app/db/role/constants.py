@@ -41,4 +41,5 @@ class Role:
         "description": "Conservation officer of Application Ecosystem",
     }
 
+
 TABLE_DESCRIPTION = "List of roles available in the system."

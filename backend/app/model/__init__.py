@@ -3,6 +3,8 @@
 from app.db.author.model import Author
 from app.db.citation.model import Citation
 from app.db.classification_system.model import ClassificationSystem
+from app.db.conscode_taxon.model import Conscodetaxon
+from app.db.conservation_code.model import Conservationcode
 from app.db.cross_reference.model import CrossReference
 from app.db.hierarchy.model import Hierarchy
 from app.db.informal_group.model import InformalGroup
@@ -14,5 +16,3 @@ from app.db.taxon_rank.model import TaxonRank
 from app.db.user.model import User
 from app.db.user_role.model import UserRole
 from app.db.vernacular.model import Vernacular
-from app.db.conservation_code.model import Conservationcode
-from app.db.conscode_taxon.model import Conscodetaxon
