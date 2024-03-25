@@ -19,6 +19,6 @@ class MappingType(Enum):
     curation_data_extract = "Curation Data Extract"
 
 class ConsCodeSource(Enum):
-    State = "Species and Communities WA"
+    State = "State"
     Federal = "Federal"
     Global = "Global"

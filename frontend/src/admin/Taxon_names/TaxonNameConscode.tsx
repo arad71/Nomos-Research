@@ -51,7 +51,7 @@ const TaxonNameConscode = () => {
             <ReferenceField
               source="conservation_code_id"
               reference="conservation_codes"
-              link="show"
+              link={false}
               allowEmpty
             >
               <div className={classes.pill}>
