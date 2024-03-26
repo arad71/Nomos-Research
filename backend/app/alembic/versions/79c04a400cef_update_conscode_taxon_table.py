@@ -55,8 +55,6 @@ def upgrade():
                 END;
                 $BODY$;
 
-                # ALTER FUNCTION public.update_conscode_taxon_source()
-                #     OWNER TO postgres;
                 """)
 
     op.execute(""" CREATE OR REPLACE FUNCTION public.update_conscode_taxon_isactive()
@@ -75,8 +73,6 @@ def upgrade():
                 END;
                 $BODY$;
 
-                # ALTER FUNCTION public.update_conscode_taxon_isactive()
-                #     OWNER TO postgres;
                 """)
 
     op.execute(""" CREATE OR REPLACE FUNCTION public.update_conscode_taxon_deleted()
@@ -96,8 +92,6 @@ def upgrade():
                                 
                 $BODY$;
 
-                # ALTER FUNCTION public.update_conscode_taxon_deleted()
-                #     OWNER TO postgres; 
                     """)
 
     op.execute(""" CREATE TRIGGER trig_update_conscode_taxon_isactive
