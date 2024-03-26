@@ -238,11 +238,11 @@ def downgrade():
     op.drop_column("taxon_name", "cons_code")
     op.drop_index(op.f("ix_conscode_taxon_updated_on"), table_name="conscode_taxon")
     op.drop_index(op.f("ix_conscode_taxon_updated_by"), table_name="conscode_taxon")
-    op.drop_index(
-        "ix_conscode_taxon_legacy_id_isactive",
-        table_name="conscode_taxon",
-        postgresql_where="deleted = FALSE",
-    )
+    # op.drop_index(
+    #     "ix_conscode_taxon_legacy_id_isactive",
+    #     table_name="conscode_taxon",
+    #     postgresql_where="deleted = FALSE",
+    # )
     op.drop_index(op.f("ix_conscode_taxon_deleted"), table_name="conscode_taxon")
     op.drop_index(op.f("ix_conscode_taxon_created_on"), table_name="conscode_taxon")
     op.drop_index(op.f("ix_conscode_taxon_created_by"), table_name="conscode_taxon")
