@@ -24,3 +24,4 @@ backup/*
 
 # Do not store React Admin Private Token in Repo
 .npmrc
+backend/.venv/Scripts/pip3.exe

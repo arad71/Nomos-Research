@@ -12,6 +12,8 @@ from app.api.api_v1.routers.authors import authors_router
 from app.api.api_v1.routers.checklist import checklist_router
 from app.api.api_v1.routers.citations import citations_router
 from app.api.api_v1.routers.classification_systems import classification_systems_router
+from app.api.api_v1.routers.conscode_taxons import conscode_taxons_router
+from app.api.api_v1.routers.conservation_codes import conservation_codes_router
 from app.api.api_v1.routers.cross_references import cross_references_router
 from app.api.api_v1.routers.dataimport import data_import_router
 from app.api.api_v1.routers.extract import extract_router
@@ -113,6 +115,13 @@ app.include_router(
 )
 
 app.include_router(
+    conscode_taxons_router,
+    prefix=API_V1_URL,
+    tags=["conscode_taxons"],
+    dependencies=[Depends(get_current_active_user)],
+)
+
+app.include_router(
     cross_references_router,
     prefix=API_V1_URL,
     tags=["cross_references"],
@@ -148,6 +157,13 @@ app.include_router(
 )
 
 app.include_router(
+    conservation_codes_router,
+    prefix=API_V1_URL,
+    tags=["conservation_codes"],
+    dependencies=[Depends(get_current_active_user)],
+)
+
+app.include_router(
     taxon_names_router,
     prefix=API_V1_URL,
     tags=["taxon_names"],
@@ -167,6 +183,7 @@ app.include_router(
     tags=["vernaculars"],
     dependencies=[Depends(get_current_active_user)],
 )
+
 
 app.include_router(
     checklist_router,

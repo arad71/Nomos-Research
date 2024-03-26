@@ -25,6 +25,10 @@ export const RolesFilter = () => (
       label="Reader"
       value={{ user_role___role___name: Role.READER }}
     />
+    <FilterListItem
+      label="Conservation Officer"
+      value={{ user_role___role___name: Role.CONSERVATION_OFFICER }}
+    />
   </FilterList>
 );
 export const DeletedFilter = () => (

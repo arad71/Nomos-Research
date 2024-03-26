@@ -11,10 +11,13 @@ import CompareArrowsIcon from '@material-ui/icons/CompareArrows';
 import CallSplitIcon from '@material-ui/icons/CallSplit';
 import MenuBookIcon from '@material-ui/icons/MenuBook';
 import ChangeHistoryIcon from '@material-ui/icons/ChangeHistory';
+import TrafficIcon from '@material-ui/icons/Traffic';
+import ReportProblemIcon from '@material-ui/icons/ReportProblem';
 import WebIcon from '@material-ui/icons/Web';
 import SettingsIcon from '@material-ui/icons/Settings';
 import GroupWorkIcon from '@material-ui/icons/GroupWork';
 import LinkIcon from '@material-ui/icons/Link';
+import ReportIcon from '@material-ui/icons/Report';
 import { usePermissions } from 'react-admin';
 const Menu = () => {
   const { loaded, permissions } = usePermissions();
@@ -24,9 +27,21 @@ const Menu = () => {
         name="Dashboard"
         label="Dashboard"
         icon={<DashboardIcon />}
+        style={{
+          fontWeight: '500',
+        }}
         to="/"
       />
-      <MenuItem name="Nomos" label="Nomos" icon={<WebIcon />}>
+      <MenuItem
+        name="Nomos"
+        label="Nomos"
+        style={{
+          fontWeight: '500',
+          borderTop: '1px solid #999',
+          borderBottom: '1px solid #ccc',
+        }}
+        icon={<WebIcon />}
+      >
         {permissions?.roles !== undefined ? (
           <MenuItem
             name="Taxon Names"
@@ -57,8 +72,27 @@ const Menu = () => {
         ) : (
           ''
         )}
+        {permissions?.roles !== undefined ? (
+          <MenuItem
+            name="Taxon Names Code"
+            label="Conservation Status (S&C)"
+            icon={<TrafficIcon />}
+            to="/taxon_names_code"
+          />
+        ) : (
+          ''
+        )}
       </MenuItem>
-      <MenuItem name="Admin" label="Admin" icon={<SettingsIcon />}>
+      <MenuItem
+        name="Admin"
+        label="Admin"
+        style={{
+          fontWeight: '500',
+          borderTop: '1px solid #999',
+          borderBottom: '1px solid #ccc',
+        }}
+        icon={<SettingsIcon />}
+      >
         {permissions?.roles !== undefined ? (
           <MenuItem
             name="Citations"
@@ -95,6 +129,26 @@ const Menu = () => {
             label="Informal Groups"
             to="/informal_groups"
             icon={<LinkIcon />}
+          />
+        ) : (
+          ''
+        )}
+        {permissions?.roles !== undefined ? (
+          <MenuItem
+            name="Cons code taxon"
+            label="Cons code - Taxonomy"
+            to="/conscode_taxons"
+            icon={<ReportIcon />}
+          />
+        ) : (
+          ''
+        )}
+        {permissions?.roles !== undefined ? (
+          <MenuItem
+            name="Conservation codes"
+            label="Conservation codes"
+            to="/conservation_codes"
+            icon={<ReportProblemIcon />}
           />
         ) : (
           ''

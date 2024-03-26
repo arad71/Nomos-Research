@@ -4,7 +4,7 @@ import { defaultTheme } from 'react-admin';
 const theme = createTheme({
   ...defaultTheme,
   sidebar: {
-    width: 220, // The default value is 240
+    width: 260, // The default value is 240
     closedWidth: 60, // The default value is 55
   },
   typography: {
@@ -21,6 +21,13 @@ const theme = createTheme({
       'Droid Sans',
       'Helvetica Neue',
     ].join(','),
+    body1: {
+      fontFamily: ['Helvetica Neue', 'Helvetica', 'sans-serif'],
+      fontWeight: 'inherit',
+      fontSize: '1rem',
+
+      lineHeight: 1.5,
+    },
   },
   palette: {
     primary: {
@@ -34,6 +41,22 @@ const theme = createTheme({
     RaMenuItem: {
       nestedList: {
         paddingLeft: '0px',
+        fontWeight: '400',
+      },
+    },
+    MuiTab: {
+      root: {
+        '@media (min-width: 600px)': {
+          minWidth: '60px',
+        },
+        '@media (min-width: 1350px)': {
+          minWidth: '120px',
+        },
+      },
+    },
+    MuiTypography: {
+      displayBlock: {
+        fontSize: '0.9rem',
       },
     },
     RaSelectArrayInput: {
@@ -49,6 +72,11 @@ const theme = createTheme({
     RaNullableBooleanInput: {
       input: {
         minWidth: '100%',
+      },
+    },
+    MuiFormControl: {
+      root: {
+        width: '100%',
       },
     },
     RaAutocompleteInput: {

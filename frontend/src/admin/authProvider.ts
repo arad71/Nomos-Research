@@ -134,12 +134,14 @@ const authProvider = {
       { action: ['create', 'edit'], resource: 'publication_authors' },
       { action: ['create', 'edit'], resource: 'taxon_names' },
       { action: ['create', 'edit'], resource: 'vernaculars' },
+      // { action: ['create', 'edit'], resource: 'conservation_code' },
     ];
     permissions[Role.MANAGER] = [
       { action: ['show', 'list', 'export'], resource: '*' },
       { action: ['create', 'edit', 'delete'], resource: 'authors' },
       { action: ['create', 'edit', 'delete'], resource: 'citations' },
       { action: ['create', 'edit', 'delete'], resource: 'cross_references' },
+      { action: ['create', 'edit', 'delete'], resource: 'conservation_code' },
       {
         action: ['create', 'edit', 'delete'],
         resource: 'hierarchies',
@@ -147,6 +149,10 @@ const authProvider = {
       {
         action: ['create', 'edit', 'delete'],
         resource: 'informal_groups',
+      },
+      {
+        action: ['create', 'edit', 'delete'],
+        resource: 'conscode_taxons',
       },
       {
         action: ['create', 'edit', 'delete'],

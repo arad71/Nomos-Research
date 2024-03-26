@@ -13,6 +13,12 @@ import { LogoutButton } from '../LogoutButton';
 
 import { UserCreate, UserEdit, UserList, UserShow } from './Users';
 import {
+  ConservationCodesList,
+  ConservationCodesShow,
+  ConservationCodesEdit,
+  ConservationCodesCreate,
+} from './Conservation_codes';
+import {
   KingdomCreate,
   KingdomEdit,
   KingdomList,
@@ -50,11 +56,23 @@ import {
   TaxonNameShow,
 } from './Taxon_names';
 import {
+  TaxonNameCodeCreate,
+  TaxonNameCodeEdit,
+  TaxonNameCodeList,
+  TaxonNameCodeShow,
+} from './Taxon_names_code';
+import {
   InformalGroupCreate,
   InformalGroupEdit,
   InformalGroupList,
   InformalGroupShow,
 } from './Informal_groups';
+import {
+  ConscodeTaxonCreate,
+  ConscodeTaxonEdit,
+  ConscodeTaxonList,
+  ConscodeTaxonShow,
+} from './Conscode_taxons';
 import {
   HierarchyCreate,
   HierarchyEdit,
@@ -113,6 +131,7 @@ const dataProvider = restDataProvider(
     publications: 'publication_id',
     citations: 'citation_id',
     taxon_names: 'taxon_name_id',
+    taxon_names_code: 'taxon_name_id',
     informal_groups: 'informal_group_id',
     hierarchies: 'hierarchy_id',
     'hierarchies/parents': 'taxon_name_id',
@@ -121,6 +140,8 @@ const dataProvider = restDataProvider(
     user_roles: 'user_role_id',
     roles: 'role_id',
     taxon_names_infrageneric_names: 'taxon_name_id',
+    conservation_codes: 'conservation_code_id',
+    conscode_taxons: 'conscode_taxon_id',
   },
   {},
   httpClient
@@ -139,8 +160,17 @@ const myDataProvider: DataProvider = {
         data: { id: params.id, infrageneric_names: json },
       }));
     }
+    if (resource === 'taxon_names_code') {
+      resource = 'taxon_names';
+    }
     // For other resources, fallback to the default implementation
     return dataProvider.getOne(resource, params);
+  },
+  getList: (resource: string, params: GetListParams) => {
+    if (resource === 'taxon_names_code') {
+      resource = 'taxon_names';
+    }
+    return dataProvider.getList(resource, params);
   },
 };
 
@@ -231,6 +261,13 @@ export const Admin: FC = () => {
         create={PublicationCreate}
       />
       <Resource
+        name="conscode_taxons"
+        list={ConscodeTaxonList}
+        show={ConscodeTaxonShow}
+        edit={ConscodeTaxonEdit}
+        create={ConscodeTaxonCreate}
+      />
+      <Resource
         name="citations"
         list={CitationList}
         show={CitationShow}
@@ -243,6 +280,14 @@ export const Admin: FC = () => {
         show={TaxonNameShow}
         edit={TaxonNameEdit}
         create={TaxonNameCreate}
+        icon={BookIcon}
+      />
+      <Resource
+        name="taxon_names_code"
+        list={TaxonNameCodeList}
+        show={TaxonNameCodeShow}
+        edit={TaxonNameCodeEdit}
+        create={TaxonNameCodeCreate}
         icon={BookIcon}
       />
       <Resource name="taxon_names_ancestors/Division" />
@@ -261,6 +306,13 @@ export const Admin: FC = () => {
         show={InformalGroupShow}
         edit={InformalGroupEdit}
         create={InformalGroupCreate}
+      />
+      <Resource
+        name="conservation_codes"
+        list={ConservationCodesList}
+        show={ConservationCodesShow}
+        edit={ConservationCodesEdit}
+        create={ConservationCodesCreate}
       />
       <Resource
         name="hierarchies"

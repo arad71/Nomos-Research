@@ -7,10 +7,12 @@ import {
   SearchInput,
   SelectArrayInput,
   TextInput,
+  AutocompleteArrayInput,
+  minValue,
+  number,
 } from 'react-admin';
 import TaxonRank from './TaxonRank';
 import PublicationStatus from './PublicationStatus';
-import { AutocompleteArrayInput, minValue, number } from 'react-admin';
 import { addDeletedFilterIfApplicable } from '../shared/SelectableFilters';
 
 const validateNumber = [number(), minValue(0)];

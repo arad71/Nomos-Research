@@ -17,3 +17,9 @@ class PublicationStatus(str, Enum):
 class MappingType(Enum):
     vanilla = "Vanilla"
     curation_data_extract = "Curation Data Extract"
+
+
+class ConsCodeSource(Enum):
+    State = "State"
+    Federal = "Federal"
+    Global = "Global"

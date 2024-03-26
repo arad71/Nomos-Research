@@ -30,6 +30,7 @@ const useStyles = makeStyles(() => ({
   wrapper: {
     paddingTop: '20px',
     display: 'grid',
+    gridAutoFlow: 'row',
     gridTemplateColumns: 'repeat(3, 1fr)',
     columnGap: '10px',
     rowGap: '1em',
@@ -81,9 +82,9 @@ const Dashboard = () => {
           )}
         </CardContent>
       </Card>
-      {permissions?.roles.includes('SUPER_ADMIN') ||
-      permissions?.roles.includes('APPLICATION_SUPPORT') ? (
-        <div className={classes.wrapper}>
+      <div className={classes.wrapper}>
+        {permissions?.roles.includes('SUPER_ADMIN') ||
+        permissions?.roles.includes('APPLICATION_SUPPORT') ? (
           <CardWithIcon
             icon={
               <ArrowForwardIcon
@@ -95,15 +96,13 @@ const Dashboard = () => {
             title="Add User"
             subtitle="Create a new Nomos user"
           />
-        </div>
-      ) : (
-        ''
-      )}
-      {permissions?.roles.includes('SUPER_ADMIN') ||
-      permissions?.roles.includes('APPLICATION_SUPPORT') ||
-      permissions?.roles.includes('MANAGER') ||
-      permissions?.roles.includes('OFFICER') ? (
-        <div className={classes.wrapper}>
+        ) : (
+          ''
+        )}
+        {permissions?.roles.includes('SUPER_ADMIN') ||
+        permissions?.roles.includes('APPLICATION_SUPPORT') ||
+        permissions?.roles.includes('MANAGER') ||
+        permissions?.roles.includes('OFFICER') ? (
           <CardWithIcon
             icon={
               <ArrowForwardIcon
@@ -115,15 +114,13 @@ const Dashboard = () => {
             title="Add Name"
             subtitle="Create a new Taxon name"
           />
-        </div>
-      ) : (
-        ''
-      )}
-      {permissions?.roles.includes('SUPER_ADMIN') ||
-      permissions?.roles.includes('APPLICATION_SUPPORT') ||
-      permissions?.roles.includes('MANAGER') ||
-      permissions?.roles.includes('OFFICER') ? (
-        <div className={classes.wrapper}>
+        ) : (
+          ''
+        )}
+        {permissions?.roles.includes('SUPER_ADMIN') ||
+        permissions?.roles.includes('APPLICATION_SUPPORT') ||
+        permissions?.roles.includes('MANAGER') ||
+        permissions?.roles.includes('OFFICER') ? (
           <CardWithIcon
             icon={
               <ArrowForwardIcon
@@ -135,15 +132,13 @@ const Dashboard = () => {
             title="Add Author"
             subtitle="Create a new Author"
           />
-        </div>
-      ) : (
-        ''
-      )}
-      {permissions?.roles.includes('SUPER_ADMIN') ||
-      permissions?.roles.includes('APPLICATION_SUPPORT') ||
-      permissions?.roles.includes('MANAGER') ||
-      permissions?.roles.includes('OFFICER') ? (
-        <div className={classes.wrapper}>
+        ) : (
+          ''
+        )}
+        {permissions?.roles.includes('SUPER_ADMIN') ||
+        permissions?.roles.includes('APPLICATION_SUPPORT') ||
+        permissions?.roles.includes('MANAGER') ||
+        permissions?.roles.includes('OFFICER') ? (
           <CardWithIcon
             icon={
               <ArrowForwardIcon
@@ -155,10 +150,28 @@ const Dashboard = () => {
             title="Add Publication"
             subtitle="Create a new Publication"
           />
-        </div>
-      ) : (
-        ''
-      )}
+        ) : (
+          ''
+        )}
+        {permissions?.roles.includes('SUPER_ADMIN') ||
+        permissions?.roles.includes('APPLICATION_SUPPORT') ||
+        permissions?.roles.includes('MANAGER') ||
+        permissions?.roles.includes('OFFICER') ? (
+          <CardWithIcon
+            icon={
+              <ArrowForwardIcon
+                fontSize={'large'}
+                className={classes.arrowPadding}
+              />
+            }
+            to={'/conscode_taxons/create'}
+            title="Add Conservation Status"
+            subtitle="Add a conservation status to a taxon name"
+          />
+        ) : (
+          ''
+        )}
+      </div>
     </div>
   ) : (
     ''

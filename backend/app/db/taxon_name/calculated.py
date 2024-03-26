@@ -36,6 +36,8 @@ def calculate_fields(
         target.vernacular = map_vernacular(target)
         target.all_vernaculars = map_vernaculars(target)
         target.editor = map_editors(target)
+        # target.cons_code = map_cons_code(target)
+        # target.cons_codes = map_cons_codes(target)
     if target.calculate_name:
         calculate_name_fields(target)
 
@@ -334,3 +336,31 @@ def is_not_none_or_empty(s: Optional[str]) -> bool:
         Boolean indicating whether the string is not None or empty.
     """
     return s is not None and s != ""
+
+
+# def map_cons_code(target):
+#     cons_code = (
+#         target.conservation_code.filter_by(deleted=False, preferred=True)
+#         .order_by(asc("sort_order"))
+#         .first()
+#     )
+#     if cons_code:
+#         return cons_code.source + ":" + cons_code.cons_code
+#     return None
+
+
+# def map_cons_codes(target):
+#     cons_codes = target.conservation_code.filter_by(deleted=False).order_by(
+#         desc("preferred")
+#     )
+#     if cons_codes.count:
+#         return ", ".join(
+#             filter(
+#                 None,
+#                 [
+#                     cons_code.source + ":" + cons_code.cons_code
+#                     for cons_code in cons_codes
+#                 ],
+#             )
+#         )
+#     return None

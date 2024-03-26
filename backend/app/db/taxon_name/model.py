@@ -140,6 +140,7 @@ class TaxonName(BaseModel, TableMixin):
         doc=constants.VERNACULAR,
         index=True,
     )
+    cons_code = sqlalchemy.Column(sqlalchemy.String(50))
     editor = sqlalchemy.Column(sqlalchemy.String(60))
     naturalised_status = sqlalchemy.Column(
         Enum(enums.NaturalisedStatus, name=__tablename__ + "__naturalised_status")

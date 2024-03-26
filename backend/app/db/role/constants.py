@@ -36,6 +36,10 @@ class Role:
         "name": "SUPER_ADMIN",
         "description": "Super Administrator of Application Ecosystem",
     }
+    CONSERVATION_OFFICER = {
+        "name": "CONSERVATION_OFFICER",
+        "description": "Conservation officer of Application Ecosystem",
+    }
 
 
 TABLE_DESCRIPTION = "List of roles available in the system."
