@@ -84,7 +84,7 @@ export const ConscodeTaxonCreateEdit: FC = (props) => {
             reference="conservation_codes"
             label="Conservation code"
             sort={{
-              field: 'conservation_code_value',
+              field: 'code_priority',
               order: 'ASC',
             }}
           >
