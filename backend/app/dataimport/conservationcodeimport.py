@@ -1,19 +1,20 @@
 import os
 import time
 
-import pandas as pd
+# import pandas as pd
 import psycopg2
-from fastapi import Depends
-from loguru import logger
+# from fastapi import Depends
+# from loguru import logger
 from openpyxl import load_workbook
-from sqlalchemy import create_engine
+# from sqlalchemy import create_engine
 
-from app.api.dependencies.range_query import RangeQueryParameter
-from app.core.auth import authorize, get_current_active_user
-from app.dataimport.wacensus import get_admin_id, trigger_calculated_fields
-from app.db.session import SessionLocal
-from app.db.taxon_name.enums import MappingType
-from app.db.user.schema import User
+# from app.api.dependencies.range_query import RangeQueryParameter
+# from app.core.auth import authorize, get_current_active_user
+# from app.dataimport.wacensus import trigger_calculated_fields
+from app.dataimport.wacensus import get_admin_id
+# from app.db.session import SessionLocal
+# from app.db.taxon_name.enums import MappingType
+# from app.db.user.schema import User
 
 # def import_cons_code(csvfile, mapping_type, db=SessionLocal()):
 #     admin_id = get_admin_id(db)
