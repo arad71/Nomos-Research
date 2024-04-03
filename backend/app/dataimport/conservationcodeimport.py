@@ -1,17 +1,23 @@
 import os
-import time
 
 # import pandas as pd
 import psycopg2
+
 # from fastapi import Depends
 # from loguru import logger
 from openpyxl import load_workbook
-# from sqlalchemy import create_engine
+
+# import time
+
 
 # from app.api.dependencies.range_query import RangeQueryParameter
 # from app.core.auth import authorize, get_current_active_user
 # from app.dataimport.wacensus import trigger_calculated_fields
-from app.dataimport.wacensus import get_admin_id
+# from app.dataimport.wacensus import get_admin_id
+
+# from sqlalchemy import create_engine
+
+
 # from app.db.session import SessionLocal
 # from app.db.taxon_name.enums import MappingType
 # from app.db.user.schema import User
@@ -35,7 +41,7 @@ def import_cons_code(
     conservation_code_column_index: int,
     source: int,
 ):
-    admin_id = get_admin_id(db)
+    #   admin_id = get_admin_id(db)
 
     try:
         # Connect to the database
@@ -57,9 +63,9 @@ def import_cons_code(
     # .transpose().to_dict('records')
     # df.to_sql('temp_cons1', engine, if_exists='replace',  index=False)
 
-    report_file_name = (
-        f'report_update_public_records_{time.strftime("%d%m%Y-%H%M%S")}.csv'
-    )
+    #   report_file_name = (
+    #       f'report_update_public_records_{time.strftime("%d%m%Y-%H%M%S")}.csv'
+    #   )
 
     workbook = load_workbook(source_file_path, True)
     worksheet = workbook.worksheets[workbook_index]

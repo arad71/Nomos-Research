@@ -3,18 +3,22 @@ import zipfile
 from pathlib import Path
 from shutil import rmtree
 
-import pandas as pd
+# import pandas as pd
 from fastapi import APIRouter, BackgroundTasks, Depends, UploadFile
 from fastapi.responses import FileResponse
 from fastapi_key_auth import AuthorizerDependency
-from openpyxl import load_workbook
 
 from app.dataimport.conservationcodeimport import import_cons_code
 from app.dataimport.csv import import_taxon_names
-from app.dataimport.wacensus import get_admin_id, import_data, trigger_calculated_fields
+from app.dataimport.wacensus import (  # get_admin_id, trigger_calculated_fields
+    import_data,
+)
 from app.db.dataimport import LEGACY_DATA_DIRECTORY
 from app.db.session import SessionLocal
 from app.db.taxon_name.enums import ConsCodeSource, MappingType
+
+# from openpyxl import load_workbook
+
 
 data_import_router = r = APIRouter(prefix="/dataimport")
 authorizer = AuthorizerDependency(key_pattern="IMPORT_API_KEY_")

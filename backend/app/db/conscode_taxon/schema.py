@@ -1,4 +1,5 @@
-from datetime import date, datetime
+# from datetime import datetime
+from datetime import date
 from typing import Optional
 
 from pydantic import BaseModel, Field
@@ -10,7 +11,8 @@ from app.db.conscode_taxon.constants import (
     NOTES,
     TABLE_DESCRIPTION,
 )
-from app.db.conservation_code.schema import Conservationcode
+
+# from app.db.conservation_code.schema import Conservationcode
 from app.db.schemas import TableBase
 
 

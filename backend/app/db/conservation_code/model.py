@@ -1,10 +1,9 @@
-from datetime import datetime
+# from datetime import datetime
 
-from sqlalchemy import TIMESTAMP, Boolean, Column, Date, Integer, String
-from sqlalchemy.schema import Index
-from sqlalchemy.types import Enum
 
-from app.db.conservation_code import enums
+from sqlalchemy import Column, Integer, String  # TIMESTAMP, Boolean,  Date
+
+# from app.db.conservation_code import enums
 from app.db.conservation_code.constants import (
     AUTHORISING_ORG,
     CODE_PRIORITY,
@@ -12,6 +11,9 @@ from app.db.conservation_code.constants import (
     CONSERVATION_CODE_ID,
 )
 from app.db.models import BaseModel, TableMixin
+
+# from sqlalchemy.schema import Index
+# from sqlalchemy.types import Enum
 
 
 class Conservationcode(BaseModel, TableMixin):
