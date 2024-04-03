@@ -304,6 +304,12 @@ export const TaxonNameCodeList = (props: ListProps) => {
       sort={{ field: 'updated_on', order: 'DESC' }}
       actions={<Actions />}
       perPage={100}
+      filter={{
+        conscode_taxons___effective_to: null,
+        conscode_taxons___conservation_code_id: [
+          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+        ],
+      }}
       filters={TaxonNameCodeFilters()}
       pagination={<DefaultPagination />}
       bulkActionButtons={useCanBulkDelete()}

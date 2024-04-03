@@ -69,8 +69,8 @@ const postListColumns = {
     <ReferenceField
       source="conservation_code_id"
       reference="conservation_codes"
-      sortBy="conservation_code___conservation_code_value"
-      link="show"
+      sortBy="conservation_code___code_priority"
+      link={(record: any) => `/taxon_names_code/${record.taxon_name_id}/show`}
       label="Conservation status"
     >
       <ConservationShort source="conservation_code_id" />
@@ -81,7 +81,8 @@ const postListColumns = {
       source="conservation_code_id"
       reference="conservation_codes"
       label="Display order"
-      link="show"
+      sortBy="conservation_code___code_priority"
+      link={(record: any) => `/taxon_names_code/${record.taxon_name_id}/show`}
     >
       <TextField source="code_priority" />
     </ReferenceField>
@@ -143,7 +144,7 @@ export const ConscodeTaxonList: FC = (props) => {
   return (
     <List
       {...props}
-      sort={{ field: 'taxon_name___scientific_name', order: 'ASC' }}
+      sort={{ field: 'conservation_code___code_priority', order: 'ASC' }}
       actions={<Actions />}
       perPage={100}
       pagination={<DefaultPagination />}

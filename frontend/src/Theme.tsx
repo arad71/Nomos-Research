@@ -44,6 +44,7 @@ const theme = createTheme({
         fontWeight: '400',
       },
     },
+
     MuiTab: {
       root: {
         '@media (min-width: 600px)': {

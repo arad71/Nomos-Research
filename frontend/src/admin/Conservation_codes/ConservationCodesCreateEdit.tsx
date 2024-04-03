@@ -28,6 +28,7 @@ export const ConservationCodesCreateEdit: FC = (props) => {
       {...props}
       toolbar={<EditToolbar resource="conservation_codes" />}
       warnWhenUnsavedChanges
+      redirect="list"
     >
       <Box>
         <Typography variant="h5" className={globalClasses.bold} gutterBottom>
