@@ -63,7 +63,8 @@ def import_cons_code(
     workbook = load_workbook(source_file_path, True)
     worksheet = workbook.worksheets[workbook_index]
 
-    # print(f'Scientific name\t Existing consv code\t new consv code\t no of records affected in Public db ')
+    # print(f'Scientific name\t Existing consv code\t new
+    # consv code\t no of records affected in Public db ')
     cnt = 0
     # cur=engine.cursor()
     # cur.execute('select * from  temp_cons')
@@ -80,7 +81,9 @@ def import_cons_code(
         if row_data[taxon_column_index] is not None:
             sci_name = row_data[taxon_column_index]
             new_cons_code = row_data[conservation_code_column_index]
-            # x="insert into temp_cons_1 values('"+new_cons_code+"','"+str(sci_name).replace("'", '"')+"','"+source+"')"
+            # x="insert into temp_cons_1 values(
+            # '"+new_cons_code+"','"+str(sci_name).replace("'", '"')+"','"+source+"'
+            # )"
             # print(x)
             cur.execute(
                 "insert into tmp_cons_code values('"

@@ -108,7 +108,6 @@ def import_conservation_code(
                 background_tasks.add_task(import_cons_code, file, ConsCodeSource)
     else:
         print(authority.name)
-        # d = pd.read_excel(file_path, sheet_name = worksheet,index_col=0,header=None).transpose().to_dict('records')
         no_of_row = import_cons_code(
             db=SessionLocal(),
             source_file_path=file_path,
