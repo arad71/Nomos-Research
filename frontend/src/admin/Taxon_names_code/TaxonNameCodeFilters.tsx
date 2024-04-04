@@ -13,6 +13,7 @@ import {
 } from 'react-admin';
 import TaxonRank from '../Taxon_names/TaxonRank';
 import PublicationStatus from '../Taxon_names/PublicationStatus';
+import ConservationType from '../Conservation_codes/ConservationType';
 import { addDeletedFilterIfApplicable } from '../shared/SelectableFilters';
 
 const validateNumber = [number(), minValue(0)];
@@ -20,6 +21,15 @@ const validateNumber = [number(), minValue(0)];
 export const TaxonNameCodeFilters = () => {
   const filters = [
     <SearchInput source="q" alwaysOn />,
+    <TextInput
+      source="conscode_taxons___conservation_code___conservation_code_value"
+      label="Conservation code"
+    />,
+    <SelectArrayInput
+      source="conscode_taxons___conservation_code___authorising_org"
+      choices={ConservationType}
+      label="Authority"
+    />,
     <NumberInput
       source="id"
       label="Taxon name ID"
