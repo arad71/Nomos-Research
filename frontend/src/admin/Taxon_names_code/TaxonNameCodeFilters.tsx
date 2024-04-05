@@ -32,9 +32,9 @@ export const TaxonNameCodeFilters = () => {
       label="Authority"
       filter={{ isactive: true }}
     />,
-    <BooleanInput 
-      label="Conservation Code Active?" 
-      source="conscode_taxons___isactive"  
+    <BooleanInput
+      label="Conservation Code Active?"
+      source="conscode_taxons___isactive"
       defaultValue={true}
     />,
     <NumberInput
