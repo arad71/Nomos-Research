@@ -49,6 +49,9 @@ export const ConscodeTaxonCreateEdit: FC = (props) => {
   const globalClasses = GlobalTheme();
   const classes = useStyles();
 
+  // const taxonRedirect = (props: any) =>
+  //   `/taxon_names_code/${props.record.taxon_name_id}/show`;
+
   const FullNameField = (props: any) => {
     const record = useRecordContext(props);
     if (!record) return null;
@@ -84,7 +87,7 @@ export const ConscodeTaxonCreateEdit: FC = (props) => {
             reference="conservation_codes"
             label="Conservation code"
             sort={{
-              field: 'conservation_code_value',
+              field: 'code_priority',
               order: 'ASC',
             }}
           >

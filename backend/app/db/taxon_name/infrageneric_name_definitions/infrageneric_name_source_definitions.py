@@ -76,101 +76,77 @@ source_genus_or_uninomial = [
     },
 ]
 
-source_species = [
-    {
-        "hierarchy_rank": "Species",
-        "preference": 1,
-        "field": [{"label": "specific_epithet", "preference": 1}],
-    }
-]
+source_species = [{
+    "hierarchy_rank": "Species",
+    "preference": 1,
+    "field": [{"label": "specific_epithet", "preference": 1}],
+}]
 
 
 # Independent sources between genus and species, and below species.
 # Used exclusively for the full hierarchy name.
-source_superspecies = [
-    {
-        "hierarchy_rank": "Superspecies",
-        "preference": 1,
-        "field": [{"label": "uninomial", "preference": 1}],
-    }
-]
+source_superspecies = [{
+    "hierarchy_rank": "Superspecies",
+    "preference": 1,
+    "field": [{"label": "uninomial", "preference": 1}],
+}]
 
-source_subseries = [
-    {
-        "hierarchy_rank": "Subseries",
-        "preference": 1,
-        "field": [{"label": "uninomial", "preference": 1}],
-    }
-]
+source_subseries = [{
+    "hierarchy_rank": "Subseries",
+    "preference": 1,
+    "field": [{"label": "uninomial", "preference": 1}],
+}]
 
-source_series = [
-    {
-        "hierarchy_rank": "Series",
-        "preference": 1,
-        "field": [{"label": "uninomial", "preference": 1}],
-    }
-]
+source_series = [{
+    "hierarchy_rank": "Series",
+    "preference": 1,
+    "field": [{"label": "uninomial", "preference": 1}],
+}]
 
-source_subsection = [
-    {
-        "hierarchy_rank": "Subsection",
-        "preference": 1,
-        "field": [{"label": "uninomial", "preference": 1}],
-    }
-]
+source_subsection = [{
+    "hierarchy_rank": "Subsection",
+    "preference": 1,
+    "field": [{"label": "uninomial", "preference": 1}],
+}]
 
-source_section = [
-    {
-        "hierarchy_rank": "Section",
-        "preference": 1,
-        "field": [{"label": "uninomial", "preference": 1}],
-    }
-]
+source_section = [{
+    "hierarchy_rank": "Section",
+    "preference": 1,
+    "field": [{"label": "uninomial", "preference": 1}],
+}]
 
-source_subgenus = [
-    {
-        "hierarchy_rank": "Subgenus",
-        "preference": 1,
-        "field": [{"label": "uninomial", "preference": 1}],
-    }
-]
+source_subgenus = [{
+    "hierarchy_rank": "Subgenus",
+    "preference": 1,
+    "field": [{"label": "uninomial", "preference": 1}],
+}]
 
-source_subform = [
-    {
-        "hierarchy_rank": "Subform",
-        "preference": 1,
-        "field": [{"label": "infraspecific_epithet", "preference": 1}],
-    }
-]
+source_subform = [{
+    "hierarchy_rank": "Subform",
+    "preference": 1,
+    "field": [{"label": "infraspecific_epithet", "preference": 1}],
+}]
 
-source_form = [
-    {
-        "hierarchy_rank": "Form",
-        "preference": 1,
-        "field": [{"label": "infraspecific_epithet", "preference": 1}],
-    }
-]
+source_form = [{
+    "hierarchy_rank": "Form",
+    "preference": 1,
+    "field": [{"label": "infraspecific_epithet", "preference": 1}],
+}]
 
-source_subvariety = [
-    {
-        "hierarchy_rank": "Subvariety",
-        "preference": 1,
-        "field": [{"label": "infraspecific_epithet", "preference": 1}],
-    }
-]
+source_subvariety = [{
+    "hierarchy_rank": "Subvariety",
+    "preference": 1,
+    "field": [{"label": "infraspecific_epithet", "preference": 1}],
+}]
 
-source_variety = [
-    {
-        "hierarchy_rank": "Variety",
-        "preference": 1,
-        "field": [{"label": "infraspecific_epithet", "preference": 1}],
-    }
-]
+source_variety = [{
+    "hierarchy_rank": "Variety",
+    "preference": 1,
+    "field": [{"label": "infraspecific_epithet", "preference": 1}],
+}]
 
-source_subspecies = [
-    {
-        "hierarchy_rank": "Subspecies",
-        "preference": 1,
-        "field": [{"label": "infraspecific_epithet", "preference": 1}],
-    }
-]
+source_subspecies = [{
+    "hierarchy_rank": "Subspecies",
+    "preference": 1,
+    "field": [{"label": "infraspecific_epithet", "preference": 1}],
+}]

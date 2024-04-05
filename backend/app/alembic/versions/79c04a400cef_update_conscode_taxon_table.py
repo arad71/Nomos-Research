@@ -138,6 +138,5 @@ def downgrade():
     )
     op.execute(""" DROP FUNCTION IF EXISTS public.update_conscode_taxon_source();""")
     op.execute(""" DROP FUNCTION IF EXISTS public.update_conscode_taxon_isactive(); """)
-    op.execute(""" DROP FUNCTION IF EXISTS public.update_conscode_taxon_deleted(); """)
 
     # ### end Alembic commands ###

@@ -9,19 +9,17 @@ def test_get_informal_groups(
 ):
     response = client.get("/api/v1/informal_groups", headers=superuser_token_headers)
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == [
-        {
-            "informal_group_id": test_informal_group.informal_group_id,
-            "taxon_name_id": test_hierarchy.taxon_name_id,
-            "classification_system_id": test_hierarchy.classification_system_id,
-            "classification_system": response.json()[0]["classification_system"],
-            "updated_by": test_informal_group.updated_by,
-            "updated_on": test_informal_group.updated_on.isoformat(),
-            "created_by": test_informal_group.created_by,
-            "created_on": test_informal_group.created_on.isoformat(),
-            "deleted": False,
-        }
-    ]
+    assert response.json() == [{
+        "informal_group_id": test_informal_group.informal_group_id,
+        "taxon_name_id": test_hierarchy.taxon_name_id,
+        "classification_system_id": test_hierarchy.classification_system_id,
+        "classification_system": response.json()[0]["classification_system"],
+        "updated_by": test_informal_group.updated_by,
+        "updated_on": test_informal_group.updated_on.isoformat(),
+        "created_by": test_informal_group.created_by,
+        "created_on": test_informal_group.created_on.isoformat(),
+        "deleted": False,
+    }]
 
 
 def test_delete_informal_group(

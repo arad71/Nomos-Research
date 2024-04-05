@@ -1,4 +1,5 @@
-from datetime import date, datetime
+# from datetime import datetime
+from datetime import date
 from typing import Optional
 
 from pydantic import BaseModel, Field
@@ -7,10 +8,12 @@ from app.db.conscode_taxon.constants import (
     CONSERVATION_CODE_ID,
     EFFECTIVE_FROM,
     EFFECTIVE_TO,
+    ISACTIVE,
     NOTES,
     TABLE_DESCRIPTION,
 )
-from app.db.conservation_code.schema import Conservationcode
+
+# from app.db.conservation_code.schema import Conservationcode
 from app.db.schemas import TableBase
 
 
@@ -21,6 +24,7 @@ class ConscodetaxonBase(BaseModel):
     effective_from: Optional[date] = Field(description=EFFECTIVE_FROM)
     effective_to: Optional[date] = Field(description=EFFECTIVE_TO)
     source: Optional[str]
+    isactive: Optional[bool] = Field(description=ISACTIVE)
 
 
 class ConscodetaxonCreate(ConscodetaxonBase):

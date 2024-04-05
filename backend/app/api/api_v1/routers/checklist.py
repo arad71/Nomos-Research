@@ -275,16 +275,14 @@ async def add_higher_rank_subquery_pivot(
         columns.append(
             func.min(
                 case(
-                    [
-                        (
-                            ancestor_rank.rank_name == higher_rank.capitalize(),
-                            func.coalesce(
-                                ancestor_name.infraspecific_epithet,
-                                ancestor_name.specific_epithet,
-                                ancestor_name.uninomial,
-                            ),
-                        )
-                    ],
+                    [(
+                        ancestor_rank.rank_name == higher_rank.capitalize(),
+                        func.coalesce(
+                            ancestor_name.infraspecific_epithet,
+                            ancestor_name.specific_epithet,
+                            ancestor_name.uninomial,
+                        ),
+                    )],
                     else_=None,
                 )
             ).label(higher_rank)

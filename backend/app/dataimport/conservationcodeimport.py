@@ -1,19 +1,26 @@
 import os
-import time
 
-import pandas as pd
+# import pandas as pd
 import psycopg2
-from fastapi import Depends
-from loguru import logger
-from openpyxl import load_workbook
-from sqlalchemy import create_engine
 
-from app.api.dependencies.range_query import RangeQueryParameter
-from app.core.auth import authorize, get_current_active_user
-from app.dataimport.wacensus import get_admin_id, trigger_calculated_fields
-from app.db.session import SessionLocal
-from app.db.taxon_name.enums import MappingType
-from app.db.user.schema import User
+# from fastapi import Depends
+# from loguru import logger
+from openpyxl import load_workbook
+
+# import time
+
+
+# from app.api.dependencies.range_query import RangeQueryParameter
+# from app.core.auth import authorize, get_current_active_user
+# from app.dataimport.wacensus import trigger_calculated_fields
+# from app.dataimport.wacensus import get_admin_id
+
+# from sqlalchemy import create_engine
+
+
+# from app.db.session import SessionLocal
+# from app.db.taxon_name.enums import MappingType
+# from app.db.user.schema import User
 
 # def import_cons_code(csvfile, mapping_type, db=SessionLocal()):
 #     admin_id = get_admin_id(db)
@@ -34,7 +41,7 @@ def import_cons_code(
     conservation_code_column_index: int,
     source: int,
 ):
-    admin_id = get_admin_id(db)
+    #   admin_id = get_admin_id(db)
 
     try:
         # Connect to the database
@@ -56,14 +63,15 @@ def import_cons_code(
     # .transpose().to_dict('records')
     # df.to_sql('temp_cons1', engine, if_exists='replace',  index=False)
 
-    report_file_name = (
-        f'report_update_public_records_{time.strftime("%d%m%Y-%H%M%S")}.csv'
-    )
+    #   report_file_name = (
+    #       f'report_update_public_records_{time.strftime("%d%m%Y-%H%M%S")}.csv'
+    #   )
 
     workbook = load_workbook(source_file_path, True)
     worksheet = workbook.worksheets[workbook_index]
 
-    # print(f'Scientific name\t Existing consv code\t new consv code\t no of records affected in Public db ')
+    # print(f'Scientific name\t Existing consv code\t new
+    # consv code\t no of records affected in Public db ')
     cnt = 0
     # cur=engine.cursor()
     # cur.execute('select * from  temp_cons')
@@ -80,7 +88,9 @@ def import_cons_code(
         if row_data[taxon_column_index] is not None:
             sci_name = row_data[taxon_column_index]
             new_cons_code = row_data[conservation_code_column_index]
-            # x="insert into temp_cons_1 values('"+new_cons_code+"','"+str(sci_name).replace("'", '"')+"','"+source+"')"
+            # x="insert into temp_cons_1 values(
+            # '"+new_cons_code+"','"+str(sci_name).replace("'", '"')+"','"+source+"'
+            # )"
             # print(x)
             cur.execute(
                 "insert into tmp_cons_code values('"
