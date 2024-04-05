@@ -10,31 +10,29 @@ def test_get_hierarchies(
 ):
     response = client.get("/api/v1/hierarchies", headers=superuser_token_headers)
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == [
-        {
-            "hierarchy_id": test_hierarchy.hierarchy_id,
-            "taxon_name_id": test_hierarchy.taxon_name_id,
-            "taxon_name": response.json()[0]["taxon_name"],
-            "classification_system_id": test_hierarchy.classification_system_id,
-            "classification_system": response.json()[0]["classification_system"],
-            "parent_nid": test_hierarchy.parent_nid,
-            "parent_name": response.json()[0]["parent_name"],
-            "updated_by": test_hierarchy.updated_by,
-            "updated_on": test_hierarchy.updated_on.isoformat(),
-            "created_by": test_hierarchy.created_by,
-            "created_on": test_hierarchy.created_on.isoformat(),
-            "deleted": False,
-            "formatted_scientific_name": "<i>Testuninomial</i>",
-            "path": {
-                "path": "{}.{}".format(
-                    test_hierarchy.classification_system_id,
-                    test_hierarchy.taxon_name_id,
-                )
-            },
-            "rank_name": "Rank Name 1",
-            "scientific_name": "Testuninomial",
-        }
-    ]
+    assert response.json() == [{
+        "hierarchy_id": test_hierarchy.hierarchy_id,
+        "taxon_name_id": test_hierarchy.taxon_name_id,
+        "taxon_name": response.json()[0]["taxon_name"],
+        "classification_system_id": test_hierarchy.classification_system_id,
+        "classification_system": response.json()[0]["classification_system"],
+        "parent_nid": test_hierarchy.parent_nid,
+        "parent_name": response.json()[0]["parent_name"],
+        "updated_by": test_hierarchy.updated_by,
+        "updated_on": test_hierarchy.updated_on.isoformat(),
+        "created_by": test_hierarchy.created_by,
+        "created_on": test_hierarchy.created_on.isoformat(),
+        "deleted": False,
+        "formatted_scientific_name": "<i>Testuninomial</i>",
+        "path": {
+            "path": "{}.{}".format(
+                test_hierarchy.classification_system_id,
+                test_hierarchy.taxon_name_id,
+            )
+        },
+        "rank_name": "Rank Name 1",
+        "scientific_name": "Testuninomial",
+    }]
 
 
 def test_hierarchies_with_data(

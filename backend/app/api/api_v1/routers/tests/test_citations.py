@@ -8,21 +8,19 @@ def test_get_citations(client, test_citation, superuser_token_headers):
     response = client.get("/api/v1/citations", headers=superuser_token_headers)
     assert response.status_code == 200
     response_json = response.json()[0]
-    assert response.json() == [
-        {
-            "citation_id": test_citation.citation_id,
-            "taxon_name_id": test_citation.taxon_name_id,
-            "author_id": test_citation.author_id,
-            "author": response_json["author"],
-            "author_type": test_citation.author_type.value,
-            "author_order": test_citation.author_order,
-            "updated_by": test_citation.updated_by,
-            "updated_on": test_citation.updated_on.isoformat(),
-            "created_by": test_citation.created_by,
-            "created_on": test_citation.created_on.isoformat(),
-            "deleted": False,
-        }
-    ]
+    assert response.json() == [{
+        "citation_id": test_citation.citation_id,
+        "taxon_name_id": test_citation.taxon_name_id,
+        "author_id": test_citation.author_id,
+        "author": response_json["author"],
+        "author_type": test_citation.author_type.value,
+        "author_order": test_citation.author_order,
+        "updated_by": test_citation.updated_by,
+        "updated_on": test_citation.updated_on.isoformat(),
+        "created_by": test_citation.created_by,
+        "created_on": test_citation.created_on.isoformat(),
+        "deleted": False,
+    }]
 
 
 def test_delete_citation(client, test_citation, test_db, superuser_token_headers):

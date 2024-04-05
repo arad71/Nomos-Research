@@ -1,7 +1,7 @@
 # from datetime import datetime
 
 # from sqlalchemy import TIMESTAMP
-from sqlalchemy import Column, Date, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Column, Date, ForeignKey, Integer, String
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.schema import Index
 
@@ -9,6 +9,7 @@ from app.db.conscode_taxon.constants import (  # NOTES,
     CONSERVATION_CODE_ID,
     EFFECTIVE_FROM,
     EFFECTIVE_TO,
+    ISACTIVE,
     TABLE_DESCRIPTION,
 )
 from app.db.models import BaseModel, TableMixin
@@ -65,3 +66,4 @@ class Conscodetaxon(BaseModel, TableMixin):
         comment=EFFECTIVE_TO,
         doc=EFFECTIVE_TO,
     )
+    isactive = Column(Boolean, default=True, comment=ISACTIVE, doc=ISACTIVE)

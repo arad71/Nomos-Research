@@ -7,22 +7,20 @@ from app.db.author.model import Author
 def test_get_authors(client, test_author, superuser_token_headers):
     response = client.get("/api/v1/authors", headers=superuser_token_headers)
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == [
-        {
-            "author_id": test_author.author_id,
-            "abbreviation": test_author.abbreviation,
-            "surname": test_author.surname,
-            "first_names": test_author.first_names,
-            "initials": test_author.initials,
-            "full_name": test_author.full_name,
-            "updated_by": test_author.updated_by,
-            "updated_on": test_author.updated_on.isoformat(),
-            "created_by": test_author.created_by,
-            "created_on": test_author.created_on.isoformat(),
-            "display_name": test_author.display_name,
-            "deleted": False,
-        }
-    ]
+    assert response.json() == [{
+        "author_id": test_author.author_id,
+        "abbreviation": test_author.abbreviation,
+        "surname": test_author.surname,
+        "first_names": test_author.first_names,
+        "initials": test_author.initials,
+        "full_name": test_author.full_name,
+        "updated_by": test_author.updated_by,
+        "updated_on": test_author.updated_on.isoformat(),
+        "created_by": test_author.created_by,
+        "created_on": test_author.created_on.isoformat(),
+        "display_name": test_author.display_name,
+        "deleted": False,
+    }]
 
 
 def test_delete_author(client, test_author, test_db, superuser_token_headers):

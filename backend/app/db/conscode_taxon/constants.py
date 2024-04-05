@@ -8,3 +8,4 @@ TABLE_DESCRIPTION = (
 NOTES = "Area for text about the threat status"
 EFFECTIVE_FROM = "The conservation code is active from"
 EFFECTIVE_TO = "The conservation code is active to"
+ISACTIVE = "This code is active or not"
