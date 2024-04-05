@@ -24,12 +24,15 @@ export const TaxonNameCodeFilters = () => {
     <TextInput
       source="conscode_taxons___conservation_code___conservation_code_value"
       label="Conservation code"
+      filter={{isactive:true}}
     />,
     <SelectArrayInput
       source="conscode_taxons___conservation_code___authorising_org"
       choices={ConservationType}
       label="Authority"
+      filter={{isactive:true}}
     />,
+    <BooleanInput label="Conservation Code Active?" source="conscode_taxons___isactive"  defaultValue={true}/>,
     <NumberInput
       source="id"
       label="Taxon name ID"
