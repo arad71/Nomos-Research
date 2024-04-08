@@ -27,7 +27,63 @@ def upgrade():
         sa.Column("scientific_name", sa.VARCHAR(), autoincrement=False, nullable=True),
         sa.Column("source", sa.VARCHAR(), autoincrement=False, nullable=True),
         sa.Column("msg", sa.VARCHAR(), autoincrement=False, nullable=True),
+        sa.Column("sci_name_id", sa.INTEGER(), autoincrement=False, nullable=True),
+        sa.Column("cons_code_id", sa.INTEGER(), autoincrement=False, nullable=True),
+        sa.Column("ready_for_import", sa.BOOLEAN(), autoincrement=False, nullable=True),
     )
+    
+    op.execute(""" CREATE OR REPLACE PROCEDURE public.import_conscode_taxon(source character,userid integer)
+            LANGUAGE 'sql'
+            AS $BODY$
+
+            update tmp_cons_code t1 
+                set cons_code_id=c.conservation_code_id
+                from conservation_code c
+                where trim(t1.source)=trim(c.authorising_org) 
+                    and trim(t1.conservation_code)=trim(c.conservation_code_value)
+                    and c.deleted=false;	
+
+            update tmp_cons_code t1 
+                set sci_name_id=t.taxon_name_id
+                from taxon_name t
+                where trim(t1.scientific_name)=trim(t.scientific_name) and t.deleted=false;	
+
+            update tmp_cons_code set msg='No Taxon and Conservation code found', ready_for_import=false
+                    where cons_code_id is null and sci_name_id is null;
+
+            update tmp_cons_code set msg='No Conservation code found', ready_for_import=false
+                    where cons_code_id is null and sci_name_id is not null;
+
+            update tmp_cons_code set msg= 'No Taxon found' , ready_for_import=false
+                    where sci_name_id is null and cons_code_id is not null;
+
+            update tmp_cons_code tcc set msg=concat(msg, 'cons code update'), ready_for_import=true 
+                    from conscode_taxon cct
+                    where tcc.sci_name_id =cct.taxon_name_id  
+                        and tcc.source=cct.source
+                        and tcc.cons_code_id<>cct.conservation_code_id
+                        and cct.isactive=true and cct.deleted=false;	
+
+            update conscode_taxon cct
+                set isactive=false, effective_to= CURRENT_DATE
+                from tmp_cons_code tcc
+                where cct.taxon_name_id = tcc.sci_name_id 
+                    and cct.conservation_code_id <>tcc.cons_code_id 
+                    and cct.source =tcc.source 
+                    and cct.isactive=true and cct.deleted=false and tcc.msg ='cons code update' ;
+
+            update tmp_cons_code set msg=concat(msg, 'duplicate entry') 
+                    where sci_name_id in (select taxon_name_id from conscode_taxon where isactive=true and deleted=false) 
+                        and cons_code_id in (select conservation_code_id from conscode_taxon where isactive=true and deleted=false) 
+                        and msg is null;
+
+            insert into conscode_taxon ( conservation_code_id, taxon_name_id, deleted, effective_from, isactive, updated_by, updated_on, created_by, created_on)
+                    select cons_code_id, sci_name_id, false , CURRENT_DATE, true, userid, NOW(),userid,NOW()  from tmp_cons_code where msg is null or msg='cons code update';
+
+            $BODY$;
+
+            ALTER PROCEDURE public.import_conscode_taxon(character, integer)
+                OWNER TO postgres;""")
     # ### end Alembic commands ###
 
 

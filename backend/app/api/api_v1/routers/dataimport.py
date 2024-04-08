@@ -4,9 +4,10 @@ from pathlib import Path
 from shutil import rmtree
 
 # import pandas as pd
-from fastapi import APIRouter, BackgroundTasks, Depends, UploadFile
-from fastapi.responses import FileResponse
+from fastapi import APIRouter, BackgroundTasks, Depends, Response, UploadFile
+from fastapi.responses import FileResponse, StreamingResponse
 from fastapi_key_auth import AuthorizerDependency
+import io
 
 from app.dataimport.conservationcodeimport import import_cons_code
 from app.dataimport.csv import import_taxon_names
@@ -121,8 +122,5 @@ def import_conservation_code(
             source=authority.value,
         )
 
-        no_of_row = 0
-
-    # return background_tasks.tasks
 
     return no_of_row
