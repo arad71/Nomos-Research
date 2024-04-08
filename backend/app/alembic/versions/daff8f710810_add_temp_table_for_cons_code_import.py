@@ -31,8 +31,9 @@ def upgrade():
         sa.Column("cons_code_id", sa.INTEGER(), autoincrement=False, nullable=True),
         sa.Column("ready_for_import", sa.BOOLEAN(), autoincrement=False, nullable=True),
     )
-    
-    op.execute(""" CREATE OR REPLACE PROCEDURE public.import_conscode_taxon(source character,userid integer)
+
+    op.execute(
+        """ CREATE OR REPLACE PROCEDURE public.import_conscode_taxon(source character,userid integer)
             LANGUAGE 'sql'
             AS $BODY$
 
@@ -83,7 +84,8 @@ def upgrade():
             $BODY$;
 
             ALTER PROCEDURE public.import_conscode_taxon(character, integer)
-                OWNER TO postgres;""")
+                OWNER TO postgres;"""
+    )
     # ### end Alembic commands ###
 
 

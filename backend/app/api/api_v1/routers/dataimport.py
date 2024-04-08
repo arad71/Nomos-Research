@@ -1,3 +1,4 @@
+import io
 import os.path
 import zipfile
 from pathlib import Path
@@ -7,7 +8,6 @@ from shutil import rmtree
 from fastapi import APIRouter, BackgroundTasks, Depends, Response, UploadFile
 from fastapi.responses import FileResponse, StreamingResponse
 from fastapi_key_auth import AuthorizerDependency
-import io
 
 from app.dataimport.conservationcodeimport import import_cons_code
 from app.dataimport.csv import import_taxon_names
@@ -121,6 +121,5 @@ def import_conservation_code(
             conservation_code_column_index=conservation_code_column_index,
             source=authority.value,
         )
-
 
     return no_of_row

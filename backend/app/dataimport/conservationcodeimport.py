@@ -1,14 +1,14 @@
+import io
 import os
+import warnings
 
 import pandas as pd
 import psycopg2
-
 from fastapi import FastAPI, Response
+from fastapi.responses import FileResponse, StreamingResponse
+
 # from loguru import logger
 from openpyxl import load_workbook
-from fastapi.responses import StreamingResponse, FileResponse
-import io
-import warnings
 
 
 def import_cons_code(
@@ -36,7 +36,6 @@ def import_cons_code(
     else:
         print("Connection established successfully")
 
- 
     workbook = load_workbook(source_file_path, True)
     worksheet = workbook.worksheets[workbook_index]
 
@@ -44,7 +43,7 @@ def import_cons_code(
     cur = conn.cursor()
     cur.execute("delete from tmp_cons_code")
     # conn.commit()
-    cnt=0
+    cnt = 0
     for row in worksheet.iter_rows(1):  # skip header
         cnt = cnt + 1
         row_data = [cell.value for cell in row]
@@ -66,12 +65,13 @@ def import_cons_code(
     # : User = Depends(get_current_active_user),
     cur.execute("CALL import_conscode_taxon(%s,%s)", (source, user_id))
 
-    warnings.filterwarnings('ignore')
-    df = pd.read_sql('select * from tmp_cons_code', con=conn)
-    response = StreamingResponse(io.StringIO(df.to_csv(index=False)), media_type="text/csv")
+    warnings.filterwarnings("ignore")
+    df = pd.read_sql("select * from tmp_cons_code", con=conn)
+    response = StreamingResponse(
+        io.StringIO(df.to_csv(index=False)), media_type="text/csv"
+    )
     response.headers["Content-Disposition"] = "attachment; filename=export.csv"
-    
+
     cur.close()
     conn.close()
     return response
-
