@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "Nomos"
-version = "2.0.1"
+version = "2.0.2"
 description = "Nomos - Taxonomic Names Management Tool"
 authors = [
     "Bri Williams <bri.williams@gaiaresources.com.au>",
@@ -10,7 +10,8 @@ authors = [
     "Kehan Harman <kehan.harman@gaiaresources.com.au>",
     "Nick Crawford <nick.crawford@gaiaresources.com.au>",
     "Nikolai Panine <Nikolai.Panine@dbca.wa.gov.au>",
-    "Phil Long <phil.long@gaiaresources.com.au>"
+    "Phil Long <phil.long@gaiaresources.com.au>",
+    "Zahurul Huq <zahurul.huq@dbca.wa.gov.au>"
 ]
 packages = [
     { include = "app" },
