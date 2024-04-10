@@ -283,8 +283,8 @@ const Actions = () => (
       preferenceName={TAXON_NAMES_CODE_PREFERENCE}
       defaultValue={Array.from(includeColumns)}
     />
-    <WithPermissions resource="taxon_names" action="create">
-      <CreateButton />
+    <WithPermissions resource="conscode_taxons" action="create">
+      <CreateButton basePath="/conscode_taxons" />
     </WithPermissions>
     <WithPermissions resource="taxon_names" action="export">
       <BatchExportButton />
