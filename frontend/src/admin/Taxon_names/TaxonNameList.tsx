@@ -206,7 +206,7 @@ const postListColumns = {
         field: 'conservation_code___code_priority',
         order: 'ASC',
       }}
-      filter={{ effective_to: null }}
+      filter={{ isactive: true }}
     >
       <SingleFieldList style={{ flexWrap: 'nowrap' }}>
         <ReferenceField

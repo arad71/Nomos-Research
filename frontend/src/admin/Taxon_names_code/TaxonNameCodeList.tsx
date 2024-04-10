@@ -202,7 +202,7 @@ const postListColumns = {
         field: 'conservation_code___code_priority',
         order: 'ASC',
       }}
-      filter={{ effective_to: null }}
+      filter={{ isactive: true }}
       link={false}
     >
       <SingleFieldList style={{ flexWrap: 'nowrap' }}>
@@ -283,8 +283,8 @@ const Actions = () => (
       preferenceName={TAXON_NAMES_CODE_PREFERENCE}
       defaultValue={Array.from(includeColumns)}
     />
-    <WithPermissions resource="taxon_names" action="create">
-      <CreateButton />
+    <WithPermissions resource="conscode_taxons" action="create">
+      <CreateButton basePath="/conscode_taxons" />
     </WithPermissions>
     <WithPermissions resource="taxon_names" action="export">
       <BatchExportButton />
@@ -305,12 +305,7 @@ export const TaxonNameCodeList = (props: ListProps) => {
       actions={<Actions />}
       perPage={100}
       filter={{
-        conscode_taxons___effective_to: null,
-        conscode_taxons___conservation_code_id: [
-          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-          21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37,
-          38, 39, 40,
-        ],
+        conscode_taxons___isactive: true,
       }}
       filters={TaxonNameCodeFilters()}
       pagination={<DefaultPagination />}
