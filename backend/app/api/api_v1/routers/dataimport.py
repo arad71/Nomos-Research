@@ -94,6 +94,7 @@ def import_conservation_code(
     worksheet: int,
     taxon_column_index: int,
     conservation_code_column_index: int,
+    effective_date_column_index: int,
 ):
     contents = upload_file.file.read()
     file_path = "/legacy_data/" + upload_file.filename
@@ -119,6 +120,7 @@ def import_conservation_code(
             workbook_index=worksheet,
             taxon_column_index=taxon_column_index,
             conservation_code_column_index=conservation_code_column_index,
+            effective_date_column_index=effective_date_column_index,
             source=authority.value,
         )
 
