@@ -30,13 +30,28 @@ def upgrade():
         sa.Column("sci_name_id", sa.INTEGER(), autoincrement=False, nullable=True),
         sa.Column("cons_code_id", sa.INTEGER(), autoincrement=False, nullable=True),
         sa.Column("ready_for_import", sa.BOOLEAN(), autoincrement=False, nullable=True),
+        sa.Column("effective_from", sa.VARCHAR(), autoincrement=False, nullable=True),
     )
 
-    op.execute(
-        """ CREATE OR REPLACE PROCEDURE public.import_conscode_taxon(source character,userid integer)
+    op.execute(""" CREATE OR REPLACE PROCEDURE public.import_conscode_taxon(
+                source character,
+                userid integer)
             LANGUAGE 'sql'
             AS $BODY$
 
+            /*
+            Assume that any uploaded sheet consists all the current listing, including - 
+                i) new conservation code may be introduced
+                ii) Some taxon may be delisted from conservation listed
+                iii) conservation code may be changed for any current conservative species 
+                    or non-conservative taxon may be included in conservation list
+            */
+
+            --
+            delete FROM public.tmp_cons_code where effective_from ='effective_from';
+            update public.tmp_cons_code set msg=null,ready_for_import=null;
+                
+            -- update conservtion code id from name
             update tmp_cons_code t1 
                 set cons_code_id=c.conservation_code_id
                 from conservation_code c
@@ -44,11 +59,13 @@ def upgrade():
                     and trim(t1.conservation_code)=trim(c.conservation_code_value)
                     and c.deleted=false;	
 
+            -- update scientifica name id from scientific name
             update tmp_cons_code t1 
                 set sci_name_id=t.taxon_name_id
                 from taxon_name t
                 where trim(t1.scientific_name)=trim(t.scientific_name) and t.deleted=false;	
 
+            -- identified the rows with no matching name, cons code
             update tmp_cons_code set msg='No Taxon and Conservation code found', ready_for_import=false
                     where cons_code_id is null and sci_name_id is null;
 
@@ -58,34 +75,50 @@ def upgrade():
             update tmp_cons_code set msg= 'No Taxon found' , ready_for_import=false
                     where sci_name_id is null and cons_code_id is not null;
 
-            update tmp_cons_code tcc set msg=concat(msg, 'cons code update'), ready_for_import=true 
+            -- identified duplicate rows
+            update tmp_cons_code tcc set msg='duplicate entry' , ready_for_import=false
+                    from conscode_taxon cct
+                    where tcc.sci_name_id =cct.taxon_name_id  
+                        and tcc.source=cct.source
+                        and tcc.cons_code_id=cct.conservation_code_id
+                        and cct.isactive=true and cct.deleted=false;	
+
+            --update delisted rows
+            update conscode_taxon 
+                set isactive=false, effective_to= CURRENT_DATE
+                where isactive=true and taxon_name_id in 
+                    (select sci_name_id from tmp_cons_code where cons_code_id is null);
+
+            update conscode_taxon 
+                set isactive=false, effective_to= CURRENT_DATE
+                where isactive=true and taxon_name_id not in 
+                    (select sci_name_id from tmp_cons_code);
+                
+            --update rows  cons code has been changed
+            update tmp_cons_code tcc set msg='cons code update', ready_for_import=true 
                     from conscode_taxon cct
                     where tcc.sci_name_id =cct.taxon_name_id  
                         and tcc.source=cct.source
                         and tcc.cons_code_id<>cct.conservation_code_id
-                        and cct.isactive=true and cct.deleted=false;	
+                        and cct.isactive=true and cct.deleted=false and cct.conservation_code_id is not null;	
 
             update conscode_taxon cct
-                set isactive=false, effective_to= CURRENT_DATE
+                set isactive=false, effective_to= TO_DATE(left(tcc.effective_from,10),'YYYY-MM_DD')
                 from tmp_cons_code tcc
                 where cct.taxon_name_id = tcc.sci_name_id 
                     and cct.conservation_code_id <>tcc.cons_code_id 
                     and cct.source =tcc.source 
-                    and cct.isactive=true and cct.deleted=false and tcc.msg ='cons code update' ;
+                    and cct.isactive=true and cct.deleted=false and tcc.msg ='cons code update';
 
-            update tmp_cons_code set msg=concat(msg, 'duplicate entry') 
-                    where sci_name_id in (select taxon_name_id from conscode_taxon where isactive=true and deleted=false) 
-                        and cons_code_id in (select conservation_code_id from conscode_taxon where isactive=true and deleted=false) 
-                        and msg is null;
 
+            -- insert valid rows
             insert into conscode_taxon ( conservation_code_id, taxon_name_id, deleted, effective_from, isactive, updated_by, updated_on, created_by, created_on)
-                    select cons_code_id, sci_name_id, false , CURRENT_DATE, true, userid, NOW(),userid,NOW()  from tmp_cons_code where msg is null or msg='cons code update';
+                    select cons_code_id, sci_name_id, false , TO_DATE(left(effective_from,10),'YYYY-MM_DD'), true, userid, NOW(),userid,NOW()  from tmp_cons_code where msg is null or msg='cons code update';
 
             $BODY$;
 
             ALTER PROCEDURE public.import_conscode_taxon(character, integer)
-                OWNER TO postgres;"""
-    )
+                OWNER TO postgres;""")
     # ### end Alembic commands ###
 
 

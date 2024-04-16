@@ -1,6 +1,7 @@
 import io
 import os
 import warnings
+from datetime import date, datetime
 
 import pandas as pd
 import psycopg2
@@ -17,10 +18,11 @@ def import_cons_code(
     workbook_index: int,
     taxon_column_index: int,
     conservation_code_column_index: int,
+    effective_date_column_index: date,
     source: int,
 ):
     #   admin_id = get_admin_id(db)
-
+    date_format = "%Y-%m-%d"
     try:
         # Connect to the database
         conn = psycopg2.connect(
@@ -51,15 +53,36 @@ def import_cons_code(
         if row_data[taxon_column_index] is not None:
             sci_name = row_data[taxon_column_index]
             new_cons_code = row_data[conservation_code_column_index]
-            cur.execute(
-                "insert into tmp_cons_code values('"
-                + new_cons_code
-                + "','"
-                + str(sci_name).replace("'", '"')
-                + "','"
-                + source
-                + "')"
-            )
+            effective_from = row_data[effective_date_column_index]
+            # print('aa'+effective_from)
+            if effective_from is not None:
+                e = effective_from
+                # print('aa'+str(e))
+                # ef=datetime.strptime(effective_from,"%Y-%m-%d %H:%M:%S")
+                # print(ef)
+
+                cur.execute(
+                    "insert into tmp_cons_code (conservation_code, scientific_name,"
+                    " source, effective_from) values('"
+                    + new_cons_code
+                    + "','"
+                    + str(sci_name).replace("'", '"')
+                    + "','"
+                    + source
+                    + "','"
+                    + str(e)
+                    + "')"
+                )
+            else:
+                cur.execute(
+                    "insert into tmp_cons_code values('"
+                    + new_cons_code
+                    + "','"
+                    + str(sci_name).replace("'", '"')
+                    + "','"
+                    + source
+                    + "')"
+                )
 
     user_id = 1
     # : User = Depends(get_current_active_user),
