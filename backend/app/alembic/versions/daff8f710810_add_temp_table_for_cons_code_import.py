@@ -116,9 +116,7 @@ def upgrade():
                     select cons_code_id, sci_name_id, false , TO_DATE(left(effective_from,10),'YYYY-MM_DD'), true, userid, NOW(),userid,NOW()  from tmp_cons_code where msg is null or msg='cons code update';
 
             $BODY$;
-
-            ALTER PROCEDURE public.import_conscode_taxon(character, integer)
-                OWNER TO taxman""")
+            """)
     # ### end Alembic commands ###
 
 
