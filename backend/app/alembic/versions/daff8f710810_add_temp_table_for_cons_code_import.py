@@ -33,7 +33,7 @@ def upgrade():
         sa.Column("effective_from", sa.VARCHAR(), autoincrement=False, nullable=True),
     )
 
-    op.execute(""" CREATE OR REPLACE PROCEDURE public.import_conscode_taxon(
+    op.execute(""" CREATE OR REPLACE PROCEDURE import_conscode_taxon(
                 source character,
                 userid integer)
             LANGUAGE 'sql'
@@ -118,7 +118,7 @@ def upgrade():
             $BODY$;
 
             ALTER PROCEDURE public.import_conscode_taxon(character, integer)
-                OWNER TO postgres;""")
+                OWNER TO taxman""")
     # ### end Alembic commands ###
 
 
