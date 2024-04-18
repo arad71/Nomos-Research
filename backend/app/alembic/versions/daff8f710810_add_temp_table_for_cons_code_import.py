@@ -30,7 +30,13 @@ def upgrade():
         sa.Column("sci_name_id", sa.INTEGER(), autoincrement=False, nullable=True),
         sa.Column("cons_code_id", sa.INTEGER(), autoincrement=False, nullable=True),
         sa.Column("ready_for_import", sa.BOOLEAN(), autoincrement=False, nullable=True),
-        sa.Column("effective_from", sa.VARCHAR(), autoincrement=False, nullable=True),
+        sa.Column(
+            "effective_from",
+            sa.VARCHAR(),
+            autoincrement=False,
+            nullable=True,
+            default="CURRENT_DATE",
+        ),
     )
 
     op.execute(""" CREATE OR REPLACE PROCEDURE import_conscode_taxon(
@@ -116,9 +122,7 @@ def upgrade():
                     select cons_code_id, sci_name_id, false , TO_DATE(left(effective_from,10),'YYYY-MM_DD'), true, userid, NOW(),userid,NOW()  from tmp_cons_code where msg is null or msg='cons code update';
 
             $BODY$;
-
-            ALTER PROCEDURE public.import_conscode_taxon(character, integer)
-                OWNER TO taxman""")
+            """)
     # ### end Alembic commands ###
 
 
