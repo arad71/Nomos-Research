@@ -30,7 +30,13 @@ def upgrade():
         sa.Column("sci_name_id", sa.INTEGER(), autoincrement=False, nullable=True),
         sa.Column("cons_code_id", sa.INTEGER(), autoincrement=False, nullable=True),
         sa.Column("ready_for_import", sa.BOOLEAN(), autoincrement=False, nullable=True),
-        sa.Column("effective_from", sa.VARCHAR(), autoincrement=False, nullable=True),
+        sa.Column(
+            "effective_from",
+            sa.VARCHAR(),
+            autoincrement=False,
+            nullable=True,
+            default="CURRENT_DATE",
+        ),
     )
 
     op.execute(""" CREATE OR REPLACE PROCEDURE import_conscode_taxon(
