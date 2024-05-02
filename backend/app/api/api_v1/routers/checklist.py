@@ -8,6 +8,8 @@ from sqlalchemy.orm import Session, aliased
 
 from app.db.checklist.schema import CheckList
 from app.db.classification_system.model import ClassificationSystem
+from app.db.conscode_taxon.model import Conscodetaxon
+from app.db.conservation_code.model import Conservationcode
 from app.db.cross_reference.model import CrossReference
 from app.db.hierarchy.model import Hierarchy
 from app.db.informal_group.model import InformalGroup
@@ -16,6 +18,8 @@ from app.db.session import get_db
 from app.db.taxon_name.model import TaxonName
 from app.db.taxon_rank.model import TaxonRank
 from app.db.vernacular.model import Vernacular
+
+import psycopg2
 
 checklist_router = r = APIRouter(prefix="/checklist")
 authorizer = AuthorizerDependency(key_pattern="API_KEY_")
@@ -100,6 +104,7 @@ async def curation_checklist(
     cross_reference_counts = await cross_reference_counts_subquery()
     vernacular = await vernacular_subquery()
     informal_group = await informal_group_subquery()
+    conscode = await conscode_subquery()
 
     statement = (
         select(
@@ -115,6 +120,7 @@ async def curation_checklist(
             original_name.review.label("review"),
             original_name.review_reason.label("reviewReason"),
             vernacular.c.vernacular_names.label("vernacularName"),
+            conscode.c.conscodes.label("conscodelist"),
             informal_group.c.informal_groups.label("informalGroups"),
             original_name.is_current.label("isCurrent"),
             TaxonRank.rank_name.label("taxonRank"),
@@ -162,6 +168,10 @@ async def curation_checklist(
             onclause=vernacular.c.taxon_name_id == original_name.taxon_name_id,
         )
         .outerjoin(
+            conscode,
+            onclause=conscode.c.taxon_name_id == original_name.taxon_name_id,
+        )
+        .outerjoin(
             informal_group,
             onclause=informal_group.c.taxon_name_id == original_name.taxon_name_id,
         )
@@ -203,6 +213,7 @@ async def curation_checklist(
     count_query = statement.with_only_columns(func.count(original_name.taxon_name_id))
     count = db.execute(count_query).scalar_one()
     response.headers["Content-Range"] = f"{offset}-{limit - 1 + offset}/{count}"
+    # statement=statement.order_by(TaxonName.taxon_name_id)
     statement = statement.limit(limit).offset(offset)
     result = db.execute(statement)
     return result.all()
@@ -352,6 +363,39 @@ async def vernacular_subquery() -> select:
     return vernacular
 
 
+async def conscode_subquery() -> select:
+    """
+    Create a subquery to get a list of conservation codes for each taxon name.
+
+    :return: A SQAlchemy select statement representing the subquery.
+    :rtype: select
+    """
+    conscode = (
+        select(
+            Conscodetaxon.taxon_name_id,
+            func.array_agg(
+                Conservationcode.authorising_org
+                + ":"
+                + Conservationcode.conservation_code_value
+            ).label("conscodes"),
+            # func.array_agg(Conscodetaxon.source).label("conscodes"),
+        )
+        .join(
+            Conservationcode,
+            Conscodetaxon.conservation_code_id == Conservationcode.conservation_code_id,
+        )
+        .group_by(Conscodetaxon.taxon_name_id)
+        .filter(
+            and_(
+                Conscodetaxon.deleted == False,  # noqa: E712
+                Conscodetaxon.isactive == True,  # noqa: E712
+            )
+        )
+        .subquery()
+    )
+    return conscode
+
+
 async def informal_group_subquery() -> select:
     """
     Returns a subquery that joins the `InformalGroup` and `ClassificationSystem` tables
@@ -381,3 +425,4 @@ async def informal_group_subquery() -> select:
         .subquery()
     )
     return informal_group
+
