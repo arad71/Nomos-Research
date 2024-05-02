@@ -50,7 +50,10 @@ def import_cons_code(
         cnt = cnt + 1
         row_data = [cell.value for cell in row]
 
-        if row_data[taxon_column_index] is not None:
+        if (
+            row_data[taxon_column_index] is not None
+            and row_data[conservation_code_column_index] is not None
+        ):
             sci_name = row_data[taxon_column_index]
             new_cons_code = row_data[conservation_code_column_index]
             effective_from = row_data[effective_date_column_index]
@@ -63,7 +66,7 @@ def import_cons_code(
 
                 cur.execute(
                     "insert into tmp_cons_code (conservation_code, scientific_name,"
-                    " source, effective_from) values('"
+                    + " source, effective_from) values('"
                     + new_cons_code
                     + "','"
                     + str(sci_name).replace("'", '"')
@@ -75,7 +78,8 @@ def import_cons_code(
                 )
             else:
                 cur.execute(
-                    "insert into tmp_cons_code values('"
+                    "insert into tmp_cons_code (conservation_code, scientific_name,"
+                    + " source) values('"
                     + new_cons_code
                     + "','"
                     + str(sci_name).replace("'", '"')

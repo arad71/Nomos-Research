@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
+import psycopg2
 from fastapi import APIRouter, Depends, Query, Response
 from fastapi_key_auth import AuthorizerDependency
 from sqlalchemy import and_, case, func, or_, select
@@ -18,8 +19,6 @@ from app.db.session import get_db
 from app.db.taxon_name.model import TaxonName
 from app.db.taxon_rank.model import TaxonRank
 from app.db.vernacular.model import Vernacular
-
-import psycopg2
 
 checklist_router = r = APIRouter(prefix="/checklist")
 authorizer = AuthorizerDependency(key_pattern="API_KEY_")
@@ -425,4 +424,3 @@ async def informal_group_subquery() -> select:
         .subquery()
     )
     return informal_group
-
