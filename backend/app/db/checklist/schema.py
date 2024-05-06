@@ -18,6 +18,7 @@ class ChecklistName(BaseModel):
     review: bool
     reviewReason: Optional[str]
     vernacularName: Optional[List[str]]
+    conscodelist: Optional[List[str]]
     informalGroups: Optional[List[str]]
     isCurrent: bool
     taxonRank: str
