@@ -3,6 +3,9 @@ from starlette import status
 from app.db.cross_reference.model import CrossReference
 from app.db.hierarchy.model import Hierarchy
 from app.db.taxon_name.model import TaxonName
+
+# from app.db.conscode_taxon.model import Conscodetaxon
+# from app.db.conservation_code.model import Conservationcode
 from app.tests.util import assert_list_dict_equal_ignoring
 
 CURATION_ENDPOINT = "/api/v1/checklist/curation"
@@ -15,6 +18,8 @@ def test_checklist(
     test_hierarchies: dict[str, Hierarchy],
     test_classification_system,
     test_vernacular,
+    # test_conservation_code,
+    # test_conscode_taxon,
     checklist_api_key,
 ):
     response = client.get(
@@ -37,6 +42,7 @@ def test_checklist(
                 "nameRepresentations": None,
                 "establishmentMeans": None,
                 "vernacularName": None,
+                # "conscodelist": None,
                 "informalGroups": None,
                 "isCurrent": True,
                 "taxonRank": "Order",
@@ -345,6 +351,7 @@ def test_checklist(
             "acceptedNameCreated",
             "acceptedNameUpdated",
             "acceptedNameUsageId",
+            # "conscodelist",
         ],
     )
 
