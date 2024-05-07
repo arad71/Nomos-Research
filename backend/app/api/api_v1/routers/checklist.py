@@ -118,8 +118,7 @@ async def curation_checklist(
             original_name.naturalised_status.label("establishmentMeans"),
             original_name.review.label("review"),
             original_name.review_reason.label("reviewReason"),
-            vernacular.c.vernacular_names.label("vernacularName"),
-            conscode.c.conscodes.label("conscodelist"),
+            vernacular.c.vernacular_names.label("vernacularName"),           
             informal_group.c.informal_groups.label("informalGroups"),
             original_name.is_current.label("isCurrent"),
             TaxonRank.rank_name.label("taxonRank"),
@@ -146,6 +145,7 @@ async def curation_checklist(
             accepted_name.review_reason.label("acceptedNameReviewReason"),
             cross_reference_counts.c.count.label("relatedNamesCount"),
             kingdom.kingdom_name.label("kingdom"),
+            # conscode.c.conscodes.label("conscodelist")                    
         )
         .join(
             CrossReference,
