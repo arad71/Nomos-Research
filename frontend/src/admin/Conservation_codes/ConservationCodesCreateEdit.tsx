@@ -49,11 +49,11 @@ export const ConservationCodesCreateEdit: FC = (props) => {
           validate={[required()]}
           fullWidth
         />
-        <TextInput 
-          source="code_priority" 
-          label="Display order" 
-          validate={[required()]} 
-          fullWidth 
+        <TextInput
+          source="code_priority"
+          label="Display order"
+          validate={[required()]}
+          fullWidth
         />
       </Box>
     </SimpleForm>

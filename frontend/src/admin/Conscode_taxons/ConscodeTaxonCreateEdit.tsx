@@ -17,7 +17,6 @@ import {
   TextField,
   EditButton,
   maxValue,
-  
 } from 'react-admin';
 import React, { FC } from 'react';
 import { GlobalTheme } from '../../GlobalTheme';
@@ -48,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const validatedate= [required(), maxValue(new Date('2024-04-17'))];
+const validatedate = [required(), maxValue(new Date('2024-04-17'))];
 
 export const ConscodeTaxonCreateEdit: FC = (props) => {
   const globalClasses = GlobalTheme();
@@ -101,7 +100,7 @@ export const ConscodeTaxonCreateEdit: FC = (props) => {
               validate={required()}
             />
           </ReferenceInput>
-          <DateInput source="effective_from"  validate={validatedate} />
+          <DateInput source="effective_from" validate={validatedate} />
           <DateInput source="effective_to" />
         </Box>
         <Box className={classes.mainGridLong}>
