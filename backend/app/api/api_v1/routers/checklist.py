@@ -119,6 +119,7 @@ async def curation_checklist(
             original_name.review.label("review"),
             original_name.review_reason.label("reviewReason"),
             vernacular.c.vernacular_names.label("vernacularName"),
+            conscode.c.conscodes.label("conscodeList"),
             informal_group.c.informal_groups.label("informalGroups"),
             original_name.is_current.label("isCurrent"),
             TaxonRank.rank_name.label("taxonRank"),

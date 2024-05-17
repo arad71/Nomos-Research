@@ -129,7 +129,7 @@ async def taxon_name_ancestors(
                         statement = statement.filter(field.in_(filter_value))
 
                     else:
-                        statement = statement.filter(field == filter_value)
+                        statement = statement.filter == filter_value
     statement = statement.filter(
         and_(
             taxon_name.deleted == False,  # noqa: E712

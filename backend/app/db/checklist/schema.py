@@ -18,7 +18,7 @@ class ChecklistName(BaseModel):
     review: bool
     reviewReason: Optional[str]
     vernacularName: Optional[List[str]]
-    # conscodelist: Optional[List[str]]
+    conscodeList: Optional[List[str]]
     informalGroups: Optional[List[str]]
     isCurrent: bool
     taxonRank: str
@@ -71,6 +71,7 @@ class ChecklistName(BaseModel):
                 "infraspecificEpithet": "furcatus",
                 "review": False,
                 "reviewReason": None,
+                "conscodelist": None,
                 "nameRepresentations": [
                     "Dero (Aulophorus) furcatus subsp. furcatus (Müller, 1774)",
                     "Dero (Aulophorus) furcatus furcatus (Müller, 1774)",
