@@ -12,6 +12,8 @@ from app.core import config, security
 from app.db.author.model import Author
 from app.db.citation.model import Citation
 from app.db.classification_system.model import ClassificationSystem
+from app.db.conscode_taxon.model import Conscodetaxon
+from app.db.conservation_code.model import Conservationcode
 from app.db.cross_reference.model import CrossReference
 from app.db.hierarchy.model import Hierarchy
 from app.db.informal_group.model import InformalGroup
@@ -1104,6 +1106,60 @@ def test_vernacular(test_db, test_taxon_name, test_superuser) -> Vernacular:
     test_db.add(vernacular)
     test_db.commit()
     return vernacular
+
+
+@pytest.fixture
+def test_conservation_code(test_db, test_superuser) -> Conservationcode:
+    """
+    Conservation code for testing
+    """
+
+    now = datetime.datetime.utcnow()
+    conservation_code = Conservationcode(
+        conservation_code_value="P1",
+        authorising_org="State",
+        code_priority=102,
+        updated_by=test_superuser.user_id,
+        updated_on=now,
+        created_by=test_superuser.user_id,
+        created_on=now,
+    )
+    test_db.add(conservation_code)
+    test_db.commit()
+    return conservation_code
+
+
+# @pytest.fixture
+# def test_conscode_taxon(
+#     test_db, test_taxon_name, test_conservation_code, test_superuser) -> Conscodetaxon:
+#     """
+#     Conservation code Taxon for testing
+#     """
+#     return create_conscode_taxon(test_conservation_code, test_db, test_superuser, test_taxon_name)
+
+
+# def create_conscode_taxon(
+#         conservation_code: Conservationcode,
+#         db: Session,
+#         user: User,
+#         taxon_name: TaxonName,
+#     ) -> Conscodetaxon:
+#         now = datetime.datetime.utcnow()
+#         conscode_taxon = Conscodetaxon(
+#             taxon_name_id=test_taxon_name.taxon_name_id,
+#             conservation_code_id=test_conservation_code.conservation_code_id,
+#             effective_from= test_conscode_taxon.effective_from.isoformat(),
+#             effective_to= test_conscode_taxon.effective_to,
+#             # "effective_from": test_conscode_taxon.effective_from,
+#             notes= test_conscode_taxon.notes,
+#             updated_by=user.user_id,
+#             updated_on=now,
+#             created_by=user.user_id,
+#             created_on=now,
+#         )
+#         db.add(conscode_taxon)
+#         db.commit()
+#         return conscode_taxon
 
 
 def verify_password_mock(first: str, second: str) -> bool:

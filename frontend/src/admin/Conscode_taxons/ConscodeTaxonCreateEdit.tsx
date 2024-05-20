@@ -16,6 +16,7 @@ import {
   DateField,
   TextField,
   EditButton,
+  maxValue,
 } from 'react-admin';
 import React, { FC } from 'react';
 import { GlobalTheme } from '../../GlobalTheme';
@@ -23,6 +24,7 @@ import { Box, Typography, makeStyles } from '@material-ui/core';
 import EditToolbar from '../shared/EditToolbar';
 import ScientificNameReference from '../Taxon_names/ScientificNameReference';
 import { ConservationShort } from '../Conservation_codes';
+import { CalendarToday, DateRange, Today } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
   mainGrid: {
@@ -44,6 +46,8 @@ const useStyles = makeStyles((theme) => ({
     gridColumnGap: '1.5em',
   },
 }));
+
+const validatedate = [required(), maxValue(new Date('2024-04-17'))];
 
 export const ConscodeTaxonCreateEdit: FC = (props) => {
   const globalClasses = GlobalTheme();
@@ -96,7 +100,7 @@ export const ConscodeTaxonCreateEdit: FC = (props) => {
               validate={required()}
             />
           </ReferenceInput>
-          <DateInput source="effective_from" validate={required()} />
+          <DateInput source="effective_from" validate={validatedate} />
           <DateInput source="effective_to" />
         </Box>
         <Box className={classes.mainGridLong}>

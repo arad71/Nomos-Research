@@ -335,7 +335,7 @@ export const TaxonNameShow: FC = (props) => {
                 className={globalClasses.bold}
                 gutterBottom
               >
-                Taxon name - Hierarchy
+                Taxon Name - Hierarchy
               </Typography>
               <HierarchyGrid />
             </Box>
@@ -351,7 +351,7 @@ export const TaxonNameShow: FC = (props) => {
                 className={globalClasses.bold}
                 gutterBottom
               >
-                Taxon name - Related Names
+                Taxon Name - Related Names
               </Typography>
               <Labeled label="Previous names">
                 <CrossReferenceManyGrid
