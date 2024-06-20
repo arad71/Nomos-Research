@@ -43,10 +43,20 @@ services:
       - ./backend:/app/:cached
       - ./.docker/.ipython:/root/.ipython:cached
       - ./backup:/backup:cached
+#    env_file:
+#      - .env
     environment:
+      # See overridable settings in backend/app/core/config.py
+      # If you want to override more variables than these consider uncommenting
+      # the env_file section above and just setting them in the .env file
       PYTHONPATH: .
-      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@taxman.com}
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-password}
+      FIRST_SUPER_ADMIN_EMAIL: ${FIRST_SUPER_ADMIN_EMAIL:-admin@taxman.com}
+      FIRST_SUPER_ADMIN_PASSWORD: ${FIRST_SUPER_ADMIN_PASSWORD:-password}
+      FIRST_SUPER_ADMIN_FIRST_NAME: ${FIRST_SUPER_ADMIN_FIRST_NAME:-Admin}
+      FIRST_SUPER_ADMIN_LAST_NAME: ${FIRST_SUPER_ADMIN_LAST_NAME:-User}
+      FIRST_SUPER_ADMIN_STARTUP_OVERRIDE: ${FIRST_SUPER_ADMIN_STARTUP_OVERRIDE:-false}
+      FIRST_SUPER_ADMIN_USER_ID: ${FIRST_SUPER_ADMIN_USER_ID:-1}
+      CREATE_DEMO_USERS: ${CREATE_DEMO_USERS:-false}
       DB_HOST: ${DB_HOST:-postgres}
       DB_USER: ${DB_USER:-taxman}
       DB_PASSWORD: ${DB_PASSWORD:-password}

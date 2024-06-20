@@ -7,7 +7,7 @@ from app.db.role.constants import Role
 from app.db.role.crud import RoleCrud
 from app.db.role.schema import RoleCreate
 from app.db.user.crud import UserCrud
-from app.db.user.schema import UserCreate
+from app.db.user.schema import UserCreate, UserEdit
 from app.db.user_role.crud import UserRoleCrud
 from app.db.user_role.schema import UserRoleCreate
 
@@ -16,12 +16,15 @@ def init_db(db: Session) -> None:
     logger.info("Initializing database")
     # Create 1st Superuser
     password = settings.FIRST_SUPER_ADMIN_PASSWORD
+    update = settings.FIRST_SUPER_ADMIN_STARTUP_OVERRIDE
     user = ensure_user(
         db,
         settings.FIRST_SUPER_ADMIN_EMAIL,
         settings.FIRST_SUPER_ADMIN_FIRST_NAME,
         settings.FIRST_SUPER_ADMIN_LAST_NAME,
         password,
+        update,
+        settings.FIRST_SUPER_ADMIN_USER_ID,
     )
     # Create Role If They Don't Exist
 
@@ -37,9 +40,14 @@ def init_db(db: Session) -> None:
                 RoleCrud.create_item(db, item=role_in)
             else:
                 logger.debug("Role {} exists", role_name)
-            if settings.ENVIRONMENT == "local":
+            if settings.CREATE_DEMO_USERS:
                 demo_user = ensure_user(
-                    db, f"{role_name}@example.com", role_name, "Demo User", password
+                    db,
+                    email=f"{role_name}@example.com",
+                    first_name=role_name,
+                    last_name="Demo User",
+                    password=password,
+                    update=update,
                 )
                 ensure_user_has_role(db, role_name, demo_user)
 
@@ -62,11 +70,36 @@ def ensure_user_has_role(db, role_name, user):
         UserRoleCrud.create_item(db, item=user_role_in, current_user=admin_id)
 
 
-def ensure_user(db, email, first_name, last_name, password):
+def ensure_user(
+    db: Session,
+    email: str,
+    first_name: str,
+    last_name: str,
+    password: str,
+    update: bool = False,
+    user_id: int = None,
+):
     user_crud = UserCrud()
-    user = user_crud.get_user_by_email(db, email=email)
+
+    if user_id:
+        user = user_crud.get_user_by_id(db, user_id)
+    else:
+        user = user_crud.get_user_by_email(db, email=email)
     if user:
         logger.debug("User {} exists", email)
+        if update:
+            logger.debug("Updating user {}", email)
+            user_in = UserEdit(
+                user_id=user.user_id,
+                email=email,
+                first_name=first_name,
+                last_name=last_name,
+                password=password,
+            )
+            user_crud.edit_item(
+                db, current_user=user, user=user_in, user_id=user.user_id
+            )
+
     else:
         logger.debug("Creating user {}", email)
         user_in = UserCreate(
