@@ -26,6 +26,14 @@ class UserCrud(crud.Crud):
         )
 
     @classmethod
+    def get_user_by_id(cls, db: Session, id: int) -> User:
+        return (
+            db.query(User)
+            .filter(User.user_id == id, User.deleted == False)  # noqa: E712
+            .one_or_none()
+        )
+
+    @classmethod
     def create_item(
         cls,
         db: Session,

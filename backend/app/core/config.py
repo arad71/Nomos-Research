@@ -18,6 +18,10 @@ class Settings(BaseSettings):
     FIRST_SUPER_ADMIN_PASSWORD: str = "password"
     FIRST_SUPER_ADMIN_FIRST_NAME: str = "Admin"
     FIRST_SUPER_ADMIN_LAST_NAME: str = "User"
+    FIRST_SUPER_ADMIN_STARTUP_OVERRIDE: bool = False
+    FIRST_SUPER_ADMIN_USER_ID: int = 1
+
+    CREATE_DEMO_USERS: bool = False
 
     API_V1_STR: str = "/api/v1"
     SECRET_KEY: str = "super_secret"
