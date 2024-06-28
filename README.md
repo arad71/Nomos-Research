@@ -434,7 +434,9 @@ The app is deployed using GitHub actions configured through [.github/workflows/c
 ### Configuration
 
 Environment specific configuration can be placed in a .env in the project directory on the deployment server.
-Take a look at [.env.example](.env.example) for an example of how to configure the app.
+Take a look at [.env.example](.env.example) for an example of how to configure the app. For the backend the configuration is read
+by [backend/app/core/config.py](backend/app/core/config.py). You can override any of those variables using environment
+variables.
 
 #### Authentication providers
 
