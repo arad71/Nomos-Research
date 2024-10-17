@@ -69,7 +69,7 @@ def import_cons_code(
                     + " source, effective_from) values('"
                     + new_cons_code
                     + "','"
-                    + str(sci_name).replace("'", '^')
+                    + str(sci_name).replace("'", "^")
                     + "','"
                     + source
                     + "','"
@@ -82,7 +82,7 @@ def import_cons_code(
                     + " source) values('"
                     + new_cons_code
                     + "','"
-                    + str(sci_name).replace("'", '^')
+                    + str(sci_name).replace("'", "^")
                     + "','"
                     + source
                     + "')"
@@ -91,7 +91,6 @@ def import_cons_code(
     user_id = 1
     # : User = Depends(get_current_active_user),
     cur.execute("CALL import_conscode_taxon(%s,%s)", (source, user_id))
-
 
     warnings.filterwarnings("ignore")
     df = pd.read_sql("select * from tmp_cons_code", con=conn)
