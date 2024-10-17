@@ -26,7 +26,7 @@ class Conservationcode(BaseModel, TableMixin):
         doc=CONSERVATION_CODE_ID,
     )
     conservation_code_value = Column(
-        String(10),
+        String(45),
         nullable=False,
         comment=CONSERVATION_CODE_DESCRIPTION,
         doc=CONSERVATION_CODE_DESCRIPTION,
