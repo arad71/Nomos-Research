@@ -69,7 +69,7 @@ def import_cons_code(
                     + " source, effective_from) values('"
                     + new_cons_code
                     + "','"
-                    + str(sci_name).replace("'", '"')
+                    + str(sci_name).replace("'", "^")
                     + "','"
                     + source
                     + "','"
@@ -82,7 +82,7 @@ def import_cons_code(
                     + " source) values('"
                     + new_cons_code
                     + "','"
-                    + str(sci_name).replace("'", '"')
+                    + str(sci_name).replace("'", "^")
                     + "','"
                     + source
                     + "')"
