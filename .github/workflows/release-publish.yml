@@ -10,8 +10,8 @@ on:
 env:
   REGISTRY: ghcr.io
   ORG: bio-wa
-  FRONTEND_DOCKER_PATH: /frontend/Dockerfile
-  BACKEND_DOCKER_PATH: /backend/Dockerfile
+  FRONTEND_DOCKER_PATH: ./frontend/Dockerfile
+  BACKEND_DOCKER_PATH: ./backend/Dockerfile
   BACKEND_IMAGE_NAME: nomos-backend-api
   FRONTEND_IMAGE_NAME: nomos-frontend
   
