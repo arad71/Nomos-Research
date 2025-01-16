@@ -70,7 +70,8 @@ const postListColumns = {
       source="conservation_code_id"
       reference="conservation_codes"
       sortBy="conservation_code___code_priority"
-      link={(record: any) => `/taxon_names_code/${record.taxon_name_id}/show`}
+      link={false}
+      //link={(record: any) => `/taxon_names_code/${record.taxon_name_id}/show`}
       label="Conservation status"
     >
       <ConservationShort source="conservation_code_id" />
