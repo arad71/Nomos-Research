@@ -23,7 +23,8 @@ jobs:
           python -m pip install poetry
           poetry config virtualenvs.create false
           # poetry install --no-dev
-          poetry install 
+          poetry install
+
       - name: Lint backend code
         run: |
           cd backend
