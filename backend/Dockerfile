@@ -24,6 +24,7 @@ RUN \
   # poetry install --no-dev
   poetry install
 
+
 USER app
 COPY . .
 RUN touch /app/log/calculate.log

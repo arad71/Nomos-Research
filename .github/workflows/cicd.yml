@@ -24,6 +24,7 @@ jobs:
           poetry config virtualenvs.create false
           # poetry install --no-dev
           poetry install
+
       - name: Lint backend code
         run: |
           cd backend
