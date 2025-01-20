@@ -21,7 +21,8 @@ COPY app/__init__.py ./app/__init__.py
 RUN \
   chown -R app:app ./ && \
   chown -R app:app /legacy_data && \
-  poetry install --no-dev
+  # poetry install --no-dev
+  poetry install 
 
 USER app
 COPY . .

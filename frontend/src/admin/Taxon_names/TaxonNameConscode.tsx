@@ -25,6 +25,7 @@ const useStyles = makeStyles({
     borderRadius: '1rem',
     padding: '0.3rem 1rem',
     marginRight: '0.3rem',
+    textWrap: 'nowrap',
   },
 });
 

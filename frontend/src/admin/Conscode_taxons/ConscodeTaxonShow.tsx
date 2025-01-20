@@ -55,7 +55,7 @@ export const ConscodeTaxonShow: FC = (props) => {
             <ReferenceField
               source="conservation_code_id"
               reference="conservation_codes"
-              link="show"
+              link={false}
             >
               <TextField source="authorising_org" />
             </ReferenceField>
@@ -64,7 +64,7 @@ export const ConscodeTaxonShow: FC = (props) => {
             <ReferenceField
               source="conservation_code_id"
               reference="conservation_codes"
-              link="show"
+              link={false}
             >
               <TextField source="conservation_code_value" />
             </ReferenceField>

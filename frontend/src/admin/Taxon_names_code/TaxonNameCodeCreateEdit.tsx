@@ -220,7 +220,7 @@ export const TaxonNameCodeCreateEdit: FC = ({
                   <ReferenceField
                     source="conservation_code_id"
                     reference="conservation_codes"
-                    link="show"
+                    link={false}
                   >
                     <ConservationShort source="conservation_code_id" />
                   </ReferenceField>
