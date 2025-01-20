@@ -22,7 +22,7 @@ RUN \
   chown -R app:app ./ && \
   chown -R app:app /legacy_data && \
   # poetry install --no-dev
-  poetry install --without dev
+  poetry install 
 
 USER app
 COPY . .
