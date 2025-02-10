@@ -46,8 +46,8 @@ export const ConscodeTaxonReferenceManyGrid = (props: {
         >
           <ConservationShort source="conservation_code_id" />
         </ReferenceField>
-        <DateField source="effective_to" />
         <DateField source="effective_from" />
+        <DateField source="effective_to" />
         <TextField source="notes" />
       </Datagrid>
     </ReferenceManyField>

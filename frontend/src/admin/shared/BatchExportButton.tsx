@@ -38,6 +38,8 @@ const BatchExportButton: React.FC<BatchExportButtonProps> = (
   const handleExport = async () => {
     setIsExporting((isExporting) => true);
     let current: number = 0;
+    let taxoninfo = [];
+    let conscodeinfo = [];
     let allRecords: any[] = [];
     let currentPage = context.page;
 
@@ -75,7 +77,7 @@ const BatchExportButton: React.FC<BatchExportButtonProps> = (
     // Fetch data in batches and accumulate all records
     while (current < context.total) {
       try {
-        const { data, loading, error } = await dataProvider.getList(
+        let { data, loading, error } = await dataProvider.getList(
           context.resource,
           {
             filter: context.filterValues,
@@ -93,6 +95,43 @@ const BatchExportButton: React.FC<BatchExportButtonProps> = (
 
         if (error) {
           errorHandler(error);
+        }
+
+        if (data[0].taxon_name_id) {
+          const taxonsForExport = await Promise.all(
+            data.map(async (post: any) => {
+              const { ...taxonForExport } = post;
+              taxoninfo = await dataProvider.getOne('taxon_names', {
+                id: post.taxon_name_id,
+              });
+
+              taxonForExport.formatted_scientific_name =
+                taxoninfo.data.formatted_scientific_name;
+              taxonForExport.scientific_name = taxoninfo.data.scientific_name;
+
+              return taxonForExport;
+            })
+          );
+          data = taxonsForExport;
+        }
+
+        if (data[0].conservation_code_id) {
+          const conscodesForExport = await Promise.all(
+            data.map(async (post: any) => {
+              const { ...conscodeForExport } = post;
+              conscodeinfo = await dataProvider.getOne('taxon_names', {
+                id: post.taxon_name_id,
+              });
+
+              conscodeForExport.formatted_scientific_name =
+                conscodeinfo.data.formatted_scientific_name;
+              conscodeForExport.scientific_name =
+                conscodeinfo.data.scientific_name;
+
+              return conscodeForExport;
+            })
+          );
+          data = conscodesForExport;
         }
         allRecords = [...allRecords, ...data];
       } catch (error) {
