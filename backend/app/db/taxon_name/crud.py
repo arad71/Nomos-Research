@@ -22,11 +22,14 @@ from app.db.user.model import User
 
 CALCULATE_LOG = "/app/log/calculate.log"
 
+INFRAGENUS = "Infragenus"
+
 INFRAGENUS_WITH_RANK = "Infragenus with rank"
 
 CANONICAL = "Canonical"
 
 CANONICAL_WITHOUT_RANK = "Canonical without rank"
+
 
 
 class TaxonNameCrud(crud.Crud):
@@ -207,7 +210,10 @@ class TaxonNameCrud(crud.Crud):
 
         # Convert the result to a list of dictionaries for script ingestion
         rows = parse_obj_as(List[schema.TaxonNameRow], result)
+        # print(rows[-1].rank_name)
         infrageneric_names = InfraGenericNames.generate_names(taxon_name_id, rows)
+        
+
         return infrageneric_names
 
     @classmethod
@@ -323,6 +329,7 @@ class TaxonNameCrud(crud.Crud):
         loguru.logger.info("Calculation completed")
         loguru.logger.remove(log)
 
+
     @classmethod
     def calculate_names_for_row(
         cls, db: orm.Session, row, current_user: int = None, use_fallback: bool = False
@@ -378,6 +385,7 @@ class TaxonNameCrud(crud.Crud):
             orm.attributes.flag_dirty(taxon_name)
         infrageneric_names = InfraGenericNames.generate_names(row.taxon_name_id, rows)
         for name_entry in infrageneric_names:
+            # print(name_entry.rank_name)
             if name_entry.name_version == CANONICAL and name_entry.formatted_name:
                 taxon_name.canonical_name = name_entry.formatted_name
                 taxon_name.calculate_name = False
@@ -394,6 +402,13 @@ class TaxonNameCrud(crud.Crud):
                 taxon_name.scientific_name = name_entry.formatted_name_with_author
                 taxon_name.formatted_scientific_name = name_entry.italicized_name
                 taxon_name.calculate_name = False
+                taxon_name.infragenus_name_with_rank=name_entry.formatted_name
+            elif (
+                name_entry.name_version == INFRAGENUS
+                and name_entry.formatted_name_with_author
+            ):
+                taxon_name.infragenus_name=name_entry.formatted_name        
+        print(taxon_name.infragenus_name)        
         if db.is_modified(taxon_name):
             if current_user:
                 taxon_name.updated_by = current_user
@@ -441,3 +456,4 @@ class TaxonNameCrud(crud.Crud):
         cls.calculation_total = 0
         cls.calculation_modified = 0
         cls.calculation_unmodified = 0
+

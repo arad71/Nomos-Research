@@ -47,7 +47,8 @@ class TaxonName(BaseModel, TableMixin):
     formatted_scientific_name = sqlalchemy.Column(sqlalchemy.String)
     specific_epithet = sqlalchemy.Column(sqlalchemy.String(70), index=True)
     infraspecific_epithet = sqlalchemy.Column(sqlalchemy.String(70), index=True)
-
+    infragenus_name = sqlalchemy.Column(sqlalchemy.String, index=True)
+    infragenus_name_with_rank = sqlalchemy.Column(sqlalchemy.String, index=True)
     is_autonym = sqlalchemy.Column(
         sqlalchemy.Boolean,
         nullable=False,
