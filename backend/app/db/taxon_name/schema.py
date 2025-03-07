@@ -101,8 +101,8 @@ class TaxonName(TaxonNameBase, TableBase):
     canonical_name_without_rank: Optional[str]
     path: Optional[List[str]]
     deleted: bool
-    infragenus_name:Optional[str]
-    infragenus_name_with_rank:Optional[str]
+    infragenus_name: Optional[str]
+    infragenus_name_with_rank: Optional[str]
 
     class Config:
         orm_mode = True
