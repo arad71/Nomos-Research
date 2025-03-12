@@ -405,6 +405,7 @@ class TaxonNameCrud(crud.Crud):
                 and name_entry.formatted_name_with_author
             ):
                 taxon_name.infragenus_name = name_entry.formatted_name
+                taxon_name.calculate_name = False
         print(taxon_name.infragenus_name)
         if db.is_modified(taxon_name):
             if current_user:
