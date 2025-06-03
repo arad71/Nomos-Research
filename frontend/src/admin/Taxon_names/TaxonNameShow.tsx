@@ -175,6 +175,11 @@ export const TaxonNameShow: FC = (props) => {
                   <BooleanField source="validated" />
                 </Labeled>
               </Box>
+              <Box className={globalClasses.fieldMargin}>
+                <Labeled label="Legacy ID" {...props}>
+                  <TextField source="legacy_id" />
+                </Labeled>
+              </Box>
             </Box>
             {/* Authors Section */}
             <Box className={globalClasses.sectionMargin}>
