@@ -60,4 +60,4 @@ AUTONYM = (
 )
 REVIEW = "Mark this taxon name for periodic review."
 REVIEW_REASON = "Specify reason for the review of the name."
-LEGACY_ID = "WA CENSUS legacy ID"
+LEGACY_ID = "Legacy ID"
