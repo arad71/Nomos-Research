@@ -76,7 +76,7 @@ class TaxonNameBase(BaseModel):
     reference: Optional[str]
     authorised_by: Optional[str]
     authorised_on: Optional[datetime]
-    legacy_id: Optional[str] = Field(description=constants.LEGACY_ID)
+    legacy_id: Optional[str]
     admin_comment: Optional[str]
     classification_system_ids: Optional[list[int]]
 
