@@ -36,7 +36,6 @@ import { ConservationShortPill } from '../Conservation_codes';
 
 const postListColumns = {
   id: <TextField source="id" />,
-  legacy_id: <TextField source="legacy_id" label="Legacy ID" />,
   rank: (
     <NestedLinkField
       source="taxon_rank"
