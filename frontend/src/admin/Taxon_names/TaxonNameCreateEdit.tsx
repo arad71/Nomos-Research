@@ -255,6 +255,11 @@ export const TaxonNameCreateEdit: FC = ({
               defaultValue={false}
               className={gridClasses.EightCol5to7span}
             />
+            <TextInput
+              label="Legacy ID"
+              source="legacy_id"
+              className={gridClasses.EightCol1to3span}
+            />
             <Box
               /* eslint-disable-next-line max-len */
               className={`${gridClasses.EightCol1to9span} ${globalClasses.sectionMargin}`}
