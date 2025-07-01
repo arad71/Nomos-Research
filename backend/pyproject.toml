@@ -50,7 +50,7 @@ colorama = "^0.4.6"
 isort = "^5.13.2"
 typer = {extras = ["all"], version = "^0.12.3"}
 rich = "^13.7.0"
-deepdiff = "^6.7.1"
+deepdiff = "^8.5.0"
 
 [tool.black]
 preview = 1
