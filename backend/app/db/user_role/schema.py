@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from app.db.role.schema import Role
 from app.db.schemas import TableBase
@@ -10,8 +10,8 @@ from app.db.user_role.constants import TABLE_DESCRIPTION
 
 
 class UserRoleBase(BaseModel):
-    user_id: Optional[int]
-    role_id: Optional[int]
+    user_id: Optional[int] = None
+    role_id: Optional[int] = None
 
 
 # Properties to receive via API on creation
@@ -28,6 +28,8 @@ class UserRole(UserRoleBase, TableBase):
     user_role_id: int
     role: Role
 
-    class Config:
-        orm_mode = True
-        schema_extra = {"description": TABLE_DESCRIPTION}
+    # ✔ Pydantic v2 config
+    model_config = ConfigDict(
+        from_attributes=True,  # replaces orm_mode=True
+        json_schema_extra={"description": TABLE_DESCRIPTION},
+    )

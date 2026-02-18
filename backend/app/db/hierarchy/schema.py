@@ -1,6 +1,6 @@
 import typing
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.db.classification_system.schema import ClassificationSystem
 from app.db.hierarchy.constants import (
@@ -31,12 +31,18 @@ class LightweightHierarchy(HierarchyBase, TableBase):
     hierarchy_id: int
     scientific_name: str
     rank_name: str
-    path: typing.Optional[typing.Any]
+    path: typing.Optional[typing.Any] = None
 
-    class Config:
-        orm_mode = True
-        arbitrary_types_allowed = True
-        schema_extra = {"description": TABLE_DESCRIPTION}
+    # class Config:
+    #     orm_mode = True
+    #     arbitrary_types_allowed = True
+    #     schema_extra = {"description": TABLE_DESCRIPTION}
+
+    # ✔ Pydantic v2 config
+    model_config = ConfigDict(
+        from_attributes=True,  # replaces orm_mode=True
+        json_schema_extra={"description": TABLE_DESCRIPTION},
+    )
 
 
 class Hierarchy(LightweightHierarchy):
@@ -47,5 +53,5 @@ class Hierarchy(LightweightHierarchy):
     formatted_scientific_name: str
     scientific_name: str
     rank_name: str
-    path: typing.Optional[typing.Any]
+    path: typing.Optional[typing.Any] = None
     deleted: bool

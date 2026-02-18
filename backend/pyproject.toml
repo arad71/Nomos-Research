@@ -21,7 +21,7 @@ packages = [
 python = "^3.10"
 alembic = "^1.16.5"
 Authlib = "^1.6.6"
-fastapi = "^0.115.14"
+fastapi =  "^0.129.0"
 fastapi-key-auth = "^0.12.0"
 httpx = "^0.28.1"
 ipython = "^8.18.1"
@@ -32,11 +32,11 @@ psycopg2-binary = "^2.9.9"
 pytest = "^8.0.0"
 requests = "^2.32.4"
 SQLAlchemy = "<2.0"
-uvicorn = "^0.24.0"
-passlib = "^1.7.4"
+uvicorn = "^0.41.0"
+passlib = ">=1.7.4"
 pandas = "^2.3.0"
 openpyxl = "^3.1.2"
-bcrypt = "^4.1.2"
+bcrypt = "4.0.1"
 sqlalchemy-utils = "^0.41.1"
 sqlalchemy_mixins = "^1.5.3"
 python-dateutil = "^2.8.2"
@@ -53,6 +53,7 @@ rich = "^13.7.0"
 deepdiff = "^8.6.1"
 pydantic-settings = "^2.13.0"
 
+
 [tool.black]
 preview = 1
 
@@ -63,3 +64,15 @@ src_paths = ["app"]
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+
+
+[tool.ruff]
+select = ["E", "F", "W", "UP", "Pydantic"]
+ignore = []
+
+[tool.ruff.pydantic]
+# fail on deprecated v1 Config
+ban-class-config = true
+# fail on @validator / @root_validator
+ban-deprecated-validators = true
