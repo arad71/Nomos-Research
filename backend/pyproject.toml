@@ -56,6 +56,7 @@ pydantic-settings = "^2.13.0"
 
 [tool.black]
 preview = 1
+extend-exclude = "backend/app/alembic/"
 
 [tool.isort]
 profile = "black"
@@ -65,11 +66,13 @@ src_paths = ["app"]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
-
-
 [tool.ruff]
 select = ["E", "F", "W", "UP", "Pydantic"]
 ignore = []
+exclude = [
+    "backend/app/alembic/**",
+]
+
 
 [tool.ruff.pydantic]
 # fail on deprecated v1 Config
