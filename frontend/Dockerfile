@@ -14,7 +14,7 @@ RUN --mount=type=secret,id=NPM_TOKEN \
         # 2. Set the registry for the @react-admin scope
         echo "@react-admin:registry=https://npm.react-admin-ee.marmelab.com" > .npmrc; \
         # 3. Use the exact format npm expects (Note the :_authToken= part)
-        echo "//://npm.react-admin-ee.marmelab.com\${ACTUAL_TOKEN}" >> .npmrc; \
+        echo "//npm.react-admin-ee.marmelab.com/_authToken=${ACTUAL_TOKEN}" >> .npmrc; \
     else \
         echo "Error: NPM_TOKEN secret not found in /run/secrets/"; exit 1; \
     fi && \
