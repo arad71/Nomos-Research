@@ -1,25 +1,30 @@
-FROM node:lts
+# --- Stage 1: Build ---
+FROM node:lts-bookworm AS builder
 
-# TODO is this a security issues? Use multi-stage build?
-ARG NPM_TOKEN
-RUN test -n "$NPM_TOKEN" || (echo "\033[1;31mNPM_TOKEN not set\033[0m"; exit 1;)
-COPY .npmrc.docker .npmrc
-ADD package.json /package.json
-ADD package-lock.json /package-lock.json
-
-ENV NODE_ENV=$NODE_ENV
-ENV NODE_PATH=/node_modules
-ENV PATH=$PATH:/node_modules/.bin
-RUN npm config set fetch-retry-mintimeout 20000
-RUN npm config set fetch-retry-maxtimeout 180000
-RUN npm ci --prefer-offline --no-audit
-RUN rm -f .npmrc.docker
+# using Docker Secrets to handle the token securely during the build process
+RUN --mount=type=secret,id=NPM_TOKEN \
+    export NPM_TOKEN=$(cat /run/secrets/NPM_TOKEN) && \
+    # Create the temporary .npmrc inside the build stage
+    echo "@react-admin:registry=https://npm.react-admin-ee.marmelab.com" > .npmrc && \
+    echo "//://npm.react-admin-ee.marmelab.com{NPM_TOKEN}" >> .npmrc && \
+    npm ci --prefer-offline --no-audit && \
+    rm .npmrc
 
 WORKDIR /app
-ADD . /app
+COPY . .
+RUN npm run build
 
+# --- Stage 2: Production ---
+FROM node:lts-bookworm-slim
+
+WORKDIR /app
+# Only copy the final compiled assets, NOT the node_modules or the token
+COPY --from=builder /app/dist ./dist
+# If you use a custom runner/script
+COPY --from=builder /app/run.sh ./run.sh
+
+ENV NODE_ENV=production
 EXPOSE 8000
-EXPOSE 35729
 
 ENTRYPOINT ["/bin/bash", "/app/run.sh"]
 CMD ["start"]

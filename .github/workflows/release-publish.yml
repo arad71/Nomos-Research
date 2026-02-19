@@ -52,6 +52,8 @@ jobs:
       with:
         context: ./backend
         file: ${{ env.BACKEND_DOCKER_PATH}}
+        secrets: |
+          "NPM_TOKEN=${{ secrets.NPM_TOKEN }}"
         push: true
         tags: ${{ steps.meta_backend.outputs.tags }}
         labels: ${{ steps.meta_backend.outputs.labels }}
