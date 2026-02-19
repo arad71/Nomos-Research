@@ -9,8 +9,11 @@ COPY package.json package-lock.json ./
 # using Docker Secrets to handle the token securely during the build process
 RUN --mount=type=secret,id=NPM_TOKEN \
     if [ -f /run/secrets/NPM_TOKEN ]; then \
-        export ACTUAL_TOKEN=$(cat /run/secrets/NPM_TOKEN); \
+        # 1. Get the token from the secret mount
+        ACTUAL_TOKEN=$(cat /run/secrets/NPM_TOKEN); \
+        # 2. Set the registry for the @react-admin scope
         echo "@react-admin:registry=https://npm.react-admin-ee.marmelab.com" > .npmrc; \
+        # 3. Use the exact format npm expects (Note the :_authToken= part)
         echo "//://npm.react-admin-ee.marmelab.com{ACTUAL_TOKEN}" >> .npmrc; \
     else \
         echo "Error: NPM_TOKEN secret not found in /run/secrets/"; exit 1; \
