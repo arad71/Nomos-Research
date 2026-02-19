@@ -1,6 +1,11 @@
 # --- Stage 1: Build ---
 FROM node:lts-bookworm AS builder
 
+WORKDIR /app
+
+# Copy only the dependency files first
+COPY package.json package-lock.json ./
+
 # using Docker Secrets to handle the token securely during the build process
 RUN --mount=type=secret,id=NPM_TOKEN \
     if [ -f /run/secrets/NPM_TOKEN ]; then \
@@ -13,7 +18,6 @@ RUN --mount=type=secret,id=NPM_TOKEN \
     npm ci --prefer-offline --no-audit && \
     rm .npmrc
 
-WORKDIR /app
 COPY . .
 RUN npm run build
 
