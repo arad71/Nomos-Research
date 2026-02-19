@@ -1,27 +1,36 @@
 import React, { FC } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { TopToolbar } from 'react-admin';
+import { useNavigate } from 'react-router-dom';
+import {
+  TopToolbar,
+  useCreatePath,
+  useRecordContext,
+  useResourceContext,
+} from 'react-admin';
 import Button from '@mui/material/Button';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
-const PostEditActions: FC = () => {
+interface PostEditActionsProps {
+  resource?: string;
+}
+
+const PostEditActions: FC<PostEditActionsProps> = (props) => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const viewSwitch = () => {
-    const path = location.pathname;
-    const tabPos = path.lastIndexOf('/');
-    if (path.split('/').length - 1 === 2) {
-      return path.concat('/show');
+  const createPath = useCreatePath();
+  const record = useRecordContext();
+  const resource = useResourceContext(props);
+  const routeChange = () => {
+    if (!resource || record?.id == null) {
+      return;
     }
-    return path.slice(0, tabPos) + '/show' + path.slice(tabPos);
+    navigate(createPath({ resource, id: record.id, type: 'show' }));
   };
-  const routeChange = () => navigate(`${viewSwitch()}`);
   return (
     <TopToolbar>
       <Button
         style={{ fontSize: '0.8125rem', padding: '0px' }}
         color="primary"
         onClick={routeChange}
+        disabled={!resource || record?.id == null}
         startIcon={<VisibilityIcon />}
       >
         SHOW

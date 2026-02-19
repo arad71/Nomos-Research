@@ -1,4 +1,4 @@
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from 'lib/makeStyles';
 
 export const GlobalTheme = makeStyles((theme: any) => ({
   title: {

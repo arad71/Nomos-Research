@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { DeleteWithConfirmButton, SaveButton, Toolbar } from 'react-admin';
-import { IfCanAccess } from '@react-admin/ra-rbac';
-import makeStyles from '@mui/styles/makeStyles';
+import { CanAccess as IfCanAccess } from 'react-admin';
+import makeStyles from 'lib/makeStyles';
 import { useRecordContext } from 'react-admin';
 
 const useStyles = makeStyles((theme: any) => ({

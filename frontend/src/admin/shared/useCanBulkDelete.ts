@@ -1,4 +1,4 @@
-import { useCanAccess } from '@react-admin/ra-rbac';
+import { useCanAccess } from 'react-admin';
 
 export function useCanBulkDelete() {
   return useCanAccess({

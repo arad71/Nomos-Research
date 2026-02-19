@@ -7,7 +7,7 @@ import {
   ReferenceField,
   ReferenceManyField,
 } from 'react-admin';
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from 'lib/makeStyles';
 import { Show } from 'react-admin';
 import { Box, Typography } from '@mui/material';
 import Aside from '../shared/Aside';

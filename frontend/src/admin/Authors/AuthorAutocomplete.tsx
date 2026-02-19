@@ -11,6 +11,7 @@ export const AuthorAutocomplete = () => (
     <AutocompleteInput
       optionText="abbreviation"
       validate={required()}
+      noOptionsText="Type at least 2 characters to search"
       shouldRenderSuggestions={(val: string) => {
         return val.trim().length > 1;
       }}

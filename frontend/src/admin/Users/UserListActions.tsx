@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { IfCanAccess } from '@react-admin/ra-rbac';
+import { CanAccess as IfCanAccess } from 'react-admin';
 
 import { TopToolbar, CreateButton } from 'react-admin';
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from 'lib/makeStyles';
 
 const useStyles = makeStyles({
   text: {

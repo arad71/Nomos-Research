@@ -1,6 +1,6 @@
 import React, { FC, useState } from 'react';
 import { Paper, Grid, TextField, Button } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from 'lib/makeStyles';
 import { Face, Fingerprint } from '@mui/icons-material';
 import Alert from '@mui/material/Alert';
 import { Navigate, useNavigate } from 'react-router-dom';

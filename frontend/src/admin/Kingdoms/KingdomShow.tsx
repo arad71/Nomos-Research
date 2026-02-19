@@ -5,7 +5,7 @@ import Aside from '../shared/Aside';
 import { KingdomName } from './KingdomName';
 import { GlobalTheme } from '../../GlobalTheme';
 import { Box, Typography } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from 'lib/makeStyles';
 
 const useStyles = makeStyles((theme: any) => ({
   showPad: {

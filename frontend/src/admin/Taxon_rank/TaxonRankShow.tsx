@@ -12,7 +12,7 @@ import { Show } from 'react-admin';
 import Aside from '../shared/Aside';
 import RankAbbreviation from './RankAbbreviation';
 import { GlobalTheme } from '../../GlobalTheme';
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from 'lib/makeStyles';
 import { Box, Typography } from '@mui/material';
 import { RankName } from './RankName';
 

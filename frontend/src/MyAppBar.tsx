@@ -2,7 +2,7 @@
 import * as React from 'react';
 import { AppBar } from 'react-admin';
 import Typography from '@mui/material/Typography';
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from 'lib/makeStyles';
 
 const useStyles = makeStyles({
   title: {

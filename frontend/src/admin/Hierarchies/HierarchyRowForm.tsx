@@ -10,7 +10,7 @@ import TaxonRank from '../Taxon_names/TaxonRank';
 import { ClassificationReference } from '../Classification_systems';
 
 export const HierarchyRowForm = (props: RowFormProps) => (
-  <RowForm warnWhenUnsavedChanges {...props}>
+  <RowForm {...props}>
     <ClassificationReference />
     <SelectInput
       source="taxon_rank_name"

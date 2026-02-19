@@ -1,7 +1,7 @@
 import { RichTextField, useRecordContext } from 'react-admin';
 import React from 'react';
 import { TaxonNameStatus } from './TaxonNameStatus';
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from 'lib/makeStyles';
 import { GlobalTheme } from '../../GlobalTheme';
 import { TaxonName } from './TaxonName';
 import { InfragenericData } from './TaxonTypes';

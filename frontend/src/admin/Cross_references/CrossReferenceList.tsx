@@ -10,7 +10,8 @@ import {
   TextField,
 } from 'react-admin';
 import CrossRefType from './CrossRefType';
-import { IfCanAccess, List } from '@react-admin/ra-rbac';
+import { List } from '@react-admin/ra-rbac';
+import { CanAccess as IfCanAccess } from 'react-admin';
 import { DefaultPagination, useCanBulkDelete } from '../shared';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';

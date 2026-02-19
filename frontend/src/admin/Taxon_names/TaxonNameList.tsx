@@ -18,21 +18,21 @@ import {
 } from 'react-admin';
 import NaturalisedStatus from './NaturalisedStatus';
 import PublicationStatus from './PublicationStatus';
-import { List, IfCanAccess } from '@react-admin/ra-rbac';
+import { List } from '@react-admin/ra-rbac';
+import { CanAccess as IfCanAccess } from 'react-admin';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
 import {
-  ListProps,
   SelectColumnsButton,
   useSelectedColumns,
 } from '@react-admin/ra-preferences';
 import { TaxonNameFilters } from './TaxonNameFilters';
-import ResetPreferenceButton from '../shared/ResetPreferenceButton';
 import { DefaultPagination, useCanBulkDelete } from '../shared';
 import NestedLinkField from '../shared/NestedLinkField';
 import BatchExportButton from '../shared/BatchExportButton';
 import { ConservationShortPill } from '../Conservation_codes';
+import ResetPreferenceButton from '../shared/ResetPreferenceButton';
 
 const postListColumns = {
   id: <TextField source="id" />,
@@ -301,12 +301,20 @@ const Actions = () => (
   </TopToolbar>
 );
 
-export const TaxonNameList = (props: ListProps) => {
+export const TaxonNameList = (props: any) => {
   const columns = useSelectedColumns({
     preferences: TAXON_NAMES_PREFERENCE,
     columns: postListColumns,
     omit: excludeColumns,
   });
+  const columnElements = React.Children.toArray(columns).map(
+    (child, index) => {
+      if (!React.isValidElement(child) || child.key != null) {
+        return child;
+      }
+      return React.cloneElement(child, { key: `col-${index}` });
+    }
+  );
 
   return (
     <List
@@ -318,7 +326,7 @@ export const TaxonNameList = (props: ListProps) => {
       {...props}
     >
       <Datagrid bulkActionButtons={useCanBulkDelete()} rowClick="show">
-        {columns}
+        {columnElements}
         <IfCanAccess resource="taxon_names" action="viewdeleted">
           <BooleanField
             source="deleted"

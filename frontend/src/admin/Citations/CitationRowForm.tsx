@@ -6,7 +6,7 @@ import { AuthorAutocomplete } from '../Authors';
 import { NumberInput, required, minValue, SelectInput } from 'react-admin';
 import AuthorType from './AuthorType';
 import React from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from 'lib/makeStyles';
 
 const useStyles = makeStyles({
   authTypeWidth: {
@@ -29,7 +29,7 @@ export const CitationRowForm = (props: RowFormProps) => {
       <NumberInput
         source="author_order"
         validate={authorOrderValidation}
-        initialValue={0}
+        defaultValue={0}
         min={0}
       />
     </RowForm>

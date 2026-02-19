@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Edit } from '@react-admin/ra-rbac';
+import { Edit } from 'react-admin';
 import { useNotify, useRefresh, useRedirect } from 'react-admin';
 import Aside from '../shared/Aside';
 import { ConscodeTaxonCreateEdit } from './ConscodeTaxonCreateEdit';
@@ -9,8 +9,13 @@ export const ConscodeTaxonEdit: FC = (props) => {
   const refresh = useRefresh();
   const redirect = useRedirect();
   const onSuccess = (data: any) => {
+    const taxonNameId = data?.taxon_name_id ?? data?.data?.taxon_name_id;
     notify(`Changes saved`);
-    redirect(`/taxon_names_code/${data.data.taxon_name_id}`);
+    if (taxonNameId) {
+      redirect(`/taxon_names_code/${taxonNameId}`);
+    } else {
+      redirect('/conscode_taxons');
+    }
     refresh();
   };
 

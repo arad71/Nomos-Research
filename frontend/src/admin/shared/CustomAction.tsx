@@ -1,4 +1,4 @@
-import { IfCanAccess } from '@react-admin/ra-rbac';
+import { CanAccess as IfCanAccess } from 'react-admin';
 import { useResourceContext } from 'react-admin';
 import {
   DeleteWithConfirmIconButton,

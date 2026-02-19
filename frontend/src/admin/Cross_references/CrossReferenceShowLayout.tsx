@@ -1,18 +1,14 @@
 import {
-  BooleanField,
   ReferenceField,
   SelectField,
   TextField,
   Labeled,
-  SimpleShowLayout,
 } from 'react-admin';
-import makeStyles from '@mui/styles/makeStyles';
-import { Show } from 'react-admin';
+import makeStyles from 'lib/makeStyles';
 import { FormattedScientificNameWithStatus } from '../Taxon_names';
 import CrossRefType from './CrossRefType';
 import React, { FC } from 'react';
 import { GlobalTheme } from '../../GlobalTheme';
-import Aside from '../shared/Aside';
 import { Box, Typography } from '@mui/material';
 
 const useStyles = makeStyles((theme: any) => ({

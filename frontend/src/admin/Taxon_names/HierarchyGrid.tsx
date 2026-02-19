@@ -3,12 +3,12 @@ import {
   BooleanField,
   Datagrid,
   Loading,
-  Pagination,
   RichTextField,
   TextField,
   useGetList,
   useRecordContext,
 } from 'react-admin';
+import { TablePagination } from '@mui/material';
 import { GlobalTheme } from '../../GlobalTheme';
 import { hierarchyRowClick } from './HierarchyRowClick';
 export interface HierarchyRecord {
@@ -112,12 +112,17 @@ export function HierarchyGrid(props: PropsWithChildren<{}>) {
           sortBy="taxon_name___all_vernaculars"
         ></TextField>
       </Datagrid>
-      <Pagination
-        page={page}
-        setPage={setPage}
-        perPage={perPage}
-        setPerPage={setPerPage}
-        total={total}
+      <TablePagination
+        component="div"
+        count={total}
+        page={Math.max(page - 1, 0)}
+        onPageChange={(_event, newPage) => setPage(newPage + 1)}
+        rowsPerPage={perPage}
+        onRowsPerPageChange={(event) => {
+          const nextPerPage = parseInt(event.target.value, 10);
+          setPerPage(nextPerPage);
+          setPage(1);
+        }}
         rowsPerPageOptions={[50, 100, 200, 500, 1000]}
       />
     </Fragment>

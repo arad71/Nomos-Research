@@ -10,7 +10,7 @@ import { Show } from 'react-admin';
 import Aside from '../shared/Aside';
 import { GlobalTheme } from '../../GlobalTheme';
 import { Box, Typography } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from 'lib/makeStyles';
 
 const useStyles = makeStyles((theme: any) => ({
   showPad: {

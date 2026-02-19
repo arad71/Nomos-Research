@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Edit } from '@react-admin/ra-rbac';
+import { Edit } from 'react-admin';
 import { TaxonRankCreateEdit } from './TaxonRankCreateEdit';
 import { RankName } from './RankName';
 

@@ -9,7 +9,7 @@ import React, { FC } from 'react';
 import ConservationType from './ConservationType';
 import { GlobalTheme } from '../../GlobalTheme';
 import { Box, Typography } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from 'lib/makeStyles';
 import EditToolbar from '../shared/EditToolbar';
 
 const useStyles = makeStyles((theme: any) => ({
@@ -28,7 +28,6 @@ export const ConservationCodesCreateEdit: FC = (props) => {
     <SimpleForm
       {...props}
       toolbar={<EditToolbar resource="conservation_codes" />}
-      warnWhenUnsavedChanges
       redirect="list"
     >
       <Box>

@@ -11,7 +11,7 @@ const rootElement = document.getElementById('root');
 if (rootElement) {
   const root = createRoot(rootElement);
   root.render(
-    <Router future={{ v7_startTransition: true }}>
+    <Router>
       <ThemeProvider theme={theme}>
         <App />
       </ThemeProvider>

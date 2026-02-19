@@ -1,7 +1,13 @@
 import { AutocompleteInput, ReferenceInput } from 'react-admin';
 import React from 'react';
 
-const ScientificNameReference = (props: {
+const ScientificNameReference = ({
+  validate,
+  perPage = 100,
+  sort = { field: 'canonical_name', order: 'ASC' },
+  filter = {},
+  ...referenceInputProps
+}: {
   source: string;
   label?: string;
   sort?: object;
@@ -11,7 +17,6 @@ const ScientificNameReference = (props: {
   helperText?: string;
   fullWidth?: boolean;
 }) => {
-  const { validate, ...referenceInputProps } = props;
 
   return (
     <ReferenceInput
@@ -19,22 +24,14 @@ const ScientificNameReference = (props: {
       filterToQuery={(searchText: string) => ({
         scientific_name__ilike: `%${searchText}%`,
       })}
+      perPage={perPage}
+      sort={sort}
+      filter={filter}
       {...referenceInputProps}
     >
-      <AutocompleteInput
-        optionText="scientific_name"
-        validate={validate}
-        resettable
-        {...referenceInputProps}
-      />
+      <AutocompleteInput optionText="scientific_name" validate={validate} />
     </ReferenceInput>
   );
-};
-
-ScientificNameReference.defaultProps = {
-  perPage: 100,
-  sort: { field: 'canonical_name,author', order: 'ASC,ASC' },
-  filter: {},
 };
 
 export default ScientificNameReference;

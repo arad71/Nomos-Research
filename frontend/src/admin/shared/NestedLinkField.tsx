@@ -1,15 +1,18 @@
 import * as React from 'react';
-import { Link, linkToRecord, useRecordContext } from 'react-admin';
-import { PublicFieldProps } from 'ra-ui-materialui/src/field/types';
+import { Link, useCreatePath, useRecordContext } from 'react-admin';
+import type { RaRecord } from 'ra-core';
 
-export interface NestedFieldPropType extends PublicFieldProps {
+export interface NestedFieldPropType {
   reference: string;
   source: string;
   idKey: string;
   labelKey: string;
+  record?: RaRecord;
+  [key: string]: any;
 }
 const NestedLinkField = (props: NestedFieldPropType) => {
   const record = useRecordContext(props);
+  const createPath = useCreatePath();
   const { idKey, labelKey, source, reference } = props;
   if (
     !record ||
@@ -19,11 +22,12 @@ const NestedLinkField = (props: NestedFieldPropType) => {
   ) {
     return null;
   }
-  const showPage = linkToRecord(`/${reference}`, record[source][idKey], 'show');
+  const showPage = createPath({
+    resource: reference,
+    id: record[source][idKey],
+    type: 'show',
+  });
   return <Link to={showPage}>{record[source][labelKey]}</Link>;
 };
 
-NestedLinkField.defaultProps = {
-  addLabel: true,
-};
 export default NestedLinkField;

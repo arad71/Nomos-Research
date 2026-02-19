@@ -10,7 +10,8 @@ import {
   TextField,
   TopToolbar,
 } from 'react-admin';
-import { List, IfCanAccess } from '@react-admin/ra-rbac';
+import { List } from '@react-admin/ra-rbac';
+import { CanAccess as IfCanAccess } from 'react-admin';
 import {
   DefaultPagination,
   selectableFilters,

@@ -9,6 +9,9 @@ export declare const usePreferences: <T = any>(
   defaultValue?: T
 ) => [T, (value: T) => void];
 
+export declare const useRemoveFromStore: (key: string) => void;
+export declare const useResetStore: () => void;
+
 export declare const useSelectedColumns: (params: {
   preferences: string;
   columns: Record<string, React.ReactNode>;

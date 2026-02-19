@@ -33,7 +33,7 @@ import { EditableDatagrid } from '@react-admin/ra-editable-datagrid';
 import React, { FC, PropsWithChildren } from 'react';
 import NaturalisedStatus from './NaturalisedStatus';
 import PublicationStatus from './PublicationStatus';
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from 'lib/makeStyles';
 import AuthorType from '../Citations/AuthorType';
 import LanguageType from '../Vernaculars/LanguageType';
 import { Box, Typography } from '@mui/material';
@@ -170,9 +170,9 @@ export const TaxonNameCreateEdit: FC = ({
     <>
       <NamePageSummary />
       <TabbedForm
+        syncWithLocation={false}
         {...props}
         toolbar={<EditToolbar resource="taxon_names" />}
-        warnWhenUnsavedChanges
       >
         <FormTab label="Name" className={globalClasses.bold}>
           <Box
@@ -232,7 +232,6 @@ export const TaxonNameCreateEdit: FC = ({
                   <AutocompleteInput
                     optionText="rank_name"
                     fullWidth
-                    resettable
                     validate={[required()]}
                   />
                 </ReferenceInput>
@@ -336,23 +335,14 @@ export const TaxonNameCreateEdit: FC = ({
                   reference="citations"
                   target="taxon_name_id"
                   sort={{
-                    field: 'author_type,author_order',
-                    order: 'ASC,ASC',
+                    field: 'author_order',
+                    order: 'ASC',
                   }}
                   {...props}
                 >
                   <EditableDatagrid
                     mutationMode="pessimistic"
                     bulkActionButtons={false}
-                    mutationOptions={{
-                      onSuccess: () =>
-                        recalculateSortOrder(
-                          'citations',
-                          'author_order',
-                          'author_type,author_order',
-                          'ASC'
-                        ),
-                    }}
                     /* eslint-disable-next-line max-len */
                     className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
                     createForm={
@@ -362,7 +352,6 @@ export const TaxonNameCreateEdit: FC = ({
                       />
                     }
                     editForm={<CitationRowForm {...props} />}
-                    hasCreate
                     noDelete={
                       !canAccess({
                         permissions,
@@ -409,7 +398,7 @@ export const TaxonNameCreateEdit: FC = ({
               perPage={100}
               className={gridClasses.EightCol1to5span}
             >
-              <AutocompleteInput optionText="title" fullWidth resettable />
+              <AutocompleteInput optionText="title" fullWidth />
             </ReferenceInput>
             <Box
               /* eslint-disable-next-line max-len */
@@ -436,23 +425,14 @@ export const TaxonNameCreateEdit: FC = ({
                   reference="vernaculars"
                   target="taxon_name_id"
                   sort={{
-                    field: 'vernacular_name,sort_order',
-                    order: 'ASC,ASC',
+                    field: 'sort_order',
+                    order: 'ASC',
                   }}
                   {...props}
                 >
                   <EditableDatagrid
                     mutationMode="pessimistic"
                     bulkActionButtons={false}
-                    mutationOptions={{
-                      onSuccess: () =>
-                        recalculateSortOrder(
-                          'vernaculars',
-                          'sort_order',
-                          'vernacular_name,sort_order',
-                          'ASC'
-                        ),
-                    }}
                     /* eslint-disable-next-line max-len */
                     className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
                     createForm={
@@ -462,7 +442,6 @@ export const TaxonNameCreateEdit: FC = ({
                       />
                     }
                     editForm={<VernacularRowForm {...props} />}
-                    hasCreate
                     expand={<EmbeddedVernacularShow />}
                     noDelete={
                       !canAccess({
@@ -491,7 +470,7 @@ export const TaxonNameCreateEdit: FC = ({
             </Box>
           </Box>
         </FormTab>
-        <FormTab label="Details" path="details" className={globalClasses.bold}>
+        <FormTab label="Details" className={globalClasses.bold}>
           <Typography
             variant="h5"
             className={`${globalClasses.bold} ${globalClasses.sectionMargin}`}
@@ -577,11 +556,7 @@ export const TaxonNameCreateEdit: FC = ({
           </Box>
           {/* End here */}
         </FormTab>
-        <FormTab
-          label="Hierarchy"
-          path="hierarchy"
-          className={globalClasses.bold}
-        >
+        <FormTab label="Hierarchy" className={globalClasses.bold}>
           <Box /* eslint-disable-next-line max-len */
             className={`${globalClasses.mainGrid} ${globalClasses.sectionMargin}`}
           >
@@ -618,7 +593,6 @@ export const TaxonNameCreateEdit: FC = ({
                   <EditableDatagrid
                     mutationMode="pessimistic"
                     bulkActionButtons={false}
-                    hasCreate
                     // eslint-disable-next-line max-len
                     className={classes.bottomMargin}
                     createForm={
@@ -665,11 +639,7 @@ export const TaxonNameCreateEdit: FC = ({
             </Box>
           </Box>
         </FormTab>
-        <FormTab
-          label="Related Names"
-          path="related_names"
-          className={globalClasses.bold}
-        >
+        <FormTab label="Related Names" className={globalClasses.bold}>
           <Box
             /* eslint-disable-next-line max-len */
             className={`${globalClasses.mainGrid} ${globalClasses.sectionMargin}`}
@@ -697,11 +667,11 @@ export const TaxonNameCreateEdit: FC = ({
                     fullWidth
                     reference="cross_references"
                     target="new_name_id"
-                    {...props}
                   >
                     <EditableDatagrid
                       mutationMode="pessimistic"
                       bulkActionButtons={false}
+                      rowClick={false}
                       undoable
                       /* eslint-disable-next-line max-len */
                       className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
@@ -709,16 +679,11 @@ export const TaxonNameCreateEdit: FC = ({
                         <CrossReferenceRowForm
                           source="old_name_id"
                           initialValues={oldNameInitialValues}
-                          {...props}
                         />
                       }
                       editForm={
-                        <CrossReferenceRowForm
-                          source="old_name_id"
-                          {...props}
-                        />
+                        <CrossReferenceRowForm source="old_name_id" />
                       }
-                      hasCreate
                       expand={<EmbeddedCrossReferenceShow />}
                       noDelete={
                         !canAccess({
@@ -758,27 +723,22 @@ export const TaxonNameCreateEdit: FC = ({
                     fullWidth
                     reference="cross_references"
                     target="old_name_id"
-                    {...props}
                   >
                     <EditableDatagrid
                       mutationMode="pessimistic"
                       bulkActionButtons={false}
+                      rowClick={false}
                       /* eslint-disable-next-line max-len */
                       className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
                       createForm={
                         <CrossReferenceRowForm
                           source="new_name_id"
                           initialValues={newNameInitialValues}
-                          {...props}
                         />
                       }
                       editForm={
-                        <CrossReferenceRowForm
-                          source="new_name_id"
-                          {...props}
-                        />
+                        <CrossReferenceRowForm source="new_name_id" />
                       }
-                      hasCreate
                       expand={<EmbeddedCrossReferenceShow />}
                       noDelete={
                         !canAccess({
@@ -813,7 +773,7 @@ export const TaxonNameCreateEdit: FC = ({
             </Box>
           </Box>
         </FormTab>
-        <FormTab label="Notes" path="notes" className={globalClasses.bold}>
+        <FormTab label="Notes" className={globalClasses.bold}>
           <Box
             /* eslint-disable-next-line max-len */
             className={`${globalClasses.mainGrid} ${globalClasses.sectionMargin}`}

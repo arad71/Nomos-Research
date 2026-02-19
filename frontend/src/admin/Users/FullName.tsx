@@ -1,6 +1,6 @@
 import { TextField } from 'react-admin';
 import React from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from 'lib/makeStyles';
 
 const useStyles = makeStyles({
   title: {

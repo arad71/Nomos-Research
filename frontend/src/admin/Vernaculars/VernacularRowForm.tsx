@@ -12,7 +12,7 @@ import {
 } from 'react-admin';
 import LanguageType from './LanguageType';
 import React from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from 'lib/makeStyles';
 
 const useStyles = makeStyles({
   langWidth: {
@@ -37,7 +37,7 @@ export const VernacularRowForm = (props: RowFormProps) => {
       <NumberInput
         source="sort_order"
         validate={sortOrderValidation}
-        initialValue={0}
+        defaultValue={0}
         min={0}
       />
     </RowForm>

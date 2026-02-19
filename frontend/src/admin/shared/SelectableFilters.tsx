@@ -1,6 +1,6 @@
 import React from 'react';
 import { BooleanInput, SearchInput, useResourceContext } from 'react-admin';
-import { useCanAccess } from '@react-admin/ra-rbac';
+import { useCanAccess } from 'react-admin';
 
 export const addDeletedFilterIfApplicable = (filters: JSX.Element[]) => {
   if (

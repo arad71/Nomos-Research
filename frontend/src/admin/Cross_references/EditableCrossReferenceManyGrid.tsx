@@ -43,7 +43,6 @@ export const EditableCrossReferenceManyGrid = (props: {
           />
         }
         editForm={<CrossReferenceRowForm {...props} />}
-        hasCreate
         expand={<EmbeddedCrossReferenceShow />}
         noDelete={
           !canAccess({

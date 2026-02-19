@@ -14,12 +14,12 @@ import TaxonNameConscode from '../Taxon_names/TaxonNameConscode';
 import TaxonHierarchy from '../Taxon_names/TaxonHierarchy';
 import { useLocation } from 'react-router-dom';
 import { GlobalTheme } from '../../GlobalTheme';
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from 'lib/makeStyles';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import grey from '@mui/material/colors/grey';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { IfCanAccess } from '@react-admin/ra-rbac';
+import { CanAccess as IfCanAccess } from 'react-admin';
 const useStyles = makeStyles((theme: any) => ({
   mainGrid: {
     display: 'grid',
