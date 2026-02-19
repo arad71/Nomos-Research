@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { DeleteWithConfirmButton, SaveButton, Toolbar } from 'react-admin';
 import { WithPermissions } from '@react-admin/ra-rbac';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
   customToolbar: {

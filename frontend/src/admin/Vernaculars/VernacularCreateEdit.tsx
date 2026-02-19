@@ -9,7 +9,8 @@ import {
 } from 'react-admin';
 import React, { FC } from 'react';
 import LanguageType from './LanguageType';
-import { Box, Typography, makeStyles } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import { GlobalTheme } from '../../GlobalTheme';
 import EditToolbar from '../shared/EditToolbar';
 import ScientificNameReference from '../Taxon_names/ScientificNameReference';

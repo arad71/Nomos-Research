@@ -1,7 +1,8 @@
 import { SimpleForm, TextInput } from 'react-admin';
 import React, { FC } from 'react';
 import { GlobalTheme } from '../../GlobalTheme';
-import { Box, Typography, makeStyles } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import EditToolbar from '../shared/EditToolbar';
 
 const useStyles = makeStyles((theme) => ({

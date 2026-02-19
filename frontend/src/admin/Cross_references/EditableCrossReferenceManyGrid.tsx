@@ -23,8 +23,8 @@ export const EditableCrossReferenceManyGrid = (props: {
 }) => {
   const globalClasses = GlobalTheme();
   const createInitialValues = props.createInitialValues;
-  const { loading, permissions } = usePermissions();
-  if (loading) return null;
+  const { loaded, permissions } = usePermissions();
+  if (!loaded) return null;
 
   return (
     <ReferenceManyField

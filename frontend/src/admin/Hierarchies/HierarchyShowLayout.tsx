@@ -6,7 +6,8 @@ import {
   Labeled,
   TextField,
 } from 'react-admin';
-import { Box, Typography, makeStyles } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 
 import { GlobalTheme } from '../../GlobalTheme';
 const useStyles = makeStyles((theme) => ({

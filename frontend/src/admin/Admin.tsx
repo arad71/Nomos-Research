@@ -101,7 +101,7 @@ import {
   GetManyParams,
   GetManyReferenceParams,
   GetOneParams,
-} from 'ra-core/lib/types';
+} from 'ra-core';
 import { InfragenericData } from './Taxon_names/TaxonTypes';
 
 const httpClient = (url: any, options?: any) => {

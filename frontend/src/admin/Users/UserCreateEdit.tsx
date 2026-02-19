@@ -11,7 +11,7 @@ import {
 import React, { FC } from 'react';
 import { Box, Typography } from '@material-ui/core';
 import { GlobalTheme } from '../../GlobalTheme';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import { AUTH_PROVIDER } from '../../config';
 import EditToolbar from '../shared/EditToolbar';
 

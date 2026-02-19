@@ -1,4 +1,5 @@
-import { Card as MuiCard, CardContent, withStyles } from '@material-ui/core';
+import { Card as MuiCard, CardContent } from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
 import { FilterLiveSearch } from 'react-admin';
 import { DeletedFilter, RolesFilter } from './UserFilters';
 import React from 'react';

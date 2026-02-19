@@ -10,7 +10,8 @@ import {
 import React, { FC } from 'react';
 import AuthorType from './AuthorType';
 import { GlobalTheme } from '../../GlobalTheme';
-import { Box, Typography, makeStyles } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import EditToolbar from '../shared/EditToolbar';
 import ScientificNameReference from '../Taxon_names/ScientificNameReference';
 

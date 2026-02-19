@@ -9,7 +9,8 @@ import {
 import { Show } from '@react-admin/ra-rbac';
 import Aside from '../shared/Aside';
 import { GlobalTheme } from '../../GlobalTheme';
-import { Box, Typography, makeStyles } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
   showPad: {

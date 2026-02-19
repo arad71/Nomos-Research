@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useDataProvider } from 'react-admin';
+import { DataProvider, GetOneResult } from 'ra-core';
 import { InfragenericNamesData } from './TaxonTypes';
-import { DataProvider, GetOneResult } from 'ra-core/lib/types';
 
 const useFetchInfragenericNames = (id: number) => {
   const dataProvider: DataProvider = useDataProvider();

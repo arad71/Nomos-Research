@@ -115,8 +115,8 @@ export const TaxonNameCreateEdit: FC = ({
       return 'A reason must be specified if you flag this taxon for review';
     }
   };
-  const { loading, permissions } = usePermissions();
-  if (loading) return null;
+  const { loaded, permissions } = usePermissions();
+  if (!loaded) return null;
 
   return (
     <>

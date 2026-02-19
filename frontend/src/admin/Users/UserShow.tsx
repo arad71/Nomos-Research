@@ -11,7 +11,7 @@ import { Show } from '@react-admin/ra-rbac';
 import Aside from '../shared/Aside';
 import { Box, Typography } from '@material-ui/core';
 import { GlobalTheme } from '../../GlobalTheme';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import { FullName } from './FullName';
 
 const useStyles = makeStyles((theme) => ({

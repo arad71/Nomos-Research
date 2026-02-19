@@ -101,8 +101,8 @@ export const TaxonNameCodeCreateEdit: FC = ({
   const newNameInitialValues = {
     old_name_id: props.record?.id,
   };
-  const { loading, permissions } = usePermissions();
-  if (loading) return null;
+  const { loaded, permissions } = usePermissions();
+  if (!loaded) return null;
 
   return (
     <>

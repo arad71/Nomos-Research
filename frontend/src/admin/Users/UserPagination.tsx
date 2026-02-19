@@ -3,7 +3,7 @@ import {
   PaginationActions as RaPaginationActions,
 } from 'react-admin';
 import React from 'react';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles({
   font: {
