@@ -3,10 +3,13 @@ FROM node:lts-bookworm AS builder
 
 # using Docker Secrets to handle the token securely during the build process
 RUN --mount=type=secret,id=NPM_TOKEN \
-    export NPM_TOKEN=$(cat /run/secrets/NPM_TOKEN) && \
-    # Create the temporary .npmrc inside the build stage
-    echo "@react-admin:registry=https://npm.react-admin-ee.marmelab.com" > .npmrc && \
-    echo "//://npm.react-admin-ee.marmelab.com{NPM_TOKEN}" >> .npmrc && \
+    if [ -f /run/secrets/NPM_TOKEN ]; then \
+        export NPM_TOKEN=$(cat /run/secrets/NPM_TOKEN); \
+        echo "@react-admin:registry=https://npm.react-admin-ee.marmelab.com" > .npmrc; \
+        echo "//://npm.react-admin-ee.marmelab.com{NPM_TOKEN}" >> .npmrc; \
+    else \
+        echo "Error: NPM_TOKEN secret not found"; exit 1; \
+    fi && \
     npm ci --prefer-offline --no-audit && \
     rm .npmrc
 
