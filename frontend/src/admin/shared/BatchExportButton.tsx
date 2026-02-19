@@ -1,13 +1,12 @@
 import React from 'react';
 import {
   Button,
-  Loading,
   useDataProvider,
   useListContext,
   useNotify,
 } from 'react-admin';
 
-import DownloadIcon from '@material-ui/icons/GetApp';
+import DownloadIcon from '@mui/icons-material/GetApp';
 
 type BatchExportButtonProps = {
   batchSize?: number;
@@ -36,12 +35,11 @@ const BatchExportButton: React.FC<BatchExportButtonProps> = (
    * Handles the export process.
    */
   const handleExport = async () => {
-    setIsExporting((isExporting) => true);
-    let current: number = 0;
+    setIsExporting(true);
     let taxoninfo = [];
     let conscodeinfo = [];
     let allRecords: any[] = [];
-    let currentPage = context.page;
+    let currentPage = 1;
 
     // Notify the user about the download and fetching process
     notify(
@@ -74,30 +72,31 @@ const BatchExportButton: React.FC<BatchExportButtonProps> = (
       console.error('Failed to fetch page.', messageArgs);
     };
 
+    const total = context.total || 0;
+    if (total === 0) {
+      notify('No records to export.', { type: 'warning' });
+      setIsExporting(false);
+      return;
+    }
+    const totalPages = Math.ceil(total / batchSize);
+
     // Fetch data in batches and accumulate all records
-    while (current < context.total) {
+    while (currentPage <= totalPages) {
       try {
-        let { data, loading, error } = await dataProvider.getList(
-          context.resource,
-          {
-            filter: context.filterValues,
-            sort: context.currentSort,
-            pagination: {
-              page: currentPage,
-              perPage: batchSize,
-            },
-          }
-        );
+        let { data } = await dataProvider.getList(context.resource, {
+          filter: context.filterValues,
+          sort: context.sort || { field: 'id', order: 'ASC' },
+          pagination: {
+            page: currentPage,
+            perPage: batchSize,
+          },
+        });
 
-        if (loading) {
-          return <Loading />;
+        if (!data || data.length === 0) {
+          break;
         }
 
-        if (error) {
-          errorHandler(error);
-        }
-
-        if (data[0].taxon_name_id) {
+        if (data[0]?.taxon_name_id) {
           const taxonsForExport = await Promise.all(
             data.map(async (post: any) => {
               const { ...taxonForExport } = post;
@@ -115,7 +114,7 @@ const BatchExportButton: React.FC<BatchExportButtonProps> = (
           data = taxonsForExport;
         }
 
-        if (data[0].conservation_code_id) {
+        if (data[0]?.conservation_code_id) {
           const conscodesForExport = await Promise.all(
             data.map(async (post: any) => {
               const { ...conscodeForExport } = post;
@@ -136,10 +135,17 @@ const BatchExportButton: React.FC<BatchExportButtonProps> = (
         allRecords = [...allRecords, ...data];
       } catch (error) {
         errorHandler(error);
+        setIsExporting(false);
+        return;
       }
 
-      current += batchSize;
       currentPage += 1;
+    }
+
+    if (allRecords.length === 0) {
+      notify('No records found to export.', { type: 'warning' });
+      setIsExporting(false);
+      return;
     }
 
     const baseName = [

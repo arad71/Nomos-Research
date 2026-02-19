@@ -6,11 +6,11 @@ import {
   Labeled,
   TextField,
 } from 'react-admin';
-import { Box, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Box, Typography } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 
 import { GlobalTheme } from '../../GlobalTheme';
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: any) => ({
   showPad: {
     padding: '8px 16px',
   },

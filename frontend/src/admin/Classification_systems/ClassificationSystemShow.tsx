@@ -1,14 +1,14 @@
 import React, { FC } from 'react';
 import { Labeled, TextField, BooleanField, SelectField } from 'react-admin';
-import { makeStyles } from '@material-ui/core/styles';
-import { Show } from '@react-admin/ra-rbac';
-import { Box, Typography } from '@material-ui/core';
+import makeStyles from '@mui/styles/makeStyles';
+import { Show } from 'react-admin';
+import { Box, Typography } from '@mui/material';
 import Aside from '../shared/Aside';
 import ClassificationType from './ClassificationType';
 import { GlobalTheme } from '../../GlobalTheme';
 import { ClassificationDescription } from './ClassificationDescription';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: any) => ({
   showPad: {
     padding: '8px 16px',
   },

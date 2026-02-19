@@ -1,7 +1,6 @@
 import React, { FC } from 'react';
-import { Route, Switch } from 'react-router-dom';
-import { useHistory } from 'react-router';
-import { makeStyles } from '@material-ui/core/styles';
+import { Navigate, Route, Routes as ReactRouterRoutes } from 'react-router-dom';
+import makeStyles from '@mui/styles/makeStyles';
 
 import { SignUp } from './views';
 import { Admin } from './admin';
@@ -25,24 +24,27 @@ const useStyles = makeStyles(() => ({
 
 export const Routes: FC = () => {
   const classes = useStyles();
-  const history = useHistory();
 
   return (
-    <Switch>
-      <Route exact path="/" component={Admin} />
-      <div className={classes.app}>
-        <header className={classes.header}>
-          <Route path="/signup" component={SignUp} />
-          <Route
-            path="/logout"
-            render={() => {
-              logout();
-              history.push('/');
-              return null;
-            }}
-          />
-        </header>
-      </div>
-    </Switch>
+    <ReactRouterRoutes>
+      <Route path="/*" element={<Admin />} />
+      <Route
+        path="/signup"
+        element={
+          <div className={classes.app}>
+            <header className={classes.header}>
+              <SignUp />
+            </header>
+          </div>
+        }
+      />
+      <Route
+        path="/logout"
+        element={(() => {
+          logout();
+          return <Navigate to="/" replace />;
+        })()}
+      />
+    </ReactRouterRoutes>
   );
 };

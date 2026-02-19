@@ -31,6 +31,160 @@ interface Permissions {
   [key: string]: Permission[];
 }
 
+const parseStoredScopes = (): string[] => {
+  const rawScopes = localStorage.getItem('scopes');
+  if (!rawScopes) {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      return [];
+    }
+
+    try {
+      const decoded: any = decodeJwt(token);
+      const tokenScopes = decoded?.scopes;
+      if (Array.isArray(tokenScopes)) {
+        const normalizedScopes = tokenScopes
+          .map((scope) => String(scope).trim())
+          .filter(Boolean);
+        if (normalizedScopes.length > 0) {
+          localStorage.setItem('scopes', normalizedScopes.join(','));
+        }
+        return normalizedScopes;
+      }
+      if (typeof tokenScopes === 'string') {
+        const normalizedScopes = tokenScopes
+          .split(',')
+          .map((scope) => scope.trim())
+          .filter(Boolean);
+        if (normalizedScopes.length > 0) {
+          localStorage.setItem('scopes', normalizedScopes.join(','));
+        }
+        return normalizedScopes;
+      }
+    } catch (error) {
+      return [];
+    }
+
+    return [];
+  }
+
+  try {
+    const parsedScopes = JSON.parse(rawScopes);
+    if (Array.isArray(parsedScopes)) {
+      return parsedScopes.map((scope) => String(scope).trim()).filter(Boolean);
+    }
+    if (typeof parsedScopes === 'string') {
+      return parsedScopes
+        .split(',')
+        .map((scope) => scope.trim())
+        .filter(Boolean);
+    }
+  } catch (error) {
+    // Fallback for non-JSON string values persisted in localStorage
+  }
+
+  return rawScopes
+    .split(',')
+    .map((scope) => scope.trim())
+    .filter(Boolean);
+};
+
+const getRolesDefinition = (): Permissions => {
+  const permissions: Permissions = {};
+  permissions[Role.READER] = [
+    { action: ['show', 'list', 'export'], resource: '*' },
+  ];
+
+  permissions[Role.OFFICER] = [
+    { action: ['show', 'list', 'export'], resource: '*' },
+    { action: 'delete', resource: '*', type: 'deny' },
+    { action: ['create', 'edit'], resource: 'authors' },
+    { action: ['create', 'edit'], resource: 'citations' },
+    { action: ['create', 'edit'], resource: 'cross_references' },
+    { action: ['create', 'edit'], resource: 'publications' },
+    { action: ['create', 'edit'], resource: 'publication_authors' },
+    { action: ['create', 'edit'], resource: 'taxon_names' },
+    { action: ['create', 'edit'], resource: 'vernaculars' },
+    // { action: ['create', 'edit'], resource: 'conservation_code' },
+  ];
+  permissions[Role.MANAGER] = [
+    { action: ['show', 'list', 'export'], resource: '*' },
+    { action: ['create', 'edit', 'delete'], resource: 'authors' },
+    { action: ['create', 'edit', 'delete'], resource: 'citations' },
+    { action: ['create', 'edit', 'delete'], resource: 'cross_references' },
+    { action: ['create', 'edit', 'delete'], resource: 'conservation_code' },
+    {
+      action: ['create', 'edit', 'delete'],
+      resource: 'hierarchies',
+    },
+    {
+      action: ['create', 'edit', 'delete'],
+      resource: 'informal_groups',
+    },
+    {
+      action: ['create', 'edit', 'delete'],
+      resource: 'conscode_taxons',
+    },
+    {
+      action: ['create', 'edit', 'delete'],
+      resource: 'publications',
+    },
+    {
+      action: ['create', 'edit'],
+      resource: 'publication_authors',
+    },
+    {
+      action: ['create', 'edit', 'delete'],
+      resource: 'taxon_names',
+    },
+    {
+      action: ['create', 'edit', 'delete'],
+      resource: 'vernaculars',
+    },
+  ];
+
+  permissions[Role.APPLICATION_SUPPORT] = [
+    { action: ['show', 'list', 'export'], resource: '*' },
+    {
+      action: ['create', 'edit', 'delete', 'viewdeleted', 'deletedfilter'],
+      resource: 'users',
+    },
+    {
+      action: ['create', 'delete'],
+      resource: 'user_roles',
+    },
+    {
+      action: ['create', 'edit', 'delete'],
+      resource: 'kingdoms',
+    },
+    {
+      action: ['create', 'edit', 'delete'],
+      resource: 'taxon_ranks',
+    },
+    {
+      action: ['create', 'edit', 'delete'],
+      resource: 'classification_systems',
+    },
+  ];
+  permissions[Role.SUPER_ADMIN] = [
+    {
+      action: [
+        'show',
+        'list',
+        'export',
+        'create',
+        'edit',
+        'delete',
+        'viewdeleted',
+        'deletedfilter',
+      ],
+      resource: '*',
+    },
+  ];
+
+  return permissions;
+};
+
 export function clearLocalStorage() {
   localStorage.removeItem('token');
   localStorage.removeItem('scopes');
@@ -111,106 +265,27 @@ const authProvider = {
     // Refresh the auth token
     return getAuthToken();
   },
-  getPermissions: () =>
-    // See https://marmelab.com/ra-enterprise/modules/ra-rbac#resource
-    Promise.resolve({
-      roles: localStorage.scopes,
-    }),
+  getPermissions: async () => {
+    let scopes = parseStoredScopes();
+
+    if (scopes.length === 0) {
+      const token = localStorage.getItem('token');
+      if (!token && useAuth2()) {
+        try {
+          await getAuthToken();
+        } catch (error) {
+          return [];
+        }
+      }
+
+      scopes = parseStoredScopes();
+    }
+
+    return scopes.flatMap((role) => getRolesDefinition()[role] || []);
+  },
   getRoles: () => {
     // see https://marmelab.com/ra-enterprise/modules/ra-rbac#resource
-
-    const permissions: Permissions = {};
-    permissions[Role.READER] = [
-      { action: ['show', 'list', 'export'], resource: '*' },
-    ];
-
-    permissions[Role.OFFICER] = [
-      { action: ['show', 'list', 'export'], resource: '*' },
-      { action: 'delete', resource: '*', type: 'deny' },
-      { action: ['create', 'edit'], resource: 'authors' },
-      { action: ['create', 'edit'], resource: 'citations' },
-      { action: ['create', 'edit'], resource: 'cross_references' },
-      { action: ['create', 'edit'], resource: 'publications' },
-      { action: ['create', 'edit'], resource: 'publication_authors' },
-      { action: ['create', 'edit'], resource: 'taxon_names' },
-      { action: ['create', 'edit'], resource: 'vernaculars' },
-      // { action: ['create', 'edit'], resource: 'conservation_code' },
-    ];
-    permissions[Role.MANAGER] = [
-      { action: ['show', 'list', 'export'], resource: '*' },
-      { action: ['create', 'edit', 'delete'], resource: 'authors' },
-      { action: ['create', 'edit', 'delete'], resource: 'citations' },
-      { action: ['create', 'edit', 'delete'], resource: 'cross_references' },
-      { action: ['create', 'edit', 'delete'], resource: 'conservation_code' },
-      {
-        action: ['create', 'edit', 'delete'],
-        resource: 'hierarchies',
-      },
-      {
-        action: ['create', 'edit', 'delete'],
-        resource: 'informal_groups',
-      },
-      {
-        action: ['create', 'edit', 'delete'],
-        resource: 'conscode_taxons',
-      },
-      {
-        action: ['create', 'edit', 'delete'],
-        resource: 'publications',
-      },
-      {
-        action: ['create', 'edit'],
-        resource: 'publication_authors',
-      },
-      {
-        action: ['create', 'edit', 'delete'],
-        resource: 'taxon_names',
-      },
-      {
-        action: ['create', 'edit', 'delete'],
-        resource: 'vernaculars',
-      },
-    ];
-
-    permissions[Role.APPLICATION_SUPPORT] = [
-      { action: ['show', 'list', 'export'], resource: '*' },
-      {
-        action: ['create', 'edit', 'delete', 'viewdeleted', 'deletedfilter'],
-        resource: 'users',
-      },
-      {
-        action: ['create', 'delete'],
-        resource: 'user_roles',
-      },
-      {
-        action: ['create', 'edit', 'delete'],
-        resource: 'kingdoms',
-      },
-      {
-        action: ['create', 'edit', 'delete'],
-        resource: 'taxon_ranks',
-      },
-      {
-        action: ['create', 'edit', 'delete'],
-        resource: 'classification_systems',
-      },
-    ];
-    permissions[Role.SUPER_ADMIN] = [
-      {
-        action: [
-          'show',
-          'list',
-          'export',
-          'create',
-          'edit',
-          'delete',
-          'viewdeleted',
-          'deletedfilter',
-        ],
-        resource: '*',
-      },
-    ];
-    return Promise.resolve(permissions);
+    return Promise.resolve(getRolesDefinition());
   },
 };
 

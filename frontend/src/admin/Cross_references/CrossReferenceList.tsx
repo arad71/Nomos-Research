@@ -10,10 +10,10 @@ import {
   TextField,
 } from 'react-admin';
 import CrossRefType from './CrossRefType';
-import { WithPermissions, List } from '@react-admin/ra-rbac';
+import { IfCanAccess, List } from '@react-admin/ra-rbac';
 import { DefaultPagination, useCanBulkDelete } from '../shared';
-import DeleteIcon from '@material-ui/icons/Delete';
-import VisibilityIcon from '@material-ui/icons/Visibility';
+import DeleteIcon from '@mui/icons-material/Delete';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import { CrossReferenceFilters } from './CrossReferenceFilters';
 
 export const CrossReferenceList: FC = (props) => (
@@ -22,11 +22,10 @@ export const CrossReferenceList: FC = (props) => (
     sort={{ field: 'updated_on', order: 'DESC' }}
     perPage={100}
     pagination={<DefaultPagination />}
-    bulkActionButtons={useCanBulkDelete()}
     title="Related names"
     filters={CrossReferenceFilters()}
   >
-    <Datagrid rowClick="show">
+    <Datagrid bulkActionButtons={useCanBulkDelete()} rowClick="show">
       <ReferenceField
         source="old_name_id"
         reference="taxon_names"
@@ -51,16 +50,16 @@ export const CrossReferenceList: FC = (props) => (
         <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" />
-      <WithPermissions resource="cross_references" action="viewdeleted">
+      <IfCanAccess resource="cross_references" action="viewdeleted">
         <BooleanField
           source="deleted"
           TrueIcon={DeleteIcon}
           FalseIcon={VisibilityIcon}
         />
-      </WithPermissions>
-      <WithPermissions resource="cross_references" action="edit">
+      </IfCanAccess>
+      <IfCanAccess resource="cross_references" action="edit">
         <EditButton />
-      </WithPermissions>
+      </IfCanAccess>
     </Datagrid>
   </List>
 );

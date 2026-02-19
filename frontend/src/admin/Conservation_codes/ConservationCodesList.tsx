@@ -12,7 +12,7 @@ import {
   CreateButton,
 } from 'react-admin';
 import ConservationType from './ConservationType';
-import { List, WithPermissions } from '@react-admin/ra-rbac';
+import { List, IfCanAccess } from '@react-admin/ra-rbac';
 import { DefaultPagination, useCanBulkDelete } from '../shared';
 import {
   ListProps,
@@ -21,8 +21,8 @@ import {
 } from '@react-admin/ra-preferences';
 import ResetPreferenceButton from '../shared/ResetPreferenceButton';
 import { ConservationCodesFilters } from './ConservationCodesFilters';
-import DeleteIcon from '@material-ui/icons/Delete';
-import VisibilityIcon from '@material-ui/icons/Visibility';
+import DeleteIcon from '@mui/icons-material/Delete';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import BatchExportButton from '../shared/BatchExportButton';
 
 const postListColumns = {
@@ -62,12 +62,12 @@ const Actions = () => (
       preferenceName={CONSERVATION_CODE_PREFERENCE}
       defaultValue={Array.from(includeColumns)}
     />
-    <WithPermissions resource="conservation_codes" action="create">
+    <IfCanAccess resource="conservation_codes" action="create">
       <CreateButton />
-    </WithPermissions>
-    <WithPermissions resource="conservation_codes" action="export">
+    </IfCanAccess>
+    <IfCanAccess resource="conservation_codes" action="export">
       <BatchExportButton />
-    </WithPermissions>
+    </IfCanAccess>
   </TopToolbar>
 );
 
@@ -86,20 +86,19 @@ export const ConservationCodesList = (props: ListProps) => {
       perPage={100}
       filters={ConservationCodesFilters()}
       pagination={<DefaultPagination />}
-      bulkActionButtons={useCanBulkDelete()}
     >
-      <Datagrid rowClick="show">
+      <Datagrid bulkActionButtons={useCanBulkDelete()} rowClick="show">
         {columns}
-        <WithPermissions resource="conservation_codes" action="viewdeleted">
+        <IfCanAccess resource="conservation_codes" action="viewdeleted">
           <BooleanField
             source="deleted"
             TrueIcon={DeleteIcon}
             FalseIcon={VisibilityIcon}
           />
-        </WithPermissions>
-        <WithPermissions action="edit" resource="conservation_codes">
+        </IfCanAccess>
+        <IfCanAccess action="edit" resource="conservation_codes">
           <EditButton />
-        </WithPermissions>
+        </IfCanAccess>
       </Datagrid>
     </List>
   );

@@ -25,15 +25,17 @@ import {
   SimpleForm,
   TextField,
   TextInput,
+  usePermissions,
+  useRecordContext,
 } from 'react-admin';
 import { EditableDatagrid } from '@react-admin/ra-editable-datagrid';
 import React, { FC, PropsWithChildren } from 'react';
 import NaturalisedStatus from '../Taxon_names/NaturalisedStatus';
 import PublicationStatus from '../Taxon_names/PublicationStatus';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import AuthorType from '../Citations/AuthorType';
 import LanguageType from '../Vernaculars/LanguageType';
-import { Box, Typography } from '@material-ui/core';
+import { Box, Typography } from '@mui/material';
 import { CitationRowForm } from '../Citations';
 import { ConscodesTaxonRowForm } from '../Conscode_taxons';
 import { ConservationShort } from '../Conservation_codes/ConservationShort';
@@ -48,8 +50,8 @@ import { FormattedScientificNameWithStatus } from '../Taxon_names';
 import { CrossReferenceRowForm } from '../Cross_references/CrossReferenceRowForm';
 import { EmbeddedHierarchyShow, HierarchyRowForm } from '../Hierarchies';
 import EditToolbar from '../shared/EditToolbar';
-import { canAccess, usePermissions } from '@react-admin/ra-rbac';
-import { Label } from '@material-ui/icons';
+import { canAccess } from '@react-admin/ra-rbac';
+import { Label } from '@mui/icons-material';
 import NestedLinkField from '../shared/NestedLinkField';
 
 const validateNumber = [number(), minValue(0)];
@@ -82,27 +84,28 @@ export interface FormDataProps {
 export const TaxonNameCodeCreateEdit: FC = ({
   ...props
 }: PropsWithChildren<any>) => {
+  const record = useRecordContext(props);
   const classes = useStyles();
   const globalClasses = GlobalTheme();
   const gridClasses = GlobalGridTheme();
   const citationInitialValues = {
-    taxon_name_id: props.record?.id,
+    taxon_name_id: record?.id,
   };
   const conscodesTaxonsInitialValues = {
-    taxon_name_id: props.record?.id,
+    taxon_name_id: record?.id,
   };
-  const hierarchyInitialValues = { taxon_name_id: props.record?.id };
+  const hierarchyInitialValues = { taxon_name_id: record?.id };
   const vernacularInitialValues = {
-    taxon_name_id: props.record?.id,
+    taxon_name_id: record?.id,
   };
   const oldNameInitialValues = {
-    new_name_id: props.record?.id,
+    new_name_id: record?.id,
   };
   const newNameInitialValues = {
-    old_name_id: props.record?.id,
+    old_name_id: record?.id,
   };
-  const { loaded, permissions } = usePermissions();
-  if (!loaded) return null;
+  const { isLoading, permissions } = usePermissions();
+  if (isLoading) return null;
 
   return (
     <>
@@ -191,7 +194,7 @@ export const TaxonNameCodeCreateEdit: FC = ({
             </Typography>
           </Box>
           <Box className={gridClasses.EightCol1to9span}>
-            {(props.record?.id && (
+            {(record?.id && (
               <ReferenceManyField
                 fullWidth
                 label="Conservation codes"
@@ -204,6 +207,8 @@ export const TaxonNameCodeCreateEdit: FC = ({
                 {...props}
               >
                 <EditableDatagrid
+                  mutationMode="pessimistic"
+                  bulkActionButtons={false}
                   /* eslint-disable-next-line max-len */
                   className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
                   createForm={

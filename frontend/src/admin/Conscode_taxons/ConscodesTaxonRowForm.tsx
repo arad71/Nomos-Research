@@ -1,4 +1,7 @@
-import { RowForm, RowFormProps } from '@react-admin/ra-editable-datagrid';
+import {
+  InlineRowForm as RowForm,
+  InlineRowFormProps as RowFormProps,
+} from '../shared/InlineRowForm';
 // import { AuthorAutocomplete } from '../Authors';
 import {
   DateInput,

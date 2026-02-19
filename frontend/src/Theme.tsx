@@ -1,5 +1,10 @@
-import { createTheme } from '@material-ui/core/styles';
+import React from 'react';
+import { createTheme } from '@mui/material/styles';
 import { defaultTheme } from 'react-admin';
+
+const NoTransition = (props: any) => {
+  return props.children || null;
+};
 
 const theme = createTheme({
   ...defaultTheme,
@@ -37,57 +42,86 @@ const theme = createTheme({
       main: '#ffcc80', // Another orange-ish color
     },
   },
-  overrides: {
+  components: {
     RaMenuItem: {
-      nestedList: {
-        paddingLeft: '0px',
-        fontWeight: '400',
+      styleOverrides: {
+        nestedList: {
+          paddingLeft: '0px',
+          fontWeight: '400',
+        },
       },
     },
-
     MuiTab: {
-      root: {
-        '@media (min-width: 600px)': {
-          minWidth: '60px',
-        },
-        '@media (min-width: 1350px)': {
-          minWidth: '120px',
+      styleOverrides: {
+        root: {
+          '@media (min-width: 600px)': {
+            minWidth: '60px',
+          },
+          '@media (min-width: 1350px)': {
+            minWidth: '120px',
+          },
         },
       },
     },
     MuiTypography: {
-      displayBlock: {
-        fontSize: '0.9rem',
+      styleOverrides: {
+        displayBlock: {
+          fontSize: '0.9rem',
+        },
       },
     },
     RaSelectArrayInput: {
-      root: {
-        minWidth: '150px',
+      styleOverrides: {
+        root: {
+          minWidth: '150px',
+        },
       },
     },
     RaSelectInput: {
-      input: {
-        minWidth: '100%',
+      styleOverrides: {
+        input: {
+          minWidth: '100%',
+        },
       },
     },
     RaNullableBooleanInput: {
-      input: {
-        minWidth: '100%',
+      styleOverrides: {
+        input: {
+          minWidth: '100%',
+        },
       },
     },
     MuiFormControl: {
-      root: {
-        width: '100%',
+      styleOverrides: {
+        root: {
+          width: '100%',
+        },
+      },
+    },
+    MuiTooltip: {
+      defaultProps: {
+        // Prevent transition child style access crashes in mixed stack.
+        TransitionComponent: NoTransition,
+      },
+    },
+    MuiSnackbar: {
+      defaultProps: {
+        // Keep notifications functional without transition wrapper assumptions.
+        TransitionComponent: NoTransition,
       },
     },
     RaAutocompleteInput: {
-      container: {
-        gridColumn: '1/5',
+      styleOverrides: {
+        container: {
+          gridColumn: '1/5',
+        },
       },
     },
     RaAutocompleteArrayInput: {
-      container: {
-        gridColumn: '1/5',
+      styleOverrides: {
+        container: {
+          gridColumn: '1/5',
+        },
       },
     },
   },

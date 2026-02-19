@@ -32,6 +32,7 @@ export const VernacularReferenceManyGrid = (props: {
       {...props.props}
     >
       <Datagrid
+        bulkActionButtons={false}
         className={globalClasses.equalColumnWidth}
         expand={<EmbeddedVernacularShow />}
       >

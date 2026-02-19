@@ -1,6 +1,6 @@
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 
-export const GlobalTheme = makeStyles((theme) => ({
+export const GlobalTheme = makeStyles((theme: any) => ({
   title: {
     fontWeight: 'bold',
     fontSize: '1.5em',
@@ -10,7 +10,7 @@ export const GlobalTheme = makeStyles((theme) => ({
     fontSize: '1em',
   },
   titlePos: {
-    position: 'absolute',
+    //position: 'absolute',
     top: '65px',
   },
   titleTruncation: {
@@ -58,7 +58,7 @@ export const GlobalTheme = makeStyles((theme) => ({
   },
 }));
 
-export const GlobalGridTheme = makeStyles((theme) => ({
+export const GlobalGridTheme = makeStyles((theme: any) => ({
   EightCol1to9span: {
     gridColumn: '1 / 9',
   },

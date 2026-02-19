@@ -1,8 +1,8 @@
 // in src/MyAppBar.js
 import * as React from 'react';
 import { AppBar } from 'react-admin';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@mui/material/Typography';
+import makeStyles from '@mui/styles/makeStyles';
 
 const useStyles = makeStyles({
   title: {

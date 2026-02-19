@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from 'react-admin';
 import { usePreferences } from '@react-admin/ra-preferences';
-import { Undo } from '@material-ui/icons';
+import { Undo } from '@mui/icons-material';
 
 /**
  * Adds a button to reset a preference

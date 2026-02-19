@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { SimpleShowLayout, TextField } from 'react-admin';
-import { Show } from '@react-admin/ra-rbac';
+import { Show } from 'react-admin';
 
 export const RolesShow: FC = (props) => {
   return (

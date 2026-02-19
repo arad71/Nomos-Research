@@ -28,6 +28,7 @@ export const HierarchyReferenceManyGrid = (props: {
       {...props.props}
     >
       <Datagrid
+        bulkActionButtons={false}
         className={globalClasses.equalColumnWidth}
         expand={<EmbeddedHierarchyShow />}
       >

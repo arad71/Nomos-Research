@@ -1,16 +1,20 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { BrowserRouter as Router } from 'react-router-dom';
 import './index.css';
-import { ThemeProvider } from '@material-ui/core/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import App from './App';
 import theme from './Theme';
 
-ReactDOM.render(
-  <Router>
-    <ThemeProvider theme={theme}>
-      <App />
-    </ThemeProvider>
-  </Router>,
-  document.getElementById('root')
-);
+const rootElement = document.getElementById('root');
+
+if (rootElement) {
+  const root = createRoot(rootElement);
+  root.render(
+    <Router future={{ v7_startTransition: true }}>
+      <ThemeProvider theme={theme}>
+        <App />
+      </ThemeProvider>
+    </Router>
+  );
+}

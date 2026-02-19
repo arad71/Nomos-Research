@@ -18,9 +18,9 @@ import {
 } from 'react-admin';
 import NaturalisedStatus from '../Taxon_names/NaturalisedStatus';
 import PublicationStatus from '../Taxon_names/PublicationStatus';
-import { List, WithPermissions } from '@react-admin/ra-rbac';
-import DeleteIcon from '@material-ui/icons/Delete';
-import VisibilityIcon from '@material-ui/icons/Visibility';
+import { List, IfCanAccess } from '@react-admin/ra-rbac';
+import DeleteIcon from '@mui/icons-material/Delete';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 import {
   ListProps,
@@ -284,12 +284,12 @@ const Actions = () => (
       preferenceName={TAXON_NAMES_CODE_PREFERENCE}
       defaultValue={Array.from(includeColumns)}
     />
-    <WithPermissions resource="conscode_taxons" action="create">
+    <IfCanAccess resource="conscode_taxons" action="create">
       <CreateButton basePath="/conscode_taxons" />
-    </WithPermissions>
-    <WithPermissions resource="taxon_names" action="export">
+    </IfCanAccess>
+    <IfCanAccess resource="taxon_names" action="export">
       <BatchExportButton />
-    </WithPermissions>
+    </IfCanAccess>
   </TopToolbar>
 );
 
@@ -310,21 +310,20 @@ export const TaxonNameCodeList = (props: ListProps) => {
       }}
       filters={TaxonNameCodeFilters()}
       pagination={<DefaultPagination />}
-      bulkActionButtons={useCanBulkDelete()}
       {...props}
     >
-      <Datagrid rowClick="show">
+      <Datagrid bulkActionButtons={useCanBulkDelete()} rowClick="show">
         {columns}
-        <WithPermissions resource="taxon_names" action="viewdeleted">
+        <IfCanAccess resource="taxon_names" action="viewdeleted">
           <BooleanField
             source="deleted"
             TrueIcon={DeleteIcon}
             FalseIcon={VisibilityIcon}
           />
-        </WithPermissions>
-        <WithPermissions resource="taxon_names" action="edit">
+        </IfCanAccess>
+        <IfCanAccess resource="taxon_names" action="edit">
           <EditButton />
-        </WithPermissions>
+        </IfCanAccess>
       </Datagrid>
     </List>
   );

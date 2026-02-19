@@ -8,7 +8,7 @@ import {
 import React, { PropsWithChildren } from 'react';
 import { InfragenericData } from './TaxonTypes';
 import useFetchInfragenericNames from './useFetchInfragenericNames';
-import { Typography } from '@material-ui/core';
+import { Typography } from '@mui/material';
 
 export const InfragenericNamesGrid = (props: PropsWithChildren<any>) => {
   const { loading, error, infragenericNames } = useFetchInfragenericNames(
@@ -37,6 +37,7 @@ export const InfragenericNamesGrid = (props: PropsWithChildren<any>) => {
 
   return (
     <Datagrid
+      bulkActionButtons={false}
       data={namesById}
       currentSort={{ field: 'id', order: 'ASC' }}
       total={ids.length}

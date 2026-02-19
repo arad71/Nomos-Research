@@ -10,11 +10,11 @@ import {
 import React, { FC } from 'react';
 import ClassificationType from './ClassificationType';
 import { GlobalTheme } from '../../GlobalTheme';
-import { Box, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Box, Typography } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import EditToolbar from '../shared/EditToolbar';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: any) => ({
   mainGrid: {
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',
@@ -62,6 +62,7 @@ export const ClassSystemCreateEdit: FC = (props) => {
             fullWidth
             validate={[minValue(0)]}
             min={0}
+            initialValue={0}
           />
         </Box>
       </Box>

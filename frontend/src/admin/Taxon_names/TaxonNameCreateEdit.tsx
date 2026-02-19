@@ -24,15 +24,19 @@ import {
   TabbedForm,
   TextField,
   TextInput,
+  useDataProvider,
+  useNotify,
+  useRefresh,
+  useRecordContext,
 } from 'react-admin';
 import { EditableDatagrid } from '@react-admin/ra-editable-datagrid';
 import React, { FC, PropsWithChildren } from 'react';
 import NaturalisedStatus from './NaturalisedStatus';
 import PublicationStatus from './PublicationStatus';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import AuthorType from '../Citations/AuthorType';
 import LanguageType from '../Vernaculars/LanguageType';
-import { Box, Typography } from '@material-ui/core';
+import { Box, Typography } from '@mui/material';
 import { CitationRowForm } from '../Citations';
 import { ConscodesTaxonRowForm } from '../Conscode_taxons';
 import { ConservationShort } from '../Conservation_codes/ConservationShort';
@@ -49,8 +53,9 @@ import { FormattedScientificNameWithStatus } from '../Taxon_names';
 import { CrossReferenceRowForm } from '../Cross_references/CrossReferenceRowForm';
 import { EmbeddedHierarchyShow, HierarchyRowForm } from '../Hierarchies';
 import EditToolbar from '../shared/EditToolbar';
-import { canAccess, usePermissions } from '@react-admin/ra-rbac';
-import { Label } from '@material-ui/icons';
+import { usePermissions } from 'react-admin';
+import { canAccess } from '@react-admin/ra-rbac';
+import { Label } from '@mui/icons-material';
 
 const useStyles = makeStyles({
   fullWidth: {
@@ -82,24 +87,67 @@ export interface FormDataProps {
 export const TaxonNameCreateEdit: FC = ({
   ...props
 }: PropsWithChildren<any>) => {
+  const record = useRecordContext(props);
+  const dataProvider = useDataProvider();
+  const notify = useNotify();
+  const refresh = useRefresh();
   const classes = useStyles();
   const globalClasses = GlobalTheme();
   const gridClasses = GlobalGridTheme();
   const citationInitialValues = {
-    taxon_name_id: props.record?.id,
+    taxon_name_id: record?.id,
+    author_order: 0,
   };
   const conscodesTaxonsInitialValues = {
-    taxon_name_id: props.record?.id,
+    taxon_name_id: record?.id,
   };
-  const hierarchyInitialValues = { taxon_name_id: props.record?.id };
+  const hierarchyInitialValues = { taxon_name_id: record?.id };
   const vernacularInitialValues = {
-    taxon_name_id: props.record?.id,
+    taxon_name_id: record?.id,
+    sort_order: 0,
   };
   const oldNameInitialValues = {
-    new_name_id: props.record?.id,
+    new_name_id: record?.id,
   };
   const newNameInitialValues = {
-    old_name_id: props.record?.id,
+    old_name_id: record?.id,
+  };
+
+  const recalculateSortOrder = async (
+    resource: 'citations' | 'vernaculars',
+    orderField: 'author_order' | 'sort_order',
+    sortField: string,
+    sortOrder: 'ASC' | 'DESC'
+  ) => {
+    if (!record?.id) return;
+
+    try {
+      const { data } = await dataProvider.getList(resource, {
+        pagination: { page: 1, perPage: 1000 },
+        sort: { field: sortField, order: sortOrder },
+        filter: { taxon_name_id: record.id },
+      });
+
+      const updates = data
+        .map((item: any, index: number) => ({ item, index }))
+        .filter((entry: any) => entry.item[orderField] !== entry.index);
+
+      await Promise.all(
+        updates.map((entry: any) =>
+          dataProvider.update(resource, {
+            id: entry.item.id,
+            data: { ...entry.item, [orderField]: entry.index },
+            previousData: entry.item,
+          })
+        )
+      );
+
+      if (updates.length > 0) {
+        refresh();
+      }
+    } catch (error) {
+      notify(`Failed to recalculate ${resource} order`, { type: 'warning' });
+    }
   };
   const validateInfraspecificEpithet = (value: string, allValues: FormData) => {
     if (allValues.is_autonym && value !== allValues.specific_epithet) {
@@ -115,8 +163,8 @@ export const TaxonNameCreateEdit: FC = ({
       return 'A reason must be specified if you flag this taxon for review';
     }
   };
-  const { loaded, permissions } = usePermissions();
-  if (!loaded) return null;
+  const { isLoading, permissions } = usePermissions();
+  if (isLoading) return null;
 
   return (
     <>
@@ -142,10 +190,13 @@ export const TaxonNameCreateEdit: FC = ({
             <ReferenceInput
               source="kingdom_id"
               reference="kingdoms"
-              validate={[required()]}
               className={gridClasses.EightCol1to3span}
             >
-              <SelectInput optionText="kingdom_name" fullWidth />
+              <SelectInput
+                optionText="kingdom_name"
+                fullWidth
+                validate={[required()]}
+              />
             </ReferenceInput>
             <BooleanInput
               source="review"
@@ -172,7 +223,6 @@ export const TaxonNameCreateEdit: FC = ({
                 <ReferenceInput
                   source="rank_id"
                   reference="taxon_ranks"
-                  validate={[required()]}
                   className={gridClasses.EightCol3to5span}
                   filter={{ kingdom_id: formData.kingdom_id }}
                   {...rest}
@@ -183,6 +233,7 @@ export const TaxonNameCreateEdit: FC = ({
                     optionText="rank_name"
                     fullWidth
                     resettable
+                    validate={[required()]}
                   />
                 </ReferenceInput>
               )}
@@ -278,7 +329,7 @@ export const TaxonNameCreateEdit: FC = ({
               </Typography>
             </Box>
             <Box className={gridClasses.EightCol1to9span}>
-              {(props.record?.id && (
+              {(record?.id && (
                 <ReferenceManyField
                   fullWidth
                   label="Authors"
@@ -291,6 +342,17 @@ export const TaxonNameCreateEdit: FC = ({
                   {...props}
                 >
                   <EditableDatagrid
+                    mutationMode="pessimistic"
+                    bulkActionButtons={false}
+                    mutationOptions={{
+                      onSuccess: () =>
+                        recalculateSortOrder(
+                          'citations',
+                          'author_order',
+                          'author_type,author_order',
+                          'ASC'
+                        ),
+                    }}
                     /* eslint-disable-next-line max-len */
                     className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
                     createForm={
@@ -367,7 +429,7 @@ export const TaxonNameCreateEdit: FC = ({
               </Typography>
             </Box>
             <Box className={gridClasses.EightCol1to9span}>
-              {(props.record?.id && (
+              {(record?.id && (
                 <ReferenceManyField
                   fullWidth
                   label="Vernaculars"
@@ -380,6 +442,17 @@ export const TaxonNameCreateEdit: FC = ({
                   {...props}
                 >
                   <EditableDatagrid
+                    mutationMode="pessimistic"
+                    bulkActionButtons={false}
+                    mutationOptions={{
+                      onSuccess: () =>
+                        recalculateSortOrder(
+                          'vernaculars',
+                          'sort_order',
+                          'vernacular_name,sort_order',
+                          'ASC'
+                        ),
+                    }}
                     /* eslint-disable-next-line max-len */
                     className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
                     createForm={
@@ -530,7 +603,7 @@ export const TaxonNameCreateEdit: FC = ({
               Save records in this grid before exiting and/or saving Taxon Name.
             </Typography>
             <Box className={gridClasses.EightCol1to9span}>
-              {(props.record?.id && (
+              {(record?.id && (
                 <ReferenceManyField
                   fullWidth
                   label="Hierarchical classification"
@@ -543,6 +616,8 @@ export const TaxonNameCreateEdit: FC = ({
                   {...props}
                 >
                   <EditableDatagrid
+                    mutationMode="pessimistic"
+                    bulkActionButtons={false}
                     hasCreate
                     // eslint-disable-next-line max-len
                     className={classes.bottomMargin}
@@ -617,7 +692,7 @@ export const TaxonNameCreateEdit: FC = ({
             </Typography>
             <Box className={gridClasses.EightCol1to9span}>
               <Labeled label="Previous names">
-                {(props.record?.id && (
+                {(record?.id && (
                   <ReferenceManyField
                     fullWidth
                     reference="cross_references"
@@ -625,6 +700,8 @@ export const TaxonNameCreateEdit: FC = ({
                     {...props}
                   >
                     <EditableDatagrid
+                      mutationMode="pessimistic"
+                      bulkActionButtons={false}
                       undoable
                       /* eslint-disable-next-line max-len */
                       className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
@@ -676,7 +753,7 @@ export const TaxonNameCreateEdit: FC = ({
             </Box>
             <Box className={gridClasses.EightCol1to9span}>
               <Labeled label="Subsequent names">
-                {(props.record?.id && (
+                {(record?.id && (
                   <ReferenceManyField
                     fullWidth
                     reference="cross_references"
@@ -684,6 +761,8 @@ export const TaxonNameCreateEdit: FC = ({
                     {...props}
                   >
                     <EditableDatagrid
+                      mutationMode="pessimistic"
+                      bulkActionButtons={false}
                       /* eslint-disable-next-line max-len */
                       className={`${classes.bottomMargin} ${globalClasses.equalColumnWidth}`}
                       createForm={

@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
 import { useRedirect } from 'react-admin';
-import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
+import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 import { clearLocalStorage } from './admin';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 
 export const LogoutButton: FC = () => {
   // The redirect hook accepts external absolute links but,

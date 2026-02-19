@@ -1,4 +1,4 @@
-import { WithPermissions } from '@react-admin/ra-rbac';
+import { IfCanAccess } from '@react-admin/ra-rbac';
 import { useResourceContext } from 'react-admin';
 import {
   DeleteWithConfirmIconButton,
@@ -8,12 +8,12 @@ import React from 'react';
 
 const CustomAction = () => (
   <>
-    <WithPermissions action="edit" resource={useResourceContext()}>
+    <IfCanAccess action="edit" resource={useResourceContext()}>
       <EditRowButton />
-    </WithPermissions>
-    <WithPermissions action="delete" resource={useResourceContext()}>
+    </IfCanAccess>
+    <IfCanAccess action="delete" resource={useResourceContext()}>
       <DeleteWithConfirmIconButton mutationMode="pessimistic" />
-    </WithPermissions>
+    </IfCanAccess>
   </>
 );
 

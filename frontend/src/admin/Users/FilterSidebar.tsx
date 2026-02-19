@@ -1,9 +1,9 @@
-import { Card as MuiCard, CardContent } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
+import { Card as MuiCard, CardContent } from '@mui/material';
+import withStyles from '@mui/styles/withStyles';
 import { FilterLiveSearch } from 'react-admin';
 import { DeletedFilter, RolesFilter } from './UserFilters';
 import React from 'react';
-import { WithPermissions } from '@react-admin/ra-rbac';
+import { IfCanAccess } from '@react-admin/ra-rbac';
 
 export const Card = withStyles((theme) => ({
   root: {
@@ -22,9 +22,9 @@ export const FilterSidebar = () => (
     <CardContent>
       <FilterLiveSearch />
       <RolesFilter />
-      <WithPermissions resource="users" action="viewdeleted">
+      <IfCanAccess resource="users" action="viewdeleted">
         <DeletedFilter />
-      </WithPermissions>
+      </IfCanAccess>
     </CardContent>
   </Card>
 );

@@ -7,9 +7,9 @@ import {
   ReferenceField,
   ReferenceManyField,
 } from 'react-admin';
-import { makeStyles } from '@material-ui/core/styles';
-import { Show } from '@react-admin/ra-rbac';
-import { Box, Typography } from '@material-ui/core';
+import makeStyles from '@mui/styles/makeStyles';
+import { Show } from 'react-admin';
+import { Box, Typography } from '@mui/material';
 import Aside from '../shared/Aside';
 import ConservationType from './ConservationType';
 import { GlobalTheme } from '../../GlobalTheme';
@@ -17,7 +17,7 @@ import { ConservationDescription } from './ConservationDescription';
 import { ConscodeTaxonReferenceManyGridTaxon } from '../Conscode_taxons';
 import { DateField } from 'react-admin';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: any) => ({
   showPad: {
     padding: '8px 16px',
   },

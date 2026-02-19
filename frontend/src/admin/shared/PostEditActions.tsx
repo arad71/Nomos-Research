@@ -1,21 +1,21 @@
 import React, { FC } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { TopToolbar } from 'react-admin';
-import Button from '@material-ui/core/Button';
-import VisibilityIcon from '@material-ui/icons/Visibility';
+import Button from '@mui/material/Button';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 const PostEditActions: FC = () => {
-  let history = useHistory();
+  const navigate = useNavigate();
+  const location = useLocation();
   const viewSwitch = () => {
-    let path = history.location.pathname;
-    let tabPos = path.lastIndexOf('/');
-    if (path.split('/').length - 1 == 2) {
+    const path = location.pathname;
+    const tabPos = path.lastIndexOf('/');
+    if (path.split('/').length - 1 === 2) {
       return path.concat('/show');
-    } else {
-      return path.slice(0, tabPos) + '/show' + path.slice(tabPos);
     }
+    return path.slice(0, tabPos) + '/show' + path.slice(tabPos);
   };
-  const routeChange = () => history.push(`${viewSwitch()}`);
+  const routeChange = () => navigate(`${viewSwitch()}`);
   return (
     <TopToolbar>
       <Button

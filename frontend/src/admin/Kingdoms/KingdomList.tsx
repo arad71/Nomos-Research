@@ -7,7 +7,7 @@ import {
   TextField,
   EditButton,
 } from 'react-admin';
-import { List, WithPermissions } from '@react-admin/ra-rbac';
+import { List, IfCanAccess } from '@react-admin/ra-rbac';
 import {
   DefaultPagination,
   selectableFilters,
@@ -22,18 +22,17 @@ export const KingdomList: FC = (props) => {
       perPage={100}
       pagination={<DefaultPagination />}
       filters={selectableFilters()}
-      bulkActionButtons={useCanBulkDelete()}
     >
-      <Datagrid rowClick="show">
+      <Datagrid bulkActionButtons={useCanBulkDelete()} rowClick="show">
         <TextField source="kingdom_name" />
         <TextField source="kingdom_desc" label="Description" />
         <ReferenceField source="updated_by" reference="users" link="show">
           <TextField source="full_name" />
         </ReferenceField>
         <DateField source="updated_on" />
-        <WithPermissions resource="kingdoms" action="edit">
+        <IfCanAccess resource="kingdoms" action="edit">
           <EditButton />
-        </WithPermissions>
+        </IfCanAccess>
       </Datagrid>
     </List>
   );

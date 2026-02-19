@@ -9,7 +9,7 @@ import {
   TextField,
   DateField,
 } from 'react-admin';
-import { Box, Typography } from '@material-ui/core';
+import { Box, Typography } from '@mui/material';
 import { GlobalTheme } from '../../GlobalTheme';
 import { ConservationShort } from '../Conservation_codes';
 
@@ -38,7 +38,11 @@ export const ConscodeTaxonReferenceManyGrid = (props: {
       target={props.target}
       {...props.props}
     >
-      <Datagrid empty={<Empty />} className={globalClasses.equalColumnWidth}>
+      <Datagrid
+        bulkActionButtons={false}
+        empty={<Empty />}
+        className={globalClasses.equalColumnWidth}
+      >
         <ReferenceField
           source="conservation_code_id"
           reference="conservation_codes"
@@ -73,7 +77,11 @@ export const ConscodeTaxonReferenceManyGridTaxon = (props: {
       target={props.target}
       {...props.props}
     >
-      <Datagrid empty={<Empty />} className={globalClasses.equalColumnWidth}>
+      <Datagrid
+        bulkActionButtons={false}
+        empty={<Empty />}
+        className={globalClasses.equalColumnWidth}
+      >
         <ReferenceField
           source={props.source}
           reference="taxon_names"

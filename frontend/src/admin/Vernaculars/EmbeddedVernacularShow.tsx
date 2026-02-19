@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Show } from '@react-admin/ra-rbac';
+import { Show } from 'react-admin';
 import { VernacularShowLayout } from './VernacularShowLayout';
 
 export const EmbeddedVernacularShow: FC = (props) => (

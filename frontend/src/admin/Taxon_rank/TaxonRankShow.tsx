@@ -8,15 +8,15 @@ import {
   TextField,
   BooleanField,
 } from 'react-admin';
-import { Show } from '@react-admin/ra-rbac';
+import { Show } from 'react-admin';
 import Aside from '../shared/Aside';
 import RankAbbreviation from './RankAbbreviation';
 import { GlobalTheme } from '../../GlobalTheme';
-import { makeStyles } from '@material-ui/core/styles';
-import { Box, Typography } from '@material-ui/core';
+import makeStyles from '@mui/styles/makeStyles';
+import { Box, Typography } from '@mui/material';
 import { RankName } from './RankName';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: any) => ({
   showPad: {
     padding: '8px 16px',
   },

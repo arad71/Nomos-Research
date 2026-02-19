@@ -13,12 +13,12 @@ import {
   TextField,
   useRecordContext,
 } from 'react-admin';
-import { Show } from '@react-admin/ra-rbac';
+import { Show } from 'react-admin';
 import Aside from '../shared/Aside';
 import NaturalisedStatus from '../Taxon_names/NaturalisedStatus';
 import PublicationStatus from '../Taxon_names/PublicationStatus';
-import { makeStyles } from '@material-ui/core/styles';
-import { Box, Typography } from '@material-ui/core';
+import makeStyles from '@mui/styles/makeStyles';
+import { Box, Typography } from '@mui/material';
 import { GlobalTheme } from '../../GlobalTheme';
 import { ConscodeTaxonReferenceManyGrid } from '../Conscode_taxons';
 // eslint-disable-next-line max-len

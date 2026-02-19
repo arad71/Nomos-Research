@@ -11,7 +11,7 @@ import {
   FilterButton,
   CreateButton,
 } from 'react-admin';
-import { List, WithPermissions } from '@react-admin/ra-rbac';
+import { List, IfCanAccess } from '@react-admin/ra-rbac';
 import { DefaultPagination, useCanBulkDelete } from '../shared';
 import {
   ListProps,
@@ -21,8 +21,8 @@ import {
 import ResetPreferenceButton from '../shared/ResetPreferenceButton';
 
 import { InformalGroupFilters } from './InformalGroupFilters';
-import DeleteIcon from '@material-ui/icons/Delete';
-import VisibilityIcon from '@material-ui/icons/Visibility';
+import DeleteIcon from '@mui/icons-material/Delete';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import BatchExportButton from '../shared/BatchExportButton';
 
 const postListColumns = {
@@ -91,12 +91,12 @@ const Actions = () => (
       preferenceName={INFORMAL_GROUP_PREFERENCE}
       defaultValue={Array.from(includeColumns)}
     />
-    <WithPermissions resource="informal_group" action="create">
+    <IfCanAccess resource="informal_group" action="create">
       <CreateButton />
-    </WithPermissions>
-    <WithPermissions resource="informal_group" action="export">
+    </IfCanAccess>
+    <IfCanAccess resource="informal_group" action="export">
       <BatchExportButton />
-    </WithPermissions>
+    </IfCanAccess>
   </TopToolbar>
 );
 
@@ -115,21 +115,20 @@ export const InformalGroupList = (props: ListProps) => {
       perPage={100}
       filters={InformalGroupFilters()}
       pagination={<DefaultPagination />}
-      bulkActionButtons={useCanBulkDelete()}
     >
-      <Datagrid rowClick="show">
+      <Datagrid bulkActionButtons={useCanBulkDelete()} rowClick="show">
         {columns}
 
-        <WithPermissions resource="informal_groups" action="viewdeleted">
+        <IfCanAccess resource="informal_groups" action="viewdeleted">
           <BooleanField
             source="deleted"
             TrueIcon={DeleteIcon}
             FalseIcon={VisibilityIcon}
           />
-        </WithPermissions>
-        <WithPermissions resource="informal_groups" action="edit">
+        </IfCanAccess>
+        <IfCanAccess resource="informal_groups" action="edit">
           <EditButton />
-        </WithPermissions>
+        </IfCanAccess>
       </Datagrid>
     </List>
   );

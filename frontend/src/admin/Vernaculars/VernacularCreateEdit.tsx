@@ -9,13 +9,13 @@ import {
 } from 'react-admin';
 import React, { FC } from 'react';
 import LanguageType from './LanguageType';
-import { Box, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Box, Typography } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import { GlobalTheme } from '../../GlobalTheme';
 import EditToolbar from '../shared/EditToolbar';
 import ScientificNameReference from '../Taxon_names/ScientificNameReference';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: any) => ({
   mainGrid: {
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',
@@ -53,7 +53,12 @@ export const VernacularCreateEdit: FC = (props) => {
           defaultValue={false}
         />
         <TextInput source="source" />
-        <NumberInput source="sort_order" validate={minValue(0)} min={0} />
+        <NumberInput
+          source="sort_order"
+          validate={minValue(0)}
+          min={0}
+          initialValue={0}
+        />
         <BooleanInput
           label="preferred"
           source="preferred"

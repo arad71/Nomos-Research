@@ -10,15 +10,15 @@ import {
   SingleFieldList,
   ChipField,
 } from 'react-admin';
-import { Show } from '@react-admin/ra-rbac';
+import { Show } from 'react-admin';
 import Aside from '../shared/Aside';
-import { Box, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Box, Typography } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import { GlobalTheme } from '../../GlobalTheme';
 import { DisplayTitle } from './DisplayTitle';
 import PostShowActions from '../shared/PostShowActions';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: any) => ({
   title: {
     fontWeight: 'bold',
     fontSize: '1.5em',
@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: '1.2em',
   },
   titlePos: {
-    position: 'absolute',
+    //position: 'absolute',
     top: '65px',
   },
 }));

@@ -13,12 +13,12 @@ import {
   TextField,
   useRecordContext,
 } from 'react-admin';
-import { Show } from '@react-admin/ra-rbac';
+import { Show } from 'react-admin';
 import Aside from '../shared/Aside';
 import NaturalisedStatus from './NaturalisedStatus';
 import PublicationStatus from './PublicationStatus';
-import { makeStyles } from '@material-ui/core/styles';
-import { Box, Typography } from '@material-ui/core';
+import makeStyles from '@mui/styles/makeStyles';
+import { Box, Typography } from '@mui/material';
 import { GlobalTheme } from '../../GlobalTheme';
 import { CrossReferenceManyGrid } from '../Cross_references';
 import { AuthorReferenceManyGrid } from '../Authors';

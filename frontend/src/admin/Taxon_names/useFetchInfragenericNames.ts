@@ -11,7 +11,13 @@ const useFetchInfragenericNames = (id: number) => {
     useState<InfragenericNamesData>({ id: 0, infrageneric_names: [] });
 
   useEffect(() => {
-    if (isNaN(id) || !id) return setLoading(false);
+    if (isNaN(id) || !id) {
+      setLoading(false);
+      setInfragenericNames({ id: 0, infrageneric_names: [] });
+      return;
+    }
+
+    setLoading(true);
 
     dataProvider
       .getOne<InfragenericNamesData>('taxon_names_infrageneric_names', {

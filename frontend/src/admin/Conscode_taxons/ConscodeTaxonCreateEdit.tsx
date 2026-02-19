@@ -20,14 +20,14 @@ import {
 } from 'react-admin';
 import React, { FC } from 'react';
 import { GlobalTheme } from '../../GlobalTheme';
-import { Box, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Box, Typography } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import EditToolbar from '../shared/EditToolbar';
 import ScientificNameReference from '../Taxon_names/ScientificNameReference';
 import { ConservationShort } from '../Conservation_codes';
-import { CalendarToday, DateRange, Today } from '@material-ui/icons';
+import { CalendarToday, DateRange, Today } from '@mui/icons-material';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: any) => ({
   mainGrid: {
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',

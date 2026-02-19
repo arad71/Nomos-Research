@@ -1,8 +1,8 @@
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 // eslint-disable-next-line max-len
 import { FormattedScientificNameWithStatus } from './FormattedScientificNameWithStatus';
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import NestedLinkField from '../shared/NestedLinkField';
 const useStyles = makeStyles({
   title: {
@@ -10,7 +10,7 @@ const useStyles = makeStyles({
     marginRight: '0.2em',
   },
   titlePos: {
-    position: 'absolute',
+    //position: 'absolute',
     top: '65px',
   },
   subtitle: {

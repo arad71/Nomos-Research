@@ -10,12 +10,12 @@ import {
 import React, { FC } from 'react';
 import AuthorType from './AuthorType';
 import { GlobalTheme } from '../../GlobalTheme';
-import { Box, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Box, Typography } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import EditToolbar from '../shared/EditToolbar';
 import ScientificNameReference from '../Taxon_names/ScientificNameReference';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: any) => ({
   mainGrid: {
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',
@@ -49,11 +49,14 @@ export const CitationCreateEdit: FC = (props) => {
           <ReferenceInput
             source="author_id"
             reference="authors"
-            validate={required()}
             sort={{ field: 'abbreviation', order: 'ASC' }}
             perPage={100}
           >
-            <AutocompleteInput optionText="abbreviation" resettable />
+            <AutocompleteInput
+              optionText="abbreviation"
+              resettable
+              validate={required()}
+            />
           </ReferenceInput>
         </Box>
         <Box>

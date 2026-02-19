@@ -10,25 +10,25 @@ import {
   TextField,
   TopToolbar,
 } from 'react-admin';
-import { List, WithPermissions } from '@react-admin/ra-rbac';
+import { List, IfCanAccess } from '@react-admin/ra-rbac';
 import {
   DefaultPagination,
   selectableFilters,
   useCanBulkDelete,
 } from '../shared';
-import DeleteIcon from '@material-ui/icons/Delete';
-import VisibilityIcon from '@material-ui/icons/Visibility';
+import DeleteIcon from '@mui/icons-material/Delete';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import BatchExportButton from '../shared/BatchExportButton';
 
 const Actions = () => (
   <TopToolbar>
     <FilterButton />
-    <WithPermissions resource="authors" action="create">
+    <IfCanAccess resource="authors" action="create">
       <CreateButton />
-    </WithPermissions>
-    <WithPermissions resource="authors" action="export">
+    </IfCanAccess>
+    <IfCanAccess resource="authors" action="export">
       <BatchExportButton />
-    </WithPermissions>
+    </IfCanAccess>
   </TopToolbar>
 );
 
@@ -40,9 +40,8 @@ export const AuthorList: FC = (props) => (
     actions={<Actions />}
     perPage={100}
     pagination={<DefaultPagination />}
-    bulkActionButtons={useCanBulkDelete()}
   >
-    <Datagrid rowClick="show">
+    <Datagrid bulkActionButtons={useCanBulkDelete()} rowClick="show">
       <TextField source="abbreviation" />
       <TextField source="surname" />
       <TextField source="first_names" />
@@ -52,16 +51,16 @@ export const AuthorList: FC = (props) => (
         <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" />
-      <WithPermissions action="viewdeleted" resource="authors">
+      <IfCanAccess action="viewdeleted" resource="authors">
         <BooleanField
           source="deleted"
           TrueIcon={DeleteIcon}
           FalseIcon={VisibilityIcon}
         />
-      </WithPermissions>
-      <WithPermissions action="edit" resource="authors">
+      </IfCanAccess>
+      <IfCanAccess action="edit" resource="authors">
         <EditButton />
-      </WithPermissions>
+      </IfCanAccess>
     </Datagrid>
   </List>
 );

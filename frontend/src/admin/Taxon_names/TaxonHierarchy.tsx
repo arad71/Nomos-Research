@@ -1,5 +1,5 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import {
   Datagrid,
   ReferenceField,
@@ -8,7 +8,7 @@ import {
   TextField,
   useRecordContext,
 } from 'react-admin';
-import { Box, Typography } from '@material-ui/core';
+import { Box, Typography } from '@mui/material';
 import { hierarchyRowClick, hierarchyCodeRowClick } from './HierarchyRowClick';
 
 const useStyles = makeStyles({
@@ -51,7 +51,10 @@ const TaxonHierarchy = () => {
         >
           <>
             {sourcecode && (
-              <Datagrid rowClick={hierarchyCodeRowClick}>
+              <Datagrid
+                bulkActionButtons={false}
+                rowClick={hierarchyCodeRowClick}
+              >
                 <TextField
                   source="rank_name"
                   sortBy="taxon_name___taxon_rank___rank_name"
@@ -69,7 +72,7 @@ const TaxonHierarchy = () => {
             )}
 
             {!sourcecode && (
-              <Datagrid rowClick={hierarchyRowClick}>
+              <Datagrid bulkActionButtons={false} rowClick={hierarchyRowClick}>
                 <TextField
                   source="rank_name"
                   sortBy="taxon_name___taxon_rank___rank_name"

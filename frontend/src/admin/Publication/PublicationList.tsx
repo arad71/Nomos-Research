@@ -10,25 +10,25 @@ import {
   TextField,
   TopToolbar,
 } from 'react-admin';
-import { List, WithPermissions } from '@react-admin/ra-rbac';
+import { List, IfCanAccess } from '@react-admin/ra-rbac';
 import {
   DefaultPagination,
   selectableFilters,
   useCanBulkDelete,
 } from '../shared';
-import DeleteIcon from '@material-ui/icons/Delete';
-import VisibilityIcon from '@material-ui/icons/Visibility';
+import DeleteIcon from '@mui/icons-material/Delete';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import BatchExportButton from '../shared/BatchExportButton';
 
 const Actions = () => (
   <TopToolbar>
     <FilterButton />
-    <WithPermissions resource="publications" action="create">
+    <IfCanAccess resource="publications" action="create">
       <CreateButton />
-    </WithPermissions>
-    <WithPermissions resource="publications" action="export">
+    </IfCanAccess>
+    <IfCanAccess resource="publications" action="export">
       <BatchExportButton />
-    </WithPermissions>
+    </IfCanAccess>
   </TopToolbar>
 );
 
@@ -39,10 +39,9 @@ export const PublicationList: FC = (props) => (
     actions={<Actions />}
     perPage={100}
     pagination={<DefaultPagination />}
-    bulkActionButtons={useCanBulkDelete()}
     filters={selectableFilters()}
   >
-    <Datagrid rowClick="show">
+    <Datagrid bulkActionButtons={useCanBulkDelete()} rowClick="show">
       <TextField source="display_title" />
       <TextField source="author_name" sortable={false} />
       <TextField source="publication_year" />
@@ -58,16 +57,16 @@ export const PublicationList: FC = (props) => (
         <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" />
-      <WithPermissions resource="publications" action="viewdeleted">
+      <IfCanAccess resource="publications" action="viewdeleted">
         <BooleanField
           source="deleted"
           TrueIcon={DeleteIcon}
           FalseIcon={VisibilityIcon}
         />
-      </WithPermissions>
-      <WithPermissions resource="publications" action="edit">
+      </IfCanAccess>
+      <IfCanAccess resource="publications" action="edit">
         <EditButton />
-      </WithPermissions>
+      </IfCanAccess>
     </Datagrid>
   </List>
 );

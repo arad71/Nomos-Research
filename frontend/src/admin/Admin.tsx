@@ -8,8 +8,9 @@ import MyLoginPage from '../views/NewLogin';
 import MyLayout from '../MyLayout';
 import theme from '../Theme';
 import Dashboard from '../Dashboard';
-import BookIcon from '@material-ui/icons/Book';
+import BookIcon from '@mui/icons-material/Book';
 import { LogoutButton } from '../LogoutButton';
+import SafeNotification from './shared/SafeNotification';
 
 import { UserCreate, UserEdit, UserList, UserShow } from './Users';
 import {
@@ -113,9 +114,40 @@ const httpClient = (url: any, options?: any) => {
   }
   const token = localStorage.getItem('token');
   options.headers.set('Authorization', `Bearer ${token}`);
+  const normalizeApiError = (detail: any): string => {
+    if (typeof detail === 'string') {
+      return detail;
+    }
+    if (Array.isArray(detail)) {
+      return detail
+        .map((item) => {
+          if (typeof item === 'string') {
+            return item;
+          }
+          if (
+            item &&
+            typeof item === 'object' &&
+            typeof item.msg === 'string'
+          ) {
+            return item.msg;
+          }
+          return JSON.stringify(item);
+        })
+        .join('\n');
+    }
+    if (detail && typeof detail === 'object') {
+      if (typeof detail.msg === 'string') {
+        return detail.msg;
+      }
+      return JSON.stringify(detail);
+    }
+    return 'Request failed';
+  };
+
   return fetchUtils.fetchJson(url, options).catch((error: any) => {
     return new Promise(function (resolve, reject) {
-      reject({ message: error.body.detail });
+      const detail = error?.body?.detail;
+      reject({ message: normalizeApiError(detail), status: error?.status });
     });
   });
 };
@@ -216,6 +248,7 @@ export const Admin: FC = () => {
       authProvider={authProvider}
       dataProvider={cacheDataProviderProxy({ dataProvider: myDataProvider })}
       logoutButton={LogoutButton}
+      notification={SafeNotification}
     >
       <Resource
         name="users"

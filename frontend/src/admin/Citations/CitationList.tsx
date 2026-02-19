@@ -11,14 +11,14 @@ import {
   TextField,
 } from 'react-admin';
 import AuthorType from './AuthorType';
-import { WithPermissions, List } from '@react-admin/ra-rbac';
+import { IfCanAccess, List } from '@react-admin/ra-rbac';
 import {
   DefaultPagination,
   selectableFilters,
   useCanBulkDelete,
 } from '../shared';
-import DeleteIcon from '@material-ui/icons/Delete';
-import VisibilityIcon from '@material-ui/icons/Visibility';
+import DeleteIcon from '@mui/icons-material/Delete';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 export const CitationList: FC = (props) => (
   <List
@@ -26,10 +26,9 @@ export const CitationList: FC = (props) => (
     sort={{ field: 'updated_on', order: 'DESC' }}
     perPage={100}
     pagination={<DefaultPagination />}
-    bulkActionButtons={useCanBulkDelete()}
     filters={selectableFilters()}
   >
-    <Datagrid rowClick="show">
+    <Datagrid bulkActionButtons={useCanBulkDelete()} rowClick="show">
       <ReferenceField
         source="taxon_name_id"
         reference="taxon_names"
@@ -52,16 +51,16 @@ export const CitationList: FC = (props) => (
         <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" />
-      <WithPermissions resource="citations" action="viewdeleted">
+      <IfCanAccess resource="citations" action="viewdeleted">
         <BooleanField
           source="deleted"
           TrueIcon={DeleteIcon}
           FalseIcon={VisibilityIcon}
         />
-      </WithPermissions>
-      <WithPermissions resource="citations" action="edit">
+      </IfCanAccess>
+      <IfCanAccess resource="citations" action="edit">
         <EditButton />
-      </WithPermissions>
+      </IfCanAccess>
     </Datagrid>
   </List>
 );

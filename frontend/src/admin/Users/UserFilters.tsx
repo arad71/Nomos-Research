@@ -1,6 +1,6 @@
 import React from 'react';
 import { FilterList, FilterListItem } from 'react-admin';
-import { Settings, ToggleOn } from '@material-ui/icons';
+import { Settings, ToggleOn } from '@mui/icons-material';
 import Role from '../role';
 
 export const RolesFilter = () => (

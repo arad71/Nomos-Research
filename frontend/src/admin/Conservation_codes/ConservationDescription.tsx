@@ -1,7 +1,7 @@
 import { TextField } from 'react-admin';
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { Label, TextFields } from '@material-ui/icons';
+import makeStyles from '@mui/styles/makeStyles';
+import { Label, TextFields } from '@mui/icons-material';
 import { ConservationShort } from './ConservationShort';
 
 const useStyles = makeStyles({
