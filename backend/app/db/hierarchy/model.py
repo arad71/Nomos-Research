@@ -1,3 +1,4 @@
+#update for ltree handling, and added root parent finding and hierarchy rebuilding methods
 from loguru import logger
 from sqlalchemy import Column, ForeignKey, Index, Integer, Sequence, and_, func
 from sqlalchemy.ext.associationproxy import association_proxy
@@ -181,3 +182,4 @@ class Hierarchy(BaseModel, TableMixin):
         root.calculate_path(db=db)
         root.calculate_path_for_children(db=db)
         logger.debug(f"Finished {root}")
+
