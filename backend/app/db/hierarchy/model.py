@@ -1,4 +1,4 @@
-#update for ltree handling, and added root parent finding and hierarchy rebuilding methods
+# update for ltree handling, and added root parent finding and hierarchy rebuilding methods
 from loguru import logger
 from sqlalchemy import Column, ForeignKey, Index, Integer, Sequence, and_, func
 from sqlalchemy.ext.associationproxy import association_proxy

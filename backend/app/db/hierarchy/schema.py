@@ -1,4 +1,4 @@
-#updated for pydantic v2, and added path coercion and serialization to ensure Ltree values are handled correctly in the API layer   
+# updated  for pydantic v2, and added path coercion and serialization to ensure Ltree values are handled correctly in the API layer   
 import typing
 from typing import Optional, Any
 from pydantic import BaseModel, ConfigDict, Field,  field_validator, field_serializer
