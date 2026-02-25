@@ -1,5 +1,4 @@
 const React = require('react');
-const { useStore } = require('react-admin');
 const Button = require('@mui/material/Button').default;
 const Menu = require('@mui/material/Menu').default;
 const MenuItem = require('@mui/material/MenuItem').default;
@@ -7,7 +6,106 @@ const Checkbox = require('@mui/material/Checkbox').default;
 const ListItemText = require('@mui/material/ListItemText').default;
 const ViewColumnIcon = require('@mui/icons-material/ViewColumn').default;
 
-const usePreferences = (key, defaultValue) => useStore(key, defaultValue);
+const resolveHook = (moduleExports, hookName) => {
+  if (!moduleExports) {
+    return undefined;
+  }
+  if (typeof moduleExports[hookName] === 'function') {
+    return moduleExports[hookName];
+  }
+  if (
+    moduleExports.default &&
+    typeof moduleExports.default[hookName] === 'function'
+  ) {
+    return moduleExports.default[hookName];
+  }
+  if (
+    moduleExports.raCore &&
+    typeof moduleExports.raCore[hookName] === 'function'
+  ) {
+    return moduleExports.raCore[hookName];
+  }
+  return undefined;
+};
+
+const getRaHook = (hookName) => {
+  let hook;
+  try {
+    const raCore = require('ra-core');
+    hook = resolveHook(raCore, hookName);
+  } catch (error) {
+    hook = undefined;
+  }
+  if (typeof hook !== 'function') {
+    const ra = require('react-admin');
+    hook = resolveHook(ra, hookName);
+  }
+  return typeof hook === 'function' ? hook : undefined;
+};
+
+const readPreference = (key, defaultValue) => {
+  if (typeof window === 'undefined') {
+    return defaultValue;
+  }
+  const raw = window.localStorage.getItem(key);
+  if (raw == null) {
+    return defaultValue;
+  }
+  try {
+    return JSON.parse(raw);
+  } catch (error) {
+    return raw;
+  }
+};
+
+const usePreferences = (key, defaultValue) => {
+  const useStore = getRaHook('useStore');
+  if (useStore) {
+    return useStore(key, defaultValue);
+  }
+
+  const [value, setValue] = React.useState(() =>
+    readPreference(key, defaultValue)
+  );
+
+  React.useEffect(() => {
+    setValue(readPreference(key, defaultValue));
+  }, [key, defaultValue]);
+
+  const setPreference = React.useCallback(
+    (nextValue) => {
+      const resolvedValue =
+        typeof nextValue === 'function' ? nextValue(value) : nextValue;
+      setValue(resolvedValue);
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem(key, JSON.stringify(resolvedValue));
+      }
+    },
+    [key, value]
+  );
+
+  return [value, setPreference];
+};
+
+const useRemoveFromStore = (key) => {
+  const hook = getRaHook('useRemoveFromStore');
+  if (hook) {
+    return hook(key);
+  }
+  return React.useCallback(() => {
+    if (typeof window !== 'undefined') {
+      window.localStorage.removeItem(key);
+    }
+  }, [key]);
+};
+
+const useResetStore = () => {
+  const hook = getRaHook('useResetStore');
+  if (hook) {
+    return hook();
+  }
+  return React.useCallback(() => undefined, []);
+};
 
 const normalizeSelectedColumns = (selectedColumns, defaultColumns) => {
   if (Array.isArray(selectedColumns)) {
@@ -49,7 +147,7 @@ const useSelectedColumns = ({ preferences, columns, omit = [] }) => {
   const defaultColumns = Object.keys(columns).filter(
     (columnName) => !omit.includes(columnName)
   );
-  const [selectedColumns] = useStore(preferences, defaultColumns);
+  const [selectedColumns] = usePreferences(preferences, defaultColumns);
   const normalizedColumns = normalizeSelectedColumns(
     selectedColumns,
     defaultColumns
@@ -61,7 +159,7 @@ const useSelectedColumns = ({ preferences, columns, omit = [] }) => {
 
 const SelectColumnsButton = ({ preference, columns, label = 'Select columns' }) => {
   const allColumnNames = Object.keys(columns || {});
-  const [selectedColumns, setSelectedColumns] = useStore(
+  const [selectedColumns, setSelectedColumns] = usePreferences(
     preference,
     allColumnNames
   );
@@ -123,4 +221,6 @@ module.exports = {
   SelectColumnsButton,
   usePreferences,
   useSelectedColumns,
+  useRemoveFromStore,
+  useResetStore,
 };

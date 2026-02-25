@@ -2,7 +2,7 @@ import { InlineRowForm as RowForm } from '../shared/InlineRowForm';
 import { required, SelectInput, TextInput } from 'react-admin';
 import React from 'react';
 import CrossRefType from './CrossRefType';
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from 'lib/makeStyles';
 import ScientificNameReference from '../Taxon_names/ScientificNameReference';
 
 const useStyles = makeStyles({

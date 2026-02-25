@@ -15,7 +15,7 @@ import {
   maxValue,
 } from 'react-admin';
 import React, { FC } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from 'lib/makeStyles';
 import { Box, Typography } from '@mui/material';
 import { GlobalTheme, GlobalGridTheme } from '../../GlobalTheme';
 import EditToolbar from '../shared/EditToolbar';
@@ -49,7 +49,6 @@ export const PublicationCreateEdit: FC = (props) => {
       <TabbedForm
         {...props}
         toolbar={<EditToolbar resource="publications" />}
-        warnWhenUnsavedChanges
       >
         <FormTab label="Publication" className={globalClasses.bold}>
           <Box className={`${classes.mainGrid} ${globalClasses.sectionMargin}`}>

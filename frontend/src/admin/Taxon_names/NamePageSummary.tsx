@@ -2,7 +2,7 @@ import { Box } from '@mui/material';
 // eslint-disable-next-line max-len
 import { FormattedScientificNameWithStatus } from './FormattedScientificNameWithStatus';
 import React from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from 'lib/makeStyles';
 import NestedLinkField from '../shared/NestedLinkField';
 const useStyles = makeStyles({
   title: {

@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { TextField, Labeled } from 'react-admin';
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from 'lib/makeStyles';
 import Aside from '../shared/Aside';
 import { Box, Typography } from '@mui/material';
 import { GlobalTheme } from '../../GlobalTheme';

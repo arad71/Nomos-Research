@@ -1,9 +1,4 @@
 import React, { FC } from 'react';
-import { Show } from 'react-admin';
 import { VernacularShowLayout } from './VernacularShowLayout';
 
-export const EmbeddedVernacularShow: FC = (props) => (
-  <Show {...props} title=" ">
-    <VernacularShowLayout />
-  </Show>
-);
+export const EmbeddedVernacularShow: FC = () => <VernacularShowLayout />;

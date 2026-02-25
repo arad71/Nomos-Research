@@ -1,9 +1,4 @@
 import React, { FC } from 'react';
-import { Show } from 'react-admin';
 import { HierarchyShowLayout } from './HierarchyShowLayout';
 
-export const EmbeddedHierarchyShow: FC = (props) => (
-  <Show {...props} title=" ">
-    <HierarchyShowLayout />
-  </Show>
-);
+export const EmbeddedHierarchyShow: FC = () => <HierarchyShowLayout />;

@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Edit } from '@react-admin/ra-rbac';
+import { Edit } from 'react-admin';
 import Aside from '../shared/Aside';
 import { InformalGroupCreateEdit } from './InformalGroupCreateEdit';
 

@@ -8,7 +8,7 @@ import {
   TextField,
 } from 'react-admin';
 import { Show } from 'react-admin';
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from 'lib/makeStyles';
 import AuthorType from './AuthorType';
 import Aside from '../shared/Aside';
 import { GlobalTheme } from '../../GlobalTheme';

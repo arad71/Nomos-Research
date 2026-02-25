@@ -9,7 +9,7 @@ import {
 import { EmbeddedCrossReferenceShow } from './EmbeddedCrossReferenceShow';
 
 import CrossRefType from './CrossRefType';
-import { FormattedScientificNameWithStatus, TaxonName } from '../Taxon_names';
+import { FormattedScientificNameWithStatus } from '../Taxon_names';
 import { GlobalTheme } from '../../GlobalTheme';
 import { Box, Typography } from '@mui/material';
 
@@ -28,14 +28,11 @@ export const CrossReferenceManyGrid = (props: {
   const globalClasses = GlobalTheme();
   return (
     <ReferenceManyField
-      rowClick={(id: number, basePath: string, record: TaxonName) =>
-        `/taxon_names/${record[props.source]}/show/related_names`
-      }
       reference="cross_references"
       target={props.target}
-      {...props.props}
     >
       <Datagrid
+        rowClick={false}
         bulkActionButtons={false}
         empty={<Empty />}
         className={globalClasses.equalColumnWidth}

@@ -11,7 +11,8 @@ import {
   ReferenceField,
   DateField,
 } from 'react-admin';
-import { IfCanAccess, List } from '@react-admin/ra-rbac';
+import { List } from '@react-admin/ra-rbac';
+import { CanAccess as IfCanAccess } from 'react-admin';
 import { FilterSidebar } from './FilterSidebar';
 import { UserListActions } from './UserListActions';
 import { UserPagination } from './UserPagination';

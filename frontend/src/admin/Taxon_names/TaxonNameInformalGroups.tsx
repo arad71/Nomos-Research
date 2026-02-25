@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Card, Typography } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from 'lib/makeStyles';
 import {
   Labeled,
   ReferenceField,
@@ -26,8 +26,12 @@ const TaxonNameInformalGroups = () => {
           Informal Groups
         </Typography>
       </Box>
-      <ReferenceManyField reference="informal_groups" target="taxon_name_id">
-        <SingleFieldList>
+      <ReferenceManyField
+        reference="informal_groups"
+        target="taxon_name_id"
+        sort={{ field: 'informal_group_id', order: 'DESC' }}
+      >
+        <SingleFieldList linkType={false}>
           <ReferenceField
             source="classification_system_id"
             reference="classification_systems"

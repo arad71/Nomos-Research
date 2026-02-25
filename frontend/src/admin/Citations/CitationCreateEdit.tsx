@@ -11,7 +11,7 @@ import React, { FC } from 'react';
 import AuthorType from './AuthorType';
 import { GlobalTheme } from '../../GlobalTheme';
 import { Box, Typography } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from 'lib/makeStyles';
 import EditToolbar from '../shared/EditToolbar';
 import ScientificNameReference from '../Taxon_names/ScientificNameReference';
 
@@ -31,7 +31,6 @@ export const CitationCreateEdit: FC = (props) => {
     <SimpleForm
       {...props}
       toolbar={<EditToolbar resource="citations" />}
-      warnWhenUnsavedChanges
     >
       <Box>
         <Typography variant="h5" className={globalClasses.bold} gutterBottom>
@@ -66,7 +65,7 @@ export const CitationCreateEdit: FC = (props) => {
           <NumberInput
             source="author_order"
             validate={[required(), minValue(0)]}
-            initialValue={0}
+            defaultValue={0}
             min={0}
             fullWidth
           />

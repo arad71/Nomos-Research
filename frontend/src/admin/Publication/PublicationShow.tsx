@@ -13,7 +13,7 @@ import {
 import { Show } from 'react-admin';
 import Aside from '../shared/Aside';
 import { Box, Typography } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from 'lib/makeStyles';
 import { GlobalTheme } from '../../GlobalTheme';
 import { DisplayTitle } from './DisplayTitle';
 import PostShowActions from '../shared/PostShowActions';

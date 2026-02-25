@@ -11,7 +11,8 @@ import {
   BooleanField,
 } from 'react-admin';
 import LanguageType from './LanguageType';
-import { List, IfCanAccess } from '@react-admin/ra-rbac';
+import { List } from '@react-admin/ra-rbac';
+import { CanAccess as IfCanAccess } from 'react-admin';
 import {
   DefaultPagination,
   selectableFilters,

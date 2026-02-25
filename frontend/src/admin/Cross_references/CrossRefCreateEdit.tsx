@@ -9,7 +9,7 @@ import React, { FC } from 'react';
 import CrossRefType from './CrossRefType';
 import { GlobalTheme } from '../../GlobalTheme';
 import { Box, Typography } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from 'lib/makeStyles';
 import EditToolbar from '../shared/EditToolbar';
 import ScientificNameReference from '../Taxon_names/ScientificNameReference';
 
@@ -29,7 +29,6 @@ export const CrossRefCreateEdit: FC = (props) => {
     <SimpleForm
       {...props}
       toolbar={<EditToolbar resource="cross_references" />}
-      warnWhenUnsavedChanges
     >
       <Box>
         <Typography variant="h5" className={globalClasses.bold} gutterBottom>

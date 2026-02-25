@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { Navigate, Route, Routes as ReactRouterRoutes } from 'react-router-dom';
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from 'lib/makeStyles';
 
 import { SignUp } from './views';
 import { Admin } from './admin';

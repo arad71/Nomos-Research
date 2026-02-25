@@ -11,7 +11,7 @@ import TextField from '@mui/material/TextField';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from 'lib/makeStyles';
 import PropTypes from 'prop-types';
 import { Field, Form } from 'react-final-form';
 import dbcaLogo from '../assets/img/logo-dbca-bio-dark.svg';

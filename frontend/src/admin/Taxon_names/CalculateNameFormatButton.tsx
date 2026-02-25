@@ -1,24 +1,15 @@
 import * as React from 'react';
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import {
-  useNotify,
-  fetchStart,
-  fetchEnd,
-  LinearProgress,
-  Button,
-} from 'react-admin';
+import { useNotify, LinearProgress, Button } from 'react-admin';
 import FunctionsIcon from '@mui/icons-material/Functions';
 
 const CalculateNameFormatButton = () => {
-  const dispatch = useDispatch();
   const notify = useNotify();
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
 
   const fetchData = () => {
     setLoading(true);
-    dispatch(fetchStart());
     const authHeader = localStorage.getItem('token');
     const headers = {
       'Content-Type': 'application/json',
@@ -61,7 +52,6 @@ const CalculateNameFormatButton = () => {
       })
       .finally(() => {
         setLoading(false);
-        dispatch(fetchEnd());
       });
   };
 

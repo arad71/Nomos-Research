@@ -7,7 +7,7 @@ import {
   undoableEventEmitter,
   useNotificationContext,
   useTranslate,
-} from 'ra-core';
+} from 'react-admin';
 
 const defaultAnchorOrigin = {
   vertical: 'bottom',

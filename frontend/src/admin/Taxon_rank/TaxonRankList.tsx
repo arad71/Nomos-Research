@@ -10,7 +10,8 @@ import {
   BooleanField,
 } from 'react-admin';
 import RankAbbreviation from './RankAbbreviation';
-import { IfCanAccess, List } from '@react-admin/ra-rbac';
+import { List } from '@react-admin/ra-rbac';
+import { CanAccess as IfCanAccess } from 'react-admin';
 import {
   DefaultPagination,
   selectableFilters,

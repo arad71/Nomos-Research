@@ -1,26 +1,40 @@
 import React, { FC } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { TopToolbar } from 'react-admin';
+import { useNavigate } from 'react-router-dom';
+import {
+  TopToolbar,
+  useCreatePath,
+  useRecordContext,
+  useResourceContext,
+} from 'react-admin';
 import { Button } from '@mui/material';
 import CreateIcon from '@mui/icons-material/Create';
-import { IfCanAccess } from '@react-admin/ra-rbac';
+import { CanAccess as IfCanAccess } from 'react-admin';
 
-const PostShowActions: FC = ({ ...props }) => {
+interface PostShowActionsProps {
+  resource?: string;
+}
+
+const PostShowActions: FC<PostShowActionsProps> = ({ ...props }) => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const viewSwitch = () => {
-    const path = location.pathname;
-    return path.replace('/show', '');
+  const createPath = useCreatePath();
+  const record = useRecordContext(props);
+  const resource = useResourceContext(props);
+  const routeChange = () => {
+    if (!resource || record?.id == null) {
+      return;
+    }
+    navigate(createPath({ resource, id: record.id, type: 'edit' }));
   };
-  const routeChange = () => navigate(`${viewSwitch()}`);
+
   return (
     <TopToolbar>
       {/*@ts-ignore*/}
-      <IfCanAccess resource={props.resource} action="edit">
+      <IfCanAccess resource={resource} action="edit">
         <Button
           style={{ fontSize: '0.8125rem', padding: '0px' }}
           color="primary"
           onClick={routeChange}
+          disabled={!resource || record?.id == null}
           startIcon={<CreateIcon />}
         >
           EDIT

@@ -32,7 +32,7 @@ import { EditableDatagrid } from '@react-admin/ra-editable-datagrid';
 import React, { FC, PropsWithChildren } from 'react';
 import NaturalisedStatus from '../Taxon_names/NaturalisedStatus';
 import PublicationStatus from '../Taxon_names/PublicationStatus';
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from 'lib/makeStyles';
 import AuthorType from '../Citations/AuthorType';
 import LanguageType from '../Vernaculars/LanguageType';
 import { Box, Typography } from '@mui/material';
@@ -113,7 +113,6 @@ export const TaxonNameCodeCreateEdit: FC = ({
       <SimpleForm
         {...props}
         toolbar={<EditToolbar resource="taxon_names" />}
-        warnWhenUnsavedChanges
       >
         <Box className={classes.fullWidth}>
           <Box className={classes.showPad}>
@@ -218,7 +217,6 @@ export const TaxonNameCodeCreateEdit: FC = ({
                     />
                   }
                   editForm={<ConscodesTaxonRowForm {...props} />}
-                  hasCreate
                   noDelete={
                     !canAccess({
                       permissions,

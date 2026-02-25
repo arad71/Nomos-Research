@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Edit } from '@react-admin/ra-rbac';
+import { Edit } from 'react-admin';
 import Aside from '../shared/Aside';
 import PostEditActions from '../shared/PostEditActions';
 import { TaxonNameCreateEdit } from './TaxonNameCreateEdit';
@@ -9,7 +9,7 @@ import { FormattedScientificNameWithStatus } from './FormattedScientificNameWith
 export const TaxonNameEdit: FC = (props) => {
   return (
     <Edit
-      actions={<PostEditActions />}
+      actions={<PostEditActions resource="taxon_names" />}
       aside={<Aside />}
       title={<FormattedScientificNameWithStatus />}
       mutationMode="pessimistic"

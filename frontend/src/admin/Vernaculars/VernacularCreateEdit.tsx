@@ -10,7 +10,7 @@ import {
 import React, { FC } from 'react';
 import LanguageType from './LanguageType';
 import { Box, Typography } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from 'lib/makeStyles';
 import { GlobalTheme } from '../../GlobalTheme';
 import EditToolbar from '../shared/EditToolbar';
 import ScientificNameReference from '../Taxon_names/ScientificNameReference';
@@ -31,7 +31,6 @@ export const VernacularCreateEdit: FC = (props) => {
     <SimpleForm
       {...props}
       toolbar={<EditToolbar resource="vernaculars" />}
-      warnWhenUnsavedChanges
     >
       <Box>
         <Typography variant="h5" className={globalClasses.bold} gutterBottom>
@@ -57,7 +56,7 @@ export const VernacularCreateEdit: FC = (props) => {
           source="sort_order"
           validate={minValue(0)}
           min={0}
-          initialValue={0}
+          defaultValue={0}
         />
         <BooleanInput
           label="preferred"

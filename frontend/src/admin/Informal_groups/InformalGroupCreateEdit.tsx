@@ -2,7 +2,7 @@ import { ReferenceInput, required, SelectInput, SimpleForm } from 'react-admin';
 import React, { FC } from 'react';
 import { GlobalTheme } from '../../GlobalTheme';
 import { Box, Typography } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from 'lib/makeStyles';
 import EditToolbar from '../shared/EditToolbar';
 import ScientificNameReference from '../Taxon_names/ScientificNameReference';
 
@@ -22,7 +22,6 @@ export const InformalGroupCreateEdit: FC = (props) => {
     <SimpleForm
       {...props}
       toolbar={<EditToolbar resource="informal_groups" />}
-      warnWhenUnsavedChanges
     >
       <Box>
         <Typography variant="h5" className={globalClasses.bold} gutterBottom>

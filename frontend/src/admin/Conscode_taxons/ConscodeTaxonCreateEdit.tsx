@@ -21,7 +21,7 @@ import {
 import React, { FC } from 'react';
 import { GlobalTheme } from '../../GlobalTheme';
 import { Box, Typography } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from 'lib/makeStyles';
 import EditToolbar from '../shared/EditToolbar';
 import ScientificNameReference from '../Taxon_names/ScientificNameReference';
 import { ConservationShort } from '../Conservation_codes';
@@ -73,7 +73,6 @@ export const ConscodeTaxonCreateEdit: FC = (props) => {
       <SimpleForm
         {...props}
         toolbar={<EditToolbar resource="conscode_taxons" />}
-        warnWhenUnsavedChanges
       >
         <Box className={classes.mainGridLong}>
           <Typography variant="h5" className={globalClasses.bold} gutterBottom>

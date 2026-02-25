@@ -11,7 +11,8 @@ import {
   TextField,
 } from 'react-admin';
 import AuthorType from './AuthorType';
-import { IfCanAccess, List } from '@react-admin/ra-rbac';
+import { List } from '@react-admin/ra-rbac';
+import { CanAccess as IfCanAccess } from 'react-admin';
 import {
   DefaultPagination,
   selectableFilters,

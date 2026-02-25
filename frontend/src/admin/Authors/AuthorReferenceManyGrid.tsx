@@ -31,8 +31,8 @@ export const AuthorReferenceManyGrid = (props: {
       reference="citations"
       target={props.target}
       sort={{
-        field: 'author_type,author_order',
-        order: 'ASC,ASC',
+        field: 'author_order',
+        order: 'ASC',
       }}
       {...props.props}
     >

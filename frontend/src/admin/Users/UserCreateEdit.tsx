@@ -11,7 +11,7 @@ import {
 import React, { FC } from 'react';
 import { Box, Typography } from '@mui/material';
 import { GlobalTheme } from '../../GlobalTheme';
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from 'lib/makeStyles';
 import { AUTH_PROVIDER } from '../../config';
 import EditToolbar from '../shared/EditToolbar';
 
@@ -35,7 +35,6 @@ export const UserCreateEdit: FC = (props) => {
     <SimpleForm
       {...props}
       toolbar={<EditToolbar resource="users" />}
-      warnWhenUnsavedChanges
     >
       <Box className={classes.mainGrid}>
         <Box className={classes.twoColSpan}>

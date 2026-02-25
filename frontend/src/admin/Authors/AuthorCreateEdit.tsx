@@ -3,7 +3,7 @@ import { required, SimpleForm, TextInput } from 'react-admin';
 import React, { FC } from 'react';
 import { Box, Typography } from '@mui/material';
 import { GlobalTheme } from '../../GlobalTheme';
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from 'lib/makeStyles';
 import EditToolbar from '../shared/EditToolbar';
 
 const useStyles = makeStyles((theme: any) => ({
@@ -27,7 +27,6 @@ export const AuthorCreateEdit: FC = (props) => {
     <SimpleForm
       {...props}
       toolbar={<EditToolbar resource="authors" />}
-      warnWhenUnsavedChanges
     >
       <Box>
         <Typography variant="h5" className={globalClasses.bold} gutterBottom>

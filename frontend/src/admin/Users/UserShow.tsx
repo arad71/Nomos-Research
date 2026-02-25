@@ -11,7 +11,7 @@ import { Show } from 'react-admin';
 import Aside from '../shared/Aside';
 import { Box, Typography } from '@mui/material';
 import { GlobalTheme } from '../../GlobalTheme';
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from 'lib/makeStyles';
 import { FullName } from './FullName';
 
 const useStyles = makeStyles((theme: any) => ({

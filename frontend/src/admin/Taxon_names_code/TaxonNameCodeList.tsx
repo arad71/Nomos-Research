@@ -18,7 +18,8 @@ import {
 } from 'react-admin';
 import NaturalisedStatus from '../Taxon_names/NaturalisedStatus';
 import PublicationStatus from '../Taxon_names/PublicationStatus';
-import { List, IfCanAccess } from '@react-admin/ra-rbac';
+import { List } from '@react-admin/ra-rbac';
+import { CanAccess as IfCanAccess } from 'react-admin';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 

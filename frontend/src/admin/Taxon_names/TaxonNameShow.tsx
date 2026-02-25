@@ -17,7 +17,7 @@ import { Show } from 'react-admin';
 import Aside from '../shared/Aside';
 import NaturalisedStatus from './NaturalisedStatus';
 import PublicationStatus from './PublicationStatus';
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from 'lib/makeStyles';
 import { Box, Typography } from '@mui/material';
 import { GlobalTheme } from '../../GlobalTheme';
 import { CrossReferenceManyGrid } from '../Cross_references';
@@ -69,14 +69,14 @@ export const TaxonNameShow: FC = (props) => {
 
   return (
     <Show
-      actions={<PostShowActions />}
+      actions={<PostShowActions resource="taxon_names" />}
       title={<FormattedScientificNameWithStatus truncate />}
       aside={<Aside />}
       {...props}
     >
       <>
         <NamePageSummary />
-        <TabbedShowLayout>
+        <TabbedShowLayout syncWithLocation={false}>
           <Tab label="Name" className={globalClasses.bold}>
             <Box className={globalClasses.sectionMargin}>
               <Typography
@@ -238,7 +238,7 @@ export const TaxonNameShow: FC = (props) => {
               />
             </Box>
           </Tab>
-          <Tab label="Details" path="details" className={globalClasses.bold}>
+          <Tab label="Details" className={globalClasses.bold}>
             <Box className={globalClasses.sectionMargin}>
               <Typography
                 variant="h5"
@@ -329,11 +329,7 @@ export const TaxonNameShow: FC = (props) => {
               />
             </Box>
           </Tab>
-          <Tab
-            label="Hierarchy"
-            path="hierarchy"
-            className={globalClasses.bold}
-          >
+          <Tab label="Hierarchy" className={globalClasses.bold}>
             <Box className={globalClasses.sectionMargin}>
               <Typography
                 variant="h5"
@@ -345,11 +341,7 @@ export const TaxonNameShow: FC = (props) => {
               <HierarchyGrid />
             </Box>
           </Tab>
-          <Tab
-            label="Related names"
-            path="related_names"
-            className={globalClasses.bold}
-          >
+          <Tab label="Related names" className={globalClasses.bold}>
             <Box className={globalClasses.sectionMargin}>
               <Typography
                 variant="h5"
@@ -378,7 +370,7 @@ export const TaxonNameShow: FC = (props) => {
               </Labeled>
             </Box>
           </Tab>
-          <Tab label="Notes" path="notes" className={globalClasses.bold}>
+          <Tab label="Notes" className={globalClasses.bold}>
             <Box className={globalClasses.sectionMargin}>
               <Typography
                 variant="h5"
@@ -392,11 +384,7 @@ export const TaxonNameShow: FC = (props) => {
               </Labeled>
             </Box>
           </Tab>
-          <Tab
-            label="Name formats"
-            path="formats"
-            className={globalClasses.bold}
-          >
+          <Tab label="Name formats" className={globalClasses.bold}>
             {/*Sub genera name*/}
             <Box className={globalClasses.sectionMargin}>
               <Typography
