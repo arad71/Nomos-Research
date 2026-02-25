@@ -1,26 +1,27 @@
+# syntax=docker/dockerfile:1.7
+
 # --- Stage 1: Build ---
 FROM node:lts-bookworm AS builder
 
 WORKDIR /app
 
-# Copy only the dependency files first
+# Copy only the dependency files first for better layer caching
 COPY package.json package-lock.json ./
 
-# using Docker Secrets to handle the token securely during the build process
+# Use Docker BuildKit secrets to read NPM token securely
 RUN --mount=type=secret,id=NPM_TOKEN \
     if [ -f /run/secrets/NPM_TOKEN ]; then \
-        # 1. Get the token from the secret mount
-        ACTUAL_TOKEN=$(cat /run/secrets/NPM_TOKEN); \
-        # 2. Set the registry for the @react-admin scope
+        ACTUAL_TOKEN="$(cat /run/secrets/NPM_TOKEN)"; \
         echo "@react-admin:registry=https://npm.react-admin-ee.marmelab.com" > .npmrc; \
-        # 3. Use the exact format npm expects (Note the :_authToken= part)
-        echo "//npm.react-admin-ee.marmelab.com/_authToken=${ACTUAL_TOKEN}" >> .npmrc; \
+        echo "//npm.react-admin-ee.marmelab.com/:_authToken=${ACTUAL_TOKEN}" >> .npmrc; \
+        echo "//npm.react-admin-ee.marmelab.com/:always-auth=true" >> .npmrc; \
     else \
         echo "Error: NPM_TOKEN secret not found in /run/secrets/"; exit 1; \
     fi && \
     npm ci --prefer-offline --no-audit && \
     rm .npmrc
 
+# Now copy the rest of your app and build
 COPY . .
 RUN npm run build
 
@@ -28,10 +29,13 @@ RUN npm run build
 FROM node:lts-bookworm-slim
 
 WORKDIR /app
-# Only copy the final compiled assets, NOT the node_modules or the token
+
+# Only copy the final compiled assets, NOT node_modules or the token
 COPY --from=builder /app/dist ./dist
-# If you use a custom runner/script
 COPY --from=builder /app/run.sh ./run.sh
+
+# Ensure the script is executable
+RUN chmod +x /app/run.sh
 
 ENV NODE_ENV=production
 EXPOSE 8000
