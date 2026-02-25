@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { WithPermissions } from '@react-admin/ra-rbac';
+import { IfCanAccess } from '@react-admin/ra-rbac';
 
 import { TopToolbar, CreateButton } from 'react-admin';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 
 const useStyles = makeStyles({
   text: {
@@ -25,12 +25,12 @@ export const UserListActions = (props: any) => {
   const classes = useStyles();
   return (
     <TopToolbar className={classes.text}>
-      <WithPermissions action="create" resource="users">
+      <IfCanAccess action="create" resource="users">
         <CreateButton
           label="Add a new user"
           className={classes.create + ' ' + classes.buttons}
         />
-      </WithPermissions>
+      </IfCanAccess>
     </TopToolbar>
   );
 };

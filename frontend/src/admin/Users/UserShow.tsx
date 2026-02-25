@@ -7,14 +7,14 @@ import {
   TextField,
   Labeled,
 } from 'react-admin';
-import { Show } from '@react-admin/ra-rbac';
+import { Show } from 'react-admin';
 import Aside from '../shared/Aside';
-import { Box, Typography } from '@material-ui/core';
+import { Box, Typography } from '@mui/material';
 import { GlobalTheme } from '../../GlobalTheme';
-import { makeStyles } from '@material-ui/core';
+import makeStyles from '@mui/styles/makeStyles';
 import { FullName } from './FullName';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: any) => ({
   showPad: {
     padding: '20px 16px 8px 16px',
   },

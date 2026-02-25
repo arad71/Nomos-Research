@@ -8,11 +8,11 @@ import {
   RichTextField,
   TextField,
 } from 'react-admin';
-import { List, WithPermissions } from '@react-admin/ra-rbac';
+import { List, IfCanAccess } from '@react-admin/ra-rbac';
 import { HierarchyFilters } from './HierarchyFilters';
 import { DefaultPagination, useCanBulkDelete } from '../shared';
-import DeleteIcon from '@material-ui/icons/Delete';
-import VisibilityIcon from '@material-ui/icons/Visibility';
+import DeleteIcon from '@mui/icons-material/Delete';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 export const HierarchyList: FC = (props) => (
   <List
@@ -20,10 +20,9 @@ export const HierarchyList: FC = (props) => (
     sort={{ field: 'path', order: 'ASC' }}
     perPage={100}
     pagination={<DefaultPagination />}
-    bulkActionButtons={useCanBulkDelete()}
     filters={HierarchyFilters()}
   >
-    <Datagrid rowClick="show">
+    <Datagrid bulkActionButtons={useCanBulkDelete()} rowClick="show">
       <ReferenceField
         source="taxon_name_id"
         reference="taxon_names"
@@ -53,16 +52,16 @@ export const HierarchyList: FC = (props) => (
         <TextField source="full_name" />
       </ReferenceField>
       <DateField source="updated_on" />
-      <WithPermissions resource="hierarchies" action="viewdeleted">
+      <IfCanAccess resource="hierarchies" action="viewdeleted">
         <BooleanField
           source="deleted"
           TrueIcon={DeleteIcon}
           FalseIcon={VisibilityIcon}
         />
-      </WithPermissions>
-      <WithPermissions resource="hierarchies" action="edit">
+      </IfCanAccess>
+      <IfCanAccess resource="hierarchies" action="edit">
         <EditButton />
-      </WithPermissions>
+      </IfCanAccess>
     </Datagrid>
   </List>
 );

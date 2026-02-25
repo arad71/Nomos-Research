@@ -10,23 +10,26 @@ const ScientificNameReference = (props: {
   filter?: object;
   helperText?: string;
   fullWidth?: boolean;
-}) => (
-  <ReferenceInput
-    reference="taxon_names"
-    filterToQuery={(searchText: string) => ({
-      scientific_name__ilike: `%${searchText}%`,
-    })}
-    {...props}
-  >
-    <AutocompleteInput
-      optionText="scientific_name"
-      validate={props.validate}
-      resettable
-      filter={props.filter}
-      {...props}
-    />
-  </ReferenceInput>
-);
+}) => {
+  const { validate, ...referenceInputProps } = props;
+
+  return (
+    <ReferenceInput
+      reference="taxon_names"
+      filterToQuery={(searchText: string) => ({
+        scientific_name__ilike: `%${searchText}%`,
+      })}
+      {...referenceInputProps}
+    >
+      <AutocompleteInput
+        optionText="scientific_name"
+        validate={validate}
+        resettable
+        {...referenceInputProps}
+      />
+    </ReferenceInput>
+  );
+};
 
 ScientificNameReference.defaultProps = {
   perPage: 100,

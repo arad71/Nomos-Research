@@ -9,13 +9,13 @@ import {
 } from 'react-admin';
 
 import React, { FC } from 'react';
-import { Box, Typography } from '@material-ui/core';
+import { Box, Typography } from '@mui/material';
 import { GlobalTheme } from '../../GlobalTheme';
-import { makeStyles } from '@material-ui/core';
+import makeStyles from '@mui/styles/makeStyles';
 import { AUTH_PROVIDER } from '../../config';
 import EditToolbar from '../shared/EditToolbar';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: any) => ({
   mainGrid: {
     display: 'grid',
     gridTemplateColumns: '50% 50%',

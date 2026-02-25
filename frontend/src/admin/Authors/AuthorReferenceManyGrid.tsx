@@ -7,7 +7,7 @@ import {
   SelectField,
   TextField,
 } from 'react-admin';
-import { Box, Typography } from '@material-ui/core';
+import { Box, Typography } from '@mui/material';
 import AuthorType from '../Citations/AuthorType';
 import { GlobalTheme } from '../../GlobalTheme';
 
@@ -36,7 +36,11 @@ export const AuthorReferenceManyGrid = (props: {
       }}
       {...props.props}
     >
-      <Datagrid empty={<Empty />} className={globalClasses.equalColumnWidth}>
+      <Datagrid
+        bulkActionButtons={false}
+        empty={<Empty />}
+        className={globalClasses.equalColumnWidth}
+      >
         <ReferenceField
           source={props.source}
           reference="authors"

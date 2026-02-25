@@ -7,10 +7,10 @@ export const AuthorAutocomplete = () => (
     reference="authors"
     sort={{ field: 'abbreviation', direction: 'ASC' }}
     perPage={200}
-    validate={required()}
   >
     <AutocompleteInput
       optionText="abbreviation"
+      validate={required()}
       shouldRenderSuggestions={(val: string) => {
         return val.trim().length > 1;
       }}

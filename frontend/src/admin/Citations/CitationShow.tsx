@@ -7,15 +7,15 @@ import {
   SelectField,
   TextField,
 } from 'react-admin';
-import { Show } from '@react-admin/ra-rbac';
-import { makeStyles } from '@material-ui/core/styles';
+import { Show } from 'react-admin';
+import makeStyles from '@mui/styles/makeStyles';
 import AuthorType from './AuthorType';
 import Aside from '../shared/Aside';
 import { GlobalTheme } from '../../GlobalTheme';
-import { Box, Typography } from '@material-ui/core';
+import { Box, Typography } from '@mui/material';
 import ScientificNameReference from '../Taxon_names/ScientificNameReference';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: any) => ({
   showPad: {
     padding: '8px 16px',
   },

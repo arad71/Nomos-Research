@@ -4,13 +4,8 @@ import { List } from '@react-admin/ra-rbac';
 import { DefaultPagination } from '../shared';
 
 export const RolesList: FC = (props) => (
-  <List
-    {...props}
-    perPage={100}
-    bulkActionButtons={false}
-    pagination={<DefaultPagination />}
-  >
-    <Datagrid rowClick="show">
+  <List {...props} perPage={100} pagination={<DefaultPagination />}>
+    <Datagrid bulkActionButtons={false} rowClick="show">
       <TextField source="name" />
       <TextField source="description" />
     </Datagrid>

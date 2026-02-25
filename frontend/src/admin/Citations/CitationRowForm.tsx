@@ -1,9 +1,12 @@
-import { RowForm, RowFormProps } from '@react-admin/ra-editable-datagrid';
+import {
+  InlineRowForm as RowForm,
+  InlineRowFormProps as RowFormProps,
+} from '../shared/InlineRowForm';
 import { AuthorAutocomplete } from '../Authors';
 import { NumberInput, required, minValue, SelectInput } from 'react-admin';
 import AuthorType from './AuthorType';
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 
 const useStyles = makeStyles({
   authTypeWidth: {

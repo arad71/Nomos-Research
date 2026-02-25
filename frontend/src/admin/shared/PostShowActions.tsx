@@ -1,21 +1,22 @@
 import React, { FC } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { TopToolbar } from 'react-admin';
-import { Button } from '@material-ui/core';
-import CreateIcon from '@material-ui/icons/Create';
-import { WithPermissions } from '@react-admin/ra-rbac';
+import { Button } from '@mui/material';
+import CreateIcon from '@mui/icons-material/Create';
+import { IfCanAccess } from '@react-admin/ra-rbac';
 
 const PostShowActions: FC = ({ ...props }) => {
-  let history = useHistory();
+  const navigate = useNavigate();
+  const location = useLocation();
   const viewSwitch = () => {
-    let path = history.location.pathname;
+    const path = location.pathname;
     return path.replace('/show', '');
   };
-  const routeChange = () => history.push(`${viewSwitch()}`);
+  const routeChange = () => navigate(`${viewSwitch()}`);
   return (
     <TopToolbar>
       {/*@ts-ignore*/}
-      <WithPermissions resource={props.resource} action="edit">
+      <IfCanAccess resource={props.resource} action="edit">
         <Button
           style={{ fontSize: '0.8125rem', padding: '0px' }}
           color="primary"
@@ -24,7 +25,7 @@ const PostShowActions: FC = ({ ...props }) => {
         >
           EDIT
         </Button>
-      </WithPermissions>
+      </IfCanAccess>
     </TopToolbar>
   );
 };

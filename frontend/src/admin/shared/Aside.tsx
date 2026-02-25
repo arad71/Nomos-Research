@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Card, Typography } from '@material-ui/core';
+import { Box, Card, Typography } from '@mui/material';
 import {
   DateField,
   ReferenceField,
@@ -14,13 +14,13 @@ import TaxonNameConscode from '../Taxon_names/TaxonNameConscode';
 import TaxonHierarchy from '../Taxon_names/TaxonHierarchy';
 import { useLocation } from 'react-router-dom';
 import { GlobalTheme } from '../../GlobalTheme';
-import { makeStyles } from '@material-ui/core/styles';
-import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
-import grey from '@material-ui/core/colors/grey';
-import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
-import DeleteIcon from '@material-ui/icons/Delete';
-import { WithPermissions } from '@react-admin/ra-rbac';
-const useStyles = makeStyles((theme) => ({
+import makeStyles from '@mui/styles/makeStyles';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import grey from '@mui/material/colors/grey';
+import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { IfCanAccess } from '@react-admin/ra-rbac';
+const useStyles = makeStyles((theme: any) => ({
   mainGrid: {
     display: 'grid',
     gridTemplateColumns: '50% 50%',
@@ -95,9 +95,9 @@ const Aside = (props: any) => {
                 History
               </Typography>
             </Box>
-            <WithPermissions resource={resource} action="viewdeleted">
+            <IfCanAccess resource={resource} action="viewdeleted">
               <Box>{deleted}</Box>
-            </WithPermissions>
+            </IfCanAccess>
           </Box>
           <Box className={classes.mainGrid}>
             <Box className={classes.panelSection}>

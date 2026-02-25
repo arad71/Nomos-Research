@@ -1,7 +1,7 @@
 import { useRecordContext } from 'react-admin';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import React from 'react';
-import { Tooltip } from '@material-ui/core';
+import { Tooltip } from '@mui/material';
 
 export const TaxonNameStatus = () => {
   const record = useRecordContext();

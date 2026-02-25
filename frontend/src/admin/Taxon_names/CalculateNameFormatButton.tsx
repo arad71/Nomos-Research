@@ -8,7 +8,7 @@ import {
   LinearProgress,
   Button,
 } from 'react-admin';
-import FunctionsIcon from '@material-ui/icons/Functions';
+import FunctionsIcon from '@mui/icons-material/Functions';
 
 const CalculateNameFormatButton = () => {
   const dispatch = useDispatch();

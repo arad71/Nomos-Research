@@ -4,6 +4,7 @@ import {
   ReferenceManyField,
   SelectField,
   TextField,
+  usePermissions,
 } from 'react-admin';
 import { EmbeddedCrossReferenceShow } from './EmbeddedCrossReferenceShow';
 
@@ -12,7 +13,7 @@ import { FormattedScientificNameWithStatus } from '../Taxon_names';
 import { GlobalTheme } from '../../GlobalTheme';
 import { CrossReferenceRowForm } from './CrossReferenceRowForm';
 import { EditableDatagrid } from '@react-admin/ra-editable-datagrid';
-import { canAccess, usePermissions } from '@react-admin/ra-rbac';
+import { canAccess } from '@react-admin/ra-rbac';
 
 export const EditableCrossReferenceManyGrid = (props: {
   source: string;
@@ -23,8 +24,8 @@ export const EditableCrossReferenceManyGrid = (props: {
 }) => {
   const globalClasses = GlobalTheme();
   const createInitialValues = props.createInitialValues;
-  const { loading, permissions } = usePermissions();
-  if (loading) return null;
+  const { isLoading, permissions } = usePermissions();
+  if (isLoading) return null;
 
   return (
     <ReferenceManyField
@@ -33,6 +34,8 @@ export const EditableCrossReferenceManyGrid = (props: {
       {...props.props}
     >
       <EditableDatagrid
+        mutationMode="pessimistic"
+        bulkActionButtons={false}
         createForm={
           <CrossReferenceRowForm
             initialValues={createInitialValues}

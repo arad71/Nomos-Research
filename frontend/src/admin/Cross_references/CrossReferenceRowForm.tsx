@@ -1,8 +1,8 @@
-import { RowForm } from '@react-admin/ra-editable-datagrid';
+import { InlineRowForm as RowForm } from '../shared/InlineRowForm';
 import { required, SelectInput, TextInput } from 'react-admin';
 import React from 'react';
 import CrossRefType from './CrossRefType';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import ScientificNameReference from '../Taxon_names/ScientificNameReference';
 
 const useStyles = makeStyles({

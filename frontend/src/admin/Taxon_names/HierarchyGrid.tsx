@@ -6,12 +6,11 @@ import {
   Pagination,
   RichTextField,
   TextField,
-  useQuery,
+  useGetList,
   useRecordContext,
 } from 'react-admin';
 import { GlobalTheme } from '../../GlobalTheme';
 import { hierarchyRowClick } from './HierarchyRowClick';
-import _ from 'lodash';
 export interface HierarchyRecord {
   id: number;
   taxon_name_id: number;
@@ -34,34 +33,62 @@ export function HierarchyGrid(props: PropsWithChildren<{}>) {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(100);
   const [sort, setSort] = useState({ field: 'path', order: 'ASC' });
-  const { data, total, loading, error } = useQuery({
-    type: 'getList',
-    resource: 'hierarchies',
-    payload: {
-      pagination: { page, perPage },
-      sort,
-      filter: hierarchyFilter,
-    },
+  const {
+    data = [],
+    total = 0,
+    isLoading,
+    error,
+  } = useGetList('hierarchies', {
+    pagination: { page, perPage },
+    sort,
+    filter: hierarchyFilter,
   });
   const rowStyle = (record: HierarchyRecord) => ({
     backgroundColor: record.taxon_name_id == recordId ? 'lightgrey' : 'inherit',
   });
-  if (loading) {
+  const formatError = (value: any): string => {
+    if (!value) return 'Unknown error';
+    if (typeof value === 'string') return value;
+    if (Array.isArray(value)) {
+      return value
+        .map((item) => {
+          if (typeof item === 'string') return item;
+          if (
+            item &&
+            typeof item === 'object' &&
+            typeof item.msg === 'string'
+          ) {
+            return item.msg;
+          }
+          return JSON.stringify(item);
+        })
+        .join('\n');
+    }
+    if (value && typeof value === 'object') {
+      if (typeof value.message === 'string') return value.message;
+      if (Array.isArray(value.message)) return formatError(value.message);
+      if (Array.isArray(value.detail)) return formatError(value.detail);
+      if (typeof value.msg === 'string') return value.msg;
+      return JSON.stringify(value);
+    }
+    return String(value);
+  };
+  if (isLoading) {
     return <Loading />;
   }
   if (error) {
-    return <p>ERROR: {error}</p>;
+    return <p>ERROR: {formatError(error)}</p>;
   }
   return (
     <Fragment>
       <Datagrid
+        bulkActionButtons={false}
         rowClick={hierarchyRowClick}
         rowStyle={rowStyle}
         className={globalClasses.equalColumnWidth}
-        data={_.keyBy(data, 'id')}
-        ids={data.map(({ id }: { id: number }) => id)}
-        currentSort={sort}
-        setSort={(field: string, order: string) => setSort({ field, order })}
+        data={data}
+        sort={sort}
+        setSort={(nextSort: any) => setSort(nextSort)}
       >
         <TextField
           source="rank_name"

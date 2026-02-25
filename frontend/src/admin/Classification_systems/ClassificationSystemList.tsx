@@ -12,7 +12,7 @@ import {
   CreateButton,
 } from 'react-admin';
 import ClassificationType from './ClassificationType';
-import { List, WithPermissions } from '@react-admin/ra-rbac';
+import { List, IfCanAccess } from '@react-admin/ra-rbac';
 import { DefaultPagination, useCanBulkDelete } from '../shared';
 import {
   ListProps,
@@ -21,8 +21,8 @@ import {
 } from '@react-admin/ra-preferences';
 import ResetPreferenceButton from '../shared/ResetPreferenceButton';
 import { ClassificationSystemFilters } from './ClassificationSystemFilters';
-import DeleteIcon from '@material-ui/icons/Delete';
-import VisibilityIcon from '@material-ui/icons/Visibility';
+import DeleteIcon from '@mui/icons-material/Delete';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import BatchExportButton from '../shared/BatchExportButton';
 
 const postListColumns = {
@@ -72,12 +72,12 @@ const Actions = () => (
       preferenceName={CLASS_SYSTEM_PREFERENCE}
       defaultValue={Array.from(includeColumns)}
     />
-    <WithPermissions resource="classification_systems" action="create">
+    <IfCanAccess resource="classification_systems" action="create">
       <CreateButton />
-    </WithPermissions>
-    <WithPermissions resource="classification_systems" action="export">
+    </IfCanAccess>
+    <IfCanAccess resource="classification_systems" action="export">
       <BatchExportButton />
-    </WithPermissions>
+    </IfCanAccess>
   </TopToolbar>
 );
 
@@ -96,20 +96,19 @@ export const ClassificationSystemList = (props: ListProps) => {
       perPage={100}
       filters={ClassificationSystemFilters()}
       pagination={<DefaultPagination />}
-      bulkActionButtons={useCanBulkDelete()}
     >
-      <Datagrid rowClick="show">
+      <Datagrid bulkActionButtons={useCanBulkDelete()} rowClick="show">
         {columns}
-        <WithPermissions resource="classification_systems" action="viewdeleted">
+        <IfCanAccess resource="classification_systems" action="viewdeleted">
           <BooleanField
             source="deleted"
             TrueIcon={DeleteIcon}
             FalseIcon={VisibilityIcon}
           />
-        </WithPermissions>
-        <WithPermissions action="edit" resource="classification_systems">
+        </IfCanAccess>
+        <IfCanAccess action="edit" resource="classification_systems">
           <EditButton />
-        </WithPermissions>
+        </IfCanAccess>
       </Datagrid>
     </List>
   );

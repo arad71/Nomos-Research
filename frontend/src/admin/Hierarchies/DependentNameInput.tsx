@@ -32,7 +32,6 @@ export const dependentNameInput = ({
       source="parent_nid"
       reference="hierarchies/parents"
       label="Parent name"
-      validate={[required()]}
       filter={filter}
       sort={{
         field: 'taxon_name___canonical_name,taxon_name___author',
@@ -46,6 +45,7 @@ export const dependentNameInput = ({
         disabled={!enabled}
         resettable
         fullWidth
+        validate={[required()]}
         /* eslint-disable-next-line max-len */
         helperText="Please select a name that will act as a parent of this name. Requires classification system and taxon name to be set."
         {...rest}

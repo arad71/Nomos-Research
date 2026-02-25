@@ -1,10 +1,10 @@
 // in src/Dashboard.js
 import * as React from 'react';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import { makeStyles } from '@material-ui/core/styles';
-import { Typography, Button } from '@material-ui/core';
-import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import makeStyles from '@mui/styles/makeStyles';
+import { Typography, Button } from '@mui/material';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import CardWithIcon from './CardWithIcon';
 import { usePermissions } from 'react-admin';
 
@@ -41,20 +41,26 @@ const useStyles = makeStyles(() => ({
 }));
 
 const Dashboard = () => {
-  const { loaded, permissions } = usePermissions();
+  const { isLoading } = usePermissions();
   const classes = useStyles();
-  return loaded ? (
+  const roles = (localStorage.getItem('scopes') || '')
+    .split(',')
+    .map((role) => role.trim())
+    .filter(Boolean);
+  const hasRole = (role: string) => roles.includes(role);
+
+  return !isLoading ? (
     <div>
       <Card className={classes.card}>
         <CardContent>
           <Typography variant="h4" className={classes.cardtitle}>
             Welcome to Nomos taxonomic names register
           </Typography>
-          {permissions?.roles.includes('SUPER_ADMIN') ||
-          permissions?.roles.includes('APPLICATION_SUPPORT') ||
-          permissions?.roles.includes('MANAGER') ||
-          permissions?.roles.includes('OFFICER') ||
-          permissions?.roles.includes('READER') ? (
+          {hasRole('SUPER_ADMIN') ||
+          hasRole('APPLICATION_SUPPORT') ||
+          hasRole('MANAGER') ||
+          hasRole('OFFICER') ||
+          hasRole('READER') ? (
             <Button
               href="/#/taxon_names"
               variant="contained"
@@ -66,9 +72,9 @@ const Dashboard = () => {
           ) : (
             ''
           )}
-          {permissions?.roles.includes('SUPER_ADMIN') ||
-          permissions?.roles.includes('APPLICATION_SUPPORT') ||
-          permissions?.roles.includes('MANAGER') ? (
+          {hasRole('SUPER_ADMIN') ||
+          hasRole('APPLICATION_SUPPORT') ||
+          hasRole('MANAGER') ? (
             <Button
               href="/#/publications"
               variant="contained"
@@ -83,8 +89,7 @@ const Dashboard = () => {
         </CardContent>
       </Card>
       <div className={classes.wrapper}>
-        {permissions?.roles.includes('SUPER_ADMIN') ||
-        permissions?.roles.includes('APPLICATION_SUPPORT') ? (
+        {hasRole('SUPER_ADMIN') || hasRole('APPLICATION_SUPPORT') ? (
           <CardWithIcon
             icon={
               <ArrowForwardIcon
@@ -99,10 +104,10 @@ const Dashboard = () => {
         ) : (
           ''
         )}
-        {permissions?.roles.includes('SUPER_ADMIN') ||
-        permissions?.roles.includes('APPLICATION_SUPPORT') ||
-        permissions?.roles.includes('MANAGER') ||
-        permissions?.roles.includes('OFFICER') ? (
+        {hasRole('SUPER_ADMIN') ||
+        hasRole('APPLICATION_SUPPORT') ||
+        hasRole('MANAGER') ||
+        hasRole('OFFICER') ? (
           <CardWithIcon
             icon={
               <ArrowForwardIcon
@@ -117,10 +122,10 @@ const Dashboard = () => {
         ) : (
           ''
         )}
-        {permissions?.roles.includes('SUPER_ADMIN') ||
-        permissions?.roles.includes('APPLICATION_SUPPORT') ||
-        permissions?.roles.includes('MANAGER') ||
-        permissions?.roles.includes('OFFICER') ? (
+        {hasRole('SUPER_ADMIN') ||
+        hasRole('APPLICATION_SUPPORT') ||
+        hasRole('MANAGER') ||
+        hasRole('OFFICER') ? (
           <CardWithIcon
             icon={
               <ArrowForwardIcon
@@ -135,10 +140,10 @@ const Dashboard = () => {
         ) : (
           ''
         )}
-        {permissions?.roles.includes('SUPER_ADMIN') ||
-        permissions?.roles.includes('APPLICATION_SUPPORT') ||
-        permissions?.roles.includes('MANAGER') ||
-        permissions?.roles.includes('OFFICER') ? (
+        {hasRole('SUPER_ADMIN') ||
+        hasRole('APPLICATION_SUPPORT') ||
+        hasRole('MANAGER') ||
+        hasRole('OFFICER') ? (
           <CardWithIcon
             icon={
               <ArrowForwardIcon
@@ -153,10 +158,10 @@ const Dashboard = () => {
         ) : (
           ''
         )}
-        {permissions?.roles.includes('SUPER_ADMIN') ||
-        permissions?.roles.includes('APPLICATION_SUPPORT') ||
-        permissions?.roles.includes('MANAGER') ||
-        permissions?.roles.includes('OFFICER') ? (
+        {hasRole('SUPER_ADMIN') ||
+        hasRole('APPLICATION_SUPPORT') ||
+        hasRole('MANAGER') ||
+        hasRole('OFFICER') ? (
           <CardWithIcon
             icon={
               <ArrowForwardIcon

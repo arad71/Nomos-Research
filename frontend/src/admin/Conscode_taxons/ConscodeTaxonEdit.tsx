@@ -16,7 +16,7 @@ export const ConscodeTaxonEdit: FC = (props) => {
 
   return (
     <Edit
-      onSuccess={onSuccess}
+      mutationOptions={{ onSuccess }}
       mutationMode="pessimistic"
       {...props}
       aside={<Aside />}

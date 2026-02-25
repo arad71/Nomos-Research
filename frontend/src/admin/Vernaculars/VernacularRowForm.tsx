@@ -1,4 +1,7 @@
-import { RowForm, RowFormProps } from '@react-admin/ra-editable-datagrid';
+import {
+  InlineRowForm as RowForm,
+  InlineRowFormProps as RowFormProps,
+} from '../shared/InlineRowForm';
 import {
   NumberInput,
   required,
@@ -9,7 +12,7 @@ import {
 } from 'react-admin';
 import LanguageType from './LanguageType';
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 
 const useStyles = makeStyles({
   langWidth: {

@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { ReferenceField } from 'react-admin';
 import { SimpleShowLayout, TextField } from 'react-admin';
-import { Show } from '@react-admin/ra-rbac';
+import { Show } from 'react-admin';
 
 export const UserRoleShow: FC = (props) => {
   return (

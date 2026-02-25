@@ -14,7 +14,11 @@ export const ConscodeTaxonCreate: FC = (props) => {
     refresh();
   };
   return (
-    <Create onSuccess={onSuccess} mutationMode="pessimistic" {...props}>
+    <Create
+      mutationOptions={{ onSuccess }}
+      mutationMode="pessimistic"
+      {...props}
+    >
       <ConscodeTaxonCreateEdit />
     </Create>
   );

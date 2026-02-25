@@ -12,7 +12,7 @@ import {
   FilterButton,
   CreateButton,
 } from 'react-admin';
-import { List, WithPermissions } from '@react-admin/ra-rbac';
+import { List, IfCanAccess } from '@react-admin/ra-rbac';
 import {
   DefaultPagination,
   selectableFilters,
@@ -27,8 +27,8 @@ import ResetPreferenceButton from '../shared/ResetPreferenceButton';
 
 import { ConservationShort } from '../Conservation_codes/ConservationShort';
 import { ConscodeTaxonFilters } from './ConscodeTaxonFilters';
-import DeleteIcon from '@material-ui/icons/Delete';
-import VisibilityIcon from '@material-ui/icons/Visibility';
+import DeleteIcon from '@mui/icons-material/Delete';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import BatchExportButton from '../shared/BatchExportButton';
 
 const postListColumns = {
@@ -127,12 +127,12 @@ const Actions = () => (
       preferenceName={CONSCODE_TAXON_PREFERENCE}
       defaultValue={Array.from(includeColumns)}
     />
-    <WithPermissions resource="conservation_codes" action="create">
+    <IfCanAccess resource="conservation_codes" action="create">
       <CreateButton />
-    </WithPermissions>
-    <WithPermissions resource="conservation_codes" action="export">
+    </IfCanAccess>
+    <IfCanAccess resource="conservation_codes" action="export">
       <BatchExportButton />
-    </WithPermissions>
+    </IfCanAccess>
   </TopToolbar>
 );
 
@@ -150,20 +150,19 @@ export const ConscodeTaxonList: FC = (props) => {
       perPage={100}
       pagination={<DefaultPagination />}
       filters={ConscodeTaxonFilters()}
-      bulkActionButtons={useCanBulkDelete()}
     >
-      <Datagrid rowClick="show">
+      <Datagrid bulkActionButtons={useCanBulkDelete()} rowClick="show">
         {columns}
-        <WithPermissions resource="conscode_taxons" action="viewdeleted">
+        <IfCanAccess resource="conscode_taxons" action="viewdeleted">
           <BooleanField
             source="deleted"
             TrueIcon={DeleteIcon}
             FalseIcon={VisibilityIcon}
           />
-        </WithPermissions>
-        <WithPermissions resource="conscode_taxons" action="edit">
+        </IfCanAccess>
+        <IfCanAccess resource="conscode_taxons" action="edit">
           <EditButton />
-        </WithPermissions>
+        </IfCanAccess>
       </Datagrid>
     </List>
   );

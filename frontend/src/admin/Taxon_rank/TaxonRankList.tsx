@@ -10,7 +10,7 @@ import {
   BooleanField,
 } from 'react-admin';
 import RankAbbreviation from './RankAbbreviation';
-import { WithPermissions, List } from '@react-admin/ra-rbac';
+import { IfCanAccess, List } from '@react-admin/ra-rbac';
 import {
   DefaultPagination,
   selectableFilters,
@@ -24,9 +24,8 @@ export const TaxonRankList: FC = (props) => (
     perPage={100}
     pagination={<DefaultPagination />}
     filters={selectableFilters()}
-    bulkActionButtons={useCanBulkDelete()}
   >
-    <Datagrid rowClick="show">
+    <Datagrid bulkActionButtons={useCanBulkDelete()} rowClick="show">
       <ReferenceField
         source="kingdom_id"
         reference="kingdoms"
@@ -65,9 +64,9 @@ export const TaxonRankList: FC = (props) => (
       </ReferenceField>
       <DateField source="updated_on" />
 
-      <WithPermissions resource="taxon_ranks" action="edit">
+      <IfCanAccess resource="taxon_ranks" action="edit">
         <EditButton />
-      </WithPermissions>
+      </IfCanAccess>
     </Datagrid>
   </List>
 );
