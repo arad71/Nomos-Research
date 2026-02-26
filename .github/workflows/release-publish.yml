@@ -62,8 +62,8 @@ jobs:
         context: ./frontend
         file: ${{ env.FRONTEND_DOCKER_PATH}}
         push: true
-        # secrets: |
-        #      "NPM_TOKEN=${{ secrets.NPM_TOKEN }}"
+        secrets: |
+             "NPM_TOKEN=${{ secrets.NPM_TOKEN }}"
         tags: ${{ steps.meta_frontend.outputs.tags }}
         labels: ${{ steps.meta_frontend.outputs.labels }}
 
