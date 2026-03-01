@@ -50,7 +50,7 @@ jobs:
     - name: Build and push backend Docker image
       uses: docker/build-push-action@v5
       with:
-        context: .
+        context: ./backend
         file: ${{ env.BACKEND_DOCKER_PATH}}
         push: true
         tags: ${{ steps.meta_backend.outputs.tags }}
@@ -59,8 +59,21 @@ jobs:
     - name: Build and push frontend Docker image
       uses: docker/build-push-action@v5
       with:
-        context: .
+        context: ./frontend
         file: ${{ env.FRONTEND_DOCKER_PATH}}
         push: true
+        secrets: |
+             npm_token=${{ secrets.NPM_TOKEN }}
         tags: ${{ steps.meta_frontend.outputs.tags }}
         labels: ${{ steps.meta_frontend.outputs.labels }}
+
+        # # This is the critical part: pass the secret to BuildKit
+        # secrets: |
+        #     id=NPM_TOKEN,env=NPM_TOKEN
+        # # Helpful for debugging the secret mount/npm output
+        # provenance: false
+        # sbom: false
+        # env:
+        #   # Define your repo/org secret named NPM_TOKEN in GitHub settings
+        #   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        
