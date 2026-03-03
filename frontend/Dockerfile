@@ -1,45 +1,59 @@
-# syntax=docker/dockerfile:1.7
-# Use ^ BuildKit frontend to enable RUN --mount features
+# syntax=docker/dockerfile:1.6
 
-FROM node:20-alpine AS deps
+########################################
+# Stage 1: Dependencies (prod)
+########################################
+FROM node:lts AS deps
 WORKDIR /app
 
-# Copy only manifest files to leverage caching
-COPY package.json package-lock.json* pnpm-lock.yaml* yarn.lock* ./
+# Only copy manifests first for better layer caching
+COPY package.json package-lock.json ./
 
-# Use a secret at build time; do NOT use ARG/ENV for tokens
-# Create a temporary .npmrc that uses the secret, install deps, then remove it
+# Install production deps using a secret-provided token
 RUN --mount=type=secret,id=npm_token \
-    set -eux; \
+    set -eu; \
     TOKEN="$(cat /run/secrets/npm_token)"; \
-    printf "//registry.npmjs.org/:_authToken=%s\n" "$TOKEN" > .npmrc; \
-    npm ci --ignore-scripts --no-audit; \
-    rm -f .npmrc
+    printf "//registry.npmjs.org/:_authToken=%s\n" "$TOKEN" > /tmp/.npmrc; \
+    NPM_CONFIG_USERCONFIG=/tmp/.npmrc \
+    npm ci --omit=dev --no-audit --prefer-offline; \
+    rm -f /tmp/.npmrc
 
-FROM node:20-alpine AS build
+########################################
+# Stage 2: Build (if you have a frontend build step)
+########################################
+FROM node:lts AS build
 WORKDIR /app
+ENV NODE_ENV=production
 
-# Optional: define NODE_ENV with a default to remove the warning
-# If you don't actually need it, you can omit both ARG and ENV lines
-ARG NODE_ENV=production
-ENV NODE_ENV=${NODE_ENV}
-
-# Bring in node_modules from deps for deterministic builds
-COPY --from=deps /app/node_modules ./node_modules
+# Copy source and reuse prod deps from deps stage
+COPY --from=deps /app/node_modules /app/node_modules
 COPY . .
 
-RUN npm run build
+# Run your build script (optional; e.g., bundling static assets)
+# If you need private registry access during build too, mount secret here similarly
+# RUN npm run build
 
-FROM node:20-alpine AS runner
+########################################
+# Stage 3: Runtime (lean)
+########################################
+FROM node:lts AS runtime
 WORKDIR /app
+ENV NODE_ENV=production \
+    NODE_PATH=/app/node_modules \
+    PATH=/app/node_modules/.bin:$PATH
 
-ENV NODE_ENV=production
-# Copy built app only, minimize final image
-COPY --from=build /app/dist ./dist
-COPY package*.json ./
+# Copy only what's needed into final image
+COPY --from=deps /app/node_modules /app/node_modules
+COPY . .
 
-# Install only prod dependencies in final image (no token needed here)
-RUN npm ci --omit=dev --ignore-scripts --no-audit
+# If your app produces build artifacts in Stage 2, copy them instead of raw sources:
+# COPY --from=build /app/dist /app/dist
 
-EXPOSE 3000
-CMD ["node", "dist/server.js"]
+# Drop privileges (Node official image has 'node' user)
+USER node
+
+EXPOSE 8000
+EXPOSE 35729
+
+ENTRYPOINT ["/bin/bash", "/app/run.sh"]
+CMD ["start"]
