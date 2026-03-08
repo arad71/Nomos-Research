@@ -1,7 +1,7 @@
 # from datetime import date, datetime
 # from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 # from app.db.conservation_code import enums
 from app.db.conservation_code.constants import (
@@ -31,5 +31,8 @@ class Conservationcode(ConservationcodeBase, TableBase):
     conservation_code_id: int = Field(description=CONSERVATION_CODE_ID)
     deleted: bool
 
-    class Config:
-        orm_mode = True
+    # ✔ Pydantic v2 config
+    model_config = ConfigDict(
+        from_attributes=True,  # replaces orm_mode=True
+        # json_schema_extra={"description": TABLE_DESCRIPTION},
+    )

@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.db.kingdom.constants import (
     KINGDOM_DESCRIPTION,
@@ -13,8 +13,8 @@ from app.db.schemas import TableBase
 
 class KingdomBase(BaseModel):
     kingdom_name: str = Field(description=KINGDOM_NAME)
-    kingdom_desc: Optional[str] = Field(description=KINGDOM_DESCRIPTION)
-    legacy_id: Optional[int]
+    kingdom_desc: Optional[str] = Field(None, description=KINGDOM_DESCRIPTION)
+    legacy_id: Optional[int] = None
 
 
 class KingdomCreate(KingdomBase):
@@ -28,6 +28,12 @@ class KingdomEdit(KingdomBase):
 class Kingdom(KingdomBase, TableBase):
     kingdom_id: int = Field(description=KINGDOM_ID)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {"description": TABLE_DESCRIPTION}
+    # class Config:
+    #     orm_mode = True
+    #     schema_extra = {"description": TABLE_DESCRIPTION}
+
+    # ✔ Pydantic v2 config
+    model_config = ConfigDict(
+        from_attributes=True,  # replaces orm_mode=True
+        json_schema_extra={"description": TABLE_DESCRIPTION},
+    )

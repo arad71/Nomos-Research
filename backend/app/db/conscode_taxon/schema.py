@@ -2,7 +2,7 @@
 from datetime import date
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.db.conscode_taxon.constants import (
     CONSERVATION_CODE_ID,
@@ -20,11 +20,11 @@ from app.db.schemas import TableBase
 class ConscodetaxonBase(BaseModel):
     conservation_code_id: int = Field(description=CONSERVATION_CODE_ID)
     taxon_name_id: int
-    notes: Optional[str] = Field(description=NOTES)
-    effective_from: Optional[date] = Field(description=EFFECTIVE_FROM)
-    effective_to: Optional[date] = Field(description=EFFECTIVE_TO)
-    source: Optional[str]
-    isactive: Optional[bool] = Field(description=ISACTIVE)
+    notes: Optional[str] = Field(None, description=NOTES)
+    effective_from: Optional[date] = Field(None, description=EFFECTIVE_FROM)
+    effective_to: Optional[date] = Field(None, description=EFFECTIVE_TO)
+    source: Optional[str] = None
+    isactive: Optional[bool] = Field(None, description=ISACTIVE)
 
 
 class ConscodetaxonCreate(ConscodetaxonBase):
@@ -41,6 +41,12 @@ class Conscodetaxon(ConscodetaxonBase, TableBase):
     deleted: bool
     source: str
 
-    class Config:
-        orm_mode = True
-        schema_extra = {"description": TABLE_DESCRIPTION}
+    # class Config:
+    #     orm_mode = True
+    #     schema_extra = {"description": TABLE_DESCRIPTION}
+
+    # ✔ Pydantic v2 config
+    model_config = ConfigDict(
+        from_attributes=True,  # replaces orm_mode=True
+        json_schema_extra={"description": TABLE_DESCRIPTION},
+    )

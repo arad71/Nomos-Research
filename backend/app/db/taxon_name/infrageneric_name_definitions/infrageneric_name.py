@@ -30,7 +30,7 @@ class Source(BaseModel):
     See source definitions for examples.
     """
 
-    hierarchy_rank: Optional[str]
+    hierarchy_rank: Optional[str] = None
     use_searched_name: bool = False
     preference: int
     field: List[SourceField]
@@ -45,7 +45,7 @@ class StaticString(BaseModel):
     """
 
     is_static: bool
-    value: Optional[str]
+    value: Optional[str] = None
 
 
 class NameComponent(BaseModel):

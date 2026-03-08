@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.db.schemas import TableBase
 from app.db.taxon_name.schema import TaxonName
@@ -20,10 +20,10 @@ class VernacularBase(BaseModel):
     taxon_name_id: int = Field(description=TAXON_NAME_ID)
     vernacular_name: str = Field(description=VERNACULAR)
     language: enums.Language = Field(description=LANGUAGE)
-    lang_pref: Optional[bool] = Field(description=LANG_PREF)
-    preferred: Optional[bool] = Field(description=PREFERRED)
-    source: Optional[str] = Field(description=SOURCE)
-    sort_order: Optional[int]
+    lang_pref: Optional[bool] = Field(None, description=LANG_PREF)
+    preferred: Optional[bool] = Field(None, description=PREFERRED)
+    source: Optional[str] = Field(None, description=SOURCE)
+    sort_order: Optional[int] = None
 
 
 class VernacularCreate(VernacularBase):
@@ -39,6 +39,8 @@ class Vernacular(VernacularBase, TableBase):
     taxon_name: TaxonName
     deleted: bool
 
-    class Config:
-        orm_mode = True
-        schema_extra = {"description": TABLE_DESCRIPTION}
+    # ✔ Pydantic v2 config
+    model_config = ConfigDict(
+        from_attributes=True,  # replaces orm_mode=True
+        json_schema_extra={"description": TABLE_DESCRIPTION},
+    )

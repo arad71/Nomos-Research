@@ -1,65 +1,66 @@
 from datetime import datetime
 from typing import List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class ChecklistName(BaseModel):
     nomenclaturalCode: str
     scientificName: str
-    scientificNameAuthorship: Optional[str]
+    scientificNameAuthorship: Optional[str] = None
     canonicalName: str
     canonicalNameWithoutRank: str
-    uninomial: Optional[str]
-    specificEpithet: Optional[str]
-    infraspecificEpithet: Optional[str]
-    nameRepresentations: Optional[List[str]]
-    establishmentMeans: Optional[str]
+    uninomial: Optional[str] = None
+    specificEpithet: Optional[str] = None
+    infraspecificEpithet: Optional[str] = None
+    nameRepresentations: Optional[List[str]] = None
+    establishmentMeans: Optional[str] = None
     review: bool
-    reviewReason: Optional[str]
-    vernacularName: Optional[List[str]]
-    conscodeList: Optional[List[str]]
-    informalGroups: Optional[List[str]]
+    reviewReason: Optional[str] = None
+    vernacularName: Optional[List[str]] = None
+    conscodeList: Optional[List[str]] = None
+    informalGroups: Optional[List[str]] = None
     isCurrent: bool
     taxonRank: str
     validated: bool
     created: datetime
     updated: datetime
     scientificNameId: int
-    crossReferenceType: Optional[str]
-    crossReferenceId: Optional[str]
-    crossReferenceCreated: Optional[datetime]
-    crossReferenceUpdated: Optional[datetime]
-    acceptedNameUsage: Optional[str]
-    acceptedNameAuthor: Optional[str]
-    acceptedNameCurrent: Optional[bool]
-    acceptedNameValidated: Optional[bool]
-    acceptedNameCreated: Optional[datetime]
-    acceptedNameUpdated: Optional[datetime]
-    acceptedNameUsageId: Optional[int]
-    acceptedNameReview: Optional[bool]
-    acceptedNameReviewReason: Optional[str]
-    relatedNamesCount: Optional[int]
-    kingdom: Optional[str]
-    division: Optional[str]
-    phylum: Optional[str]
-    class_: Optional[str] = Field(None, alias="class")
-    subclass: Optional[str]
-    order: Optional[str]
-    suborder: Optional[str]
-    family: Optional[str]
-    subfamily: Optional[str]
-    genus: Optional[str]
-    subgenus: Optional[str]
-    section: Optional[str]
-    series: Optional[str]
-    species: Optional[str]
-    subspecies: Optional[str]
-    variety: Optional[str]
-    form: Optional[str]
+    crossReferenceType: Optional[str] = None
+    crossReferenceId: Optional[str] = None
+    crossReferenceCreated: Optional[datetime] = None
+    crossReferenceUpdated: Optional[datetime] = None
+    acceptedNameUsage: Optional[str] = None
+    acceptedNameAuthor: Optional[str] = None
+    acceptedNameCurrent: Optional[bool] = None
+    acceptedNameValidated: Optional[bool] = None
+    acceptedNameCreated: Optional[datetime] = None
+    acceptedNameUpdated: Optional[datetime] = None
+    acceptedNameUsageId: Optional[int] = None
+    acceptedNameReview: Optional[bool] = None
+    acceptedNameReviewReason: Optional[str] = None
+    relatedNamesCount: Optional[int] = None
+    kingdom: Optional[str] = None
+    division: Optional[str] = None
+    phylum: Optional[str] = None
+    class_: Optional[str] = Field(default=None, alias="class")
+    subclass: Optional[str] = None
+    order: Optional[str] = None
+    suborder: Optional[str] = None
+    family: Optional[str] = None
+    subfamily: Optional[str] = None
+    genus: Optional[str] = None
+    subgenus: Optional[str] = None
+    section: Optional[str] = None
+    series: Optional[str] = None
+    species: Optional[str] = None
+    subspecies: Optional[str] = None
+    variety: Optional[str] = None
+    form: Optional[str] = None
 
-    class Config:
-        schema_extra = {
+    # Pydantic v2: replace class Config with model_config
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "nomenclaturalCode": "Animalia",
                 "scientificName": "Dero (Aulophorus) furcatus furcatus (Müller, 1774)",
@@ -71,7 +72,7 @@ class ChecklistName(BaseModel):
                 "infraspecificEpithet": "furcatus",
                 "review": False,
                 "reviewReason": None,
-                "conscodelist": None,
+                "conscodeList": None,
                 "nameRepresentations": [
                     "Dero (Aulophorus) furcatus subsp. furcatus (Müller, 1774)",
                     "Dero (Aulophorus) furcatus furcatus (Müller, 1774)",
@@ -113,6 +114,7 @@ class ChecklistName(BaseModel):
                 "form": None,
             }
         }
+    )
 
 
 CheckList = List[ChecklistName]

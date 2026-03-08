@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.db.classification_system.schema import ClassificationSystem
 from app.db.informal_group.constants import CLASSIFICATION_SYSTEM_ID, TABLE_DESCRIPTION
@@ -23,6 +23,12 @@ class InformalGroup(InformalGroupBase, TableBase):
     classification_system: ClassificationSystem
     deleted: bool
 
-    class Config:
-        orm_mode = True
-        schema_extra = {"description": TABLE_DESCRIPTION}
+    # class Config:
+    #     orm_mode = True
+    #     schema_extra = {"description": TABLE_DESCRIPTION}
+
+    # ✔ Pydantic v2 config
+    model_config = ConfigDict(
+        from_attributes=True,  # replaces orm_mode=True
+        json_schema_extra={"description": TABLE_DESCRIPTION},
+    )

@@ -2,7 +2,7 @@ import typing as t
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.core.config import settings
 from app.db.role.constants import Role
@@ -16,8 +16,8 @@ class UserBase(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     legacy_id_name: Optional[str] = None
-    role_names: Optional[list[str]]
-    role_ids: Optional[list[int]]
+    role_names: Optional[list[str]] = None
+    role_ids: Optional[list[int]] = None
 
 
 class UserOut(UserBase):
@@ -29,31 +29,34 @@ class UserCreate(UserBase):
         password: t.Optional[str] = None
     else:
         password: str = None
-
-    class Config:
-        orm_mode = True
-        schema_extra = {"description": TABLE_DESCRIPTION}
+    model_config = ConfigDict(
+        from_attributes=True, json_schema_extra={"description": TABLE_DESCRIPTION}
+    )
 
 
 class UserEdit(UserBase):
     password: t.Optional[str] = None
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class User(UserBase):
     user_id: int
-    user_role: Optional[list[UserRole]]
-    full_name: Optional[str]
-    updated_by: Optional[int]
-    updated_on: Optional[datetime]
-    created_by: Optional[int]
-    created_on: Optional[datetime]
+    user_role: Optional[list[UserRole]] = None
+    full_name: Optional[str] = None
+    updated_by: Optional[int] = None
+    updated_on: Optional[datetime] = None
+    created_by: Optional[int] = None
+    created_on: Optional[datetime] = None
     deleted: bool
 
-    class Config:
-        orm_mode = True
+    # class Config:
+    #     orm_mode = True
+
+    # ✔ Pydantic v2 config
+    model_config = ConfigDict(
+        from_attributes=True,  # replaces orm_mode=True
+        json_schema_extra={"description": TABLE_DESCRIPTION},
+    )
 
 
 class Token(BaseModel):

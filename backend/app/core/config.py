@@ -1,9 +1,10 @@
 from functools import lru_cache
 from importlib import metadata
 from os import getenv
-from typing import Any, Dict, Literal, Optional
+from typing import Any, Literal, Optional
 
-from pydantic import AnyUrl, BaseSettings, Field, PostgresDsn, validator
+from pydantic import AnyUrl, Field, ValidationInfo, field_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -85,7 +86,8 @@ class Settings(BaseSettings):
         ..., description="The authentication provider to use."
     )
 
-    SQLALCHEMY_DATABASE_URI: Optional[PostgresDsn] = Field(
+    # Keep this as str to avoid passing v2 URL objects to SQLAlchemy
+    SQLALCHEMY_DATABASE_URI: Optional[str] = Field(
         None, description="The SQLAlchemy database URI."
     )
     SQLALCHEMY_SESSION_POOL_SIZE: int = Field(
@@ -110,62 +112,33 @@ class Settings(BaseSettings):
         description="Flag to enable or disable echoing of database queries to the log.",
     )
 
-    @validator("SQLALCHEMY_DATABASE_URI", pre=True)
-    def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
+    @field_validator("SQLALCHEMY_DATABASE_URI", mode="after")
+    @classmethod
+    def assemble_db_connection(cls, v: Optional[str], info: ValidationInfo) -> str:
         """
-        Assembles the database connection string from individual settings.
-
-        Parameters
-        ----------
-        v : Optional[str]
-            The database URI string.
-        values : Dict[str, Any]
-            The dictionary containing individual database settings.
-
-        Returns
-        -------
-        Any
-            The assembled database URI.
+        Build a DB URI from individual parts if one is not provided.
         """
-        if isinstance(v, str):
+        if v:
             return v
-        return PostgresDsn.build(
-            scheme="postgresql",
-            user=values.get("DB_USER"),
-            password=values.get("DB_PASSWORD"),
-            host=values.get("DB_HOST"),
-            path=f"/{values.get('DB_NAME') or ''}",
-            port=values.get("DB_PORT"),
-        )
+        data = info.data
+        user = data.get("DB_USER")
+        pwd = data.get("DB_PASSWORD")
+        host = data.get("DB_HOST")
+        port = data.get("DB_PORT")
+        db = data.get("DB_NAME")
+        return f"postgresql://{user}:{pwd}@{host}:{port}/{db}"
 
-    class Config:
-        """
-        Configuration class for Settings.
-
-        Attributes
-        ----------
-        case_sensitive : bool
-            Flag to enable case sensitivity for environment variables.
-        env_file : str
-            The path to the environment file.
-        """
-
-        case_sensitive = True
-        env_file = ".env"
+    # Pydantic v2 settings config
+    model_config = SettingsConfigDict(
+        case_sensitive=True,
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+    )
 
 
 @lru_cache()
-def get_settings():
-    """
-    Returns the settings instance.
-
-    Uses lru_cache to cache the settings instance for improved performance.
-
-    Returns
-    -------
-    Settings
-        The settings instance.
-    """
+def get_settings() -> Settings:
     return Settings()
 
 

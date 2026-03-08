@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.db.author.schema import Author
 from app.db.citation import enums
@@ -18,7 +18,7 @@ class CitationBase(BaseModel):
     author_id: int
     author_type: enums.AuthorType = Field(description=AUTHOR_TYPE)
     author_order: int = Field(description=AUTHOR_ORDER)
-    legacy_id_name: Optional[str]
+    legacy_id_name: Optional[str] = None
 
 
 class CitationCreate(CitationBase):
@@ -34,6 +34,8 @@ class Citation(CitationBase, TableBase):
     author: Author
     deleted: bool
 
-    class Config:
-        orm_mode = True
-        schema_extra = {"description": TABLE_DESCRIPTION}
+    # ✔ Pydantic v2 config
+    model_config = ConfigDict(
+        from_attributes=True,  # replaces orm_mode=True
+        json_schema_extra={"description": TABLE_DESCRIPTION},
+    )
