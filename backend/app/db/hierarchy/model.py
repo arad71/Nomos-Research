@@ -182,4 +182,3 @@ class Hierarchy(BaseModel, TableMixin):
         root.calculate_path(db=db)
         root.calculate_path_for_children(db=db)
         logger.debug(f"Finished {root}")
-

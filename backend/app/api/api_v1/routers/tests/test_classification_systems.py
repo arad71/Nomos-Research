@@ -11,17 +11,19 @@ def test_get_classification_systems(
         "/api/v1/classification_systems", headers=superuser_token_headers
     )
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == [{
-        "classification_system_id": test_classification_system.classification_system_id,
-        "class_desc": test_classification_system.class_desc,
-        "class_type": test_classification_system.class_type.value,
-        "preferred": test_classification_system.preferred,
-        "updated_by": test_classification_system.updated_by,
-        "updated_on": test_classification_system.updated_on.isoformat(),
-        "created_by": test_classification_system.created_by,
-        "created_on": test_classification_system.created_on.isoformat(),
-        "deleted": False,
-    }]
+    assert response.json() == [
+        {
+            "classification_system_id": test_classification_system.classification_system_id,
+            "class_desc": test_classification_system.class_desc,
+            "class_type": test_classification_system.class_type.value,
+            "preferred": test_classification_system.preferred,
+            "updated_by": test_classification_system.updated_by,
+            "updated_on": test_classification_system.updated_on.isoformat(),
+            "created_by": test_classification_system.created_by,
+            "created_on": test_classification_system.created_on.isoformat(),
+            "deleted": False,
+        }
+    ]
 
 
 def test_delete_classification_system(

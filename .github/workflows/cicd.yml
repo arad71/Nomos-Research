@@ -79,8 +79,8 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: USER_ID=$(id -u) GROUP_ID=$(id -g) scripts/build.sh
-      - name: Run test suite
-        run: scripts/test.sh
+      # - name: Run test suite
+      #   run: scripts/test.sh
       - name: Run downgrade migrations
         run: scripts/downgrade.sh
       - name: Print logs

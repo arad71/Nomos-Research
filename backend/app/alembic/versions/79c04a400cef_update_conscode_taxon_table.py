@@ -43,7 +43,8 @@ def upgrade():
     #     unique=True,
     #     postgresql_where="(deleted = false)",
     # )
-    op.execute(""" CREATE OR REPLACE FUNCTION public.update_conscode_taxon_source()
+    op.execute(
+        """ CREATE OR REPLACE FUNCTION public.update_conscode_taxon_source()
                     RETURNS trigger
                     LANGUAGE 'plpgsql'
                     COST 100
@@ -55,9 +56,11 @@ def upgrade():
                 END;
                 $BODY$;
 
-                """)
+                """
+    )
 
-    op.execute(""" CREATE OR REPLACE FUNCTION public.update_conscode_taxon_isactive()
+    op.execute(
+        """ CREATE OR REPLACE FUNCTION public.update_conscode_taxon_isactive()
                     RETURNS trigger
                     LANGUAGE 'plpgsql'
                     COST 100
@@ -73,9 +76,11 @@ def upgrade():
                 END;
                 $BODY$;
 
-                """)
+                """
+    )
 
-    op.execute(""" CREATE OR REPLACE FUNCTION public.update_conscode_taxon_deleted()
+    op.execute(
+        """ CREATE OR REPLACE FUNCTION public.update_conscode_taxon_deleted()
                     RETURNS trigger
                     LANGUAGE 'plpgsql'
                     COST 100
@@ -92,23 +97,30 @@ def upgrade():
                                 
                 $BODY$;
 
-                    """)
+                    """
+    )
 
-    op.execute(""" CREATE TRIGGER trig_update_conscode_taxon_isactive
+    op.execute(
+        """ CREATE TRIGGER trig_update_conscode_taxon_isactive
                     BEFORE INSERT OR UPDATE 
                     ON public.conscode_taxon
                     FOR EACH ROW
-                    EXECUTE FUNCTION public.update_conscode_taxon_isactive(); """)
-    op.execute(""" CREATE TRIGGER trig_update_conscode_taxon_source
+                    EXECUTE FUNCTION public.update_conscode_taxon_isactive(); """
+    )
+    op.execute(
+        """ CREATE TRIGGER trig_update_conscode_taxon_source
                     BEFORE INSERT OR UPDATE 
                     ON public.conscode_taxon
                     FOR EACH ROW
-                    EXECUTE FUNCTION public.update_conscode_taxon_source(); """)
-    op.execute(""" CREATE TRIGGER update_conscode_taxon_deleted
+                    EXECUTE FUNCTION public.update_conscode_taxon_source(); """
+    )
+    op.execute(
+        """ CREATE TRIGGER update_conscode_taxon_deleted
                     AFTER UPDATE OF deleted
                     ON public.conservation_code
                     FOR EACH ROW
-                    EXECUTE FUNCTION public.update_conscode_taxon_deleted(); """)
+                    EXECUTE FUNCTION public.update_conscode_taxon_deleted(); """
+    )
     # ### end Alembic commands ###
 
 

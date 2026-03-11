@@ -9,17 +9,19 @@ def test_get_conservation_codes(
 ):
     response = client.get("/api/v1/conservation_codes", headers=superuser_token_headers)
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == [{
-        "conservation_code_id": test_conservation_code.conservation_code_id,
-        "conservation_code_value": test_conservation_code.conservation_code_value,
-        "authorising_org": test_conservation_code.authorising_org,
-        "code_priority": test_conservation_code.code_priority,
-        "updated_by": test_conservation_code.updated_by,
-        "updated_on": test_conservation_code.updated_on.isoformat(),
-        "created_by": test_conservation_code.created_by,
-        "created_on": test_conservation_code.created_on.isoformat(),
-        "deleted": False,
-    }]
+    assert response.json() == [
+        {
+            "conservation_code_id": test_conservation_code.conservation_code_id,
+            "conservation_code_value": test_conservation_code.conservation_code_value,
+            "authorising_org": test_conservation_code.authorising_org,
+            "code_priority": test_conservation_code.code_priority,
+            "updated_by": test_conservation_code.updated_by,
+            "updated_on": test_conservation_code.updated_on.isoformat(),
+            "created_by": test_conservation_code.created_by,
+            "created_on": test_conservation_code.created_on.isoformat(),
+            "deleted": False,
+        }
+    ]
 
 
 def test_delete_conservation_codes(
@@ -281,13 +283,15 @@ def test_officer_permissions(
     )
     assert response.status_code == status.HTTP_200_OK
 
-    conservation_code_json.update({
-        "conservation_code_value": "P1",
-        "authorising_org": "Federal",
-        "code_priority": "102",
-        "updated_by": test_officer.user_id,
-        "updated_on": test_conservation_code.updated_on.isoformat(),
-    })
+    conservation_code_json.update(
+        {
+            "conservation_code_value": "P1",
+            "authorising_org": "Federal",
+            "code_priority": "102",
+            "updated_by": test_officer.user_id,
+            "updated_on": test_conservation_code.updated_on.isoformat(),
+        }
+    )
     response = client.put(
         f"/api/v1/conservation_codes/{test_conservation_code.conservation_code_id}",
         headers=officer_token_headers,

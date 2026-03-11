@@ -63,17 +63,21 @@ def calculate_name_fields(target: model.TaxonName):
     and the author as parameters.
     """
     canonical_parts = get_name_components(target)
-    target.canonical_name = filter_join([
-        canonical_parts.uninomial,
-        canonical_parts.specific_epithet,
-        canonical_parts.rank_abbreviation,
-        canonical_parts.infraspecific_epithet,
-    ])
-    target.canonical_name_without_rank = filter_join([
-        canonical_parts.uninomial,
-        canonical_parts.specific_epithet,
-        canonical_parts.infraspecific_epithet,
-    ])
+    target.canonical_name = filter_join(
+        [
+            canonical_parts.uninomial,
+            canonical_parts.specific_epithet,
+            canonical_parts.rank_abbreviation,
+            canonical_parts.infraspecific_epithet,
+        ]
+    )
+    target.canonical_name_without_rank = filter_join(
+        [
+            canonical_parts.uninomial,
+            canonical_parts.specific_epithet,
+            canonical_parts.infraspecific_epithet,
+        ]
+    )
     if any([target.canonical_name, target.author]):
         target.scientific_name = calculate_scientific_name_string(
             components=canonical_parts, is_autonym=target.is_autonym, italicize=False

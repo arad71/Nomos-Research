@@ -1,4 +1,4 @@
-"""Data Model 
+"""Data Model
 
 
 Revision ID: 56594f95c92e

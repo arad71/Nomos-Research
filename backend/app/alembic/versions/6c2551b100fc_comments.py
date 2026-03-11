@@ -1,4 +1,4 @@
-""" Add table and column comments.
+"""Add table and column comments.
 
 Revision ID: 6c2551b100fc
 Revises: a61b3b720423

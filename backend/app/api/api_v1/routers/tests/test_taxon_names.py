@@ -11,29 +11,31 @@ def test_get_taxon_names(
     response = client.get("/api/v1/taxon_names", headers=superuser_token_headers)
     assert response.status_code == status.HTTP_200_OK
     response_json = response.json()[0]
-    assert response.json() == [{
-        "taxon_name_id": test_taxon_name.taxon_name_id,
-        "kingdom_id": test_kingdom.kingdom_id,
-        "kingdom": response_json["kingdom"],
-        "rank_id": test_taxon_rank.taxon_rank_id,
-        "taxon_rank": response_json["taxon_rank"],
-        "is_current": True,
-        "validated": True,
-        "is_autonym": False,
-        "review": False,
-        "canonical_name": test_taxon_name.canonical_name,
-        "canonical_name_without_rank": test_taxon_name.canonical_name_without_rank,
-        "updated_by": test_taxon_name.updated_by,
-        "updated_on": test_taxon_name.updated_on.isoformat(),
-        "created_by": test_taxon_name.created_by,
-        "created_on": test_taxon_name.created_on.isoformat(),
-        "classification_system_ids": [],
-        "path": [],
-        "scientific_name": "Testuninomial",
-        "formatted_scientific_name": "<i>Testuninomial</i>",
-        "uninomial": "Testuninomial",
-        "deleted": False,
-    }]
+    assert response.json() == [
+        {
+            "taxon_name_id": test_taxon_name.taxon_name_id,
+            "kingdom_id": test_kingdom.kingdom_id,
+            "kingdom": response_json["kingdom"],
+            "rank_id": test_taxon_rank.taxon_rank_id,
+            "taxon_rank": response_json["taxon_rank"],
+            "is_current": True,
+            "validated": True,
+            "is_autonym": False,
+            "review": False,
+            "canonical_name": test_taxon_name.canonical_name,
+            "canonical_name_without_rank": test_taxon_name.canonical_name_without_rank,
+            "updated_by": test_taxon_name.updated_by,
+            "updated_on": test_taxon_name.updated_on.isoformat(),
+            "created_by": test_taxon_name.created_by,
+            "created_on": test_taxon_name.created_on.isoformat(),
+            "classification_system_ids": [],
+            "path": [],
+            "scientific_name": "Testuninomial",
+            "formatted_scientific_name": "<i>Testuninomial</i>",
+            "uninomial": "Testuninomial",
+            "deleted": False,
+        }
+    ]
 
 
 def test_delete_taxon_name(
@@ -364,11 +366,13 @@ def test_super_admin_permissions(
     )
     assert response.status_code == status.HTTP_200_OK
 
-    taxon_json.update({
-        "canonical_name": test_taxon_name_2.canonical_name,
-        "updated_by": test_manager.user_id,
-        "updated_on": test_taxon_name.created_on.isoformat(),
-    })
+    taxon_json.update(
+        {
+            "canonical_name": test_taxon_name_2.canonical_name,
+            "updated_by": test_manager.user_id,
+            "updated_on": test_taxon_name.created_on.isoformat(),
+        }
+    )
     response = client.put(
         f"/api/v1/taxon_names/{test_taxon_name_2.taxon_name_id}",
         headers=superuser_token_headers,
@@ -416,11 +420,13 @@ def test_manager_permissions(
     )
     assert response.status_code == status.HTTP_200_OK
 
-    taxon_json.update({
-        "canonical_name": test_taxon_name_2.canonical_name,
-        "updated_by": test_manager.user_id,
-        "updated_on": test_taxon_name.created_on.isoformat(),
-    })
+    taxon_json.update(
+        {
+            "canonical_name": test_taxon_name_2.canonical_name,
+            "updated_by": test_manager.user_id,
+            "updated_on": test_taxon_name.created_on.isoformat(),
+        }
+    )
     response = client.put(
         f"/api/v1/taxon_names/{test_taxon_name_2.taxon_name_id}",
         headers=manager_token_headers,
@@ -468,11 +474,13 @@ def test_officer_permissions(
     )
     assert response.status_code == status.HTTP_200_OK
 
-    taxon_json.update({
-        "canonical_name": test_taxon_name_2.canonical_name,
-        "updated_by": test_manager.user_id,
-        "updated_on": test_taxon_name.created_on.isoformat(),
-    })
+    taxon_json.update(
+        {
+            "canonical_name": test_taxon_name_2.canonical_name,
+            "updated_by": test_manager.user_id,
+            "updated_on": test_taxon_name.created_on.isoformat(),
+        }
+    )
     response = client.put(
         f"/api/v1/taxon_names/{test_taxon_name_2.taxon_name_id}",
         headers=officer_token_headers,

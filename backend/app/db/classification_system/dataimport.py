@@ -26,16 +26,18 @@ class ImportClassificationSystem(DataImportBase):
         )
 
     def import_row(self, row):
-        self.values.append({
-            "class_desc": row["CLASS_DESC"],
-            "class_type": self.map_enum_base(row["CLASS_TYPE"]),
-            "preferred": self.map_y_n_to_bool(row["PREFERRED"]),
-            "sort_order": row["SORT_ORDER"] or None,
-            "legacy_id_name": row["CLASS_ID"],
-            "created_by": self.current_user,
-            "updated_by": self.map_row_by_unique_key(
-                UserModel, "legacy_id_name", row["UPDATED_BY"], "user_id"
-            ),
-            "updated_on": row["UPDATED_ON"] or datetime.datetime.now(),
-            "created_on": row["UPDATED_ON"] or datetime.datetime.now(),
-        })
+        self.values.append(
+            {
+                "class_desc": row["CLASS_DESC"],
+                "class_type": self.map_enum_base(row["CLASS_TYPE"]),
+                "preferred": self.map_y_n_to_bool(row["PREFERRED"]),
+                "sort_order": row["SORT_ORDER"] or None,
+                "legacy_id_name": row["CLASS_ID"],
+                "created_by": self.current_user,
+                "updated_by": self.map_row_by_unique_key(
+                    UserModel, "legacy_id_name", row["UPDATED_BY"], "user_id"
+                ),
+                "updated_on": row["UPDATED_ON"] or datetime.datetime.now(),
+                "created_on": row["UPDATED_ON"] or datetime.datetime.now(),
+            }
+        )
