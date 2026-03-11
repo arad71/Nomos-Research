@@ -22,16 +22,18 @@ class ImportAuthor(DataImportBase):
         )
 
     def import_row(self, row):
-        self.values.append({
-            "abbreviation": row["AUTHOR"],
-            "surname": row["SURNAME"],
-            "first_names": row["FIRST_NAMES"],
-            "initials": row["INITIALS"],
-            "legacy_id_name": row["AUTHOR"],
-            "created_by": self.current_user,
-            "updated_by": self.map_row_by_unique_key(
-                UserModel, "legacy_id_name", row["UPDATED_BY"], "user_id"
-            ),
-            "updated_on": row["UPDATED_ON"] or datetime.datetime.now(),
-            "created_on": row["UPDATED_ON"] or datetime.datetime.now(),
-        })
+        self.values.append(
+            {
+                "abbreviation": row["AUTHOR"],
+                "surname": row["SURNAME"],
+                "first_names": row["FIRST_NAMES"],
+                "initials": row["INITIALS"],
+                "legacy_id_name": row["AUTHOR"],
+                "created_by": self.current_user,
+                "updated_by": self.map_row_by_unique_key(
+                    UserModel, "legacy_id_name", row["UPDATED_BY"], "user_id"
+                ),
+                "updated_on": row["UPDATED_ON"] or datetime.datetime.now(),
+                "created_on": row["UPDATED_ON"] or datetime.datetime.now(),
+            }
+        )

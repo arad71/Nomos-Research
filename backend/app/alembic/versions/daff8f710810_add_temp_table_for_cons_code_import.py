@@ -39,7 +39,8 @@ def upgrade():
         ),
     )
 
-    op.execute(""" CREATE OR REPLACE PROCEDURE import_conscode_taxon(
+    op.execute(
+        """ CREATE OR REPLACE PROCEDURE import_conscode_taxon(
                 source character,
                 userid integer)
             LANGUAGE 'sql'
@@ -122,7 +123,8 @@ def upgrade():
                     select cons_code_id, sci_name_id, false , TO_DATE(left(effective_from,10),'YYYY-MM_DD'), true, userid, NOW(),userid,NOW()  from tmp_cons_code where msg is null or msg='cons code update';
 
             $BODY$;
-            """)
+            """
+    )
     # ### end Alembic commands ###
 
 

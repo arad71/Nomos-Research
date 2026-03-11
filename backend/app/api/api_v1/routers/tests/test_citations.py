@@ -8,19 +8,21 @@ def test_get_citations(client, test_citation, superuser_token_headers):
     response = client.get("/api/v1/citations", headers=superuser_token_headers)
     assert response.status_code == 200
     response_json = response.json()[0]
-    assert response.json() == [{
-        "citation_id": test_citation.citation_id,
-        "taxon_name_id": test_citation.taxon_name_id,
-        "author_id": test_citation.author_id,
-        "author": response_json["author"],
-        "author_type": test_citation.author_type.value,
-        "author_order": test_citation.author_order,
-        "updated_by": test_citation.updated_by,
-        "updated_on": test_citation.updated_on.isoformat(),
-        "created_by": test_citation.created_by,
-        "created_on": test_citation.created_on.isoformat(),
-        "deleted": False,
-    }]
+    assert response.json() == [
+        {
+            "citation_id": test_citation.citation_id,
+            "taxon_name_id": test_citation.taxon_name_id,
+            "author_id": test_citation.author_id,
+            "author": response_json["author"],
+            "author_type": test_citation.author_type.value,
+            "author_order": test_citation.author_order,
+            "updated_by": test_citation.updated_by,
+            "updated_on": test_citation.updated_on.isoformat(),
+            "created_by": test_citation.created_by,
+            "created_on": test_citation.created_on.isoformat(),
+            "deleted": False,
+        }
+    ]
 
 
 def test_delete_citation(client, test_citation, test_db, superuser_token_headers):
@@ -185,10 +187,12 @@ def test_super_admin_permissions(
     assert response.status_code == status.HTTP_200_OK
     citation_id = response.json()["citation_id"]
 
-    citation_json.update({
-        "updated_by": test_superuser.user_id,
-        "updated_on": test_citation.updated_on.isoformat(),
-    })
+    citation_json.update(
+        {
+            "updated_by": test_superuser.user_id,
+            "updated_on": test_citation.updated_on.isoformat(),
+        }
+    )
     response = client.put(
         f"/api/v1/citations/{citation_id}",
         headers=superuser_token_headers,
@@ -235,10 +239,12 @@ def test_manager_permissions(
     )
     assert response.status_code == status.HTTP_200_OK
     citation_id = response.json()["citation_id"]
-    citation_json.update({
-        "updated_by": test_manager.user_id,
-        "updated_on": test_citation.updated_on.isoformat(),
-    })
+    citation_json.update(
+        {
+            "updated_by": test_manager.user_id,
+            "updated_on": test_citation.updated_on.isoformat(),
+        }
+    )
     response = client.put(
         f"/api/v1/citations/{citation_id}",
         headers=manager_token_headers,
@@ -291,10 +297,12 @@ def test_officer_permissions(
     )
     assert response.status_code == status.HTTP_200_OK
     citation_id = response.json()["citation_id"]
-    citation_json.update({
-        "updated_by": test_officer.user_id,
-        "updated_on": test_citation.updated_on.isoformat(),
-    })
+    citation_json.update(
+        {
+            "updated_by": test_officer.user_id,
+            "updated_on": test_citation.updated_on.isoformat(),
+        }
+    )
     response = client.put(
         f"/api/v1/citations/{citation_id}",
         headers=officer_token_headers,

@@ -10,18 +10,20 @@ def test_get_taxon_ranks(
 ):
     response = client.get("/api/v1/taxon_ranks", headers=superuser_token_headers)
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == [{
-        "taxon_rank_id": test_taxon_rank.taxon_rank_id,
-        "kingdom_id": test_taxon_rank.kingdom_id,
-        "rank_name": test_taxon_rank.rank_name,
-        "rank_abbrev": test_taxon_rank.rank_abbrev.value,
-        "uninomial": test_taxon_rank.uninomial,
-        "updated_by": test_taxon_rank.updated_by,
-        "updated_on": test_taxon_rank.updated_on.isoformat(),
-        "created_by": test_taxon_rank.created_by,
-        "kingdom_name": test_kingdom.kingdom_name,
-        "created_on": test_taxon_rank.created_on.isoformat(),
-    }]
+    assert response.json() == [
+        {
+            "taxon_rank_id": test_taxon_rank.taxon_rank_id,
+            "kingdom_id": test_taxon_rank.kingdom_id,
+            "rank_name": test_taxon_rank.rank_name,
+            "rank_abbrev": test_taxon_rank.rank_abbrev.value,
+            "uninomial": test_taxon_rank.uninomial,
+            "updated_by": test_taxon_rank.updated_by,
+            "updated_on": test_taxon_rank.updated_on.isoformat(),
+            "created_by": test_taxon_rank.created_by,
+            "kingdom_name": test_kingdom.kingdom_name,
+            "created_on": test_taxon_rank.created_on.isoformat(),
+        }
+    ]
 
 
 def test_delete_taxon_rank(client, test_taxon_rank, test_db, superuser_token_headers):

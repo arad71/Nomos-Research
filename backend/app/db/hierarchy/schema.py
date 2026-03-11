@@ -1,7 +1,8 @@
-# updated  for pydantic v2, and added path coercion and serialization to ensure Ltree values are handled correctly in the API layer   
+# updated  for pydantic v2, and added path coercion and serialization to ensure Ltree values are handled correctly in the API layer
 import typing
-from typing import Optional, Any
-from pydantic import BaseModel, ConfigDict, Field,  field_validator, field_serializer
+from typing import Any, Optional
+
+from pydantic import BaseModel, ConfigDict, Field, field_serializer, field_validator
 
 from app.db.classification_system.schema import ClassificationSystem
 from app.db.hierarchy.constants import (
@@ -57,6 +58,7 @@ class LightweightHierarchy(HierarchyBase, TableBase):
     def _serialize_path(self, v: Optional[str], _info):
         return v
 
+
 class Hierarchy(LightweightHierarchy):
     hierarchy_id: int
     taxon_name: TaxonName
@@ -67,7 +69,6 @@ class Hierarchy(LightweightHierarchy):
     rank_name: str
     path: typing.Optional[typing.Any] = None
     deleted: bool
-
 
     @field_validator("path", mode="before")
     @classmethod

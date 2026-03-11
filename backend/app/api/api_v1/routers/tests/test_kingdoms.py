@@ -7,15 +7,17 @@ from app.db.kingdom.model import Kingdom
 def test_get_kingdoms(client, test_kingdom, superuser_token_headers):
     response = client.get("/api/v1/kingdoms", headers=superuser_token_headers)
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == [{
-        "kingdom_id": test_kingdom.kingdom_id,
-        "kingdom_name": test_kingdom.kingdom_name,
-        "kingdom_desc": test_kingdom.kingdom_desc,
-        "updated_by": test_kingdom.updated_by,
-        "updated_on": test_kingdom.updated_on.isoformat(),
-        "created_by": test_kingdom.created_by,
-        "created_on": test_kingdom.created_on.isoformat(),
-    }]
+    assert response.json() == [
+        {
+            "kingdom_id": test_kingdom.kingdom_id,
+            "kingdom_name": test_kingdom.kingdom_name,
+            "kingdom_desc": test_kingdom.kingdom_desc,
+            "updated_by": test_kingdom.updated_by,
+            "updated_on": test_kingdom.updated_on.isoformat(),
+            "created_by": test_kingdom.created_by,
+            "created_on": test_kingdom.created_on.isoformat(),
+        }
+    ]
 
 
 def test_delete_kingdom(client, test_kingdom, test_db, superuser_token_headers):

@@ -7,25 +7,27 @@ from app.db.publication.model import Publication
 def test_get_publications(client, test_publication, superuser_token_headers):
     response = client.get("/api/v1/publications", headers=superuser_token_headers)
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == [{
-        "publication_id": test_publication.publication_id,
-        "abbreviated_title": test_publication.abbreviated_title,
-        "display_title": test_publication.display_title,
-        "title": test_publication.title,
-        "author": [],
-        "publication_day": test_publication.publication_day,
-        "publication_month": test_publication.publication_month,
-        "publication_year": test_publication.publication_year,
-        "publication_date": test_publication.publication_date,
-        "updated_by": test_publication.updated_by,
-        "updated_on": test_publication.updated_on.isoformat(),
-        "created_by": test_publication.created_by,
-        "created_on": test_publication.created_on.isoformat(),
-        "author_ids": [],
-        "author_names": [],
-        "author_name": "",
-        "deleted": False,
-    }]
+    assert response.json() == [
+        {
+            "publication_id": test_publication.publication_id,
+            "abbreviated_title": test_publication.abbreviated_title,
+            "display_title": test_publication.display_title,
+            "title": test_publication.title,
+            "author": [],
+            "publication_day": test_publication.publication_day,
+            "publication_month": test_publication.publication_month,
+            "publication_year": test_publication.publication_year,
+            "publication_date": test_publication.publication_date,
+            "updated_by": test_publication.updated_by,
+            "updated_on": test_publication.updated_on.isoformat(),
+            "created_by": test_publication.created_by,
+            "created_on": test_publication.created_on.isoformat(),
+            "author_ids": [],
+            "author_names": [],
+            "author_name": "",
+            "deleted": False,
+        }
+    ]
 
 
 def test_delete_publication(client, test_publication, test_db, superuser_token_headers):
@@ -288,11 +290,13 @@ def test_officer_permissions(
     )
     assert response.status_code == status.HTTP_200_OK
 
-    publication_json.update({
-        **UPDATE_PUBLICATION,
-        "updated_by": test_officer.user_id,
-        "updated_on": test_publication.updated_on.isoformat(),
-    })
+    publication_json.update(
+        {
+            **UPDATE_PUBLICATION,
+            "updated_by": test_officer.user_id,
+            "updated_on": test_publication.updated_on.isoformat(),
+        }
+    )
     response = client.put(
         f"/api/v1/publications/{test_publication.publication_id}",
         headers=officer_token_headers,

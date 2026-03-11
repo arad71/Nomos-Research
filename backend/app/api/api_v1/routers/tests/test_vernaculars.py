@@ -7,18 +7,20 @@ from app.db.vernacular.model import Vernacular
 def test_get_vernaculars(client, test_vernacular, superuser_token_headers):
     response = client.get("/api/v1/vernaculars", headers=superuser_token_headers)
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == [{
-        "vernacular_id": test_vernacular.vernacular_id,
-        "taxon_name_id": test_vernacular.taxon_name_id,
-        "taxon_name": response.json()[0]["taxon_name"],
-        "vernacular_name": test_vernacular.vernacular_name,
-        "language": test_vernacular.language.value,
-        "updated_by": test_vernacular.updated_by,
-        "updated_on": test_vernacular.updated_on.isoformat(),
-        "created_by": test_vernacular.created_by,
-        "created_on": test_vernacular.created_on.isoformat(),
-        "deleted": False,
-    }]
+    assert response.json() == [
+        {
+            "vernacular_id": test_vernacular.vernacular_id,
+            "taxon_name_id": test_vernacular.taxon_name_id,
+            "taxon_name": response.json()[0]["taxon_name"],
+            "vernacular_name": test_vernacular.vernacular_name,
+            "language": test_vernacular.language.value,
+            "updated_by": test_vernacular.updated_by,
+            "updated_on": test_vernacular.updated_on.isoformat(),
+            "created_by": test_vernacular.created_by,
+            "created_on": test_vernacular.created_on.isoformat(),
+            "deleted": False,
+        }
+    ]
 
 
 def test_delete_vernacular(client, test_vernacular, test_db, superuser_token_headers):
@@ -164,10 +166,12 @@ def test_super_admin_permissions(
     assert response.status_code == status.HTTP_200_OK
 
     vernacular_id = response.json()["vernacular_id"]
-    vernacular_json.update({
-        "updated_by": test_superuser.user_id,
-        "updated_on": test_vernacular.created_on.isoformat(),
-    })
+    vernacular_json.update(
+        {
+            "updated_by": test_superuser.user_id,
+            "updated_on": test_vernacular.created_on.isoformat(),
+        }
+    )
     response = client.put(
         f"/api/v1/vernaculars/{vernacular_id}",
         headers=superuser_token_headers,
@@ -216,10 +220,12 @@ def test_manager_permissions(
     assert response.status_code == status.HTTP_200_OK
 
     vernacular_id = response.json()["vernacular_id"]
-    vernacular_json.update({
-        "updated_by": test_manager.user_id,
-        "updated_on": test_vernacular.created_on.isoformat(),
-    })
+    vernacular_json.update(
+        {
+            "updated_by": test_manager.user_id,
+            "updated_on": test_vernacular.created_on.isoformat(),
+        }
+    )
     response = client.put(
         f"/api/v1/vernaculars/{vernacular_id}",
         headers=manager_token_headers,
@@ -268,10 +274,12 @@ def test_officer_permissions(
     assert response.status_code == status.HTTP_200_OK
 
     vernacular_id = response.json()["vernacular_id"]
-    vernacular_json.update({
-        "updated_by": test_officer.user_id,
-        "updated_on": test_vernacular.created_on.isoformat(),
-    })
+    vernacular_json.update(
+        {
+            "updated_by": test_officer.user_id,
+            "updated_on": test_vernacular.created_on.isoformat(),
+        }
+    )
     response = client.put(
         f"/api/v1/vernaculars/{vernacular_id}",
         headers=officer_token_headers,
