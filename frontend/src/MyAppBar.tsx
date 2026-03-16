@@ -38,7 +38,7 @@ const MyAppBar = (props: any) => {
         <span className={classes.boldtext}>Nomos</span> Taxonomic Names Register
       </Typography>
       <span className={classes.spacer} />
-      {process.env.REACT_APP_VERSION}
+      {import.meta.env.VITE_APP_VERSION}
     </AppBar>
   );
 };
