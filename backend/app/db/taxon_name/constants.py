@@ -27,6 +27,9 @@ CONTRIBUTED_BY = (
     "This will be the name of a taxonomist who can vouch for the "
     "correctness of the record."
 )
+AUTHORISED_BY = "Person authorising entry of this name. This will be the name of a taxonomist who can vouch for the correctness of the record."
+AUTTHORISED_ON = "Date this entry was authorised on"
+
 COMMENTS = "Comments about name"
 FORM_DESC_DY = "Day of date formally described"
 FORM_DESC_MN = "Month of date formally described"
