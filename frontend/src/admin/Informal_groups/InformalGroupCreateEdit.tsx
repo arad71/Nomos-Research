@@ -10,8 +10,10 @@ const useStyles = makeStyles((theme: any) => ({
   mainGrid: {
     display: 'grid',
     gridTemplateColumns: '1fr',
-    width: '50%',
+    width: '100%',
+    maxWidth: '880px',
     gridColumnGap: '1.5em',
+    rowGap: '0.75em',
   },
 }));
 

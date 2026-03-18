@@ -112,7 +112,7 @@ const getRolesDefinition = (): Permissions => {
     { action: ['create', 'edit', 'delete'], resource: 'authors' },
     { action: ['create', 'edit', 'delete'], resource: 'citations' },
     { action: ['create', 'edit', 'delete'], resource: 'cross_references' },
-    { action: ['create', 'edit', 'delete'], resource: 'conservation_code' },
+    { action: ['create', 'edit', 'delete'], resource: 'conservation_codes' },
     {
       action: ['create', 'edit', 'delete'],
       resource: 'hierarchies',

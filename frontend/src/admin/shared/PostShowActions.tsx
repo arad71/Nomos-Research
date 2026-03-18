@@ -31,13 +31,18 @@ const PostShowActions: FC<PostShowActionsProps> = ({ ...props }) => {
       {/*@ts-ignore*/}
       <IfCanAccess resource={resource} action="edit">
         <Button
-          style={{ fontSize: '0.8125rem', padding: '0px' }}
+          variant="outlined"
           color="primary"
           onClick={routeChange}
           disabled={!resource || record?.id == null}
           startIcon={<CreateIcon />}
+          sx={{
+            borderRadius: '12px',
+            textTransform: 'none',
+            fontWeight: 600,
+          }}
         >
-          EDIT
+          Edit
         </Button>
       </IfCanAccess>
     </TopToolbar>

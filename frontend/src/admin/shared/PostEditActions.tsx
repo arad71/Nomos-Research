@@ -27,13 +27,18 @@ const PostEditActions: FC<PostEditActionsProps> = (props) => {
   return (
     <TopToolbar>
       <Button
-        style={{ fontSize: '0.8125rem', padding: '0px' }}
+        variant="outlined"
         color="primary"
         onClick={routeChange}
         disabled={!resource || record?.id == null}
         startIcon={<VisibilityIcon />}
+        sx={{
+          borderRadius: '12px',
+          textTransform: 'none',
+          fontWeight: 600,
+        }}
       >
-        SHOW
+        Show
       </Button>
     </TopToolbar>
   );

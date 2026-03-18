@@ -8,6 +8,11 @@ const useStyles = makeStyles((theme: any) => ({
   customToolbar: {
     justifyContent: 'space-between',
   },
+  actionGroup: {
+    display: 'flex',
+    gap: theme.spacing(1.5),
+    alignItems: 'center',
+  },
 }));
 
 const EditToolbar = (props: { resource: string }) => {
@@ -16,13 +21,23 @@ const EditToolbar = (props: { resource: string }) => {
   const hasRecordId = Boolean(record && record.id);
   return (
     <Toolbar className={classes.customToolbar} {...props}>
-      {/* @ts-ignore */}
-      <SaveButton disabled={props.pristine} />
-      {hasRecordId && (
-        <IfCanAccess resource={props.resource} action="delete">
-          <DeleteWithConfirmButton mutationMode="pessimistic" />
-        </IfCanAccess>
-      )}
+      <div className={classes.actionGroup}>
+        {/* @ts-ignore */}
+        <SaveButton
+          disabled={props.pristine}
+          variant="contained"
+          label="Save changes"
+        />
+        {hasRecordId && (
+          <IfCanAccess resource={props.resource} action="delete">
+            <DeleteWithConfirmButton
+              mutationMode="pessimistic"
+              variant="outlined"
+              label="Delete"
+            />
+          </IfCanAccess>
+        )}
+      </div>
     </Toolbar>
   );
 };

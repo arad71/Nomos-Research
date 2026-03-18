@@ -19,12 +19,20 @@ const useStyles = makeStyles((theme: any) => ({
   mainGrid: {
     display: 'grid',
     gridTemplateColumns: '50% 50%',
-    width: '50%',
+    width: '100%',
+    maxWidth: '880px',
     gridColumnGap: '1.5em',
+    rowGap: '0.75em',
+    [theme.breakpoints.down('sm')]: {
+      gridTemplateColumns: '1fr',
+    },
   },
   twoColSpan: {
     gridColumnStart: '1',
     gridColumnEnd: '3',
+    [theme.breakpoints.down('sm')]: {
+      gridColumn: '1 / -1',
+    },
   },
 }));
 

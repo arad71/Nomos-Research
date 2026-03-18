@@ -17,7 +17,6 @@ import { AUTH_PROVIDER, BACKEND_URL } from '../config';
 import authProvider from './authProvider';
 import MyLoginPage from '../views/NewLogin';
 import MyLayout from '../MyLayout';
-import theme from '../Theme';
 import Dashboard from '../Dashboard';
 import BookIcon from '@mui/icons-material/Book';
 import { LogoutButton } from '../LogoutButton';
@@ -257,7 +256,7 @@ interface CacheDataProviderProxyParams {
   duration?: number;
 }
 
-const myDataProvider: DataProvider = {
+export const myDataProvider: DataProvider = {
   ...dataProvider,
   getOne: (resource: string, params: GetOneParams) => {
     if (resource === 'taxon_names_infrageneric_names') {
@@ -347,7 +346,6 @@ export const Admin: FC = () => {
       loginPage={AUTH_PROVIDER === 'auth2' ? false : MyLoginPage}
       dashboard={Dashboard}
       layout={MyLayout}
-      theme={theme}
       authProvider={authProvider}
       store={localStorageStore(STORE_VERSION, STORE_APP_KEY)}
       dataProvider={cacheDataProviderProxy({ dataProvider: myDataProvider })}

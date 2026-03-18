@@ -20,14 +20,22 @@ import { Box, Typography } from '@mui/material';
 import { GlobalTheme, GlobalGridTheme } from '../../GlobalTheme';
 import EditToolbar from '../shared/EditToolbar';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme: any) => ({
   mainGrid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(8, 1fr)',
-    width: '90%',
+    width: '100%',
+    maxWidth: '1200px',
     gridColumnGap: '1.5em',
+    rowGap: '0.75em',
+    [theme.breakpoints.down('md')]: {
+      gridTemplateColumns: 'repeat(2, 1fr)',
+    },
+    [theme.breakpoints.down('sm')]: {
+      gridTemplateColumns: '1fr',
+    },
   },
-});
+}));
 
 export const PublicationCreateEdit: FC = (props) => {
   const classes = useStyles();

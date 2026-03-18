@@ -24,15 +24,23 @@ const useFetchInfragenericNames = (id: number) => {
         id: id,
       })
       .then(({ data }: GetOneResult<InfragenericNamesData>) => {
+        setError(undefined);
         setInfragenericNames(data);
         setLoading(false);
       })
-      .catch((error: Error) => {
+      .catch((error: Error & { status?: number }) => {
+        if (error.status === 404) {
+          setError(undefined);
+          setInfragenericNames({ id, infrageneric_names: [] });
+          setLoading(false);
+          return;
+        }
+
         console.error(error);
         setError(error);
         setLoading(false);
       });
-  }, [id]);
+  }, [dataProvider, id]);
 
   return { loading, error, infragenericNames };
 };
