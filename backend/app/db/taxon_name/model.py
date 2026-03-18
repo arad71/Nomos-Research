@@ -177,8 +177,16 @@ class TaxonName(BaseModel, TableMixin):
     all_vernaculars = sqlalchemy.Column(sqlalchemy.String(200), index=True)
     notes = sqlalchemy.Column(sqlalchemy.String(3000))
     reference = sqlalchemy.Column(sqlalchemy.Text)
-    authorised_by = sqlalchemy.Column(sqlalchemy.String(16), comment=constants.AUTHORISED_BY, doc=constants.AUTHORISED_BY)
-    authorised_on = sqlalchemy.Column(sqlalchemy.DateTime, comment=constants.AUTTHORISED_ON, doc=constants.AUTTHORISED_ON)
+    authorised_by = sqlalchemy.Column(
+        sqlalchemy.String(16),
+        comment=constants.AUTHORISED_BY,
+        doc=constants.AUTHORISED_BY,
+    )
+    authorised_on = sqlalchemy.Column(
+        sqlalchemy.DateTime,
+        comment=constants.AUTTHORISED_ON,
+        doc=constants.AUTTHORISED_ON,
+    )
     legacy_id = sqlalchemy.Column(sqlalchemy.String)
 
     admin_comment = sqlalchemy.Column(sqlalchemy.String)

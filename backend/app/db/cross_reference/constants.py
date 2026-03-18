@@ -1,6 +1,6 @@
 COMMENTS = "Other informative comments about the cross-reference"
 AUTHORISED_BY = "The person who authorised this cross-reference"
-AUTHORISED_ON= "The date this cross-reference was authorised"
+AUTHORISED_ON = "The date this cross-reference was authorised"
 CONTRIBUTED_BY = "The person who contributed this cross-reference"
 CONTRIBUTED_ON = "The date this cross-reference was contributed"
 ACTIVE = "Flag indicating if this reference is active or not"
