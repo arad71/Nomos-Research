@@ -5,7 +5,10 @@ from pydantic import BaseModel, ConfigDict, Field
 from app.db.cross_reference import enums
 from app.db.cross_reference.constants import (
     AUTHORISED_BY,
+    AUTHORISED_ON,
     COMMENTS,
+    CONTRIBUTED_BY,
+    CONTRIBUTED_ON,
     CROSS_REFERENCE_ID,
     CROSS_REFERENCE_TYPE,
     NEW_NAME_ID,
@@ -26,6 +29,9 @@ class CrossReferenceBase(BaseModel):
     authorised_mn: Optional[int] = None
     authorised_dy: Optional[int] = None
     authorised_by: Optional[str] = Field(None, description=AUTHORISED_BY)
+    authorised_on: Optional[str] = Field(None, description=AUTHORISED_ON)
+    contributed_by: Optional[str] = Field(None, description=CONTRIBUTED_BY)
+    contributed_on: Optional[str] = Field(None, description=CONTRIBUTED_ON)
     reference_comments: Optional[str] = Field(None, description=COMMENTS)
     notes: Optional[str] = None
     legacy_id: Optional[int] = None
