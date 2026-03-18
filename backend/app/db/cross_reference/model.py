@@ -6,7 +6,10 @@ from sqlalchemy.types import Enum
 from app.db.cross_reference import enums
 from app.db.cross_reference.constants import (
     AUTHORISED_BY,
+    AUTHORISED_ON,
     COMMENTS,
+    CONTRIBUTED_BY,
+    CONTRIBUTED_ON,
     CROSS_REFERENCE_ID,
     CROSS_REFERENCE_TYPE,
     NEW_NAME_ID,
@@ -61,6 +64,9 @@ class CrossReference(BaseModel, TableMixin):
     authorised_mn = Column(Integer, index=True, comment="The month of authorisation")
     authorised_dy = Column(Integer, index=True, comment="The day of authorisation")
     authorised_by = Column(String(60), comment=AUTHORISED_BY, doc=AUTHORISED_BY)
+    authorised_on = Column(String(10), comment=AUTHORISED_ON, doc=AUTHORISED_ON)
+    contributed_by = Column(String(60), comment=CONTRIBUTED_BY, doc=CONTRIBUTED_BY)
+    contributed_on = Column(String(10), comment=CONTRIBUTED_ON, doc=CONTRIBUTED_ON)
     reference_comments = Column(String(1000), comment=COMMENTS, doc=COMMENTS)
     notes = Column(String(3000))
     legacy_id = Column(Integer)

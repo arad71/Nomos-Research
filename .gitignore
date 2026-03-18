@@ -10,7 +10,7 @@ __pycache__/
 
 # Sensitive information
 .env
-
+.venv/
 # too much personalisations to share
 .idea/
 /backend/nomos_sample_data.xlsx

@@ -72,8 +72,12 @@ class TaxonNameBase(BaseModel):
     all_vernaculars: Optional[str] = None
     notes: Optional[str] = None
     reference: Optional[str] = None
-    authorised_by: Optional[str] = None
-    authorised_on: Optional[datetime] = None
+    authorised_by: Optional[str] = Field(
+        default=None, description=constants.AUTHORISED_BY
+    )
+    authorised_on: Optional[datetime] = Field(
+        default=None, description=constants.AUTTHORISED_ON
+    )
     legacy_id: Optional[str] = Field(default=None, description=constants.LEGACY_ID)
     admin_comment: Optional[str] = None
     classification_system_ids: Optional[list[int]] = None
