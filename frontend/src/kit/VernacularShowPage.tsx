@@ -59,6 +59,7 @@ const VernacularShowPage = () => (
             />
           </ReferenceField>
         </RecordField>
+        <RecordField source="source" label="Source" className="md:col-span-2" />
         <RecordField
           source="language"
           label="Language"
@@ -70,7 +71,6 @@ const VernacularShowPage = () => (
           label="Preferred language"
           render={(record: { lang_pref?: boolean | null }) => renderBoolean(record.lang_pref)}
         />
-        <RecordField source="source" label="Source" />
         <RecordField source="sort_order" label="Sort order" />
         <RecordField
           label="Preferred"

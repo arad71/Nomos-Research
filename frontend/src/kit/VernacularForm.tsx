@@ -37,9 +37,9 @@ const VernacularForm = ({ hideTaxonName = false }: VernacularFormProps) => (
           />
         </ReferenceInput>
       ) : null}
+      <TextInput source="source" label="Source" className="md:col-span-2" />
       <SelectInput source="language" choices={LanguageType} validate={requiredValue} />
       <BooleanInput source="lang_pref" label="Lang pref" defaultValue={false} />
-      <TextInput source="source" label="Source" />
       <NumberInput source="sort_order" label="Sort order" min={0} validate={minZero} />
       <BooleanInput source="preferred" label="Preferred" defaultValue={false} />
     </div>

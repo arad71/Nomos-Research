@@ -249,15 +249,15 @@ const AdminKitLayout = () => {
           </div>
         </div>
       </div>
-      <div className="flex min-h-[calc(100vh-69px)] w-full gap-6 p-4 md:p-6">
+      <div className="flex min-h-[calc(100vh-69px)] w-full gap-6 pl-0 pr-4 md:pr-6">
         <aside
           className={cn(
             'hidden transition-all duration-300 md:block',
             collapsed ? 'w-18' : 'w-80'
           )}
         >
-          <Card className="sticky top-6 flex h-[calc(100vh-3rem)] flex-col overflow-hidden bg-card">
-            <nav className="flex-1 overflow-y-auto p-3">
+          <Card className="flex flex-col rounded-none bg-card">
+            <nav className="flex-1 p-3">
               <div className="space-y-5">
                 {adminNavSections.map((section) => {
                   const items = section.items.filter((item) =>
@@ -285,7 +285,7 @@ const AdminKitLayout = () => {
                             <Link
                               to={to}
                               className={cn(
-                                'flex min-h-11 items-center rounded-2xl px-3 text-sm font-medium transition',
+                                'flex min-h-11 items-center rounded-none px-3 text-sm font-medium transition',
                                 collapsed ? 'justify-center' : 'gap-3',
                                 active
                                   ? ''
