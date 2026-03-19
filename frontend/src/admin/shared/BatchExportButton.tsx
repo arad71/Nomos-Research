@@ -148,6 +148,17 @@ const BatchExportButton: React.FC<BatchExportButtonProps> = (
       return;
     }
 
+    const exportRecords =
+      context.resource === 'taxon_names'
+        ? allRecords.map((record: any) => {
+            const { id, taxon_name_id, ...rest } = record;
+            return {
+              NomosID: taxon_name_id ?? id ?? '',
+              ...rest,
+            };
+          })
+        : allRecords;
+
     const baseName = [
       context.defaultTitle,
       JSON.stringify(context.filterValues).replace(/[^a-zA-Z0-9_.-]+/g, '_'),
@@ -156,7 +167,7 @@ const BatchExportButton: React.FC<BatchExportButtonProps> = (
       .join(' ')
       .replace(/[^a-zA-Z0-9_.-]/g, '_');
     // Use the default exporter from the list context to export as CSV
-    context.exporter(allRecords, null, dataProvider, baseName);
+    context.exporter(exportRecords, null, dataProvider, baseName);
     // Notify the user about the completion and provide the filename.
     notify(`Download complete.\n Look for a file called %{baseName}.csv.`, {
       type: 'success',

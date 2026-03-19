@@ -176,6 +176,11 @@ export const TaxonNameShow: FC = (props) => {
                 </Labeled>
               </Box>
               <Box className={globalClasses.fieldMargin}>
+                <Labeled label="NomosID" {...props}>
+                  <TextField source="id" />
+                </Labeled>
+              </Box>
+              <Box className={globalClasses.fieldMargin}>
                 <Labeled label="Legacy ID" {...props}>
                   <TextField source="legacy_id" />
                 </Labeled>

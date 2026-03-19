@@ -35,7 +35,7 @@ import { ConservationShortPill } from '../Conservation_codes';
 import ResetPreferenceButton from '../shared/ResetPreferenceButton';
 
 const postListColumns = {
-  id: <TextField source="id" />,
+  id: <TextField source="id" label="NomosID" />,
   legacy_id: <TextField source="legacy_id" label="Legacy ID" />,
   rank: (
     <NestedLinkField
@@ -265,6 +265,7 @@ const postListColumns = {
 };
 
 const includeColumns = new Set([
+  'id',
   'rank',
   'formatted_scientific_name',
   'author',

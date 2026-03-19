@@ -20,10 +20,10 @@ const validateNumber = [number(), minValue(0)];
 
 export const TaxonNameFilters = () => {
   const filters = [
-    <SearchInput source="q" alwaysOn />,
+    <SearchInput source="q" alwaysOn placeholder="Search name or NomosID" />,
     <NumberInput
       source="id"
-      label="Taxon name ID"
+      label="NomosID"
       min={0}
       validate={validateNumber}
     />,

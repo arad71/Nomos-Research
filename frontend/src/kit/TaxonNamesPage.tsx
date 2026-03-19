@@ -180,10 +180,11 @@ type TaxonNameFilters = {
 
 const DEFAULT_PER_PAGE = 25;
 const PER_PAGE_OPTIONS = [15, 25, 50, 100] as const;
-const TABLE_STORE_KEY = 'taxon_names.kit.datatable.v2';
+const TABLE_STORE_KEY = 'taxon_names.kit.datatable.v4';
 const DEFAULT_SORT_FIELD = 'updated_on';
 const DEFAULT_SORT_ORDER: SortOrder = 'DESC';
 const defaultColumns: ColumnKey[] = [
+  'id',
   'name',
   'rank',
   'kingdom',
@@ -193,6 +194,7 @@ const defaultColumns: ColumnKey[] = [
   'actions',
 ];
 const columnOptions: Array<{ key: ColumnKey; label: string }> = [
+  { key: 'id', label: 'NomosID' },
   { key: 'name', label: 'Name' },
   { key: 'rank', label: 'Rank' },
   { key: 'kingdom', label: 'Kingdom' },
@@ -200,7 +202,6 @@ const columnOptions: Array<{ key: ColumnKey; label: string }> = [
   { key: 'status', label: 'Status' },
   { key: 'updated', label: 'Updated' },
   { key: 'actions', label: 'Actions' },
-  { key: 'id', label: 'ID' },
   { key: 'legacyId', label: 'Legacy ID' },
   { key: 'canonicalName', label: 'Canonical name' },
   { key: 'division', label: 'Division' },
@@ -332,12 +333,15 @@ const parseTotal = (response: Response, rows: unknown[]) => {
 
 const buildFilterObject = (filters: TaxonNameFilters) => {
   const nextFilter: Record<string, string | boolean> = {};
+  const isExactNomosIdSearch = /^\d+$/.test(filters.q);
 
-  if (filters.q) {
+  if (filters.q && !isExactNomosIdSearch) {
     nextFilter.q = filters.q;
   }
   if (filters.id) {
     nextFilter.id = filters.id;
+  } else if (isExactNomosIdSearch) {
+    nextFilter.id = filters.q;
   }
   if (filters.legacyId) {
     nextFilter.legacy_id__contains = filters.legacyId;
@@ -756,7 +760,7 @@ const escapeCsvValue = (value: string | number | boolean | null | undefined) => 
 
 const buildExportCsv = (records: TaxonNameRecord[]) => {
   const headers = [
-    'Taxon name ID',
+    'NomosID',
     'Legacy ID',
     'Scientific name',
     'Canonical name',
@@ -1067,8 +1071,13 @@ const TaxonNamesPage = () => {
   const activeFilterBadges = React.useMemo(
     () =>
       [
-        filters.q ? { label: 'Query', value: filters.q } : null,
-        filters.id ? { label: 'ID', value: filters.id } : null,
+        filters.q
+          ? {
+              label: /^\d+$/.test(filters.q) ? 'NomosID' : 'Query',
+              value: filters.q,
+            }
+          : null,
+        filters.id ? { label: 'NomosID', value: filters.id } : null,
         filters.legacyId ? { label: 'Legacy ID', value: filters.legacyId } : null,
         filters.scientificName
           ? { label: 'Scientific name', value: filters.scientificName }
@@ -1278,7 +1287,7 @@ const TaxonNamesPage = () => {
         return (
           <div className="space-y-1">
             <div className="font-medium">{renderName(record)}</div>
-            <div className="text-xs text-muted-foreground">ID {taxonNameId}</div>
+            <div className="text-xs text-muted-foreground">NomosID {taxonNameId}</div>
           </div>
         );
       case 'legacyId':
@@ -1614,14 +1623,14 @@ const TaxonNamesPage = () => {
                       q: event.target.value,
                     }))
                   }
-                  placeholder="Name, ID, publication..."
+                  placeholder="Name, NomosID, publication..."
                   className="h-10 w-full rounded-xl border border-border bg-background pl-9 pr-3 text-sm outline-none ring-offset-background transition placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
                 />
               </div>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
-              {renderTextFilter('Taxon name ID', 'id')}
+              {renderTextFilter('NomosID', 'id')}
               {renderTextFilter('Legacy ID', 'legacyId')}
             </div>
             {renderTextFilter('Scientific name', 'scientificName')}

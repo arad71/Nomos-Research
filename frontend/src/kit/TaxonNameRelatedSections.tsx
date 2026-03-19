@@ -538,6 +538,12 @@ const TaxonNameRelatedSections = ({
                 <RecordField label="Validated" render={(taxon: { validated?: boolean | null }) => renderBoolean(taxon.validated)} />
                 <RecordField label="Review" render={(taxon: { review?: boolean | null }) => renderBoolean(taxon.review)} />
                 <RecordField source="review_reason" label="Review reason" className="xl:col-span-2" />
+                <RecordField
+                  label="NomosID"
+                  render={(taxon: { id?: string | number | null; taxon_name_id?: string | number | null }) =>
+                    taxon.taxon_name_id ?? taxon.id ?? ''
+                  }
+                />
                 <RecordField source="legacy_id" label="Legacy ID" />
                 <RecordField source="comments" label="Comments" className="xl:col-span-4" />
               </div>

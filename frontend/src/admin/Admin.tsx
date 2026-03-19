@@ -196,6 +196,17 @@ const remapParamsForResource = (resource: string, params: any) => {
 
   const nextParams = { ...params };
 
+  if (
+    resource === 'taxon_names' &&
+    nextParams.filter?.q &&
+    !nextParams.filter?.id &&
+    /^\d+$/.test(String(nextParams.filter.q).trim())
+  ) {
+    const qValue = String(nextParams.filter.q).trim();
+    const { q, ...restFilter } = nextParams.filter;
+    nextParams.filter = { ...restFilter, id: qValue };
+  }
+
   if (nextParams.sort?.field === 'id') {
     nextParams.sort = { ...nextParams.sort, field: idKey };
   }

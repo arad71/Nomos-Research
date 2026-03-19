@@ -3,6 +3,9 @@ import { useGetOne, useRecordContext } from 'ra-core';
 import { Badge } from '@/components/ui/badge';
 
 type TaxonNameTitleRecord = {
+  id?: string | number | null;
+  taxon_name_id?: string | number | null;
+  legacy_id?: string | number | null;
   scientific_name?: string | null;
   formatted_scientific_name?: string | null;
   is_current?: boolean | null;
@@ -23,15 +26,22 @@ const TaxonNameTitle = ({ fallback }: { fallback: string }) => {
   }
 
   const title = record.formatted_scientific_name || record.scientific_name || fallback;
+  const nomosId = record.taxon_name_id ?? record.id;
 
   return (
     <span className="inline-flex flex-col gap-1">
+      {rankRecord?.rank_name ? (
+        <span className="text-base font-normal text-foreground">{rankRecord.rank_name}</span>
+      ) : null}
       <span className="inline-flex items-center gap-2">
         <span dangerouslySetInnerHTML={{ __html: title }} />
         {record.is_current ? <Badge>Current</Badge> : null}
       </span>
-      {rankRecord?.rank_name ? (
-        <span className="text-base font-normal text-foreground">{rankRecord.rank_name}</span>
+      {nomosId != null ? (
+        <span className="inline-flex items-baseline gap-0">
+          <span className="text-sm font-semibold text-foreground">NomosID</span>
+          <span className="text-sm font-normal text-foreground">{nomosId}</span>
+        </span>
       ) : null}
     </span>
   );
