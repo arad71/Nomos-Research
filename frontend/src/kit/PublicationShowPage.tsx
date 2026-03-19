@@ -41,12 +41,6 @@ const PublicationShowActions = () => {
   );
 };
 
-const SectionTitle = ({ children }: { children: React.ReactNode }) => (
-  <div className="col-span-full pt-2">
-    <h3 className="text-base font-semibold tracking-tight">{children}</h3>
-  </div>
-);
-
 const DoiLink = ({ value }: { value?: string | null }) => {
   const normalized = normalizeDoi(value);
 
@@ -99,76 +93,104 @@ const PublicationShowPage = () => (
           <RecordField source="author_name" label="" />
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <SectionTitle>Publication</SectionTitle>
-          <RecordField source="title" label="Title" className="xl:col-span-2" />
-          <RecordField
-            source="abbreviated_title"
-            label="Abbreviated title"
-            className="xl:col-span-2"
-          />
-          <RecordField
-            source="author_name"
-            label="Publication authors"
-            className="xl:col-span-2"
-          />
-          <RecordField source="publication_day" label="Day" />
-          <RecordField source="publication_month" label="Month" />
-          <RecordField source="publication_year" label="Year" />
-          <RecordField
-            label="Published"
-            render={(record: { published?: boolean | null }) => renderBoolean(record.published)}
-          />
-          <RecordField
-            source="doi"
-            label="DOI"
-            className="xl:col-span-2"
-            render={(record: { doi?: string | null }) => <DoiLink value={record.doi} />}
-          />
+        <div className="grid gap-8">
+          <section className="space-y-4">
+            <div className="space-y-1">
+              <h3 className="text-base font-semibold tracking-tight">Publication</h3>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              <RecordField source="title" label="Title" className="xl:col-span-2" />
+              <RecordField
+                source="abbreviated_title"
+                label="Abbreviated title"
+                className="xl:col-span-2"
+              />
+              <RecordField
+                source="author_name"
+                label="Publication authors"
+                className="xl:col-span-4"
+              />
+              <RecordField source="publication_day" label="Day" />
+              <RecordField source="publication_month" label="Month" />
+              <RecordField source="publication_year" label="Year" />
+              <RecordField
+                label="Published"
+                render={(record: { published?: boolean | null }) => renderBoolean(record.published)}
+              />
+              <RecordField
+                source="doi"
+                label="DOI"
+                className="xl:col-span-4"
+                render={(record: { doi?: string | null }) => <DoiLink value={record.doi} />}
+              />
+            </div>
+          </section>
 
-          <SectionTitle>Publication metadata</SectionTitle>
-          <RecordField label="Authors" className="xl:col-span-2">
-            <ReferenceArrayField reference="authors" source="author_ids">
-              <SingleFieldList>
-                <RecordField source="abbreviation" label="" />
-              </SingleFieldList>
-            </ReferenceArrayField>
-          </RecordField>
-          <RecordField source="publisher" label="Publisher" className="xl:col-span-2" />
-          <RecordField label="Parent publication" source="parent_id" className="xl:col-span-2">
-            <ReferenceField source="parent_id" reference="publications">
-              <RecordField source="abbreviated_title" label="" />
-            </ReferenceField>
-          </RecordField>
-          <RecordField source="published_location" label="Published location" />
-          <RecordField source="volume" label="Volume" />
-          <RecordField source="edition" label="Edition" />
-          <RecordField source="pages" label="Pages" />
+          <section className="mt-12 space-y-4 border-t border-border pt-12">
+            <div className="space-y-1">
+              <h3 className="text-base font-semibold tracking-tight">Publication metadata</h3>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              <RecordField label="Authors" className="xl:col-span-4">
+                <ReferenceArrayField reference="authors" source="author_ids">
+                  <SingleFieldList>
+                    <RecordField source="abbreviation" label="" />
+                  </SingleFieldList>
+                </ReferenceArrayField>
+              </RecordField>
+              <RecordField source="publisher" label="Publisher" className="xl:col-span-4" />
+              <RecordField label="Parent publication" source="parent_id" className="xl:col-span-4">
+                <ReferenceField source="parent_id" reference="publications">
+                  <RecordField source="abbreviated_title" label="" />
+                </ReferenceField>
+              </RecordField>
+              <RecordField
+                source="published_location"
+                label="Published location"
+                className="xl:col-span-4"
+              />
+              <RecordField source="volume" label="Volume" />
+              <RecordField source="edition" label="Edition" />
+              <RecordField source="pages" label="Pages" />
+            </div>
+          </section>
 
-          <SectionTitle>Details</SectionTitle>
-          <RecordField source="legacy_id" label="Legacy ID" />
-          <RecordField source="isbn" label="ISBN" />
-          <RecordField source="issn" label="ISSN" />
-          <RecordField source="tl2" label="TL2" />
-          <RecordField
-            source="bhl_url"
-            label="BHL URL"
-            className="xl:col-span-2"
-            render={(record: { bhl_url?: string | null }) => (
-              <ExternalUrlLink value={record.bhl_url} />
-            )}
-          />
-          <RecordField source="reference_type" label="Reference type" />
-          <RecordField source="reference_author_role" label="Reference author role" />
-          <RecordField label="Duplicate of" source="duplicate_of_id" className="xl:col-span-2">
-            <ReferenceField source="duplicate_of_id" reference="publications">
-              <RecordField source="abbreviated_title" label="" />
-            </ReferenceField>
-          </RecordField>
-          <RecordField source="language" label="Language" />
+          <section className="mt-12 space-y-4 border-t border-border pt-12">
+            <div className="space-y-1">
+              <h3 className="text-base font-semibold tracking-tight">Details</h3>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              <RecordField source="legacy_id" label="Legacy ID" />
+              <RecordField source="isbn" label="ISBN" />
+              <RecordField source="issn" label="ISSN" />
+              <RecordField source="tl2" label="TL2" />
+              <RecordField
+                source="bhl_url"
+                label="BHL URL"
+                className="xl:col-span-4"
+                render={(record: { bhl_url?: string | null }) => (
+                  <ExternalUrlLink value={record.bhl_url} />
+                )}
+              />
+              <RecordField source="reference_type" label="Reference type" />
+              <RecordField source="reference_author_role" label="Reference author role" />
+              <RecordField label="Duplicate of" source="duplicate_of_id" className="xl:col-span-4">
+                <ReferenceField source="duplicate_of_id" reference="publications">
+                  <RecordField source="abbreviated_title" label="" />
+                </ReferenceField>
+              </RecordField>
+              <RecordField source="language" label="Language" />
+            </div>
+          </section>
 
-          <SectionTitle>Notes</SectionTitle>
-          <RecordField source="notes" label="Notes" className="xl:col-span-4" />
+          <section className="mt-12 space-y-4 border-t border-border pt-12">
+            <div className="space-y-1">
+              <h3 className="text-base font-semibold tracking-tight">Notes</h3>
+            </div>
+            <div className="grid gap-4">
+              <RecordField source="notes" label="Notes" className="xl:col-span-4" />
+            </div>
+          </section>
         </div>
       </div>
       <div className="xl:sticky xl:top-6 xl:self-start">
