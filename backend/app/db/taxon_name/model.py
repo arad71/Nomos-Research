@@ -188,13 +188,13 @@ class TaxonName(BaseModel, TableMixin):
         doc=constants.AUTTHORISED_ON,
     )
     legacy_id = sqlalchemy.Column(sqlalchemy.String)
-    is_wa_herbarium_recognised = sqlalchemy.Column(
+    is_wa_recognised = sqlalchemy.Column(
         sqlalchemy.Boolean,
         nullable=False,
         default=False,
         server_default=sqlalchemy.text("false"),
-        comment=constants.IS_WA_HERBARIUM_RECOGNISED,
-        doc=constants.IS_WA_HERBARIUM_RECOGNISED,
+        comment=constants.IS_WA_RECOGNISED,
+        doc=constants.IS_WA_RECOGNISED,
     )
     admin_comment = sqlalchemy.Column(sqlalchemy.String)
     kingdom_name = association_proxy("kingdom", "kingdom_name")
