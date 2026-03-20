@@ -23,6 +23,7 @@ const RecordPageActions = ({
   extra,
 }: RecordPageActionsProps) => (
   <div className="flex items-center gap-2">
+    {extra}
     <Button asChild variant="outline">
       <Link to={listTo}>Back to list</Link>
     </Button>
@@ -40,7 +41,6 @@ const RecordPageActions = ({
         </Button>
       </CanAccess>
     ) : null}
-    {extra}
   </div>
 );
 

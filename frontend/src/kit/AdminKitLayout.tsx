@@ -1,7 +1,8 @@
 import * as React from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import decodeJwt from 'jwt-decode';
 import { CanAccess } from 'react-admin';
 import {
-  ArrowRight,
   ChevronLeft,
   ChevronRight,
   ChevronRight as BreadcrumbChevron,
@@ -15,6 +16,7 @@ import {
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { adminNavSections, getStoredRoles, hasAnyRole } from '../adminShell';
 import authProvider, { clearLocalStorage } from '../admin/authProvider';
+import Role from '../admin/role';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
@@ -23,6 +25,10 @@ import { cn } from '../lib/utils';
 
 const legacyPath = (path: string) => `/legacy${path === '/' ? '' : path}`;
 const THEME_STORAGE_KEY = 'nomos-kit-theme';
+const ORIGINAL_SCOPES_STORAGE_KEY = 'original_scopes';
+const MASKED_SCOPES_STORAGE_KEY = 'masked_scopes';
+const ADMIN_ROLE_OPTIONS = [Role.SUPER_ADMIN, Role.APPLICATION_SUPPORT];
+const ROLE_MASK_OPTIONS = [Role.READER, Role.OFFICER, Role.MANAGER] as const;
 const kitRoutes = new Set([
   '/',
   '/kit',
@@ -49,6 +55,33 @@ const formatBreadcrumb = (segment: string) =>
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(' ');
 
+const parseRoleStorage = (value: string | null): string[] =>
+  (value || '')
+    .split(',')
+    .map((role) => role.trim())
+    .filter(Boolean);
+
+const getTokenRoles = (): string[] => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    return [];
+  }
+
+  try {
+    const decoded: { scopes?: string[] | string } = decodeJwt(token);
+    if (Array.isArray(decoded.scopes)) {
+      return decoded.scopes.map((role) => String(role).trim()).filter(Boolean);
+    }
+    if (typeof decoded.scopes === 'string') {
+      return parseRoleStorage(decoded.scopes);
+    }
+  } catch (error) {
+    return [];
+  }
+
+  return [];
+};
+
 const AdminKitLayout = () => {
   const [collapsed, setCollapsed] = React.useState(false);
   const [authState, setAuthState] = React.useState<
@@ -56,9 +89,16 @@ const AdminKitLayout = () => {
   >('checking');
   const [theme, setTheme] = React.useState<'light' | 'dark'>('light');
   const [userMenuOpen, setUserMenuOpen] = React.useState(false);
-  const roles = getStoredRoles();
+  const [roles, setRoles] = React.useState<string[]>(() => getStoredRoles());
+  const [originalRoles, setOriginalRoles] = React.useState<string[]>(() =>
+    parseRoleStorage(localStorage.getItem(ORIGINAL_SCOPES_STORAGE_KEY))
+  );
+  const [tokenRoles, setTokenRoles] = React.useState<string[]>(() =>
+    getTokenRoles()
+  );
   const location = useLocation();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const userMenuRef = React.useRef<HTMLDivElement | null>(null);
   const fullName = localStorage.getItem('fullName') || 'Nomos user';
   const initials = fullName
@@ -78,6 +118,24 @@ const AdminKitLayout = () => {
       to: `/${segments.slice(0, index + 1).join('/')}`,
     }));
   }, [location.pathname]);
+  const storedRoles = getStoredRoles();
+  const storedOriginalRoles = parseRoleStorage(
+    localStorage.getItem(ORIGINAL_SCOPES_STORAGE_KEY)
+  );
+  const actualRoles =
+    storedOriginalRoles.length > 0
+      ? storedOriginalRoles
+      : tokenRoles.length > 0
+        ? tokenRoles
+        : storedRoles;
+  const hasAdminOrigin = actualRoles.some((role) =>
+    ADMIN_ROLE_OPTIONS.includes(role as (typeof ADMIN_ROLE_OPTIONS)[number])
+  );
+  const canMaskRoles =
+    hasAdminOrigin || localStorage.getItem(ORIGINAL_SCOPES_STORAGE_KEY) != null;
+  const isRoleMasked =
+    storedOriginalRoles.length > 0 &&
+    storedOriginalRoles.join(',') !== storedRoles.join(',');
 
   React.useEffect(() => {
     const storedTheme = localStorage.getItem(THEME_STORAGE_KEY);
@@ -105,6 +163,19 @@ const AdminKitLayout = () => {
   }, []);
 
   React.useEffect(() => {
+    const syncRoles = () => {
+      setRoles(getStoredRoles());
+      setOriginalRoles(
+        parseRoleStorage(localStorage.getItem(ORIGINAL_SCOPES_STORAGE_KEY))
+      );
+      setTokenRoles(getTokenRoles());
+    };
+
+    window.addEventListener('storage', syncRoles);
+    return () => window.removeEventListener('storage', syncRoles);
+  }, []);
+
+  React.useEffect(() => {
     let active = true;
 
     authProvider
@@ -127,6 +198,10 @@ const AdminKitLayout = () => {
     };
   }, [navigate]);
 
+  React.useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, [location.pathname]);
+
   const toggleTheme = () => {
     const nextTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(nextTheme);
@@ -141,6 +216,50 @@ const AdminKitLayout = () => {
     window.location.href = logoutLink;
   };
 
+  const applyMaskedRoles = (nextRoles: string[]) => {
+    if (!canMaskRoles) {
+      return;
+    }
+
+    const existingOriginalRoles =
+      parseRoleStorage(localStorage.getItem(ORIGINAL_SCOPES_STORAGE_KEY));
+    const nextOriginalRoles =
+      existingOriginalRoles.length > 0 ? existingOriginalRoles : actualRoles;
+
+    if (existingOriginalRoles.length === 0) {
+      localStorage.setItem(ORIGINAL_SCOPES_STORAGE_KEY, actualRoles.join(','));
+    }
+
+    localStorage.setItem('scopes', nextRoles.join(','));
+    localStorage.setItem(MASKED_SCOPES_STORAGE_KEY, nextRoles.join(','));
+    setOriginalRoles(nextOriginalRoles);
+    setTokenRoles(getTokenRoles());
+    setRoles(nextRoles);
+    setUserMenuOpen(false);
+    queryClient.invalidateQueries({ queryKey: ['auth', 'canAccess'] });
+  };
+
+  const resetMaskedRoles = () => {
+    if (!localStorage.getItem(ORIGINAL_SCOPES_STORAGE_KEY)) {
+      return;
+    }
+
+    const existingOriginalRoles = parseRoleStorage(
+      localStorage.getItem(ORIGINAL_SCOPES_STORAGE_KEY)
+    );
+    const restoredRoles =
+      existingOriginalRoles.length > 0 ? existingOriginalRoles : actualRoles;
+
+    localStorage.setItem('scopes', restoredRoles.join(','));
+    localStorage.removeItem(MASKED_SCOPES_STORAGE_KEY);
+    localStorage.removeItem(ORIGINAL_SCOPES_STORAGE_KEY);
+    setRoles(restoredRoles);
+    setOriginalRoles([]);
+    setTokenRoles(getTokenRoles());
+    setUserMenuOpen(false);
+    queryClient.invalidateQueries({ queryKey: ['auth', 'canAccess'] });
+  };
+
   if (authState !== 'ready') {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background text-sm text-muted-foreground">
@@ -151,7 +270,7 @@ const AdminKitLayout = () => {
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.72),_transparent_28%),_var(--background)] text-foreground dark:bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.08),_transparent_24%),_var(--background)]">
-      <div className="border-b border-border bg-white px-4 py-2 shadow-[0_3px_12px_rgba(15,23,42,0.04)] md:px-6 dark:bg-card">
+      <div className="sticky top-0 z-40 border-b border-border bg-white px-4 py-2 shadow-[0_3px_12px_rgba(15,23,42,0.04)] md:px-6 dark:bg-card">
         <div className="flex items-center justify-between">
           <div className="flex min-w-0 items-center gap-3">
             <div className="flex min-w-0 items-center gap-3">
@@ -236,6 +355,46 @@ const AdminKitLayout = () => {
                       {theme === 'dark' ? 'Dark' : 'Light'}
                     </span>
                   </button>
+                  {canMaskRoles ? (
+                    <>
+                      <Separator className="my-1" />
+                      <div className="px-3 py-2">
+                        <p className="text-xs font-medium text-foreground">
+                          Admin role view
+                        </p>
+                          <p className="text-xs text-muted-foreground">
+                          Current: {storedRoles.join(', ') || 'None'}
+                        </p>
+                      </div>
+                      {ROLE_MASK_OPTIONS.map((role) => (
+                        <button
+                          key={role}
+                          type="button"
+                          onClick={() => applyMaskedRoles([role])}
+                          disabled={
+                            storedRoles.length === 1 && storedRoles[0] === role
+                          }
+                          className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-sm transition hover:bg-accent disabled:cursor-default disabled:opacity-50"
+                        >
+                          <span>View as {formatBreadcrumb(role.toLowerCase())}</span>
+                          {storedRoles.length === 1 && storedRoles[0] === role ? (
+                            <span className="text-xs text-muted-foreground">
+                              Active
+                            </span>
+                          ) : null}
+                        </button>
+                      ))}
+                      {isRoleMasked ? (
+                        <button
+                          type="button"
+                          onClick={resetMaskedRoles}
+                          className="flex w-full items-center rounded-xl px-3 py-2 text-sm font-medium transition hover:bg-accent"
+                        >
+                          Return to admin
+                        </button>
+                      ) : null}
+                    </>
+                  ) : null}
                   <button
                     type="button"
                     onClick={handleLogout}
@@ -249,14 +408,14 @@ const AdminKitLayout = () => {
           </div>
         </div>
       </div>
-      <div className="flex min-h-[calc(100vh-69px)] w-full gap-6 pl-0 pr-4 md:pr-6">
+      <div className="flex min-h-[calc(100vh-56px)] w-full gap-6 pl-0 pr-4 md:pr-6">
         <aside
           className={cn(
             'hidden transition-all duration-300 md:block',
             collapsed ? 'w-18' : 'w-80'
           )}
         >
-          <Card className="flex flex-col rounded-none bg-card">
+          <Card className="flex flex-col rounded-none border-t-0 bg-card h-full">
             <nav className="flex-1 p-3">
               <div className="space-y-5">
                 {adminNavSections.map((section) => {
@@ -285,7 +444,7 @@ const AdminKitLayout = () => {
                             <Link
                               to={to}
                               className={cn(
-                                'flex min-h-11 items-center rounded-none px-3 text-sm font-medium transition',
+                                'flex min-h-11 items-center rounded-2xl px-3 text-sm font-medium transition',
                                 collapsed ? 'justify-center' : 'gap-3',
                                 active
                                   ? ''
@@ -327,23 +486,10 @@ const AdminKitLayout = () => {
                 })}
               </div>
             </nav>
-            <div className="p-3">
-              <Button
-                asChild
-                variant="outline"
-                size="icon"
-                className="w-full"
-                aria-label="Legacy admin"
-              >
-                <Link to="/legacy">
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
           </Card>
         </aside>
 
-        <main className="flex min-w-0 flex-1 flex-col gap-4">
+        <main className="flex min-w-0 flex-1 flex-col gap-4 pb-6">
           <div className="flex min-w-0 items-center gap-2 text-sm">
             <Button
               type="button"

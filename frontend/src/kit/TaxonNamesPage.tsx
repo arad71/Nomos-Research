@@ -1800,14 +1800,7 @@ const TaxonNamesPage = () => {
               page: 1,
             })
           }
-          bulkActionButtons={canBulkDelete}
-          bulkActionsToolbar={
-            canBulkDelete ? (
-              <TaxonNamesBulkActionsToolbar
-                onDeleted={() => setReloadNonce((current) => current + 1)}
-              />
-            ) : undefined
-          }
+          bulkActionButtons={false}
         >
           {visibleColumnOptions.map((column) => (
             <DataTable.Col<TaxonNameRecord>

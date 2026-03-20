@@ -31,7 +31,9 @@ export interface AdminNavSection {
 }
 
 export const getStoredRoles = (): string[] =>
-  (localStorage.getItem('scopes') || '')
+  (localStorage.getItem('masked_scopes') ||
+    localStorage.getItem('scopes') ||
+    '')
     .split(',')
     .map((role) => role.trim())
     .filter(Boolean);

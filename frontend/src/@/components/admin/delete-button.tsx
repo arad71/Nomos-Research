@@ -1,6 +1,18 @@
 import * as React from "react";
 import { Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  alertDialogActionClassName,
+  alertDialogCancelClassName,
+} from "@/components/ui/alert-dialog";
 import { humanize, singularize } from "inflection";
 import type { UseDeleteOptions, RedirectionSideEffect } from "ra-core";
 import {
@@ -16,6 +28,7 @@ export type DeleteButtonProps = {
   label?: string;
   size?: "default" | "sm" | "lg" | "icon";
   onClick?: React.ReactEventHandler<HTMLButtonElement>;
+  confirmMessage?: string;
   mutationOptions?: UseDeleteOptions;
   redirect?: RedirectionSideEffect;
   resource?: string;
@@ -51,6 +64,7 @@ export const DeleteButton = (props: DeleteButtonProps) => {
   const {
     label: labelProp,
     onClick,
+    confirmMessage,
     size,
     mutationOptions,
     redirect = "list",
@@ -95,19 +109,49 @@ export const DeleteButton = (props: DeleteButtonProps) => {
     },
     userText: labelProp,
   });
+  const confirmationMessage =
+    confirmMessage ||
+    `Delete ${recordRepresentation ? `"${recordRepresentation}"` : `this ${resourceName}`}?`;
+  const [open, setOpen] = React.useState(false);
+
+  const handleConfirmedDelete = React.useCallback(() => {
+    handleDelete();
+    setOpen(false);
+  }, [handleDelete]);
 
   return (
-    <Button
-      variant={variant}
-      type="button"
-      onClick={handleDelete}
-      disabled={isPending}
-      aria-label={typeof label === "string" ? label : undefined}
-      size={size}
-      className={className}
-    >
-      <Trash />
-      {label}
-    </Button>
+    <AlertDialog open={open} onOpenChange={setOpen}>
+      <Button
+        variant={variant}
+        type="button"
+        onClick={() => setOpen(true)}
+        disabled={isPending}
+        aria-label={typeof label === "string" ? label : undefined}
+        size={size}
+        className={className}
+      >
+        <Trash />
+        {label}
+      </Button>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Confirm delete</AlertDialogTitle>
+          <AlertDialogDescription>
+            {confirmationMessage}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel className={alertDialogCancelClassName}>
+            Cancel
+          </AlertDialogCancel>
+          <AlertDialogAction
+            className={alertDialogActionClassName}
+            onClick={handleConfirmedDelete}
+          >
+            Delete
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 };

@@ -31,7 +31,20 @@ interface Permissions {
   [key: string]: Permission[];
 }
 
+type CanAccessParams = {
+  action: string;
+  resource: string;
+};
+
 const parseStoredScopes = (): string[] => {
+  const maskedScopes = localStorage.getItem('masked_scopes');
+  if (maskedScopes) {
+    return maskedScopes
+      .split(',')
+      .map((scope) => scope.trim())
+      .filter(Boolean);
+  }
+
   const rawScopes = localStorage.getItem('scopes');
   if (!rawScopes) {
     const token = localStorage.getItem('token');
@@ -185,9 +198,48 @@ const getRolesDefinition = (): Permissions => {
   return permissions;
 };
 
+const matchesResource = (permissionResource: string, resource: string) =>
+  permissionResource === '*' || permissionResource === resource;
+
+const matchesAction = (permissionAction: Actions, action: string) => {
+  if (permissionAction === '*') {
+    return true;
+  }
+
+  if (Array.isArray(permissionAction)) {
+    return permissionAction.includes('*') || permissionAction.includes(action as Action);
+  }
+
+  return permissionAction === action;
+};
+
+const canAccessWithScopes = (
+  scopes: string[],
+  { action, resource }: CanAccessParams
+) => {
+  const permissions = scopes.flatMap((role) => getRolesDefinition()[role] || []);
+  const matchingPermissions = permissions.filter(
+    (permission) =>
+      matchesResource(permission.resource, resource) &&
+      matchesAction(permission.action, action)
+  );
+
+  if (
+    matchingPermissions.some((permission) => permission.type === 'deny')
+  ) {
+    return false;
+  }
+
+  return matchingPermissions.some(
+    (permission) => permission.type !== 'deny'
+  );
+};
+
 export function clearLocalStorage() {
   localStorage.removeItem('token');
   localStorage.removeItem('scopes');
+  localStorage.removeItem('masked_scopes');
+  localStorage.removeItem('original_scopes');
   localStorage.removeItem('username');
   localStorage.removeItem('fullName');
   localStorage.removeItem('id');
@@ -282,6 +334,28 @@ const authProvider = {
     }
 
     return scopes.flatMap((role) => getRolesDefinition()[role] || []);
+  },
+  canAccess: async ({ action, resource }: CanAccessParams) => {
+    let scopes = parseStoredScopes();
+
+    if (scopes.length === 0) {
+      const token = localStorage.getItem('token');
+      if (!token && useAuth2()) {
+        try {
+          await getAuthToken();
+        } catch (error) {
+          return false;
+        }
+      }
+
+      scopes = parseStoredScopes();
+    }
+
+    if (scopes.length === 0) {
+      return false;
+    }
+
+    return canAccessWithScopes(scopes, { action, resource });
   },
   getRoles: () => {
     // see https://marmelab.com/ra-enterprise/modules/ra-rbac#resource

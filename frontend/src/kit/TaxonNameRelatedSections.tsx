@@ -96,6 +96,16 @@ const EmptyState = ({ children }: { children: React.ReactNode }) => (
   </div>
 );
 
+const RelatedFetchError = ({
+  resourceLabel,
+}: {
+  resourceLabel: string;
+}) => (
+  <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-6 text-sm text-muted-foreground">
+    Unable to load {resourceLabel} right now.
+  </div>
+);
+
 const RelatedCreateButton = ({ to, label }: { to: string; label: string }) => (
   <Button asChild variant="outline">
     <Link to={to}>{label}</Link>
@@ -894,6 +904,7 @@ const TaxonNameRelatedSections = ({
                   reference="cross_references"
                   target="new_name_id"
                   empty={<EmptyState>No previous names linked yet.</EmptyState>}
+                  error={<RelatedFetchError resourceLabel="previous names" />}
                 >
                   <DataTable bulkActionButtons={false}>
                     <DataTable.Col source="cross_reference_type" label="Type">
@@ -954,6 +965,7 @@ const TaxonNameRelatedSections = ({
                   reference="cross_references"
                   target="old_name_id"
                   empty={<EmptyState>No subsequent names linked yet.</EmptyState>}
+                  error={<RelatedFetchError resourceLabel="subsequent names" />}
                 >
                   <DataTable bulkActionButtons={false}>
                     <DataTable.Col source="cross_reference_type" label="Type">
@@ -1002,6 +1014,7 @@ const TaxonNameRelatedSections = ({
                 reference="cross_references"
                 target="new_name_id"
                 empty={<EmptyState>No previous names linked yet.</EmptyState>}
+                error={<RelatedFetchError resourceLabel="previous names" />}
               >
                 <DataTable rowClick="show" bulkActionButtons={false}>
                   <DataTable.Col source="cross_reference_type" label="Type">
@@ -1034,6 +1047,7 @@ const TaxonNameRelatedSections = ({
                 reference="cross_references"
                 target="old_name_id"
                 empty={<EmptyState>No subsequent names linked yet.</EmptyState>}
+                error={<RelatedFetchError resourceLabel="subsequent names" />}
               >
                 <DataTable rowClick="show" bulkActionButtons={false}>
                   <DataTable.Col source="cross_reference_type" label="Type">
