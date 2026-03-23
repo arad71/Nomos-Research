@@ -78,6 +78,9 @@ class TaxonNameBase(BaseModel):
     authorised_on: Optional[datetime] = Field(
         default=None, description=constants.AUTTHORISED_ON
     )
+    is_wa_recognised: Optional[bool] = Field(
+        default=False, description=constants.IS_WA_RECOGNISED
+    )
     legacy_id: Optional[str] = Field(default=None, description=constants.LEGACY_ID)
     admin_comment: Optional[str] = None
     classification_system_ids: Optional[list[int]] = None
