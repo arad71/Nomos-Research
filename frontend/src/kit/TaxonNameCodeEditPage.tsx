@@ -20,7 +20,7 @@ const TaxonNameCodeEditActions = () => {
 const TaxonNameCodeEditPage = () => (
   <Edit resource="taxon_names_code" title={<TaxonNameCodeTitle />} redirect={false} actions={<TaxonNameCodeEditActions />}>
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
-      <TaxonNameCodeDetails />
+      <TaxonNameCodeDetails editable />
       <div className="xl:sticky xl:top-6 xl:self-start">
         <HistoryInfoBox />
       </div>

@@ -32,6 +32,7 @@ import CrossRefType from '../admin/Cross_references/CrossRefType';
 import NaturalisedStatus from '../admin/Taxon_names/NaturalisedStatus';
 import PublicationStatus from '../admin/Taxon_names/PublicationStatus';
 import CitationForm from './CitationForm';
+import ConscodeTaxonForm from './ConscodeTaxonForm';
 import CrossReferenceForm from './CrossReferenceForm';
 import HierarchyForm from './HierarchyForm';
 import PublicationForm from './PublicationForm';
@@ -97,6 +98,19 @@ const TaxonNameCodeButton = () => {
   return (
     <Button asChild variant="outline">
       <Link to={`/taxon_names_code/${record.id}`}>Open conservation code page</Link>
+    </Button>
+  );
+};
+
+const OpenConservationCodeRelatedButton = () => {
+  const record = useRecordContext<{ id?: string | number }>();
+  if (record?.id == null) {
+    return null;
+  }
+
+  return (
+    <Button asChild variant="outline" size="sm">
+      <Link to={`/conscode_taxons/${record.id}/show`}>Open</Link>
     </Button>
   );
 };
@@ -1127,7 +1141,24 @@ const TaxonNameRelatedSections = ({
         <SectionHeader
           title="Conservation codes"
           description="Linked conservation-code records for this taxon name."
-          action={<TaxonNameCodeButton />}
+          action={
+            editable && recordId ? (
+              <CreateInDialogButton
+                resource="conscode_taxons"
+                record={{ taxon_name_id: recordId }}
+                fullWidth
+                maxWidth="md"
+                mutationMode="pessimistic"
+                title="Create conservation code"
+                label="+ Create conservation code"
+                ButtonProps={relatedDialogButtonProps}
+              >
+                <DialogFormPadding>
+                  <ConscodeTaxonForm />
+                </DialogFormPadding>
+              </CreateInDialogButton>
+            ) : undefined
+          }
         />
         {recordId ? (
           <ReferenceManyField
@@ -1149,7 +1180,20 @@ const TaxonNameRelatedSections = ({
               </DataTable.Col>
               <DataTable.Col source="effective_from" label="Effective from" field={DateField} />
               <DataTable.Col source="effective_to" label="Effective to" field={DateField} />
-              <DataTable.Col source="notes" label="Notes" />
+              {editable ? (
+                <DataTable.Col label="">
+                  <div className="flex justify-end">
+                    <div className="flex items-center gap-2">
+                      <EditRelatedButton label="Edit conservation code">
+                        <DialogFormPadding>
+                          <ConscodeTaxonForm />
+                        </DialogFormPadding>
+                      </EditRelatedButton>
+                      <OpenConservationCodeRelatedButton />
+                    </div>
+                  </div>
+                </DataTable.Col>
+              ) : null}
             </DataTable>
           </ReferenceManyField>
         ) : null}

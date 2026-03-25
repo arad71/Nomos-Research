@@ -6,6 +6,7 @@ import { DeleteButton } from '@/components/admin/delete-button';
 import { Button } from '../components/ui/button';
 import { HardDeleteButton } from '@/components/admin/hard-delete-button';
 import { RestoreButton } from '@/components/admin/restore-button';
+import { getRememberedListLocation } from './listNavigation';
 
 type RecordPageActionsProps = {
   listTo: string;
@@ -29,17 +30,21 @@ const RecordPageActions = ({
   restoreable = false,
 }: RecordPageActionsProps) => {
   const record = useRecordContext<{ deleted?: boolean | null }>();
+  const resolvedListTo = React.useMemo(
+    () => getRememberedListLocation(listTo),
+    [listTo]
+  );
 
   return (
     <div className="flex items-center gap-2">
-      {!record?.deleted ? <DeleteButton resource={resource} redirect={listTo} /> : null}
+      {!record?.deleted ? <DeleteButton resource={resource} redirect={resolvedListTo} /> : null}
       {restoreable && record?.deleted ? <RestoreButton resource={resource} /> : null}
       {restoreable && record?.deleted ? (
-        <HardDeleteButton resource={resource} redirectTo={listTo} />
+        <HardDeleteButton resource={resource} redirectTo={resolvedListTo} />
       ) : null}
       {extra}
       <Button asChild variant="outline">
-        <Link to={listTo}>Back to list</Link>
+        <Link to={resolvedListTo}>Back to list</Link>
       </Button>
       {showTo ? (
         <CanAccess resource={showResource ?? resource} action="show">

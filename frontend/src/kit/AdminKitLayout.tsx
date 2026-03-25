@@ -22,6 +22,7 @@ import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Separator } from '../components/ui/separator';
 import { cn } from '../lib/utils';
+import { rememberListLocation } from './listNavigation';
 
 const legacyPath = (path: string) => `/legacy${path === '/' ? '' : path}`;
 const THEME_STORAGE_KEY = 'nomos-kit-theme';
@@ -206,6 +207,12 @@ const AdminKitLayout = () => {
   React.useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
   }, [location.pathname]);
+
+  React.useEffect(() => {
+    if (kitRoutes.has(location.pathname)) {
+      rememberListLocation(location.pathname, location.search);
+    }
+  }, [location.pathname, location.search]);
 
   const toggleTheme = () => {
     const nextTheme = theme === 'dark' ? 'light' : 'dark';
