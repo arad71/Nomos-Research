@@ -61,6 +61,17 @@ const renderChoice = (choices: Array<{ id: string; name: string }>, value?: stri
   return choices.find((choice) => choice.id === value)?.name ?? value;
 };
 
+const formatDateTime = (value?: string | null) => {
+  if (!value) return '';
+
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return value;
+  }
+
+  return parsed.toLocaleString();
+};
+
 const SectionHeader = ({
   title,
   description,
@@ -564,6 +575,30 @@ const TaxonNameRelatedSections = ({
                 <div className="hidden md:block md:col-span-2 xl:col-span-4" aria-hidden="true" />
                 <RecordField source="legacy_id" label="Legacy ID" className="xl:col-span-4" />
                 <RecordField source="comments" label="Comments" className="xl:col-span-4" />
+              </div>
+            </section>
+
+            <section className="mt-12 space-y-4 border-t border-border pt-12">
+              <SectionHeader title="Authority" />
+              <div className="grid gap-4 md:grid-cols-2">
+                <RecordField source="authorised_by" label="Authorised by" />
+                <RecordField source="authorised_on" label="Authorised on">
+                  <RecordField
+                    label=""
+                    render={(taxon: { authorised_on?: string | null }) =>
+                      taxon.authorised_on ? formatDateTime(taxon.authorised_on) : ''
+                    }
+                  />
+                </RecordField>
+                <RecordField source="contributed_by" label="Contributed by" />
+                <RecordField source="contributed_on" label="Contributed on">
+                  <RecordField
+                    label=""
+                    render={(taxon: { contributed_on?: string | null }) =>
+                      taxon.contributed_on ? formatDateTime(taxon.contributed_on) : ''
+                    }
+                  />
+                </RecordField>
               </div>
             </section>
 
