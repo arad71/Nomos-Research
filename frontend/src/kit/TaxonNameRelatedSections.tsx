@@ -487,9 +487,17 @@ const TaxonNameRelatedSections = ({
           <>
             <section className="space-y-4">
               <SectionHeader title="Taxon name summary" />
-              <div className="space-y-2">
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                <RecordField
+                  label="NomosID"
+                  className="xl:col-span-1"
+                  render={(taxon: { id?: string | number | null; taxon_name_id?: string | number | null }) =>
+                    taxon.taxon_name_id ?? taxon.id ?? ''
+                  }
+                />
                 <RecordField
                   label="Formatted scientific name"
+                  className="md:col-span-1 xl:col-span-3"
                   render={(taxon: { formatted_scientific_name?: string | null }) => (
                     <HtmlValue value={taxon.formatted_scientific_name} />
                   )}
@@ -536,6 +544,7 @@ const TaxonNameRelatedSections = ({
                     />
                   </ReferenceField>
                 </RecordField>
+                <div className="hidden md:block md:col-span-2 xl:col-span-4" aria-hidden="true" />
                 <RecordField source="publication_status" label="Publication status">
                   <RecordField
                     label=""
@@ -546,15 +555,14 @@ const TaxonNameRelatedSections = ({
                 </RecordField>
                 <RecordField label="Current" render={(taxon: { is_current?: boolean | null }) => renderBoolean(taxon.is_current)} />
                 <RecordField label="Validated" render={(taxon: { validated?: boolean | null }) => renderBoolean(taxon.validated)} />
+                <RecordField
+                  label="WA recognised"
+                  render={(taxon: { is_wa_recognised?: boolean | null }) => renderBoolean(taxon.is_wa_recognised)}
+                />
                 <RecordField label="Review" render={(taxon: { review?: boolean | null }) => renderBoolean(taxon.review)} />
                 <RecordField source="review_reason" label="Review reason" className="xl:col-span-2" />
-                <RecordField
-                  label="NomosID"
-                  render={(taxon: { id?: string | number | null; taxon_name_id?: string | number | null }) =>
-                    taxon.taxon_name_id ?? taxon.id ?? ''
-                  }
-                />
-                <RecordField source="legacy_id" label="Legacy ID" />
+                <div className="hidden md:block md:col-span-2 xl:col-span-4" aria-hidden="true" />
+                <RecordField source="legacy_id" label="Legacy ID" className="xl:col-span-4" />
                 <RecordField source="comments" label="Comments" className="xl:col-span-4" />
               </div>
             </section>

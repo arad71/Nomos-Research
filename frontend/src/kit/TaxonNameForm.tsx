@@ -4,6 +4,7 @@ import { minValue, number, required } from 'ra-core';
 import { AutocompleteArrayInput } from '@/components/admin/autocomplete-array-input';
 import { AutocompleteInput } from '@/components/admin/autocomplete-input';
 import { BooleanInput } from '@/components/admin/boolean-input';
+import { DateTimeInput } from '@/components/admin/date-time-input';
 import { NumberInput } from '@/components/admin/number-input';
 import { ReferenceArrayInput } from '@/components/admin/reference-array-input';
 import { ReferenceInput } from '@/components/admin/reference-input';
@@ -141,9 +142,22 @@ const TaxonNameFormInner = ({ relatedSections }: { relatedSections?: React.React
           <SelectInput source="publication_status" choices={PublicationStatus} />
           <BooleanInput source="is_current" label="Current" />
           <BooleanInput source="validated" label="Validated" />
+          <BooleanInput source="is_wa_recognised" label="WA recognised" />
 
           <div className="hidden md:block md:col-span-2 xl:col-span-4" aria-hidden="true" />
           <TextInput source="legacy_id" label="Legacy ID" className="xl:col-span-4" />
+        </div>
+      </section>
+
+      <section className="mt-12 space-y-4 border-t border-border pt-12">
+        <div className="space-y-1">
+          <h3 className="text-base font-semibold tracking-tight">Authority</h3>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <TextInput source="authorised_by" label="Authorised by" className="xl:col-span-2" />
+          <DateTimeInput source="authorised_on" label="Authorised on" className="xl:col-span-2" />
+          <TextInput source="contributed_by" label="Contributed by" className="xl:col-span-2" />
+          <DateTimeInput source="contributed_on" label="Contributed on" className="xl:col-span-2" />
         </div>
       </section>
 

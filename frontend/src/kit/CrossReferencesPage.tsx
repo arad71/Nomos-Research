@@ -20,6 +20,9 @@ type CrossReferenceRecord = {
   new_name_id?: number;
   cross_reference_type?: string;
   authorised_by?: string;
+  authorised_on?: string;
+  contributed_by?: string;
+  contributed_on?: string;
   reference_comments?: string;
   notes?: string;
   updated_by?: number;
@@ -43,6 +46,9 @@ type ColumnKey =
   | 'newName'
   | 'type'
   | 'authorisedBy'
+  | 'authorisedOn'
+  | 'contributedBy'
+  | 'contributedOn'
   | 'referenceComments'
   | 'notes'
   | 'updatedBy'
@@ -58,18 +64,20 @@ const DEFAULT_SORT_ORDER: SortOrder = 'DESC';
 const EXPORT_BATCH_SIZE = 500;
 
 const defaultColumns: ColumnKey[] = [
+  'type',
   'oldName',
   'newName',
-  'type',
-  'referenceComments',
   'actions',
 ];
 
 const columnOptions: Array<{ key: ColumnKey; label: string }> = [
+  { key: 'type', label: 'Cross reference type' },
   { key: 'oldName', label: 'Old name' },
   { key: 'newName', label: 'New name' },
-  { key: 'type', label: 'Cross reference type' },
   { key: 'authorisedBy', label: 'Authorised by' },
+  { key: 'authorisedOn', label: 'Authorised on' },
+  { key: 'contributedBy', label: 'Contributed by' },
+  { key: 'contributedOn', label: 'Contributed on' },
   { key: 'referenceComments', label: 'Reference comments' },
   { key: 'notes', label: 'Notes' },
   { key: 'updatedBy', label: 'Updated by' },
@@ -91,6 +99,9 @@ const sortableColumns: Partial<Record<ColumnKey, string>> = {
   newName: 'new_name___scientific_name',
   type: 'cross_reference_type',
   authorisedBy: 'authorised_by',
+  authorisedOn: 'authorised_on',
+  contributedBy: 'contributed_by',
+  contributedOn: 'contributed_on',
   referenceComments: 'reference_comments',
   notes: 'notes',
   updatedBy: 'updated_by',
@@ -452,6 +463,9 @@ const CrossReferencesPage = () => {
       'New name',
       'Cross reference type',
       'Authorised by',
+      'Authorised on',
+      'Contributed by',
+      'Contributed on',
       'Reference comments',
       'Notes',
       'Updated by',
@@ -467,6 +481,9 @@ const CrossReferencesPage = () => {
         ? crossRefTypeMap[record.cross_reference_type] ?? record.cross_reference_type
         : '',
       record.authorised_by ?? '',
+      record.authorised_on ?? '',
+      record.contributed_by ?? '',
+      record.contributed_on ?? '',
       record.reference_comments ?? '',
       record.notes ?? '',
       record.updated_by ? userMap[record.updated_by] ?? '' : '',
@@ -553,6 +570,16 @@ const CrossReferencesPage = () => {
           : '';
       case 'authorisedBy':
         return textOrEmpty(record.authorised_by);
+      case 'authorisedOn':
+        return (
+          <span className="text-muted-foreground">{formatDate(record.authorised_on)}</span>
+        );
+      case 'contributedBy':
+        return textOrEmpty(record.contributed_by);
+      case 'contributedOn':
+        return (
+          <span className="text-muted-foreground">{formatDate(record.contributed_on)}</span>
+        );
       case 'referenceComments':
         return textOrEmpty(record.reference_comments);
       case 'notes':

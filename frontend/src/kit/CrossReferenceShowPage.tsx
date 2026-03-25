@@ -12,28 +12,21 @@ const crossRefTypeMap = CrossRefType.reduce<Record<string, string>>((acc, item) 
   return acc;
 }, {});
 
-const formatAuthorisedOn = (record: {
-  authorised_yr?: number | null;
-  authorised_mn?: number | null;
-  authorised_dy?: number | null;
-}) => {
-  const year = record.authorised_yr;
-  const month = record.authorised_mn;
-  const day = record.authorised_dy;
-
-  if (!year && !month && !day) {
-    return '';
-  }
-
-  return [day, month, year].filter((value) => value != null && value !== '').join('/');
-};
-
 const HtmlValue = ({ value }: { value?: string | null }) => {
   if (!value) {
     return null;
   }
 
   return <span dangerouslySetInnerHTML={{ __html: value }} />;
+};
+
+const formatDateTime = (value?: string | null) => {
+  if (!value) {
+    return '';
+  }
+
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? value : date.toLocaleString();
 };
 
 const CrossReferenceShowTitle = () => {
@@ -57,53 +50,75 @@ const CrossReferenceShowPage = () => (
   <Show resource="cross_references" title={<CrossReferenceShowTitle />} actions={<CrossReferenceShowActions />}>
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
       <div className="grid gap-6 rounded-2xl border border-border bg-card p-6">
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          <RecordField label="Old name" source="old_name_id">
-            <ReferenceField source="old_name_id" reference="taxon_names">
-              <RecordField
-                label=""
-                render={(record: { formatted_scientific_name?: string | null }) => (
-                  <HtmlValue value={record.formatted_scientific_name} />
-                )}
-              />
-            </ReferenceField>
-          </RecordField>
-          <RecordField label="New name" source="new_name_id">
-            <ReferenceField source="new_name_id" reference="taxon_names">
-              <RecordField
-                label=""
-                render={(record: { formatted_scientific_name?: string | null }) => (
-                  <HtmlValue value={record.formatted_scientific_name} />
-                )}
-              />
-            </ReferenceField>
-          </RecordField>
-          <RecordField
-            source="cross_reference_type"
-            label="Cross reference type"
-            className="md:col-span-2 xl:col-span-3"
-            render={(record: { cross_reference_type?: string | null }) =>
-              record.cross_reference_type
-                ? crossRefTypeMap[record.cross_reference_type] ?? record.cross_reference_type
-                : ''
-            }
-          />
-          <RecordField source="authorised_by" label="Authorised by" />
-          <RecordField
-            label="Authorised on"
-            render={(record: {
-              authorised_yr?: number | null;
-              authorised_mn?: number | null;
-              authorised_dy?: number | null;
-            }) => formatAuthorisedOn(record)}
-          />
-          <RecordField
-            source="reference_comments"
-            label="Comments"
-            className="md:col-span-2 xl:col-span-3"
-          />
-          <RecordField source="notes" label="Notes" className="xl:col-span-3" />
-        </div>
+        <section className="space-y-4">
+          <div className="space-y-1">
+            <h3 className="text-base font-semibold tracking-tight">Related name</h3>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <RecordField label="Old name" source="old_name_id">
+              <ReferenceField source="old_name_id" reference="taxon_names">
+                <RecordField
+                  label=""
+                  render={(record: { formatted_scientific_name?: string | null }) => (
+                    <HtmlValue value={record.formatted_scientific_name} />
+                  )}
+                />
+              </ReferenceField>
+            </RecordField>
+            <RecordField label="New name" source="new_name_id">
+              <ReferenceField source="new_name_id" reference="taxon_names">
+                <RecordField
+                  label=""
+                  render={(record: { formatted_scientific_name?: string | null }) => (
+                    <HtmlValue value={record.formatted_scientific_name} />
+                  )}
+                />
+              </ReferenceField>
+            </RecordField>
+            <RecordField
+              source="cross_reference_type"
+              label="Cross reference type"
+              className="md:col-span-2 xl:col-span-3"
+              render={(record: { cross_reference_type?: string | null }) =>
+                record.cross_reference_type
+                  ? crossRefTypeMap[record.cross_reference_type] ?? record.cross_reference_type
+                  : ''
+              }
+            />
+          </div>
+        </section>
+
+        <section className="mt-12 space-y-4 border-t border-border pt-12">
+          <div className="space-y-1">
+            <h3 className="text-base font-semibold tracking-tight">Authority</h3>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <RecordField source="authorised_by" label="Authorised by" />
+            <RecordField
+              label="Authorised on"
+              render={(record: { authorised_on?: string | null }) => formatDateTime(record.authorised_on)}
+            />
+            <RecordField source="contributed_by" label="Contributed by" />
+            <RecordField
+              label="Contributed on"
+              render={(record: { contributed_on?: string | null }) => formatDateTime(record.contributed_on)}
+            />
+          </div>
+        </section>
+
+        <section className="mt-12 space-y-4 border-t border-border pt-12">
+          <div className="space-y-1">
+            <h3 className="text-base font-semibold tracking-tight">Notes</h3>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <RecordField
+              source="reference_comments"
+              label="Comments"
+              className="md:col-span-2 xl:col-span-3"
+            />
+            <RecordField source="notes" label="Notes" className="xl:col-span-3" />
+          </div>
+        </section>
       </div>
       <div className="xl:sticky xl:top-6 xl:self-start">
         <HistoryInfoBox />

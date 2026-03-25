@@ -71,6 +71,7 @@ type TaxonNameRecord = {
   created_by?: number;
   notes?: string;
   admin_comment?: string;
+  authorised_by?: string;
   authorised_on?: string;
   updated_by?: number;
   updated_on?: string;
@@ -132,6 +133,7 @@ type ColumnKey =
   | 'naturalisedComments'
   | 'linearSequence'
   | 'familyNid'
+  | 'authorisedBy'
   | 'authorisedOn'
   | 'createdBy'
   | 'created'
@@ -201,7 +203,6 @@ const columnOptions: Array<{ key: ColumnKey; label: string }> = [
   { key: 'yearPublished', label: 'Year published' },
   { key: 'status', label: 'Status' },
   { key: 'updated', label: 'Updated' },
-  { key: 'actions', label: 'Actions' },
   { key: 'legacyId', label: 'Legacy ID' },
   { key: 'canonicalName', label: 'Canonical name' },
   { key: 'division', label: 'Division' },
@@ -242,13 +243,17 @@ const columnOptions: Array<{ key: ColumnKey; label: string }> = [
   { key: 'naturalisedComments', label: 'Naturalised comments' },
   { key: 'linearSequence', label: 'Linear sequence' },
   { key: 'familyNid', label: 'Family NID' },
-  { key: 'authorisedOn', label: 'Authorised on' },
   { key: 'createdBy', label: 'Created by' },
   { key: 'created', label: 'Created' },
   { key: 'notes', label: 'Notes' },
   { key: 'adminComment', label: 'Admin comment' },
   { key: 'updatedBy', label: 'Updated by' },
   { key: 'deleted', label: 'Deleted' },
+  { key: 'authorisedBy', label: 'Authorised by' },
+  { key: 'authorisedOn', label: 'Authorised on' },
+  { key: 'contributedBy', label: 'Contributed by' },
+  { key: 'contributedOn', label: 'Contributed on' },
+  { key: 'actions', label: 'Actions' },
 ];
 const columnLabelMap = columnOptions.reduce<Record<ColumnKey, string>>(
   (acc, column) => {
@@ -295,6 +300,7 @@ const sortableColumns: Partial<Record<ColumnKey, string>> = {
   naturalisedComments: 'naturalised_comments',
   linearSequence: 'linear_sequence',
   familyNid: 'family',
+  authorisedBy: 'authorised_by',
   authorisedOn: 'authorised_on',
   createdBy: 'created_by',
   created: 'created_on',
@@ -1405,6 +1411,8 @@ const TaxonNamesPage = () => {
         return <span className="text-muted-foreground">{textOrEmpty(record.linear_sequence as number | null)}</span>;
       case 'familyNid':
         return renderHtmlOrFallback(record.family_nid ? familyNidMap[record.family_nid] : undefined);
+      case 'authorisedBy':
+        return textOrEmpty(record.authorised_by);
       case 'authorisedOn':
         return <span className="text-muted-foreground">{formatDate(record.authorised_on)}</span>;
       case 'createdBy':
