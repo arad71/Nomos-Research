@@ -3,6 +3,7 @@ import { Download, Plus, Search } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { ColumnsButton } from '@/components/admin/columns-button';
 import { DataTable } from '@/components/admin/data-table';
+import { Checkbox } from '@/components/ui/checkbox';
 import authProvider from '../admin/authProvider';
 import AuthorizedButtonLink from './AuthorizedButtonLink';
 import RecordActionButtons from './RecordActionButtons';
@@ -176,13 +177,28 @@ const booleanOptions = [
 
 const ClassificationSystemsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [canUseDeletedFilter, setCanUseDeletedFilter] = React.useState(false);
+  React.useEffect(() => {
+    let active = true;
+    authProvider
+      .canAccess({ resource: 'classification_systems', action: 'deletedfilter' })
+      .then((result) => {
+        if (active) setCanUseDeletedFilter(Boolean(result));
+      })
+      .catch(() => {
+        if (active) setCanUseDeletedFilter(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
   const filters = React.useMemo<ClassificationFilters>(
     () => ({
       q: searchParams.get('q') || '',
       classType: searchParams.get('class_type') || '',
-      deleted: searchParams.get('deleted') || '',
+      deleted: canUseDeletedFilter ? searchParams.get('deleted') || '' : '',
     }),
-    [searchParams]
+    [canUseDeletedFilter, searchParams]
   );
   const page = Math.max(Number(searchParams.get('page') || '1'), 1);
   const perPage = React.useMemo(() => {
@@ -216,7 +232,7 @@ const ClassificationSystemsPage = () => {
   const activeFilterBadges = [
     ...(filters.q ? [{ label: 'Query', value: filters.q }] : []),
     ...(filters.classType ? [{ label: 'Class type', value: classificationTypeMap[filters.classType] || filters.classType }] : []),
-    ...(filters.deleted ? [{ label: 'Deleted', value: filters.deleted === 'true' ? 'Yes' : 'No' }] : []),
+    ...(canUseDeletedFilter && filters.deleted ? [{ label: 'Deleted only', value: 'Yes' }] : []),
   ];
   const updateParams = (updates: Record<string, string | number | null>) => {
     const next = new URLSearchParams(searchParams);
@@ -231,7 +247,7 @@ const ClassificationSystemsPage = () => {
     updateParams({
       q: draftFilters.q || null,
       class_type: draftFilters.classType || null,
-      deleted: draftFilters.deleted || null,
+      deleted: canUseDeletedFilter ? draftFilters.deleted || null : null,
       page: 1,
     });
   };
@@ -339,12 +355,20 @@ const ClassificationSystemsPage = () => {
                 {ClassificationType.map((option) => <option key={option.id} value={option.id}>{option.name}</option>)}
               </select>
             </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Deleted</label>
-              <select value={draftFilters.deleted} onChange={(event) => setDraftFilters((current) => ({ ...current, deleted: event.target.value }))} className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring">
-                {booleanOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-              </select>
-            </div>
+            {canUseDeletedFilter ? <div className="space-y-2">
+              <label className="inline-flex items-center gap-2 text-sm font-medium">
+                <Checkbox
+                  checked={draftFilters.deleted === 'true'}
+                  onCheckedChange={(checked) =>
+                    setDraftFilters((current) => ({
+                      ...current,
+                      deleted: checked ? 'true' : '',
+                    }))
+                  }
+                />
+                Show deleted only
+              </label>
+            </div> : null}
           </div>
           <div className="flex flex-wrap gap-2">
             <Button type="submit">Apply filters</Button>

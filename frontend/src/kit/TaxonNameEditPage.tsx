@@ -22,6 +22,7 @@ const TaxonNameEditActions = () => {
       listTo="/taxon_names"
       showTo={record?.id != null ? `/taxon_names/${record.id}/show` : null}
       extra={record?.id != null && canAccess ? <DeleteButton resource="taxon_names" /> : null}
+      restoreable
     />
   );
 };

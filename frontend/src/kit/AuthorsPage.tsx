@@ -311,7 +311,12 @@ const AuthorsPage = () => {
     const authorId = record.author_id ?? record.id ?? 0;
     switch (column) {
       case 'abbreviation':
-        return record.abbreviation ?? '';
+        return (
+          <span className="inline-flex items-center gap-2">
+            <span>{record.abbreviation ?? ''}</span>
+            {record.deleted ? <Badge variant="destructive">Deleted</Badge> : null}
+          </span>
+        );
       case 'surname':
         return record.surname ?? '';
       case 'firstNames':

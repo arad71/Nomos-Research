@@ -360,7 +360,12 @@ const CitationsPage = () => {
     const citationId = record.citation_id ?? record.id ?? 0;
     switch (column) {
       case 'taxonName':
-        return renderHtml(record.taxon_name_id ? taxonNameMap[record.taxon_name_id] : '');
+        return (
+          <span className="inline-flex items-center gap-2">
+            <span>{renderHtml(record.taxon_name_id ? taxonNameMap[record.taxon_name_id] : '')}</span>
+            {record.deleted ? <Badge variant="destructive">Deleted</Badge> : null}
+          </span>
+        );
       case 'author':
         return (record.author_id && authorMap[record.author_id]) || '';
       case 'authorType':

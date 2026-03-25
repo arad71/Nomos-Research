@@ -3,6 +3,7 @@ import { Download, Plus, Search } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { ColumnsButton } from '@/components/admin/columns-button';
 import { DataTable } from '@/components/admin/data-table';
+import { Checkbox } from '@/components/ui/checkbox';
 import authProvider from '../admin/authProvider';
 import AuthorizedButtonLink from './AuthorizedButtonLink';
 import RecordActionButtons from './RecordActionButtons';
@@ -31,6 +32,7 @@ type UsersResponse = {
 
 type UserFilters = {
   q: string;
+  deleted: string;
 };
 
 type ColumnKey =
@@ -141,7 +143,14 @@ const fetchUsers = async (
 ): Promise<UsersResponse> => {
   const sort = encodeURIComponent(JSON.stringify([sortField, sortOrder]));
   const range = encodeURIComponent(JSON.stringify([(page - 1) * perPage, page * perPage - 1]));
-  const filter = encodeURIComponent(JSON.stringify(filters.q ? { q: filters.q } : {}));
+  const nextFilter: Record<string, string | boolean> = {};
+  if (filters.q) {
+    nextFilter.q = filters.q;
+  }
+  if (filters.deleted) {
+    nextFilter.deleted = filters.deleted === 'true';
+  }
+  const filter = encodeURIComponent(JSON.stringify(nextFilter));
   const response = await fetch(
     `${BACKEND_URL}/users?sort=${sort}&range=${range}&filter=${filter}`,
     { headers: buildHeaders() }
@@ -188,9 +197,13 @@ const downloadCsv = (filename: string, content: string) => {
 
 const UsersPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [canUseDeletedFilter, setCanUseDeletedFilter] = React.useState(false);
   const filters = React.useMemo<UserFilters>(
-    () => ({ q: searchParams.get('q') || '' }),
-    [searchParams]
+    () => ({
+      q: searchParams.get('q') || '',
+      deleted: canUseDeletedFilter ? searchParams.get('deleted') || '' : '',
+    }),
+    [canUseDeletedFilter, searchParams]
   );
   const page = Math.max(Number(searchParams.get('page') || '1'), 1);
   const perPage = React.useMemo(() => {
@@ -212,6 +225,25 @@ const UsersPage = () => {
     data: UserRecord[];
     total: number;
   }>({ loading: true, error: null, data: [], total: 0 });
+
+  React.useEffect(() => {
+    let active = true;
+    authProvider
+      .canAccess({ resource: 'users', action: 'deletedfilter' })
+      .then((result) => {
+        if (active) {
+          setCanUseDeletedFilter(Boolean(result));
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setCanUseDeletedFilter(false);
+        }
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   React.useEffect(() => setDraftFilters(filters), [filters]);
 
@@ -251,7 +283,12 @@ const UsersPage = () => {
   }, [state.data]);
 
   const totalPages = Math.max(Math.ceil(state.total / perPage), 1);
-  const activeFilterBadges = filters.q ? [{ label: 'Query', value: filters.q }] : [];
+  const activeFilterBadges = [
+    ...(filters.q ? [{ label: 'Query', value: filters.q }] : []),
+    ...(canUseDeletedFilter && filters.deleted
+      ? [{ label: 'Deleted only', value: 'Yes' }]
+      : []),
+  ];
 
   const updateParams = (updates: Record<string, string | number | null>) => {
     const next = new URLSearchParams(searchParams);
@@ -264,11 +301,15 @@ const UsersPage = () => {
 
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    updateParams({ q: draftFilters.q || null, page: 1 });
+    updateParams({
+      q: draftFilters.q || null,
+      deleted: canUseDeletedFilter ? draftFilters.deleted || null : null,
+      page: 1,
+    });
   };
 
   const clearAllFilters = () => {
-    setDraftFilters({ q: '' });
+    setDraftFilters({ q: '', deleted: '' });
     setSearchParams(new URLSearchParams());
   };
 
@@ -338,7 +379,12 @@ const UsersPage = () => {
     const userId = record.user_id ?? record.id ?? 0;
     switch (column) {
       case 'email':
-        return record.email ?? '';
+        return (
+          <span className="inline-flex items-center gap-2">
+            <span>{record.email ?? ''}</span>
+            {record.deleted ? <Badge variant="destructive">Deleted</Badge> : null}
+          </span>
+        );
       case 'firstName':
         return record.first_name ?? '';
       case 'lastName':
@@ -408,12 +454,33 @@ const UsersPage = () => {
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <input
                 value={draftFilters.q}
-                onChange={(event) => setDraftFilters({ q: event.target.value })}
+                onChange={(event) =>
+                  setDraftFilters((current) => ({
+                    ...current,
+                    q: event.target.value,
+                  }))
+                }
                 placeholder="Search users"
                 className="h-10 w-full rounded-xl border border-border bg-background pl-9 pr-3 text-sm outline-none ring-offset-background transition placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
               />
             </div>
           </div>
+          {canUseDeletedFilter ? (
+            <div className="space-y-2">
+              <label className="inline-flex items-center gap-2 text-sm font-medium">
+                <Checkbox
+                  checked={draftFilters.deleted === 'true'}
+                  onCheckedChange={(checked) =>
+                    setDraftFilters((current) => ({
+                      ...current,
+                      deleted: checked ? 'true' : '',
+                    }))
+                  }
+                />
+                Show deleted only
+              </label>
+            </div>
+          ) : null}
           <div className="flex flex-wrap gap-2">
             <Button type="submit">Apply filters</Button>
             <Button type="button" variant="outline" onClick={clearAllFilters}>

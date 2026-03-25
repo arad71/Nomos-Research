@@ -14,6 +14,7 @@ import {
 import { Link, useSearchParams } from 'react-router-dom';
 import { ColumnsButton } from '@/components/admin/columns-button';
 import { DataTable } from '@/components/admin/data-table';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useDataProvider, useNotify } from 'react-admin';
 import authProvider from '../admin/authProvider';
 import AuthorizedButtonLink from './AuthorizedButtonLink';
@@ -1149,7 +1150,7 @@ const TaxonNamesPage = () => {
           ? { label: 'Autonym', value: getBooleanLabel(filters.isAutonym) }
           : null,
         canUseDeletedFilter && filters.deleted
-          ? { label: 'Deleted', value: getBooleanLabel(filters.deleted) }
+          ? { label: 'Deleted only', value: 'Yes' }
           : null,
       ].filter(Boolean) as Array<{ label: string; value: string }>,
     [canUseDeletedFilter, filters]
@@ -1292,7 +1293,10 @@ const TaxonNamesPage = () => {
       case 'name':
         return (
           <div className="space-y-1">
-            <div className="font-medium">{renderName(record)}</div>
+            <div className="inline-flex items-center gap-2 font-medium">
+              <span>{renderName(record)}</span>
+              {record.deleted ? <Badge variant="destructive">Deleted</Badge> : null}
+            </div>
             <div className="text-xs text-muted-foreground">NomosID {taxonNameId}</div>
           </div>
         );
@@ -1488,6 +1492,23 @@ const TaxonNamesPage = () => {
           </option>
         ))}
       </select>
+    </div>
+  );
+
+  const renderDeletedOnlyFilter = () => (
+    <div className="space-y-2">
+      <label className="inline-flex items-center gap-2 text-sm font-medium">
+        <Checkbox
+          checked={draftFilters.deleted === 'true'}
+          onCheckedChange={(checked) =>
+            setDraftFilters((current) => ({
+              ...current,
+              deleted: checked ? 'true' : '',
+            }))
+          }
+        />
+        Show deleted only
+      </label>
     </div>
   );
 
@@ -1763,9 +1784,7 @@ const TaxonNamesPage = () => {
                   <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
                     {renderSelectFilter('Validated', 'validated', booleanOptions)}
                     {renderSelectFilter('Autonym', 'isAutonym', booleanOptions)}
-                    {canUseDeletedFilter
-                      ? renderSelectFilter('Deleted?', 'deleted', booleanOptions)
-                      : null}
+                    {canUseDeletedFilter ? renderDeletedOnlyFilter() : null}
                   </div>
                 </div>
               </div>

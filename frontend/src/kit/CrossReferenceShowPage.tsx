@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useRecordContext } from 'ra-core';
+import { Badge } from '@/components/ui/badge';
 import { RecordField } from '@/components/admin/record-field';
 import { ReferenceField } from '@/components/admin/reference-field';
 import { Show } from '@/components/admin/show';
@@ -30,8 +31,14 @@ const formatDateTime = (value?: string | null) => {
 };
 
 const CrossReferenceShowTitle = () => {
-  const record = useRecordContext<{ id?: string | number }>();
-  return record?.id != null ? `Related name #${record.id}` : 'Related name';
+  const record = useRecordContext<{ id?: string | number; deleted?: boolean | null }>();
+  const title = record?.id != null ? `Related name #${record.id}` : 'Related name';
+  return (
+    <span className="inline-flex items-center gap-2">
+      <span>{title}</span>
+      {record?.deleted ? <Badge variant="destructive">Deleted</Badge> : null}
+    </span>
+  );
 };
 
 const CrossReferenceShowActions = () => {
@@ -42,6 +49,7 @@ const CrossReferenceShowActions = () => {
       resource="cross_references"
       listTo="/cross_references"
       editTo={record?.id != null ? `/cross_references/${record.id}` : null}
+      restoreable
     />
   );
 };

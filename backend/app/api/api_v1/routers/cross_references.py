@@ -155,3 +155,26 @@ async def cross_reference_delete(
     Delete existing cross_reference
     """
     return CrossReferenceCrud.delete_item(db, current_user, cross_reference_id, True)
+
+
+@r.post(
+    "/{cross_reference_id}/restore",
+    response_model=CrossReference,
+    response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
+async def cross_reference_restore(
+    cross_reference_id: int,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
+):
+    """
+    Restore a soft deleted cross_reference
+    """
+    return CrossReferenceCrud.undelete_item(db, current_user, cross_reference_id)

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useRecordContext } from 'ra-core';
+import { Badge } from '@/components/ui/badge';
 import { RecordField } from '@/components/admin/record-field';
 import { ReferenceField } from '@/components/admin/reference-field';
 import { Show } from '@/components/admin/show';
@@ -15,8 +16,14 @@ const HtmlValue = ({ value }: { value?: string | null }) => {
 };
 
 const HierarchyShowTitle = () => {
-  const record = useRecordContext<{ id?: string | number }>();
-  return record?.id != null ? `Hierarchy #${record.id}` : 'Hierarchy';
+  const record = useRecordContext<{ id?: string | number; deleted?: boolean | null }>();
+  const title = record?.id != null ? `Hierarchy #${record.id}` : 'Hierarchy';
+  return (
+    <span className="inline-flex items-center gap-2">
+      <span>{title}</span>
+      {record?.deleted ? <Badge variant="destructive">Deleted</Badge> : null}
+    </span>
+  );
 };
 
 const HierarchyShowActions = () => {
@@ -27,6 +34,7 @@ const HierarchyShowActions = () => {
       resource="hierarchies"
       listTo="/hierarchies"
       editTo={record?.id != null ? `/hierarchies/${record.id}` : null}
+      restoreable
     />
   );
 };

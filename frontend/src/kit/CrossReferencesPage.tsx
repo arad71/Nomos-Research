@@ -3,6 +3,7 @@ import { Download, Plus, Search } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { ColumnsButton } from '@/components/admin/columns-button';
 import { DataTable } from '@/components/admin/data-table';
+import { Checkbox } from '@/components/ui/checkbox';
 import authProvider from '../admin/authProvider';
 import AuthorizedButtonLink from './AuthorizedButtonLink';
 import RecordActionButtons from './RecordActionButtons';
@@ -298,13 +299,14 @@ const booleanOptions = [
 
 const CrossReferencesPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [canUseDeletedFilter, setCanUseDeletedFilter] = React.useState(false);
   const filters = React.useMemo<CrossReferenceFilters>(
     () => ({
       q: searchParams.get('q') || '',
       crossReferenceType: searchParams.get('cross_reference_type') || '',
-      deleted: searchParams.get('deleted') || '',
+      deleted: canUseDeletedFilter ? searchParams.get('deleted') || '' : '',
     }),
-    [searchParams]
+    [canUseDeletedFilter, searchParams]
   );
   const page = Math.max(Number(searchParams.get('page') || '1'), 1);
   const perPage = React.useMemo(() => {
@@ -331,6 +333,25 @@ const CrossReferencesPage = () => {
     data: [],
     total: 0,
   });
+
+  React.useEffect(() => {
+    let active = true;
+    authProvider
+      .canAccess({ resource: 'cross_references', action: 'deletedfilter' })
+      .then((result) => {
+        if (active) {
+          setCanUseDeletedFilter(Boolean(result));
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setCanUseDeletedFilter(false);
+        }
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   React.useEffect(() => {
     setDraftFilters(filters);
@@ -416,11 +437,11 @@ const CrossReferencesPage = () => {
                 crossRefTypeMap[filters.crossReferenceType] || filters.crossReferenceType,
             }
           : null,
-        filters.deleted
-          ? { label: 'Deleted', value: filters.deleted === 'true' ? 'Yes' : 'No' }
+        canUseDeletedFilter && filters.deleted
+          ? { label: 'Deleted only', value: 'Yes' }
           : null,
       ].filter(Boolean) as Array<{ label: string; value: string }>,
-    [filters]
+    [canUseDeletedFilter, filters]
   );
 
   const updateParams = (updates: Record<string, string | number | null>) => {
@@ -442,7 +463,7 @@ const CrossReferencesPage = () => {
     updateParams({
       q: draftFilters.q || null,
       cross_reference_type: draftFilters.crossReferenceType || null,
-      deleted: draftFilters.deleted || null,
+      deleted: canUseDeletedFilter ? draftFilters.deleted || null : null,
       page: 1,
     });
   };
@@ -557,8 +578,15 @@ const CrossReferencesPage = () => {
 
     switch (column) {
       case 'oldName':
-        return renderHtmlOrFallback(
-          record.old_name_id ? taxonNameMap[record.old_name_id] : undefined
+        return (
+          <span className="inline-flex items-center gap-2">
+            <span>
+              {renderHtmlOrFallback(
+                record.old_name_id ? taxonNameMap[record.old_name_id] : undefined
+              )}
+            </span>
+            {record.deleted ? <Badge variant="destructive">Deleted</Badge> : null}
+          </span>
         );
       case 'newName':
         return renderHtmlOrFallback(
@@ -690,25 +718,20 @@ const CrossReferencesPage = () => {
               </select>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Deleted</label>
-              <select
-                value={draftFilters.deleted}
-                onChange={(event) =>
-                  setDraftFilters((current) => ({
-                    ...current,
-                    deleted: event.target.value,
-                  }))
-                }
-                className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                {booleanOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {canUseDeletedFilter ? <div className="space-y-2">
+              <label className="inline-flex items-center gap-2 text-sm font-medium">
+                <Checkbox
+                  checked={draftFilters.deleted === 'true'}
+                  onCheckedChange={(checked) =>
+                    setDraftFilters((current) => ({
+                      ...current,
+                      deleted: checked ? 'true' : '',
+                    }))
+                  }
+                />
+                Show deleted only
+              </label>
+            </div> : null}
           </div>
 
           <div className="flex flex-wrap gap-2">

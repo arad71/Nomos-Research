@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { required } from 'ra-core';
 import { AutocompleteArrayInput } from '@/components/admin/autocomplete-array-input';
-import { BooleanInput } from '@/components/admin/boolean-input';
 import { ReferenceArrayInput } from '@/components/admin/reference-array-input';
 import { SimpleForm } from '@/components/admin/simple-form';
 import { TextInput } from '@/components/admin/text-input';
@@ -41,12 +40,6 @@ const UserForm = () => (
           validate={requiredValue}
         />
       </ReferenceArrayInput>
-      <BooleanInput
-        source="deleted"
-        label="Deleted"
-        className="md:col-span-2"
-        helperText="Toggle to mark the user as deleted (inactive) or not (active)"
-      />
     </div>
   </SimpleForm>
 );

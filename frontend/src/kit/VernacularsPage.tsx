@@ -3,6 +3,7 @@ import { Download, Plus, Search } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { ColumnsButton } from '@/components/admin/columns-button';
 import { DataTable } from '@/components/admin/data-table';
+import { Checkbox } from '@/components/ui/checkbox';
 import authProvider from '../admin/authProvider';
 import AuthorizedButtonLink from './AuthorizedButtonLink';
 import RecordActionButtons from './RecordActionButtons';
@@ -59,18 +60,15 @@ const DEFAULT_SORT_ORDER: SortOrder = 'ASC';
 const EXPORT_BATCH_SIZE = 500;
 
 const defaultColumns: ColumnKey[] = [
-  'taxonName',
   'vernacularName',
+  'taxonName',
   'language',
-  'preferred',
-  'source',
-  'sortOrder',
   'actions',
 ];
 
 const columnOptions: Array<{ key: ColumnKey; label: string }> = [
-  { key: 'taxonName', label: 'Taxon name' },
   { key: 'vernacularName', label: 'Vernacular name' },
+  { key: 'taxonName', label: 'Taxon name' },
   { key: 'language', label: 'Language' },
   { key: 'langPref', label: 'Lang pref' },
   { key: 'preferred', label: 'Preferred' },
@@ -291,12 +289,13 @@ const booleanOptions = [
 
 const VernacularsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [canUseDeletedFilter, setCanUseDeletedFilter] = React.useState(false);
   const filters = React.useMemo<VernacularFilters>(
     () => ({
       q: searchParams.get('q') || '',
-      deleted: searchParams.get('deleted') || '',
+      deleted: canUseDeletedFilter ? searchParams.get('deleted') || '' : '',
     }),
-    [searchParams]
+    [canUseDeletedFilter, searchParams]
   );
   const page = Math.max(Number(searchParams.get('page') || '1'), 1);
   const perPage = React.useMemo(() => {
@@ -323,6 +322,25 @@ const VernacularsPage = () => {
     data: [],
     total: 0,
   });
+
+  React.useEffect(() => {
+    let active = true;
+    authProvider
+      .canAccess({ resource: 'vernaculars', action: 'deletedfilter' })
+      .then((result) => {
+        if (active) {
+          setCanUseDeletedFilter(Boolean(result));
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setCanUseDeletedFilter(false);
+        }
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   React.useEffect(() => {
     setDraftFilters(filters);
@@ -401,14 +419,14 @@ const VernacularsPage = () => {
     () =>
       [
         filters.q ? { label: 'Query', value: filters.q } : null,
-        filters.deleted
+        canUseDeletedFilter && filters.deleted
           ? {
-              label: 'Deleted',
-              value: filters.deleted === 'true' ? 'Yes' : 'No',
+              label: 'Deleted only',
+              value: 'Yes',
             }
           : null,
       ].filter(Boolean) as Array<{ label: string; value: string }>,
-    [filters]
+    [canUseDeletedFilter, filters]
   );
 
   const updateParams = (updates: Record<string, string | number | null>) => {
@@ -429,7 +447,7 @@ const VernacularsPage = () => {
     event.preventDefault();
     updateParams({
       q: draftFilters.q || null,
-      deleted: draftFilters.deleted || null,
+      deleted: canUseDeletedFilter ? draftFilters.deleted || null : null,
       page: 1,
     });
   };
@@ -541,7 +559,12 @@ const VernacularsPage = () => {
           record.taxon_name_id ? taxonNameMap[record.taxon_name_id] : undefined
         );
       case 'vernacularName':
-        return textOrEmpty(record.vernacular_name);
+        return (
+          <span className="inline-flex items-center gap-2">
+            <span>{textOrEmpty(record.vernacular_name)}</span>
+            {record.deleted ? <Badge variant="destructive">Deleted</Badge> : null}
+          </span>
+        );
       case 'language':
         return record.language ? languageMap[record.language] ?? record.language : '';
       case 'langPref':
@@ -644,25 +667,20 @@ const VernacularsPage = () => {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Deleted</label>
-              <select
-                value={draftFilters.deleted}
-                onChange={(event) =>
-                  setDraftFilters((current) => ({
-                    ...current,
-                    deleted: event.target.value,
-                  }))
-                }
-                className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                {booleanOptions.map((option) => (
-                  <option key={option.label} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {canUseDeletedFilter ? <div className="space-y-2">
+              <label className="inline-flex items-center gap-2 text-sm font-medium">
+                <Checkbox
+                  checked={draftFilters.deleted === 'true'}
+                  onCheckedChange={(checked) =>
+                    setDraftFilters((current) => ({
+                      ...current,
+                      deleted: checked ? 'true' : '',
+                    }))
+                  }
+                />
+                Show deleted only
+              </label>
+            </div> : null}
           </div>
 
           <div className="flex flex-wrap gap-2">

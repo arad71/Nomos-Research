@@ -6,6 +6,7 @@ import { Show } from '@/components/admin/show';
 import { SingleFieldList } from '@/components/admin/single-field-list';
 import HistoryInfoBox from './HistoryInfoBox';
 import RecordPageActions from './RecordPageActions';
+import { Badge } from '../components/ui/badge';
 
 const renderBoolean = (value?: boolean | null) => {
   if (value === null || value === undefined) {
@@ -21,8 +22,19 @@ const SectionTitle = ({ children }: { children: React.ReactNode }) => (
 );
 
 const UserShowTitle = () => {
-  const record = useRecordContext<{ full_name?: string; email?: string }>();
-  return record?.full_name || record?.email || 'User';
+  const record = useRecordContext<{
+    full_name?: string;
+    email?: string;
+    deleted?: boolean | null;
+  }>();
+  const title = record?.full_name || record?.email || 'User';
+
+  return (
+    <span className="inline-flex items-center gap-2">
+      <span>{title}</span>
+      {record?.deleted ? <Badge variant="destructive">Deleted</Badge> : null}
+    </span>
+  );
 };
 
 const UserShowActions = () => {
@@ -33,6 +45,7 @@ const UserShowActions = () => {
       resource="users"
       listTo="/users"
       editTo={record?.id != null ? `/users/${record.id}` : null}
+      restoreable
     />
   );
 };

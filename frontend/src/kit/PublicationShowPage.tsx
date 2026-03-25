@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useRecordContext } from 'ra-core';
+import { Badge } from '@/components/ui/badge';
 import { RecordField } from '@/components/admin/record-field';
 import { ReferenceArrayField } from '@/components/admin/reference-array-field';
 import { ReferenceField } from '@/components/admin/reference-field';
@@ -25,8 +26,14 @@ const renderBoolean = (value?: boolean | null) => {
 };
 
 const PublicationShowTitle = () => {
-  const record = useRecordContext<{ display_title?: string; abbreviated_title?: string }>();
-  return record?.display_title || record?.abbreviated_title || 'Publication';
+  const record = useRecordContext<{ display_title?: string; abbreviated_title?: string; deleted?: boolean | null }>();
+  const title = record?.display_title || record?.abbreviated_title || 'Publication';
+  return (
+    <span className="inline-flex items-center gap-2">
+      <span>{title}</span>
+      {record?.deleted ? <Badge variant="destructive">Deleted</Badge> : null}
+    </span>
+  );
 };
 
 const PublicationShowActions = () => {
@@ -37,6 +44,7 @@ const PublicationShowActions = () => {
       resource="publications"
       listTo="/publications"
       editTo={record?.id != null ? `/publications/${record.id}` : null}
+      restoreable
     />
   );
 };

@@ -3,6 +3,7 @@ import { Download, Plus, Search } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { ColumnsButton } from '@/components/admin/columns-button';
 import { DataTable } from '@/components/admin/data-table';
+import { Checkbox } from '@/components/ui/checkbox';
 import authProvider from '../admin/authProvider';
 import AuthorizedButtonLink from './AuthorizedButtonLink';
 import RecordActionButtons from './RecordActionButtons';
@@ -316,6 +317,7 @@ const ConservationStatusBadge = ({ summary }: { summary?: ConservationCodeSummar
 
 const ConscodeTaxonsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [canUseDeletedFilter, setCanUseDeletedFilter] = React.useState(false);
   const filters = React.useMemo<ConscodeTaxonFilters>(
     () => ({
       q: searchParams.get('q') || '',
@@ -327,9 +329,9 @@ const ConscodeTaxonsPage = () => {
         searchParams.get('conservation_code___authorising_org') ||
         searchParams.get('authority') ||
         '',
-      deleted: searchParams.get('deleted') || '',
+      deleted: canUseDeletedFilter ? searchParams.get('deleted') || '' : '',
     }),
-    [searchParams]
+    [canUseDeletedFilter, searchParams]
   );
   const page = Math.max(Number(searchParams.get('page') || '1'), 1);
   const perPage = React.useMemo(() => {
@@ -358,6 +360,25 @@ const ConscodeTaxonsPage = () => {
     data: [],
     total: 0,
   });
+
+  React.useEffect(() => {
+    let active = true;
+    authProvider
+      .canAccess({ resource: 'conscode_taxons', action: 'deletedfilter' })
+      .then((result) => {
+        if (active) {
+          setCanUseDeletedFilter(Boolean(result));
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setCanUseDeletedFilter(false);
+        }
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   React.useEffect(() => {
     setDraftFilters(filters);
@@ -468,14 +489,14 @@ const ConscodeTaxonsPage = () => {
           ? { label: 'Conservation code', value: filters.conservationCode }
           : null,
         filters.authority ? { label: 'Authority', value: filters.authority } : null,
-        filters.deleted
+        canUseDeletedFilter && filters.deleted
           ? {
-              label: 'Deleted',
-              value: filters.deleted === 'true' ? 'Yes' : 'No',
+              label: 'Deleted only',
+              value: 'Yes',
             }
           : null,
       ].filter(Boolean) as Array<{ label: string; value: string }>,
-    [filters]
+    [canUseDeletedFilter, filters]
   );
 
   const updateParams = (updates: Record<string, string | number | null>) => {
@@ -498,7 +519,7 @@ const ConscodeTaxonsPage = () => {
       q: draftFilters.q || null,
       conservation_code: draftFilters.conservationCode || null,
       authority: draftFilters.authority || null,
-      deleted: draftFilters.deleted || null,
+      deleted: canUseDeletedFilter ? draftFilters.deleted || null : null,
       page: 1,
     });
   };
@@ -790,25 +811,20 @@ const ConscodeTaxonsPage = () => {
               </select>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Deleted</label>
-              <select
-                value={draftFilters.deleted}
-                onChange={(event) =>
-                  setDraftFilters((current) => ({
-                    ...current,
-                    deleted: event.target.value,
-                  }))
-                }
-                className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                {booleanOptions.map((option) => (
-                  <option key={option.label} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {canUseDeletedFilter ? <div className="space-y-2">
+              <label className="inline-flex items-center gap-2 text-sm font-medium">
+                <Checkbox
+                  checked={draftFilters.deleted === 'true'}
+                  onCheckedChange={(checked) =>
+                    setDraftFilters((current) => ({
+                      ...current,
+                      deleted: checked ? 'true' : '',
+                    }))
+                  }
+                />
+                Show deleted only
+              </label>
+            </div> : null}
           </div>
 
           <div className="flex flex-wrap gap-2">

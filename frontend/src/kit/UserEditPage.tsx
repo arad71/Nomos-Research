@@ -4,10 +4,22 @@ import { Edit } from '@/components/admin/edit';
 import HistoryInfoBox from './HistoryInfoBox';
 import UserForm from './UserForm';
 import RecordPageActions from './RecordPageActions';
+import { Badge } from '../components/ui/badge';
 
 const UserEditTitle = () => {
-  const record = useRecordContext<{ full_name?: string; email?: string }>();
-  return record?.full_name || record?.email || 'Edit user';
+  const record = useRecordContext<{
+    full_name?: string;
+    email?: string;
+    deleted?: boolean | null;
+  }>();
+  const title = record?.full_name || record?.email || 'Edit user';
+
+  return (
+    <span className="inline-flex items-center gap-2">
+      <span>{title}</span>
+      {record?.deleted ? <Badge variant="destructive">Deleted</Badge> : null}
+    </span>
+  );
 };
 
 const UserEditActions = () => {
@@ -18,6 +30,7 @@ const UserEditActions = () => {
       resource="users"
       listTo="/users"
       showTo={record?.id != null ? `/users/${record.id}/show` : null}
+      restoreable
     />
   );
 };

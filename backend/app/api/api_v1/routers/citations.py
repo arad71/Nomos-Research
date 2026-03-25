@@ -149,3 +149,26 @@ async def citation_delete(
     Delete existing citation
     """
     return CitationCrud.delete_item(db, current_user, citation_id, True)
+
+
+@r.post(
+    "/{citation_id}/restore",
+    response_model=Citation,
+    response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
+async def citation_restore(
+    citation_id: int,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
+):
+    """
+    Restore a soft deleted citation
+    """
+    return CitationCrud.undelete_item(db, current_user, citation_id)

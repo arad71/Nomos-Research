@@ -151,3 +151,26 @@ async def publication_delete(
     Delete existing publication
     """
     return PublicationCrud.delete_item(db, current_user, publication_id, True)
+
+
+@r.post(
+    "/{publication_id}/restore",
+    response_model=Publication,
+    response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
+async def publication_restore(
+    publication_id: int,
+    db=Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+):
+    """
+    Restore a soft deleted publication
+    """
+    return PublicationCrud.undelete_item(db, current_user, publication_id)

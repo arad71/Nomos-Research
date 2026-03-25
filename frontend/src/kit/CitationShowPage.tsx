@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useRecordContext } from 'ra-core';
+import { Badge } from '@/components/ui/badge';
 import { RecordField } from '@/components/admin/record-field';
 import { ReferenceField } from '@/components/admin/reference-field';
 import { Show } from '@/components/admin/show';
@@ -21,8 +22,14 @@ const HtmlValue = ({ value }: { value?: string | null }) => {
 };
 
 const CitationShowTitle = () => {
-  const record = useRecordContext<{ id?: string | number }>();
-  return record?.id != null ? `Citation #${record.id}` : 'Citation';
+  const record = useRecordContext<{ id?: string | number; deleted?: boolean | null }>();
+  const title = record?.id != null ? `Citation #${record.id}` : 'Citation';
+  return (
+    <span className="inline-flex items-center gap-2">
+      <span>{title}</span>
+      {record?.deleted ? <Badge variant="destructive">Deleted</Badge> : null}
+    </span>
+  );
 };
 
 const CitationShowActions = () => {
@@ -33,6 +40,7 @@ const CitationShowActions = () => {
       resource="citations"
       listTo="/citations"
       editTo={record?.id != null ? `/citations/${record.id}` : null}
+      restoreable
     />
   );
 };

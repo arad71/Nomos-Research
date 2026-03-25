@@ -28,7 +28,12 @@ const THEME_STORAGE_KEY = 'nomos-kit-theme';
 const ORIGINAL_SCOPES_STORAGE_KEY = 'original_scopes';
 const MASKED_SCOPES_STORAGE_KEY = 'masked_scopes';
 const ADMIN_ROLE_OPTIONS = [Role.SUPER_ADMIN, Role.APPLICATION_SUPPORT];
-const ROLE_MASK_OPTIONS = [Role.READER, Role.OFFICER, Role.MANAGER] as const;
+const ROLE_MASK_OPTIONS = [
+  Role.READER,
+  Role.OFFICER,
+  Role.MANAGER,
+  Role.APPLICATION_SUPPORT,
+] as const;
 const kitRoutes = new Set([
   '/',
   '/kit',
@@ -521,7 +526,7 @@ const AdminKitLayout = () => {
               </React.Fragment>
             ))}
           </div>
-          <Outlet />
+          <Outlet key={roles.join(',') || 'no-roles'} />
         </main>
       </div>
     </div>

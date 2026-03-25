@@ -149,3 +149,26 @@ async def author_delete(
     Delete existing author
     """
     return AuthorCrud.delete_item(db, current_user, author_id, True)
+
+
+@r.post(
+    "/{author_id}/restore",
+    response_model=Author,
+    response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
+async def author_restore(
+    author_id: int,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
+):
+    """
+    Restore a soft deleted author
+    """
+    return AuthorCrud.undelete_item(db, current_user, author_id)

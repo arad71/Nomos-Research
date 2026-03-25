@@ -3,6 +3,7 @@ import { Download, Plus, Search } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { ColumnsButton } from '@/components/admin/columns-button';
 import { DataTable } from '@/components/admin/data-table';
+import { Checkbox } from '@/components/ui/checkbox';
 import authProvider from '../admin/authProvider';
 import AuthorizedButtonLink from './AuthorizedButtonLink';
 import RecordActionButtons from './RecordActionButtons';
@@ -322,6 +323,7 @@ const downloadCsv = (filename: string, content: string) => {
 
 const HierarchiesPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [canUseDeletedFilter, setCanUseDeletedFilter] = React.useState(false);
   const [classificationSystems, setClassificationSystems] = React.useState<
     ClassificationSystemOption[]
   >([]);
@@ -334,9 +336,9 @@ const HierarchiesPage = () => {
       parentRank: searchParams.get('parent_rank') || '',
       taxonRank: searchParams.get('taxon_rank') || '',
       classificationSystemId: searchParams.get('classification_system_id') || '',
-      deleted: searchParams.get('deleted') || '',
+      deleted: canUseDeletedFilter ? searchParams.get('deleted') || '' : '',
     }),
-    [searchParams]
+    [canUseDeletedFilter, searchParams]
   );
   const page = Math.max(Number(searchParams.get('page') || '1'), 1);
   const perPage = React.useMemo(() => {
@@ -366,6 +368,25 @@ const HierarchiesPage = () => {
     data: [],
     total: 0,
   });
+
+  React.useEffect(() => {
+    let active = true;
+    authProvider
+      .canAccess({ resource: 'hierarchies', action: 'deletedfilter' })
+      .then((result) => {
+        if (active) {
+          setCanUseDeletedFilter(Boolean(result));
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setCanUseDeletedFilter(false);
+        }
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   React.useEffect(() => {
     fetchClassificationSystems().then((result) => {
@@ -471,11 +492,11 @@ const HierarchiesPage = () => {
                 filters.classificationSystemId,
             }
           : null,
-        filters.deleted
-          ? { label: 'Deleted', value: filters.deleted === 'true' ? 'Yes' : 'No' }
+        canUseDeletedFilter && filters.deleted
+          ? { label: 'Deleted only', value: 'Yes' }
           : null,
       ].filter(Boolean) as Array<{ label: string; value: string }>,
-    [filters, classificationSystemMap]
+    [canUseDeletedFilter, filters, classificationSystemMap]
   );
 
   const updateParams = (updates: Record<string, string | number | null>) => {
@@ -502,7 +523,7 @@ const HierarchiesPage = () => {
       parent_rank: draftFilters.parentRank || null,
       taxon_rank: draftFilters.taxonRank || null,
       classification_system_id: draftFilters.classificationSystemId || null,
-      deleted: draftFilters.deleted || null,
+      deleted: canUseDeletedFilter ? draftFilters.deleted || null : null,
       page: 1,
     });
   };
@@ -610,8 +631,15 @@ const HierarchiesPage = () => {
 
     switch (column) {
       case 'taxonName':
-        return renderHtmlOrFallback(
-          record.taxon_name_id ? taxonNameMap[record.taxon_name_id] : undefined
+        return (
+          <span className="inline-flex items-center gap-2">
+            <span>
+              {renderHtmlOrFallback(
+                record.taxon_name_id ? taxonNameMap[record.taxon_name_id] : undefined
+              )}
+            </span>
+            {record.deleted ? <Badge variant="destructive">Deleted</Badge> : null}
+          </span>
         );
       case 'parentName':
         return renderHtmlOrFallback(
@@ -813,25 +841,20 @@ const HierarchiesPage = () => {
               </select>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Deleted</label>
-              <select
-                value={draftFilters.deleted}
-                onChange={(event) =>
-                  setDraftFilters((current) => ({
-                    ...current,
-                    deleted: event.target.value,
-                  }))
-                }
-                className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                {booleanOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {canUseDeletedFilter ? <div className="space-y-2">
+              <label className="inline-flex items-center gap-2 text-sm font-medium">
+                <Checkbox
+                  checked={draftFilters.deleted === 'true'}
+                  onCheckedChange={(checked) =>
+                    setDraftFilters((current) => ({
+                      ...current,
+                      deleted: checked ? 'true' : '',
+                    }))
+                  }
+                />
+                Show deleted only
+              </label>
+            </div> : null}
           </div>
 
           <div className="flex flex-wrap gap-2">

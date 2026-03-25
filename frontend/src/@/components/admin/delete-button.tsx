@@ -16,7 +16,8 @@ import {
 import { humanize, singularize } from "inflection";
 import type { UseDeleteOptions, RedirectionSideEffect } from "ra-core";
 import {
-  useDeleteWithUndoController,
+  useCanAccess,
+  useDeleteController,
   useGetRecordRepresentation,
   useResourceTranslation,
   useRecordContext,
@@ -74,11 +75,16 @@ export const DeleteButton = (props: DeleteButtonProps) => {
   } = props;
   const record = useRecordContext(props);
   const resource = useResourceContext(props);
+  const { canAccess, isPending: isAccessPending } = useCanAccess({
+    resource,
+    action: "delete",
+  });
 
-  const { isPending, handleDelete } = useDeleteWithUndoController({
+  const { isPending, handleDelete } = useDeleteController({
     record,
     resource,
     redirect,
+    mutationMode: "pessimistic",
     onClick,
     mutationOptions,
     successMessage,
@@ -113,11 +119,14 @@ export const DeleteButton = (props: DeleteButtonProps) => {
     confirmMessage ||
     `Delete ${recordRepresentation ? `"${recordRepresentation}"` : `this ${resourceName}`}?`;
   const [open, setOpen] = React.useState(false);
-
   const handleConfirmedDelete = React.useCallback(() => {
     handleDelete();
     setOpen(false);
   }, [handleDelete]);
+
+  if (isAccessPending || !canAccess || record?.deleted) {
+    return null;
+  }
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>

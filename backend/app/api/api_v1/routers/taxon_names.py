@@ -263,6 +263,29 @@ async def taxon_name_delete(
     return TaxonNameCrud.delete_item(db, current_user, taxon_name_id, True)
 
 
+@r.post(
+    "/{taxon_name_id}/restore",
+    response_model=TaxonName,
+    response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
+async def taxon_name_restore(
+    taxon_name_id: int,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
+):
+    """
+    Restore a soft deleted taxon_name
+    """
+    return TaxonNameCrud.undelete_item(db, current_user, taxon_name_id)
+
+
 @r.get(
     "_calculate",
     dependencies=[

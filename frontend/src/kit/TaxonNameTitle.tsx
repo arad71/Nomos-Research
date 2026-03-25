@@ -9,6 +9,7 @@ type TaxonNameTitleRecord = {
   scientific_name?: string | null;
   formatted_scientific_name?: string | null;
   is_current?: boolean | null;
+  deleted?: boolean | null;
   rank_id?: string | number | null;
 };
 
@@ -36,6 +37,7 @@ const TaxonNameTitle = ({ fallback }: { fallback: string }) => {
       <span className="inline-flex items-center gap-2">
         <span dangerouslySetInnerHTML={{ __html: title }} />
         {record.is_current ? <Badge>Current</Badge> : null}
+        {record.deleted ? <Badge variant="destructive">Deleted</Badge> : null}
       </span>
       {nomosId != null ? (
         <span className="inline-flex items-baseline gap-0">

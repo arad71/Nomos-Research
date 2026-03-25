@@ -3,6 +3,8 @@ import { Download, Plus, Search } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { ColumnsButton } from '@/components/admin/columns-button';
 import { DataTable } from '@/components/admin/data-table';
+import { useCanAccess } from 'react-admin';
+import { Checkbox } from '@/components/ui/checkbox';
 import authProvider from '../admin/authProvider';
 import AuthorizedButtonLink from './AuthorizedButtonLink';
 import RecordActionButtons from './RecordActionButtons';
@@ -19,6 +21,7 @@ type KingdomRecord = {
   kingdom_desc?: string;
   updated_by?: number;
   updated_on?: string;
+  deleted?: boolean;
 };
 
 type KingdomsResponse = {
@@ -28,6 +31,7 @@ type KingdomsResponse = {
 
 type KingdomFilters = {
   q: string;
+  deleted: string;
 };
 
 type ColumnKey = 'kingdomName' | 'description' | 'updatedBy' | 'updated' | 'actions';
@@ -119,7 +123,12 @@ const fetchKingdoms = async (
 ): Promise<KingdomsResponse> => {
   const sort = encodeURIComponent(JSON.stringify([sortField, sortOrder]));
   const range = encodeURIComponent(JSON.stringify([(page - 1) * perPage, page * perPage - 1]));
-  const filter = encodeURIComponent(JSON.stringify(filters.q ? { q: filters.q } : {}));
+  const filter = encodeURIComponent(
+    JSON.stringify({
+      ...(filters.q ? { q: filters.q } : {}),
+      ...(filters.deleted ? { deleted: filters.deleted === 'true' } : {}),
+    })
+  );
   const response = await fetch(
     `${BACKEND_URL}/kingdoms?sort=${sort}&range=${range}&filter=${filter}`,
     { headers: buildHeaders() }
@@ -163,10 +172,17 @@ const downloadCsv = (filename: string, content: string) => {
 };
 
 const KingdomsPage = () => {
+  const { canAccess: canUseDeletedFilter } = useCanAccess({
+    resource: 'kingdoms',
+    action: 'deletedfilter',
+  });
   const [searchParams, setSearchParams] = useSearchParams();
   const filters = React.useMemo<KingdomFilters>(
-    () => ({ q: searchParams.get('q') || '' }),
-    [searchParams]
+    () => ({
+      q: searchParams.get('q') || '',
+      deleted: canUseDeletedFilter ? searchParams.get('deleted') || '' : '',
+    }),
+    [canUseDeletedFilter, searchParams]
   );
   const page = Math.max(Number(searchParams.get('page') || '1'), 1);
   const perPage = React.useMemo(() => {
@@ -204,7 +220,12 @@ const KingdomsPage = () => {
   }, [state.data]);
 
   const totalPages = Math.max(Math.ceil(state.total / perPage), 1);
-  const activeFilterBadges = filters.q ? [{ label: 'Query', value: filters.q }] : [];
+  const activeFilterBadges = [
+    ...(filters.q ? [{ label: 'Query', value: filters.q }] : []),
+    ...(canUseDeletedFilter && filters.deleted
+      ? [{ label: 'Deleted only', value: 'Yes' }]
+      : []),
+  ];
 
   const updateParams = (updates: Record<string, string | number | null>) => {
     const next = new URLSearchParams(searchParams);
@@ -217,11 +238,15 @@ const KingdomsPage = () => {
 
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    updateParams({ q: draftFilters.q || null, page: 1 });
+    updateParams({
+      q: draftFilters.q || null,
+      deleted: canUseDeletedFilter ? draftFilters.deleted || null : null,
+      page: 1,
+    });
   };
 
   const clearAllFilters = () => {
-    setDraftFilters({ q: '' });
+    setDraftFilters({ q: '', deleted: '' });
     setSearchParams(new URLSearchParams());
   };
 
@@ -316,12 +341,30 @@ const KingdomsPage = () => {
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <input
                 value={draftFilters.q}
-                onChange={(event) => setDraftFilters({ q: event.target.value })}
+                onChange={(event) =>
+                  setDraftFilters((current) => ({ ...current, q: event.target.value }))
+                }
                 placeholder="Search kingdoms"
                 className="h-10 w-full rounded-xl border border-border bg-background pl-9 pr-3 text-sm outline-none ring-offset-background transition placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
               />
             </div>
           </div>
+          {canUseDeletedFilter ? (
+            <div className="space-y-2">
+              <label className="inline-flex items-center gap-2 text-sm font-medium">
+                <Checkbox
+                  checked={draftFilters.deleted === 'true'}
+                  onCheckedChange={(checked) =>
+                    setDraftFilters((current) => ({
+                      ...current,
+                      deleted: checked ? 'true' : '',
+                    }))
+                  }
+                />
+                Show deleted only
+              </label>
+            </div>
+          ) : null}
           <div className="flex flex-wrap gap-2">
             <Button type="submit">Apply filters</Button>
             <Button type="button" variant="outline" onClick={clearAllFilters}>Reset</Button>

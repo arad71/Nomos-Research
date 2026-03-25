@@ -17,6 +17,8 @@ type Action =
   | 'write' // for a field in the resource
   | 'delete'
   | 'bulkdelete'
+  | 'restore'
+  | 'harddelete'
   | 'viewdeleted'
   | 'deletedfilter'
   | '*';
@@ -167,11 +169,11 @@ const getRolesDefinition = (): Permissions => {
       resource: 'user_roles',
     },
     {
-      action: ['create', 'edit', 'delete'],
+      action: ['create', 'edit'],
       resource: 'kingdoms',
     },
     {
-      action: ['create', 'edit', 'delete'],
+      action: ['create', 'edit'],
       resource: 'taxon_ranks',
     },
     {
@@ -188,6 +190,8 @@ const getRolesDefinition = (): Permissions => {
         'create',
         'edit',
         'delete',
+        'restore',
+        'harddelete',
         'viewdeleted',
         'deletedfilter',
       ],

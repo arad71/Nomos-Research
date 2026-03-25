@@ -1,13 +1,20 @@
 import * as React from 'react';
 import { useRecordContext } from 'ra-core';
+import { Badge } from '@/components/ui/badge';
 import { RecordField } from '@/components/admin/record-field';
 import { Show } from '@/components/admin/show';
 import HistoryInfoBox from './HistoryInfoBox';
 import RecordPageActions from './RecordPageActions';
 
 const AuthorShowTitle = () => {
-  const record = useRecordContext<{ abbreviation?: string; display_name?: string }>();
-  return record?.display_name || record?.abbreviation || 'Author';
+  const record = useRecordContext<{ abbreviation?: string; display_name?: string; deleted?: boolean | null }>();
+  const title = record?.display_name || record?.abbreviation || 'Author';
+  return (
+    <span className="inline-flex items-center gap-2">
+      <span>{title}</span>
+      {record?.deleted ? <Badge variant="destructive">Deleted</Badge> : null}
+    </span>
+  );
 };
 
 const AuthorShowActions = () => {
@@ -18,6 +25,7 @@ const AuthorShowActions = () => {
       resource="authors"
       listTo="/authors"
       editTo={record?.id != null ? `/authors/${record.id}` : null}
+      restoreable
     />
   );
 };

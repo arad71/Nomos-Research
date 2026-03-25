@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useRecordContext } from 'ra-core';
+import { Badge } from '@/components/ui/badge';
 import { RecordField } from '@/components/admin/record-field';
 import { ReferenceField } from '@/components/admin/reference-field';
 import { Show } from '@/components/admin/show';
@@ -28,8 +29,14 @@ const renderBoolean = (value?: boolean | null) => {
 };
 
 const VernacularShowTitle = () => {
-  const record = useRecordContext<{ vernacular_name?: string }>();
-  return record?.vernacular_name || 'Vernacular';
+  const record = useRecordContext<{ vernacular_name?: string; deleted?: boolean | null }>();
+  const title = record?.vernacular_name || 'Vernacular';
+  return (
+    <span className="inline-flex items-center gap-2">
+      <span>{title}</span>
+      {record?.deleted ? <Badge variant="destructive">Deleted</Badge> : null}
+    </span>
+  );
 };
 
 const VernacularShowActions = () => {
@@ -40,6 +47,7 @@ const VernacularShowActions = () => {
       resource="vernaculars"
       listTo="/vernaculars"
       editTo={record?.id != null ? `/vernaculars/${record.id}` : null}
+      restoreable
     />
   );
 };

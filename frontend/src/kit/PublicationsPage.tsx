@@ -333,7 +333,12 @@ const PublicationsPage = () => {
     const publicationId = record.publication_id ?? record.id ?? 0;
     switch (column) {
       case 'displayTitle':
-        return record.display_title ?? '';
+        return (
+          <span className="inline-flex items-center gap-2">
+            <span>{record.display_title ?? ''}</span>
+            {record.deleted ? <Badge variant="destructive">Deleted</Badge> : null}
+          </span>
+        );
       case 'authorName':
         return record.author_name ?? '';
       case 'publicationYear':

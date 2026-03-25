@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useRecordContext } from 'ra-core';
+import { Badge } from '@/components/ui/badge';
 import { RecordField } from '@/components/admin/record-field';
 import { Show } from '@/components/admin/show';
 import HistoryInfoBox from './HistoryInfoBox';
@@ -12,10 +13,21 @@ const ConservationCodeShowTitle = () => {
   }>();
 
   if (record?.authorising_org && record?.conservation_code_value) {
-    return `${record.authorising_org}: ${record.conservation_code_value}`;
+    return (
+      <span className="inline-flex items-center gap-2">
+        <span>{`${record.authorising_org}: ${record.conservation_code_value}`}</span>
+        {record.deleted ? <Badge variant="destructive">Deleted</Badge> : null}
+      </span>
+    );
   }
 
-  return record?.conservation_code_value || 'Conservation code';
+  const title = record?.conservation_code_value || 'Conservation code';
+  return (
+    <span className="inline-flex items-center gap-2">
+      <span>{title}</span>
+      {record?.deleted ? <Badge variant="destructive">Deleted</Badge> : null}
+    </span>
+  );
 };
 
 const ConservationCodeShowActions = () => {
@@ -26,6 +38,7 @@ const ConservationCodeShowActions = () => {
       resource="conservation_codes"
       listTo="/conservation_codes"
       editTo={record?.id != null ? `/conservation_codes/${record.id}` : null}
+      restoreable
     />
   );
 };
