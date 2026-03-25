@@ -51,7 +51,7 @@ export const NumberInput = (props: NumberInputProps) => {
     const numberValue = parse(value);
 
     setValue(value);
-    field.onChange(numberValue ?? 0);
+    field.onChange(numberValue);
   };
 
   const [value, setValue] = useState<string | undefined>(
@@ -113,7 +113,7 @@ export interface NumberInputProps
       React.ComponentProps<"input">,
       "defaultValue" | "onBlur" | "onChange" | "type"
     > {
-  parse?: (value: string) => number;
+  parse?: (value: string) => number | null;
 }
 
 const convertStringToNumber = (value?: string | null) => {
