@@ -27,7 +27,7 @@ const TaxonNameEditActions = () => {
 };
 
 const TaxonNameEditPage = () => (
-  <Edit resource="taxon_names" title={<TaxonNameEditTitle />} mutationMode="pessimistic" redirect="show" actions={<TaxonNameEditActions />}>
+  <Edit resource="taxon_names" title={<TaxonNameEditTitle />} mutationMode="pessimistic" redirect={false} actions={<TaxonNameEditActions />}>
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
       <div className="grid gap-6">
         <div className="rounded-2xl border border-border bg-card p-6">

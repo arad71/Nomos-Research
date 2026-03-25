@@ -28,7 +28,7 @@ const PublicationEditPage = () => (
     resource="publications"
     title={<PublicationEditTitle />}
     mutationMode="pessimistic"
-    redirect="show"
+    redirect={false}
     actions={<PublicationEditActions />}
     transform={transformPublicationPayload}
   >

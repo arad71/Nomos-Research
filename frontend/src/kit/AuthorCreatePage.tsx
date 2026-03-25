@@ -7,7 +7,6 @@ const AuthorCreatePage = () => (
     resource="authors"
     title="Create author"
     mutationMode="pessimistic"
-    redirect="show"
   >
     <AuthorForm />
   </Create>

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useNotify, useRecordContext, useRedirect, useRefresh } from 'ra-core';
+import { useRecordContext } from 'ra-core';
 import { Edit } from '@/components/admin/edit';
 import ConscodeTaxonForm from './ConscodeTaxonForm';
 import HistoryInfoBox from './HistoryInfoBox';
@@ -24,38 +24,21 @@ const ConscodeTaxonEditActions = () => {
   );
 };
 
-const ConscodeTaxonEditPage = () => {
-  const notify = useNotify();
-  const refresh = useRefresh();
-  const redirect = useRedirect();
-
-  return (
-    <Edit
-      resource="conscode_taxons"
-      title={<ConscodeTaxonEditTitle />}
-      mutationMode="pessimistic"
-      actions={<ConscodeTaxonEditActions />}
-      mutationOptions={{
-        onSuccess: (data: { taxon_name_id?: number } | { data?: { taxon_name_id?: number } }) => {
-          const taxonNameId = data?.taxon_name_id ?? data?.data?.taxon_name_id;
-          notify('Changes saved');
-          if (taxonNameId) {
-            redirect(`/taxon_names_code/${taxonNameId}`);
-          } else {
-            redirect('/conscode_taxons');
-          }
-          refresh();
-        },
-      }}
-    >
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
-        <ConscodeTaxonForm />
-        <div className="xl:sticky xl:top-6 xl:self-start">
-          <HistoryInfoBox />
-        </div>
+const ConscodeTaxonEditPage = () => (
+  <Edit
+    resource="conscode_taxons"
+    title={<ConscodeTaxonEditTitle />}
+    mutationMode="pessimistic"
+    redirect={false}
+    actions={<ConscodeTaxonEditActions />}
+  >
+    <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
+      <ConscodeTaxonForm />
+      <div className="xl:sticky xl:top-6 xl:self-start">
+        <HistoryInfoBox />
       </div>
-    </Edit>
-  );
-};
+    </div>
+  </Edit>
+);
 
 export default ConscodeTaxonEditPage;

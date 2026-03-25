@@ -7,7 +7,6 @@ const CitationCreatePage = () => (
     resource="citations"
     title="Create citation"
     mutationMode="pessimistic"
-    redirect="show"
     defaultValues={{ author_order: 0 }}
   >
     <CitationForm />

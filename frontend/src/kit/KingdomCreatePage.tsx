@@ -7,7 +7,6 @@ const KingdomCreatePage = () => (
     resource="kingdoms"
     title="Create kingdom"
     mutationMode="pessimistic"
-    redirect="show"
   >
     <KingdomForm />
   </Create>

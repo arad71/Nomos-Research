@@ -7,7 +7,6 @@ const ClassificationSystemCreatePage = () => (
     resource="classification_systems"
     title="Create classification system"
     mutationMode="pessimistic"
-    redirect="show"
     defaultValues={{ sort_order: 0, preferred: null }}
   >
     <ClassificationSystemForm />

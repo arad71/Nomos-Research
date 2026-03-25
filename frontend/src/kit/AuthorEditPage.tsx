@@ -27,7 +27,7 @@ const AuthorEditPage = () => (
     resource="authors"
     title={<AuthorEditTitle />}
     mutationMode="pessimistic"
-    redirect="show"
+    redirect={false}
     actions={<AuthorEditActions />}
   >
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">

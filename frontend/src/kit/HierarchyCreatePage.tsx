@@ -7,7 +7,6 @@ const HierarchyCreatePage = () => (
     resource="hierarchies"
     title="Create hierarchy"
     mutationMode="pessimistic"
-    redirect="show"
   >
     <HierarchyForm />
   </Create>

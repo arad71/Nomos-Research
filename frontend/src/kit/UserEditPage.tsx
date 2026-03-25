@@ -27,7 +27,7 @@ const UserEditPage = () => (
     resource="users"
     title={<UserEditTitle />}
     mutationMode="pessimistic"
-    redirect="show"
+    redirect={false}
     actions={<UserEditActions />}
   >
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">

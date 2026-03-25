@@ -7,7 +7,6 @@ const TaxonRankCreatePage = () => (
     resource="taxon_ranks"
     title="Create taxon rank"
     mutationMode="pessimistic"
-    redirect="show"
   >
     <TaxonRankForm />
   </Create>

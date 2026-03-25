@@ -7,7 +7,6 @@ const UserCreatePage = () => (
     resource="users"
     title="Create user"
     mutationMode="pessimistic"
-    redirect="show"
     defaultValues={{ deleted: false }}
   >
     <UserForm />

@@ -27,7 +27,7 @@ const HierarchyEditPage = () => (
     resource="hierarchies"
     title={<HierarchyEditTitle />}
     mutationMode="pessimistic"
-    redirect="show"
+    redirect={false}
     actions={<HierarchyEditActions />}
   >
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">

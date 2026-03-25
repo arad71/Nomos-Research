@@ -35,7 +35,7 @@ const ConservationCodeEditPage = () => (
     resource="conservation_codes"
     title={<ConservationCodeEditTitle />}
     mutationMode="pessimistic"
-    redirect="show"
+    redirect={false}
     actions={<ConservationCodeEditActions />}
   >
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">

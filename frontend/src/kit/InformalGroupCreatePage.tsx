@@ -7,7 +7,6 @@ const InformalGroupCreatePage = () => (
     resource="informal_groups"
     title="Create informal group"
     mutationMode="pessimistic"
-    redirect="show"
   >
     <InformalGroupForm />
   </Create>

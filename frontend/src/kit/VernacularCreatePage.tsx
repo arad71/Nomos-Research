@@ -7,7 +7,6 @@ const VernacularCreatePage = () => (
     resource="vernaculars"
     title="Create vernacular"
     mutationMode="pessimistic"
-    redirect="show"
     defaultValues={{ lang_pref: false, preferred: false, sort_order: 0 }}
   >
     <VernacularForm />

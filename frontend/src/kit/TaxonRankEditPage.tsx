@@ -27,7 +27,7 @@ const TaxonRankEditPage = () => (
     resource="taxon_ranks"
     title={<TaxonRankEditTitle />}
     mutationMode="pessimistic"
-    redirect="show"
+    redirect={false}
     actions={<TaxonRankEditActions />}
   >
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">

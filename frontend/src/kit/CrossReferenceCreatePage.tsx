@@ -7,7 +7,6 @@ const CrossReferenceCreatePage = () => (
     resource="cross_references"
     title="Create related name"
     mutationMode="pessimistic"
-    redirect="show"
   >
     <CrossReferenceForm />
   </Create>

@@ -27,7 +27,7 @@ const InformalGroupEditPage = () => (
     resource="informal_groups"
     title={<InformalGroupEditTitle />}
     mutationMode="pessimistic"
-    redirect="show"
+    redirect={false}
     actions={<InformalGroupEditActions />}
   >
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">

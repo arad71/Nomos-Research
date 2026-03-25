@@ -7,7 +7,6 @@ const ConservationCodeCreatePage = () => (
     resource="conservation_codes"
     title="Create conservation code"
     mutationMode="pessimistic"
-    redirect="show"
   >
     <ConservationCodeForm />
   </Create>
