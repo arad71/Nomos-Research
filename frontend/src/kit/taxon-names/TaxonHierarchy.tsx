@@ -1,5 +1,4 @@
 import React from 'react';
-import makeStyles from 'lib/makeStyles';
 import {
   Datagrid,
   ReferenceField,
@@ -11,14 +10,7 @@ import {
 import { Box, Typography } from '@mui/material';
 import { hierarchyCodeRowClick, hierarchyRowClick } from './HierarchyRowClick';
 
-const useStyles = makeStyles({
-  bold: {
-    fontWeight: 'bold',
-  },
-});
-
 const TaxonHierarchy = () => {
-  const classes = useStyles();
   const record = useRecordContext();
   const currentURL = window.location.href;
   const splitUrl = currentURL.split('/');
@@ -32,7 +24,7 @@ const TaxonHierarchy = () => {
   return (
     <Box mt="1.2em">
       <Box mt="2.2em">
-        <Typography variant="h5" className={classes.bold} gutterBottom>
+        <Typography variant="h5" fontWeight="bold" gutterBottom>
           Taxon Hierarchy
         </Typography>
       </Box>

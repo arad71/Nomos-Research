@@ -1,6 +1,5 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
-import makeStyles from 'lib/makeStyles';
 import {
   ChipField,
   ReferenceField,
@@ -8,19 +7,11 @@ import {
   SingleFieldList,
 } from 'react-admin';
 
-const useStyles = makeStyles({
-  bold: {
-    fontWeight: 'bold',
-  },
-});
-
 const TaxonNameInformalGroups = () => {
-  const classes = useStyles();
-
   return (
     <Box mt="1.2em">
       <Box mt="2.2em">
-        <Typography variant="h5" className={classes.bold} gutterBottom>
+        <Typography variant="h5" fontWeight="bold" gutterBottom>
           Informal Groups
         </Typography>
       </Box>

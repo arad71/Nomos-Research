@@ -1,18 +1,10 @@
 import { RichTextField, useRecordContext } from 'react-admin';
 import React from 'react';
-import makeStyles from 'lib/makeStyles';
 import { GlobalTheme } from '../../GlobalTheme';
 import { InfragenericData } from './infrageneric/TaxonTypes';
 import useFetchInfragenericNames from './infrageneric/useFetchInfragenericNames';
 import { TaxonName } from './TaxonName';
 import { TaxonNameStatus } from './TaxonNameStatus';
-
-const useStyles = makeStyles({
-  title: {
-    fontWeight: 'bold',
-    fontSize: '1em',
-  },
-});
 
 type FormattedScientificNameWithStatusProps = {
   id?: number;
@@ -28,7 +20,6 @@ export const FormattedScientificNameWithStatus = ({
   const idValue = record?.id;
   const id = idValue !== undefined && idValue !== null ? Number(idValue) : NaN;
   const safeId = Number.isNaN(id) ? 0 : id;
-  const classes = useStyles();
   const globalClasses = GlobalTheme();
   const { loading, infragenericNames } = useFetchInfragenericNames(safeId);
 
@@ -43,13 +34,13 @@ export const FormattedScientificNameWithStatus = ({
       <span className={truncate ? globalClasses.titleTruncation : ''}>
         {(infragenus && (
           <span
-            className={classes.title}
+            className="font-bold text-base"
             dangerouslySetInnerHTML={{ __html: infragenus.italicized_name }}
           />
         )) || (
           <RichTextField
             source="formatted_scientific_name"
-            className={classes.title}
+            className="font-bold text-base"
           />
         )}
       </span>

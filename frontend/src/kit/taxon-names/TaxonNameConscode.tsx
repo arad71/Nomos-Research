@@ -1,6 +1,5 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
-import makeStyles from 'lib/makeStyles';
 import {
   FunctionField,
   ReferenceField,
@@ -12,26 +11,19 @@ import {
   ConservationShortPillAdd,
 } from '../conservation-codes/ConservationShort';
 
-const useStyles = makeStyles({
-  bold: {
-    fontWeight: 'bold',
-  },
-  pill: {
-    background: 'rgba(44, 83, 49, 0.2)',
-    borderRadius: '1rem',
-    padding: '0.3rem 1rem',
-    marginRight: '0.3rem',
-    textWrap: 'nowrap',
-  },
-});
+const pillStyle = {
+  background: 'rgba(44, 83, 49, 0.2)',
+  borderRadius: '1rem',
+  padding: '0.3rem 1rem',
+  marginRight: '0.3rem',
+  textWrap: 'nowrap' as const,
+};
 
 const TaxonNameConscode = () => {
-  const classes = useStyles();
-
   return (
     <Box mt="1.2em">
       <Box mt="2.2em">
-        <Typography variant="h5" className={classes.bold} gutterBottom>
+        <Typography variant="h5" fontWeight="bold" gutterBottom>
           Conservation Code
         </Typography>
       </Box>
@@ -52,7 +44,7 @@ const TaxonNameConscode = () => {
               link={false}
               allowEmpty
             >
-              <div className={classes.pill}>
+              <div style={pillStyle}>
                 <FunctionField
                   label="test"
                   render={() => (
