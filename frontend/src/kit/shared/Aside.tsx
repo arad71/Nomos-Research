@@ -16,6 +16,7 @@ import grey from '@mui/material/colors/grey';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { CanAccess as IfCanAccess } from 'react-admin';
+
 const useStyles = makeStyles((theme: any) => ({
   mainGrid: {
     display: 'grid',
@@ -57,7 +58,7 @@ const useStyles = makeStyles((theme: any) => ({
   },
 }));
 
-const Aside = (props: any) => {
+const Aside = () => {
   const classes = useStyles();
   const globalClasses = GlobalTheme();
   const record = useRecordContext();
@@ -69,6 +70,7 @@ const Aside = (props: any) => {
         Deleted
       </Typography>
     ) : null;
+
   return (
     <Box className={classes.asideWidth}>
       <Card className={classes.asidePadding}>

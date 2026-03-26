@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { Show } from 'react-admin';
-import Aside from '../shared/Aside';
+import Aside from '../../kit/shared/Aside';
 import { HierarchyShowLayout } from './HierarchyShowLayout';
 
 export const HierarchyShow: FC = (props) => {

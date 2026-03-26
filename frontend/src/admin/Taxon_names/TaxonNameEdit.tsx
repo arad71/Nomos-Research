@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { Edit } from 'react-admin';
-import TaxonNameAside from '../shared/TaxonNameAside';
+import TaxonNameAside from '../../kit/shared/TaxonNameAside';
 import PostEditActions from '../../kit/shared/PostEditActions';
 import { TaxonNameCreateEdit } from './TaxonNameCreateEdit';
 // eslint-disable-next-line max-len

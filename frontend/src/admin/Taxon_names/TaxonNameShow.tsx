@@ -14,7 +14,7 @@ import {
   useRecordContext,
 } from 'react-admin';
 import { Show } from 'react-admin';
-import TaxonNameAside from '../shared/TaxonNameAside';
+import TaxonNameAside from '../../kit/shared/TaxonNameAside';
 import NaturalisedStatus from '../../kit/shared/choices/NaturalisedStatus';
 import PublicationStatus from '../../kit/shared/choices/PublicationStatus';
 import makeStyles from 'lib/makeStyles';
