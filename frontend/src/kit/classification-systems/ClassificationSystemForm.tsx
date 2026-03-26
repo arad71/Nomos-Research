@@ -4,7 +4,7 @@ import { NumberInput } from '@/components/admin/number-input';
 import { SelectInput } from '@/components/admin/select-input';
 import { SimpleForm } from '@/components/admin/simple-form';
 import { TextInput } from '@/components/admin/text-input';
-import ClassificationType from '../../admin/Classification_systems/ClassificationType';
+import ClassificationType from '../shared/choices/ClassificationType';
 
 const requiredValue = required();
 const minZero = minValue(0);

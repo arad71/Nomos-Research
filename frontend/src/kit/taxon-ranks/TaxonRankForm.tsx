@@ -7,7 +7,7 @@ import { ReferenceInput } from '@/components/admin/reference-input';
 import { SelectInput } from '@/components/admin/select-input';
 import { SimpleForm } from '@/components/admin/simple-form';
 import { TextInput } from '@/components/admin/text-input';
-import RankAbbreviation from '../../admin/Taxon_rank/RankAbbreviation';
+import RankAbbreviation from '../shared/choices/RankAbbreviation';
 
 const requiredValue = required();
 const formatRankOption = (choice?: {

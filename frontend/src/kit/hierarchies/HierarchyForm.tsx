@@ -5,7 +5,7 @@ import { AutocompleteInput } from '@/components/admin/autocomplete-input';
 import { ReferenceInput } from '@/components/admin/reference-input';
 import { SelectInput } from '@/components/admin/select-input';
 import { SimpleForm } from '@/components/admin/simple-form';
-import TaxonRank from '../../admin/Taxon_names/TaxonRank';
+import TaxonRank from '../shared/choices/TaxonRank';
 
 const requiredValue = required();
 

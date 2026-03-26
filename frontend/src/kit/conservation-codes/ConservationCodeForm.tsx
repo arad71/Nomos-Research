@@ -3,7 +3,7 @@ import { required } from 'ra-core';
 import { SelectInput } from '@/components/admin/select-input';
 import { SimpleForm } from '@/components/admin/simple-form';
 import { TextInput } from '@/components/admin/text-input';
-import ConservationType from '../../admin/Conservation_codes/ConservationType';
+import ConservationType from '../shared/choices/ConservationType';
 
 const requiredValue = required();
 

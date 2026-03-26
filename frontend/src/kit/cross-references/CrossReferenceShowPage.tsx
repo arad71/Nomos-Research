@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { RecordField } from '@/components/admin/record-field';
 import { ReferenceField } from '@/components/admin/reference-field';
 import { Show } from '@/components/admin/show';
-import CrossRefType from '../../admin/Cross_references/CrossRefType';
+import CrossRefType from '../shared/choices/CrossRefType';
 import HistoryInfoBox from '../shared/HistoryInfoBox';
 import RecordPageActions from '../shared/RecordPageActions';
 

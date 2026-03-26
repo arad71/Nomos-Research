@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import TaxonNameRelatedSections from './TaxonNameRelatedSections';
 import HistoryInfoBox from '../shared/HistoryInfoBox';
-import { InfragenericNamesGrid } from '../../admin/Taxon_names/InfragenericNamesGrid';
+import { InfragenericNamesGrid } from './infrageneric/InfragenericNamesGrid';
 import TaxonNameTitle from './TaxonNameTitle';
 import TaxonNameSidebarCards from './TaxonNameSidebarCards';
 import RecordPageActions from '../shared/RecordPageActions';

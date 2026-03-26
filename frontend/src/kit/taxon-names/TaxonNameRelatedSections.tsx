@@ -28,9 +28,9 @@ import {
   BooleanField as RaBooleanField,
   NumberField as RaNumberField,
 } from 'react-admin';
-import CrossRefType from '../../admin/Cross_references/CrossRefType';
-import NaturalisedStatus from '../../admin/Taxon_names/NaturalisedStatus';
-import PublicationStatus from '../../admin/Taxon_names/PublicationStatus';
+import CrossRefType from '../shared/choices/CrossRefType';
+import NaturalisedStatus from '../shared/choices/NaturalisedStatus';
+import PublicationStatus from '../shared/choices/PublicationStatus';
 import CitationForm from '../citations/CitationForm';
 import ConscodeTaxonForm from '../conscode-taxons/ConscodeTaxonForm';
 import CrossReferenceForm from '../cross-references/CrossReferenceForm';

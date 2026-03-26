@@ -10,7 +10,7 @@ import { ReferenceField } from '@/components/admin/reference-field';
 import { ReferenceManyField } from '@/components/admin/reference-many-field';
 import { Button } from '@/components/ui/button';
 import TaxonNameTitle from '../taxon-names/TaxonNameTitle';
-import PublicationStatus from '../../admin/Taxon_names/PublicationStatus';
+import PublicationStatus from '../shared/choices/PublicationStatus';
 import ConscodeTaxonForm from '../conscode-taxons/ConscodeTaxonForm';
 
 const HtmlValue = ({ value }: { value?: string | null }) => {

@@ -5,7 +5,7 @@ import { NumberInput } from '@/components/admin/number-input';
 import { ReferenceInput } from '@/components/admin/reference-input';
 import { SelectInput } from '@/components/admin/select-input';
 import { SimpleForm } from '@/components/admin/simple-form';
-import AuthorType from '../../admin/Citations/AuthorType';
+import AuthorType from '../shared/choices/AuthorType';
 
 const requiredValue = required();
 const minZero = minValue(0);

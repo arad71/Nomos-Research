@@ -8,7 +8,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import authProvider from '../../admin/authProvider';
 import AuthorizedButtonLink from '../shared/AuthorizedButtonLink';
 import RecordActionButtons from '../shared/RecordActionButtons';
-import RankAbbreviation from '../../admin/Taxon_rank/RankAbbreviation';
+import RankAbbreviation from '../shared/choices/RankAbbreviation';
 import { BACKEND_URL } from '../../config';
 import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';

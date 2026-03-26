@@ -9,7 +9,7 @@ import RecordActionButtons from '../shared/RecordActionButtons';
 import { BACKEND_URL } from '../../config';
 import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';
-import AuthorType from '../../admin/Citations/AuthorType';
+import AuthorType from '../shared/choices/AuthorType';
 
 type SortOrder = 'ASC' | 'DESC';
 

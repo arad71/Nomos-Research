@@ -7,7 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import authProvider from '../../admin/authProvider';
 import AuthorizedButtonLink from '../shared/AuthorizedButtonLink';
 import RecordActionButtons from '../shared/RecordActionButtons';
-import ConservationType from '../../admin/Conservation_codes/ConservationType';
+import ConservationType from '../shared/choices/ConservationType';
 import { BACKEND_URL } from '../../config';
 import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';

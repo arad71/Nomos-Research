@@ -7,7 +7,7 @@ import { ReferenceInput } from '@/components/admin/reference-input';
 import { SelectInput } from '@/components/admin/select-input';
 import { SimpleForm } from '@/components/admin/simple-form';
 import { TextInput } from '@/components/admin/text-input';
-import LanguageType from '../../admin/Vernaculars/LanguageType';
+import LanguageType from '../shared/choices/LanguageType';
 
 const requiredValue = required();
 const minZero = minValue(0);

@@ -1,5 +1,1 @@
-const ClassificationType = [
-  { id: 'informal', name: 'informal' },
-  { id: 'hierarchical', name: 'hierarchical' },
-];
-export default ClassificationType;
+export { default } from '../../kit/shared/choices/ClassificationType';

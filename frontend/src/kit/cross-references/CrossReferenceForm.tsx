@@ -6,7 +6,7 @@ import { ReferenceInput } from '@/components/admin/reference-input';
 import { SelectInput } from '@/components/admin/select-input';
 import { SimpleForm } from '@/components/admin/simple-form';
 import { TextInput } from '@/components/admin/text-input';
-import CrossRefType from '../../admin/Cross_references/CrossRefType';
+import CrossRefType from '../shared/choices/CrossRefType';
 
 const requiredValue = required();
 
