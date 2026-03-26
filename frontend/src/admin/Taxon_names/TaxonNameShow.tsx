@@ -14,7 +14,7 @@ import {
   useRecordContext,
 } from 'react-admin';
 import { Show } from 'react-admin';
-import Aside from '../shared/Aside';
+import TaxonNameAside from '../shared/TaxonNameAside';
 import NaturalisedStatus from '../../kit/shared/choices/NaturalisedStatus';
 import PublicationStatus from '../../kit/shared/choices/PublicationStatus';
 import makeStyles from 'lib/makeStyles';
@@ -71,7 +71,7 @@ export const TaxonNameShow: FC = (props) => {
     <Show
       actions={<PostShowActions resource="taxon_names" />}
       title={<FormattedScientificNameWithStatus truncate />}
-      aside={<Aside />}
+      aside={<TaxonNameAside />}
       {...props}
     >
       <>

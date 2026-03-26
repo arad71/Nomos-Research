@@ -1,4 +1,5 @@
 export * from './Aside';
+export * from './TaxonNameAside';
 export * from './ResetPreferenceButton';
 export * from './PostShowActions';
 export * from './PostEditActions';
