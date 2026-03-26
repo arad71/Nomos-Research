@@ -13,6 +13,7 @@ const TaxonNameCodeShowActions = () => {
       resource="taxon_names"
       listTo="/taxon_names_code"
       editTo={record?.id != null ? `/taxon_names_code/${record.id}` : null}
+      showDelete={false}
     />
   );
 };

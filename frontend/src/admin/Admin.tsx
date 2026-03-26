@@ -37,12 +37,6 @@ import {
   TaxonNameCodeShow,
 } from './Taxon_names_code';
 import {
-  ConscodeTaxonCreate,
-  ConscodeTaxonEdit,
-  ConscodeTaxonList,
-  ConscodeTaxonShow,
-} from './Conscode_taxons';
-import {
   HierarchyCreate,
   HierarchyEdit,
   HierarchyList,
@@ -321,13 +315,6 @@ export const Admin: FC = () => {
         show={AuthorShow}
         edit={AuthorEdit}
         create={AuthorCreate}
-      />
-      <Resource
-        name="conscode_taxons"
-        list={ConscodeTaxonList}
-        show={ConscodeTaxonShow}
-        edit={ConscodeTaxonEdit}
-        create={ConscodeTaxonCreate}
       />
       <Resource
         name="taxon_names"

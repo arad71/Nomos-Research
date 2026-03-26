@@ -23,6 +23,7 @@ const TaxonNameShowActions = () => {
       listTo="/taxon_names"
       editTo={record?.id != null ? `/taxon_names/${record.id}` : null}
       restoreable
+      showDelete={false}
     />
   );
 };

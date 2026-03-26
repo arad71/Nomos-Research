@@ -30,6 +30,7 @@ const ConscodeTaxonShowActions = () => {
       resource="conscode_taxons"
       listTo="/conscode_taxons"
       editTo={record?.id != null ? `/conscode_taxons/${record.id}` : null}
+      showDelete={false}
     />
   );
 };

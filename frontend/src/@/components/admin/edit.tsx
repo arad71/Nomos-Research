@@ -132,15 +132,17 @@ export const EditView = ({
       )}
       <div
         className={cn(
-          "flex justify-between items-start flex-wrap gap-2 my-2",
+          "my-2 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between",
           className,
         )}
       >
-        <h2 className="text-2xl font-bold tracking-tight">
-          {title !== undefined ? title : context.defaultTitle}
-        </h2>
+        <div className="min-w-0 flex-1">
+          <h2 className="text-2xl font-bold tracking-tight break-words">
+            {title !== undefined ? title : context.defaultTitle}
+          </h2>
+        </div>
         {actions ?? (
-          <div className="flex justify-end items-center gap-2">
+          <div className="flex shrink-0 items-center justify-end gap-2 self-end sm:ml-4 sm:self-end">
             {hasShow ? <ShowButton /> : null}
             <DeleteButton />
           </div>

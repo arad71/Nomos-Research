@@ -45,6 +45,7 @@ const PublicationShowActions = () => {
       listTo="/publications"
       editTo={record?.id != null ? `/publications/${record.id}` : null}
       restoreable
+      showDelete={false}
     />
   );
 };

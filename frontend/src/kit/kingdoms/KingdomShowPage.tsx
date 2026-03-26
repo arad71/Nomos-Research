@@ -18,6 +18,7 @@ const KingdomShowActions = () => {
       resource="kingdoms"
       listTo="/kingdoms"
       editTo={record?.id != null ? `/kingdoms/${record.id}` : null}
+      showDelete={false}
     />
   );
 };

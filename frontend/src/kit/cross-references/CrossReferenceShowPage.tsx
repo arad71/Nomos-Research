@@ -50,6 +50,7 @@ const CrossReferenceShowActions = () => {
       listTo="/cross_references"
       editTo={record?.id != null ? `/cross_references/${record.id}` : null}
       restoreable
+      showDelete={false}
     />
   );
 };

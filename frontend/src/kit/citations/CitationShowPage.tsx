@@ -41,6 +41,7 @@ const CitationShowActions = () => {
       listTo="/citations"
       editTo={record?.id != null ? `/citations/${record.id}` : null}
       restoreable
+      showDelete={false}
     />
   );
 };

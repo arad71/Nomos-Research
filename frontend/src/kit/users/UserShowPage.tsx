@@ -46,6 +46,7 @@ const UserShowActions = () => {
       listTo="/users"
       editTo={record?.id != null ? `/users/${record.id}` : null}
       restoreable
+      showDelete={false}
     />
   );
 };

@@ -35,6 +35,7 @@ const HierarchyShowActions = () => {
       listTo="/hierarchies"
       editTo={record?.id != null ? `/hierarchies/${record.id}` : null}
       restoreable
+      showDelete={false}
     />
   );
 };

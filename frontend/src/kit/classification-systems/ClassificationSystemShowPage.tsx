@@ -25,6 +25,7 @@ const ClassificationSystemShowActions = () => {
       resource="classification_systems"
       listTo="/classification_systems"
       editTo={record?.id != null ? `/classification_systems/${record.id}` : null}
+      showDelete={false}
     />
   );
 };
