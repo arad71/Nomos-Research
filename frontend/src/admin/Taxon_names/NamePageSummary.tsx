@@ -3,7 +3,7 @@ import { Box } from '@mui/material';
 import { FormattedScientificNameWithStatus } from './FormattedScientificNameWithStatus';
 import React from 'react';
 import makeStyles from 'lib/makeStyles';
-import NestedLinkField from '../shared/NestedLinkField';
+import NestedLinkField from '../../kit/shared/NestedLinkField';
 const useStyles = makeStyles({
   title: {
     fontSize: '1.5em',

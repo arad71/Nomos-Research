@@ -19,7 +19,7 @@ import MyLayout from '../MyLayout';
 import Dashboard from '../Dashboard';
 import BookIcon from '@mui/icons-material/Book';
 import { LogoutButton } from '../LogoutButton';
-import SafeNotification from './shared/SafeNotification';
+import SafeNotification from '../kit/shared/SafeNotification';
 
 import { TaxonNameCreate } from './Taxon_names/TaxonNameCreate';
 import { TaxonNameEdit } from './Taxon_names/TaxonNameEdit';

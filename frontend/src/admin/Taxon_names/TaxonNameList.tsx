@@ -28,12 +28,12 @@ import {
   useSelectedColumns,
 } from '@react-admin/ra-preferences';
 import { TaxonNameFilters } from './TaxonNameFilters';
-import { DefaultPagination } from '../shared/DefaultPagination';
+import { DefaultPagination } from '../../kit/shared/DefaultPagination';
 import { useCanBulkDelete } from '../../kit/shared/useCanBulkDelete';
-import NestedLinkField from '../shared/NestedLinkField';
+import NestedLinkField from '../../kit/shared/NestedLinkField';
 import BatchExportButton from '../shared/BatchExportButton';
 import { ConservationShortPill } from '../Conservation_codes';
-import ResetPreferenceButton from '../shared/ResetPreferenceButton';
+import ResetPreferenceButton from '../../kit/shared/ResetPreferenceButton';
 
 const postListColumns = {
   id: <TextField source="id" label="NomosID" />,

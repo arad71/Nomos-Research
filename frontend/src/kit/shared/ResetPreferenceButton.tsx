@@ -3,19 +3,13 @@ import { Button } from 'react-admin';
 import { usePreferences } from '@react-admin/ra-preferences';
 import { Undo } from '@mui/icons-material';
 
-/**
- * Adds a button to reset a preference
- * @param preferenceName
- * @param defaultValue
- * @param label
- * @constructor
- */
 const ResetPreferenceButton: React.FC<{
   preferenceName: string;
   defaultValue: any;
   label: string;
 }> = ({ preferenceName, defaultValue, label }) => {
   const [currentValue, setPreference] = usePreferences(preferenceName);
+
   const resetPreference = (): void => {
     setPreference(defaultValue);
   };

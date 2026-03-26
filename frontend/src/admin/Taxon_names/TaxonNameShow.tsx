@@ -28,7 +28,7 @@ import { VernacularReferenceManyGrid } from '../Vernaculars/VernacularReferenceM
 import { FormattedScientificNameWithStatus } from './FormattedScientificNameWithStatus';
 import { NamePageSummary } from './NamePageSummary';
 import PostShowActions from '../shared/PostShowActions';
-import NestedLinkField from '../shared/NestedLinkField';
+import NestedLinkField from '../../kit/shared/NestedLinkField';
 import { HierarchyGrid } from './HierarchyGrid';
 import { InfragenericNamesGrid } from '../../kit/taxon-names/infrageneric/InfragenericNamesGrid';
 import { TaxonName } from './TaxonName';

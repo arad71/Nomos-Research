@@ -10,10 +10,12 @@ export interface NestedFieldPropType {
   record?: RaRecord;
   [key: string]: any;
 }
+
 const NestedLinkField = (props: NestedFieldPropType) => {
   const record = useRecordContext(props);
   const createPath = useCreatePath();
   const { idKey, labelKey, source, reference } = props;
+
   if (
     !record ||
     !record[source] ||
@@ -22,11 +24,13 @@ const NestedLinkField = (props: NestedFieldPropType) => {
   ) {
     return null;
   }
+
   const showPage = createPath({
     resource: reference,
     id: record[source][idKey],
     type: 'show',
   });
+
   return <Link to={showPage}>{record[source][labelKey]}</Link>;
 };
 

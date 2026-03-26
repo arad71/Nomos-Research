@@ -120,65 +120,40 @@ export const SafeNotification = (props: any) => {
       ...options
     },
   } = messageInfo;
-  const notificationType = typeFromMessage || type;
-  const normalizeMessage = (value: any): string => {
-    if (typeof value === 'string') {
-      return translate(value, messageArgs);
-    }
-    if (Array.isArray(value)) {
-      return value.map(normalizeMessage).filter(Boolean).join('\n');
-    }
-    if (value && typeof value === 'object') {
-      if (typeof value.msg === 'string') {
-        return value.msg;
+
+  return (
+    <StyledSnackbar
+      className={clsx(
+        className,
+        notificationClasses[
+          typeFromMessage || type
+        ],
+        {
+          [notificationClasses.multiLine]: multiLineFromMessage || multiLine,
+        }
+      )}
+      open={open}
+      message={translate(message, messageArgs)}
+      autoHideDuration={undoable ? undefined : autoHideDurationFromMessage || autoHideDuration}
+      onClose={handleRequestClose}
+      TransitionProps={{ onExited: handleExited }}
+      action={
+        undoable ? (
+          <Button
+            className={notificationClasses.undo}
+            color="primary"
+            size="small"
+            onClick={handleUndo}
+          >
+            {translate('ra.action.undo')}
+          </Button>
+        ) : undefined
       }
-      if (Array.isArray(value.detail)) {
-        return value.detail.map(normalizeMessage).filter(Boolean).join('\n');
-      }
-      return JSON.stringify(value);
-    }
-    return value == null ? '' : String(value);
-  };
-  const messageIsElement = React.isValidElement(message);
-  const normalizedMessage = messageIsElement ? '' : normalizeMessage(message);
-
-  const snackbarProps = {
-    className,
-    open,
-    message: normalizedMessage || undefined,
-    autoHideDuration:
-      autoHideDurationFromMessage === undefined
-        ? autoHideDuration
-        : autoHideDurationFromMessage,
-    disableWindowBlurListener: undoable,
-    TransitionProps: { onExited: handleExited },
-    onClose: handleRequestClose,
-    ContentProps: {
-      className: clsx(notificationClasses[notificationType], {
-        [notificationClasses.multiLine]: multiLineFromMessage || multiLine,
-      }),
-    },
-    action: undoable ? (
-      <Button
-        color="primary"
-        className={notificationClasses.undo}
-        size="small"
-        onClick={handleUndo}
-      >
-        {translate('ra.action.undo')}
-      </Button>
-    ) : null,
-    anchorOrigin,
-    ...rest,
-    ...options,
-  };
-
-  // Avoid passing non-elements as children to Snackbar.
-  if (messageIsElement) {
-    snackbarProps.children = message;
-  }
-
-  return <StyledSnackbar {...snackbarProps} />;
+      anchorOrigin={anchorOrigin}
+      {...options}
+      {...rest}
+    />
+  );
 };
 
 export default SafeNotification;

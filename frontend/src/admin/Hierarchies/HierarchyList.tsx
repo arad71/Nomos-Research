@@ -11,7 +11,7 @@ import {
 import { List } from '@react-admin/ra-rbac';
 import { CanAccess as IfCanAccess } from 'react-admin';
 import { HierarchyFilters } from './HierarchyFilters';
-import { DefaultPagination } from '../shared/DefaultPagination';
+import { DefaultPagination } from '../../kit/shared/DefaultPagination';
 import { useCanBulkDelete } from '../../kit/shared/useCanBulkDelete';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
