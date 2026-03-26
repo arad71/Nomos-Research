@@ -27,10 +27,7 @@ export const HierarchyCreateEdit: FC = (props) => {
   const globalClasses = GlobalTheme();
   const classes = useStyles();
   return (
-    <SimpleForm
-      {...props}
-      toolbar={<EditToolbar resource="hierarchies" />}
-    >
+    <SimpleForm {...props} toolbar={<EditToolbar resource="hierarchies" />}>
       <Box>
         <Typography variant="h5" className={globalClasses.bold} gutterBottom>
           Hierarchy
