@@ -26,12 +26,10 @@ import { TaxonNameCreate } from './Taxon_names/TaxonNameCreate';
 import { TaxonNameEdit } from './Taxon_names/TaxonNameEdit';
 import { TaxonNameList } from './Taxon_names/TaxonNameList';
 import { TaxonNameShow } from './Taxon_names/TaxonNameShow';
-import {
-  HierarchyCreate,
-  HierarchyEdit,
-  HierarchyList,
-  HierarchyShow,
-} from './Hierarchies';
+import { HierarchyCreate } from './Hierarchies/HierarchyCreate';
+import { HierarchyEdit } from './Hierarchies/HierarchyEdit';
+import { HierarchyList } from './Hierarchies/HierarchyList';
+import { HierarchyShow } from './Hierarchies/HierarchyShow';
 import { InfragenericData } from './Taxon_names/TaxonTypes';
 
 const httpClient = (url: any, options?: any) => {
