@@ -22,12 +22,10 @@ import BookIcon from '@mui/icons-material/Book';
 import { LogoutButton } from '../LogoutButton';
 import SafeNotification from './shared/SafeNotification';
 
-import {
-  TaxonNameCreate,
-  TaxonNameEdit,
-  TaxonNameList,
-  TaxonNameShow,
-} from './Taxon_names';
+import { TaxonNameCreate } from './Taxon_names/TaxonNameCreate';
+import { TaxonNameEdit } from './Taxon_names/TaxonNameEdit';
+import { TaxonNameList } from './Taxon_names/TaxonNameList';
+import { TaxonNameShow } from './Taxon_names/TaxonNameShow';
 import {
   HierarchyCreate,
   HierarchyEdit,
