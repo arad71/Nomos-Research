@@ -47,7 +47,7 @@ const AccessGuard = ({ resource, action, children }: AccessGuardProps) => {
               <Link to="/kit">Back to dashboard</Link>
             </Button>
             <Button asChild variant="outline">
-              <Link to={`/legacy/${resource}`}>Open legacy admin</Link>
+              <Link to="/login">Sign in again</Link>
             </Button>
           </CardContent>
         </Card>

@@ -5,7 +5,7 @@ import { ColumnsButton } from '@/components/admin/columns-button';
 import { DataTable } from '@/components/admin/data-table';
 import { useCanAccess } from 'react-admin';
 import { Checkbox } from '@/components/ui/checkbox';
-import authProvider from '../../admin/authProvider';
+import authProvider from '../app/authProvider';
 import AuthorizedButtonLink from '../shared/AuthorizedButtonLink';
 import RecordActionButtons from '../shared/RecordActionButtons';
 import { BACKEND_URL } from '../../config';

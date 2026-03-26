@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { CoreAdminContext, localStorageStore } from 'ra-core';
 import { i18nProvider } from '@/lib/i18nProvider';
-import authProvider from '../../admin/authProvider';
-import { myDataProvider } from '../../admin/Admin';
+import authProvider from './authProvider';
+import { myDataProvider } from './dataProvider';
 
 const store = localStorageStore('1', 'taxman');
 

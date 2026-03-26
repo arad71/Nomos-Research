@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { useRedirect } from 'react-admin';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
-import { clearLocalStorage } from './admin';
+import { clearLocalStorage } from './kit/app/authProvider';
 import Button from '@mui/material/Button';
 
 export const LogoutButton: FC = () => {

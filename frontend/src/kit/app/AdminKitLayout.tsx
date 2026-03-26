@@ -15,16 +15,14 @@ import {
 } from 'lucide-react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { adminNavSections, getStoredRoles, hasAnyRole } from '../../adminShell';
-import authProvider, { clearLocalStorage } from '../../admin/authProvider';
-import Role from '../../admin/role';
+import authProvider, { clearLocalStorage } from '../app/authProvider';
+import Role from './role';
 import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { Separator } from '../../components/ui/separator';
 import { cn } from '../../lib/utils';
 import { rememberListLocation } from '../shared/listNavigation';
-
-const legacyPath = (path: string) => `/legacy${path === '/' ? '' : path}`;
 const THEME_STORAGE_KEY = 'nomos-kit-theme';
 const ORIGINAL_SCOPES_STORAGE_KEY = 'original_scopes';
 const MASKED_SCOPES_STORAGE_KEY = 'masked_scopes';
@@ -196,7 +194,7 @@ const AdminKitLayout = () => {
           return;
         }
         setAuthState('redirecting');
-        navigate('/legacy', { replace: true });
+        navigate('/login', { replace: true });
       });
 
     return () => {
@@ -448,9 +446,7 @@ const AdminKitLayout = () => {
                       ) : null}
                       <div className="space-y-1">
                         {items.map((item) => {
-                          const to = kitRoutes.has(item.to)
-                            ? item.to
-                            : legacyPath(item.to);
+                          const to = item.to;
                           const active = location.pathname === to;
                           const navLink = (
                             <Link

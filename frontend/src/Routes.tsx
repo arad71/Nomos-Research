@@ -2,23 +2,8 @@ import React, { FC } from 'react';
 import { Navigate, Route, Routes as ReactRouterRoutes } from 'react-router-dom';
 import makeStyles from 'lib/makeStyles';
 
-import {
-  AuthorCreate,
-  AuthorEdit,
-  AuthorShow,
-} from './admin/Authors';
-import {
-  ClassificationSystemCreate,
-  ClassificationSystemEdit,
-  ClassificationSystemShow,
-} from './admin/Classification_systems';
-import {
-  KingdomCreate,
-  KingdomEdit,
-  KingdomShow,
-} from './admin/Kingdoms';
 import { SignUp } from './views';
-import { Admin } from './admin';
+import NewLogin from './views/NewLogin';
 import AdminKitApp from './kit/app/AdminKitApp';
 import AccessGuard from './kit/shared/AccessGuard';
 import KitAdminProvider from './kit/app/KitAdminProvider';
@@ -366,7 +351,14 @@ export const Routes: FC = () => {
           element={withAccess('users', 'show', <UserShowPage />)}
         />
       </Route>
-      <Route path="/legacy/*" element={<Admin />} />
+      <Route
+        path="/login"
+        element={
+          <KitAdminProvider>
+            <NewLogin redirectTo="/kit" />
+          </KitAdminProvider>
+        }
+      />
       <Route
         path="/signup"
         element={
@@ -381,7 +373,7 @@ export const Routes: FC = () => {
         path="/logout"
         element={(() => {
           logout();
-          return <Navigate to="/kit" replace />;
+          return <Navigate to="/login" replace />;
         })()}
       />
     </ReactRouterRoutes>

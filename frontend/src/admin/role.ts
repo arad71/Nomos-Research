@@ -1,9 +1,1 @@
-const role = {
-  READER: 'READER',
-  OFFICER: 'OFFICER',
-  MANAGER: 'MANAGER',
-  APPLICATION_SUPPORT: 'APPLICATION_SUPPORT',
-  SUPER_ADMIN: 'SUPER_ADMIN',
-  CONSERVATION_OFFICER: 'CONSERVATION_OFFICER',
-};
-export default role;
+export { default } from '../kit/app/role';
