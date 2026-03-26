@@ -9,7 +9,7 @@ import {
 import { EmbeddedCrossReferenceShow } from './EmbeddedCrossReferenceShow';
 
 import CrossRefType from '../../kit/shared/choices/CrossRefType';
-import { FormattedScientificNameWithStatus } from '../Taxon_names';
+import { FormattedScientificNameWithStatus } from '../Taxon_names/FormattedScientificNameWithStatus';
 import { GlobalTheme } from '../../GlobalTheme';
 import { CrossReferenceRowForm } from './CrossReferenceRowForm';
 import { EditableDatagrid } from '@react-admin/ra-editable-datagrid';
