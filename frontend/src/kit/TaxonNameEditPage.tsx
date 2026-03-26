@@ -1,8 +1,6 @@
 import * as React from 'react';
-import { useCanAccess, useRecordContext } from 'ra-core';
+import { useRecordContext } from 'ra-core';
 import { Edit } from '@/components/admin/edit';
-import { DeleteButton } from '@/components/admin/delete-button';
-import { RecordField } from '@/components/admin/record-field';
 import TaxonNameForm from './TaxonNameForm';
 import TaxonNameRelatedSections from './TaxonNameRelatedSections';
 import HistoryInfoBox from './HistoryInfoBox';
@@ -14,14 +12,12 @@ const TaxonNameEditTitle = () => <TaxonNameTitle fallback="Edit taxon name" />;
 
 const TaxonNameEditActions = () => {
   const record = useRecordContext<{ id?: string | number }>();
-  const { canAccess } = useCanAccess({ resource: 'taxon_names', action: 'delete' });
 
   return (
     <RecordPageActions
       resource="taxon_names"
       listTo="/taxon_names"
       showTo={record?.id != null ? `/taxon_names/${record.id}/show` : null}
-      extra={record?.id != null && canAccess ? <DeleteButton resource="taxon_names" /> : null}
       restoreable
     />
   );
