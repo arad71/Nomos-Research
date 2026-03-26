@@ -31,7 +31,7 @@ import { TaxonNameFilters } from './TaxonNameFilters';
 import { DefaultPagination } from '../../kit/shared/DefaultPagination';
 import { useCanBulkDelete } from '../../kit/shared/useCanBulkDelete';
 import NestedLinkField from '../../kit/shared/NestedLinkField';
-import BatchExportButton from '../shared/BatchExportButton';
+import BatchExportButton from '../../kit/shared/BatchExportButton';
 import { ConservationShortPill } from '../Conservation_codes';
 import ResetPreferenceButton from '../../kit/shared/ResetPreferenceButton';
 

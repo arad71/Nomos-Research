@@ -31,9 +31,6 @@ const BatchExportButton: React.FC<BatchExportButtonProps> = (
   const dataProvider = useDataProvider();
   const notify = useNotify();
 
-  /**
-   * Handles the export process.
-   */
   const handleExport = async () => {
     setIsExporting(true);
     let taxoninfo = [];
@@ -41,7 +38,6 @@ const BatchExportButton: React.FC<BatchExportButtonProps> = (
     let allRecords: any[] = [];
     let currentPage = 1;
 
-    // Notify the user about the download and fetching process
     notify(
       `Downloading %{defaultTitle}\n` +
         ` Fetching %{total} records in the background.` +
@@ -54,10 +50,6 @@ const BatchExportButton: React.FC<BatchExportButtonProps> = (
       }
     );
 
-    /**
-     * Handles the error and notifies the user.
-     * @param error - The error object or string.
-     */
     const errorHandler = (error: Error | string | unknown) => {
       const messageArgs: { page: number; error: Error | string | unknown } = {
         page: currentPage,
@@ -80,7 +72,6 @@ const BatchExportButton: React.FC<BatchExportButtonProps> = (
     }
     const totalPages = Math.ceil(total / batchSize);
 
-    // Fetch data in batches and accumulate all records
     while (currentPage <= totalPages) {
       try {
         let { data } = await dataProvider.getList(context.resource, {
@@ -166,9 +157,8 @@ const BatchExportButton: React.FC<BatchExportButtonProps> = (
     ]
       .join(' ')
       .replace(/[^a-zA-Z0-9_.-]/g, '_');
-    // Use the default exporter from the list context to export as CSV
+
     context.exporter(exportRecords, null, dataProvider, baseName);
-    // Notify the user about the completion and provide the filename.
     notify(`Download complete.\n Look for a file called %{baseName}.csv.`, {
       type: 'success',
       messageArgs: { baseName: baseName },
@@ -186,6 +176,7 @@ const BatchExportButton: React.FC<BatchExportButtonProps> = (
     </div>
   );
 };
+
 const defaultIcon = <DownloadIcon />;
 
 export default BatchExportButton;
