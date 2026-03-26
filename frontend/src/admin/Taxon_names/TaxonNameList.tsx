@@ -28,7 +28,8 @@ import {
   useSelectedColumns,
 } from '@react-admin/ra-preferences';
 import { TaxonNameFilters } from './TaxonNameFilters';
-import { DefaultPagination, useCanBulkDelete } from '../shared';
+import { DefaultPagination } from '../shared/DefaultPagination';
+import { useCanBulkDelete } from '../../kit/shared/useCanBulkDelete';
 import NestedLinkField from '../shared/NestedLinkField';
 import BatchExportButton from '../shared/BatchExportButton';
 import { ConservationShortPill } from '../Conservation_codes';
