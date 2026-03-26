@@ -54,7 +54,7 @@ import { FormattedScientificNameWithStatus } from './FormattedScientificNameWith
 import { CrossReferenceRowForm } from '../Cross_references/CrossReferenceRowForm';
 import { EmbeddedHierarchyShow } from '../Hierarchies/EmbeddedHierarchyShow';
 import { HierarchyRowForm } from '../Hierarchies/HierarchyRowForm';
-import EditToolbar from '../shared/EditToolbar';
+import EditToolbar from '../../kit/shared/EditToolbar';
 import { usePermissions } from 'react-admin';
 import { canAccess } from '@react-admin/ra-rbac';
 import { Label } from '@mui/icons-material';

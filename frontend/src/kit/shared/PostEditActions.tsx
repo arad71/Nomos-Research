@@ -18,12 +18,14 @@ const PostEditActions: FC<PostEditActionsProps> = (props) => {
   const createPath = useCreatePath();
   const record = useRecordContext();
   const resource = useResourceContext(props);
+
   const routeChange = () => {
     if (!resource || record?.id == null) {
       return;
     }
     navigate(createPath({ resource, id: record.id, type: 'show' }));
   };
+
   return (
     <TopToolbar>
       <Button

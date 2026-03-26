@@ -27,7 +27,7 @@ import { VernacularReferenceManyGrid } from '../Vernaculars/VernacularReferenceM
 // eslint-disable-next-line max-len
 import { FormattedScientificNameWithStatus } from './FormattedScientificNameWithStatus';
 import { NamePageSummary } from './NamePageSummary';
-import PostShowActions from '../shared/PostShowActions';
+import PostShowActions from '../../kit/shared/PostShowActions';
 import NestedLinkField from '../../kit/shared/NestedLinkField';
 import { HierarchyGrid } from './HierarchyGrid';
 import { InfragenericNamesGrid } from '../../kit/taxon-names/infrageneric/InfragenericNamesGrid';

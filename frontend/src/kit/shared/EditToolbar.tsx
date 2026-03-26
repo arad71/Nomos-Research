@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React from 'react';
 import { DeleteWithConfirmButton, SaveButton, Toolbar } from 'react-admin';
 import { CanAccess as IfCanAccess } from 'react-admin';
 import makeStyles from 'lib/makeStyles';
@@ -19,6 +19,7 @@ const EditToolbar = (props: { resource: string }) => {
   const classes = useStyles();
   const record = useRecordContext();
   const hasRecordId = Boolean(record && record.id);
+
   return (
     <Toolbar className={classes.customToolbar} {...props}>
       <div className={classes.actionGroup}>

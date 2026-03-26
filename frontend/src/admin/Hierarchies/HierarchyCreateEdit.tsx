@@ -8,7 +8,7 @@ import React, { FC } from 'react';
 import { GlobalTheme } from '../../GlobalTheme';
 import { Box, Typography } from '@mui/material';
 import makeStyles from 'lib/makeStyles';
-import EditToolbar from '../shared/EditToolbar';
+import EditToolbar from '../../kit/shared/EditToolbar';
 import ScientificNameReference from '../Taxon_names/ScientificNameReference';
 import TaxonRank from '../../kit/shared/choices/TaxonRank';
 import { dependentNameInput } from './DependentNameInput';

@@ -19,6 +19,7 @@ const PostShowActions: FC<PostShowActionsProps> = ({ ...props }) => {
   const createPath = useCreatePath();
   const record = useRecordContext(props);
   const resource = useResourceContext(props);
+
   const routeChange = () => {
     if (!resource || record?.id == null) {
       return;
@@ -28,7 +29,7 @@ const PostShowActions: FC<PostShowActionsProps> = ({ ...props }) => {
 
   return (
     <TopToolbar>
-      {/*@ts-ignore*/}
+      {/* @ts-ignore */}
       <IfCanAccess resource={resource} action="edit">
         <Button
           variant="outlined"
