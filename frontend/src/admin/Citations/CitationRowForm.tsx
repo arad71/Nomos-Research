@@ -1,7 +1,7 @@
 import {
   InlineRowForm as RowForm,
   InlineRowFormProps as RowFormProps,
-} from '../shared/InlineRowForm';
+} from '../../kit/shared/InlineRowForm';
 import { AuthorAutocomplete } from '../Authors/AuthorAutocomplete';
 import { NumberInput, required, minValue, SelectInput } from 'react-admin';
 import AuthorType from '../../kit/shared/choices/AuthorType';

@@ -6,7 +6,7 @@ import {
 } from 'react-admin';
 import TaxonRank from '../../kit/shared/choices/TaxonRank';
 import ScientificNameReference from '../Taxon_names/ScientificNameReference';
-import { addDeletedFilterIfApplicable } from '../shared/SelectableFilters';
+import { addDeletedFilterIfApplicable } from '../../kit/shared/SelectableFilters';
 
 export const HierarchyFilters = () => {
   const filters = [

@@ -1,4 +1,4 @@
-import { InlineRowForm as RowForm } from '../shared/InlineRowForm';
+import { InlineRowForm as RowForm } from '../../kit/shared/InlineRowForm';
 import { required, SelectInput, TextInput } from 'react-admin';
 import React from 'react';
 import CrossRefType from '../../kit/shared/choices/CrossRefType';

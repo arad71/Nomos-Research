@@ -1,7 +1,7 @@
 import {
   InlineRowForm as RowForm,
   InlineRowFormProps as RowFormProps,
-} from '../shared/InlineRowForm';
+} from '../../kit/shared/InlineRowForm';
 import {
   NumberInput,
   required,
