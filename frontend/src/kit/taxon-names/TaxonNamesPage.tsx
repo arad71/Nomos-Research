@@ -231,8 +231,6 @@ const columnOptions: Array<{ key: ColumnKey; label: string }> = [
   { key: 'infraspecificEpithet', label: 'Infraspecific epithet' },
   { key: 'origin', label: 'Origin' },
   { key: 'comments', label: 'Comments' },
-  { key: 'contributedBy', label: 'Contributed by' },
-  { key: 'contributedOn', label: 'Contributed on' },
   { key: 'validated', label: 'Validated' },
   { key: 'source', label: 'Source' },
   { key: 'externalId', label: 'External ID' },

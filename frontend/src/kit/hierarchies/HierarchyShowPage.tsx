@@ -1,0 +1,79 @@
+import * as React from 'react';
+import { useRecordContext } from 'ra-core';
+import { Badge } from '@/components/ui/badge';
+import { RecordField } from '@/components/admin/record-field';
+import { ReferenceField } from '@/components/admin/reference-field';
+import { Show } from '@/components/admin/show';
+import HistoryInfoBox from '../shared/HistoryInfoBox';
+import RecordPageActions from '../shared/RecordPageActions';
+
+const HtmlValue = ({ value }: { value?: string | null }) => {
+  if (!value) {
+    return null;
+  }
+
+  return <span dangerouslySetInnerHTML={{ __html: value }} />;
+};
+
+const HierarchyShowTitle = () => {
+  const record = useRecordContext<{ id?: string | number; deleted?: boolean | null }>();
+  const title = record?.id != null ? `Hierarchy #${record.id}` : 'Hierarchy';
+  return (
+    <span className="inline-flex items-center gap-2">
+      <span>{title}</span>
+      {record?.deleted ? <Badge variant="destructive">Deleted</Badge> : null}
+    </span>
+  );
+};
+
+const HierarchyShowActions = () => {
+  const record = useRecordContext<{ id?: string | number }>();
+
+  return (
+    <RecordPageActions
+      resource="hierarchies"
+      listTo="/hierarchies"
+      editTo={record?.id != null ? `/hierarchies/${record.id}` : null}
+      restoreable
+    />
+  );
+};
+
+const HierarchyShowPage = () => (
+  <Show resource="hierarchies" title={<HierarchyShowTitle />} actions={<HierarchyShowActions />}>
+    <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
+      <div className="grid gap-6 rounded-2xl border border-border bg-card p-6 md:grid-cols-2">
+        <RecordField label="Classification system" source="classification_system_id">
+          <ReferenceField source="classification_system_id" reference="classification_systems">
+            <RecordField source="class_desc" label="" />
+          </ReferenceField>
+        </RecordField>
+        <RecordField label="Parent name" source="parent_nid">
+          <ReferenceField source="parent_nid" reference="taxon_names">
+            <RecordField
+              label=""
+              render={(record: { formatted_scientific_name?: string | null }) => (
+                <HtmlValue value={record.formatted_scientific_name} />
+              )}
+            />
+          </ReferenceField>
+        </RecordField>
+        <RecordField label="Taxon name" source="taxon_name_id">
+          <ReferenceField source="taxon_name_id" reference="taxon_names">
+            <RecordField
+              label=""
+              render={(record: { formatted_scientific_name?: string | null }) => (
+                <HtmlValue value={record.formatted_scientific_name} />
+              )}
+            />
+          </ReferenceField>
+        </RecordField>
+      </div>
+      <div className="xl:sticky xl:top-6 xl:self-start">
+        <HistoryInfoBox />
+      </div>
+    </div>
+  </Show>
+);
+
+export default HierarchyShowPage;

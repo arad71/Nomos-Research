@@ -31,13 +31,13 @@ import {
 import CrossRefType from '../../admin/Cross_references/CrossRefType';
 import NaturalisedStatus from '../../admin/Taxon_names/NaturalisedStatus';
 import PublicationStatus from '../../admin/Taxon_names/PublicationStatus';
-import CitationForm from '../CitationForm';
-import ConscodeTaxonForm from '../ConscodeTaxonForm';
-import CrossReferenceForm from '../CrossReferenceForm';
-import HierarchyForm from '../HierarchyForm';
-import PublicationForm from '../PublicationForm';
+import CitationForm from '../citations/CitationForm';
+import ConscodeTaxonForm from '../conscode-taxons/ConscodeTaxonForm';
+import CrossReferenceForm from '../cross-references/CrossReferenceForm';
+import HierarchyForm from '../hierarchies/HierarchyForm';
+import PublicationForm from '../publications/PublicationForm';
 import { normalizeDoi, transformPublicationPayload } from '../shared/publicationDoi';
-import VernacularForm from '../VernacularForm';
+import VernacularForm from '../vernaculars/VernacularForm';
 
 const crossRefTypeMap = CrossRefType.reduce<Record<string, string>>((acc, item) => {
   acc[item.id] = item.name;
