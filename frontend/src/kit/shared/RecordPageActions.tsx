@@ -17,6 +17,7 @@ type RecordPageActionsProps = {
   resource: string;
   extra?: React.ReactNode;
   restoreable?: boolean;
+  showDelete?: boolean;
 };
 
 const RecordPageActions = ({
@@ -28,6 +29,7 @@ const RecordPageActions = ({
   resource,
   extra,
   restoreable = false,
+  showDelete = true,
 }: RecordPageActionsProps) => {
   const record = useRecordContext<{ deleted?: boolean | null }>();
   const resolvedListTo = React.useMemo(
@@ -37,7 +39,9 @@ const RecordPageActions = ({
 
   return (
     <div className="flex items-center gap-2">
-      {!record?.deleted ? <DeleteButton resource={resource} redirect={resolvedListTo} /> : null}
+      {showDelete && !record?.deleted ? (
+        <DeleteButton resource={resource} redirect={resolvedListTo} />
+      ) : null}
       {restoreable && record?.deleted ? <RestoreButton resource={resource} /> : null}
       {restoreable && record?.deleted ? (
         <HardDeleteButton resource={resource} redirectTo={resolvedListTo} />

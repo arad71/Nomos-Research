@@ -26,6 +26,7 @@ const TaxonRankShowActions = () => {
       resource="taxon_ranks"
       listTo="/taxon_ranks"
       editTo={record?.id != null ? `/taxon_ranks/${record.id}` : null}
+      showDelete={false}
     />
   );
 };

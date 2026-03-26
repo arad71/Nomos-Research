@@ -35,6 +35,7 @@ const InformalGroupShowActions = () => {
       listTo="/informal_groups"
       editTo={record?.id != null ? `/informal_groups/${record.id}` : null}
       restoreable
+      showDelete={false}
     />
   );
 };

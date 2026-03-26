@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { useCanAccess, useRecordContext } from 'ra-core';
-import { DeleteButton } from '@/components/admin/delete-button';
+import { useRecordContext } from 'ra-core';
 import { Badge } from '@/components/ui/badge';
 import { Edit } from '@/components/admin/edit';
 import HistoryInfoBox from '../shared/HistoryInfoBox';
@@ -20,16 +19,12 @@ const InformalGroupEditTitle = () => {
 
 const InformalGroupEditActions = () => {
   const record = useRecordContext<{ id?: string | number }>();
-  const { canAccess } = useCanAccess({ resource: 'informal_groups', action: 'delete' });
 
   return (
     <RecordPageActions
       resource="informal_groups"
       listTo="/informal_groups"
       showTo={record?.id != null ? `/informal_groups/${record.id}/show` : null}
-      extra={
-        record?.id != null && canAccess ? <DeleteButton resource="informal_groups" /> : null
-      }
       restoreable
     />
   );

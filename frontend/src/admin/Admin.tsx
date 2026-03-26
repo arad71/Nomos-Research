@@ -31,12 +31,6 @@ import {
 } from './Conservation_codes';
 import { AuthorCreate, AuthorEdit, AuthorList, AuthorShow } from './Authors';
 import {
-  TaxonRankCreate,
-  TaxonRankEdit,
-  TaxonRankList,
-  TaxonRankShow,
-} from './Taxon_rank';
-import {
   TaxonNameCreate,
   TaxonNameEdit,
   TaxonNameList,
@@ -339,13 +333,6 @@ export const Admin: FC = () => {
         show={AuthorShow}
         edit={AuthorEdit}
         create={AuthorCreate}
-      />
-      <Resource
-        name="taxon_ranks"
-        list={TaxonRankList}
-        show={TaxonRankShow}
-        edit={TaxonRankEdit}
-        create={TaxonRankCreate}
       />
       <Resource
         name="conscode_taxons"
