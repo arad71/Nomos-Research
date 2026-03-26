@@ -22,7 +22,6 @@ import BookIcon from '@mui/icons-material/Book';
 import { LogoutButton } from '../LogoutButton';
 import SafeNotification from './shared/SafeNotification';
 
-import { UserCreate, UserEdit, UserList, UserShow } from './Users';
 import {
   TaxonNameCreate,
   TaxonNameEdit,
@@ -298,14 +297,6 @@ export const Admin: FC = () => {
       logoutButton={LogoutButton}
       notification={SafeNotification}
     >
-      <Resource
-        name="users"
-        key="user_id"
-        list={UserList}
-        show={UserShow}
-        edit={UserEdit}
-        create={UserCreate}
-      />
       <Resource
         name="taxon_names"
         list={TaxonNameList}

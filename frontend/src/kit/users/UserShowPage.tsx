@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { BadgeField } from '@/components/admin/badge-field';
 import { useRecordContext } from 'ra-core';
 import { RecordField } from '@/components/admin/record-field';
 import { ReferenceArrayField } from '@/components/admin/reference-array-field';
@@ -65,7 +66,7 @@ const UserShowPage = () => (
           <RecordField label="Roles" className="md:col-span-2">
             <ReferenceArrayField reference="roles" source="role_ids">
               <SingleFieldList>
-                <RecordField source="name" label="" />
+                <BadgeField source="name" variant="outline" />
               </SingleFieldList>
             </ReferenceArrayField>
           </RecordField>
