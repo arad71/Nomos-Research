@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { minValue, number, required } from 'ra-core';
+import { maxValue, minValue, number, required } from 'ra-core';
 import { AutocompleteArrayInput } from '@/components/admin/autocomplete-array-input';
 import { AutocompleteInput } from '@/components/admin/autocomplete-input';
 import { BooleanInput } from '@/components/admin/boolean-input';
@@ -17,7 +17,38 @@ import PublicationStatus from '../shared/choices/PublicationStatus';
 const requiredValue = required();
 const minYear = minValue(1735);
 const minOne = minValue(1);
+const maxDay = maxValue(31);
+const maxMonth = maxValue(12);
 const EMPTY_CHOICE = '__empty__';
+
+type TaxonNameFormValues = {
+  review?: boolean;
+  review_reason?: string | null;
+  specific_epithet?: string | null;
+  infraspecific_epithet?: string | null;
+  is_autonym?: boolean;
+};
+
+const validateReviewReason = (value?: string | null, allValues?: TaxonNameFormValues) => {
+  if (allValues?.review && !value?.trim()) {
+    return 'A reason must be specified if you flag this taxon for review';
+  }
+
+  return undefined;
+};
+
+const validateInfraspecificEpithet = (value?: string | null, allValues?: TaxonNameFormValues) => {
+  if (
+    allValues?.is_autonym &&
+    value &&
+    allValues.specific_epithet &&
+    value !== allValues.specific_epithet
+  ) {
+    return 'Infraspecific epithet must match the specific epithet when autonym is true';
+  }
+
+  return undefined;
+};
 
 const nullableBooleanChoices = [
   { id: EMPTY_CHOICE, name: '' },
@@ -83,6 +114,12 @@ const TaxonNameFormInner = ({ relatedSections }: { relatedSections?: React.React
     }
   }, [review, setValue]);
 
+  React.useEffect(() => {
+    if (!infraspecificEpithet) {
+      setValue('is_autonym', false, { shouldDirty: true, shouldValidate: true });
+    }
+  }, [infraspecificEpithet, setValue]);
+
   return (
     <div className="grid gap-8">
       <section className="space-y-4">
@@ -108,12 +145,19 @@ const TaxonNameFormInner = ({ relatedSections }: { relatedSections?: React.React
             />
           </ReferenceInput>
           <BooleanInput source="review" label="Review?" />
-          {review ? <TextInput source="review_reason" label="Review reason" className="xl:col-span-2" /> : null}
+          {review ? (
+            <TextInput
+              source="review_reason"
+              label="Review reason"
+              className="xl:col-span-2"
+              validate={validateReviewReason}
+            />
+          ) : null}
 
           <div className="hidden md:block md:col-span-2 xl:col-span-4" aria-hidden="true" />
           <TextInput source="uninomial" validate={requiredValue} />
           <TextInput source="specific_epithet" />
-          <TextInput source="infraspecific_epithet" />
+          <TextInput source="infraspecific_epithet" validate={validateInfraspecificEpithet} />
           {infraspecificEpithet ? <BooleanInput source="is_autonym" label="Autonym" /> : null}
 
           <div className="hidden md:block md:col-span-2 xl:col-span-4" aria-hidden="true" />
@@ -122,14 +166,14 @@ const TaxonNameFormInner = ({ relatedSections }: { relatedSections?: React.React
             label="Day"
             min={1}
             max={31}
-            validate={[number(), minOne]}
+            validate={[number(), minOne, maxDay]}
           />
           <NumberInput
             source="form_desc_mn"
             label="Month"
             min={1}
             max={12}
-            validate={[number(), minOne]}
+            validate={[number(), minOne, maxMonth]}
           />
           <NumberInput
             source="form_desc_yr"
