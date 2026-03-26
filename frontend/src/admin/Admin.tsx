@@ -29,12 +29,6 @@ import {
   TaxonNameShow,
 } from './Taxon_names';
 import {
-  TaxonNameCodeCreate,
-  TaxonNameCodeEdit,
-  TaxonNameCodeList,
-  TaxonNameCodeShow,
-} from './Taxon_names_code';
-import {
   HierarchyCreate,
   HierarchyEdit,
   HierarchyList,
@@ -303,14 +297,6 @@ export const Admin: FC = () => {
         show={TaxonNameShow}
         edit={TaxonNameEdit}
         create={TaxonNameCreate}
-        icon={BookIcon}
-      />
-      <Resource
-        name="taxon_names_code"
-        list={TaxonNameCodeList}
-        show={TaxonNameCodeShow}
-        edit={TaxonNameCodeEdit}
-        create={TaxonNameCodeCreate}
         icon={BookIcon}
       />
       <Resource name="taxon_names_ancestors/Division" />
