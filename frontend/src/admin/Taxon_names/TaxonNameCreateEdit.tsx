@@ -45,11 +45,11 @@ import { ConscodeTaxonReferenceManyGrid } from '../Conscode_taxons/ConscodeTaxon
 import { EmbeddedVernacularShow } from '../Vernaculars/EmbeddedVernacularShow';
 import { VernacularRowForm } from '../Vernaculars/VernacularRowForm';
 import { GlobalGridTheme, GlobalTheme } from '../../GlobalTheme';
-import { NamePageSummary } from './NamePageSummary';
+import { NamePageSummary } from '../../kit/taxon-names/NamePageSummary';
 // eslint-disable-next-line max-len
 import { EmbeddedCrossReferenceShow } from '../Cross_references/EmbeddedCrossReferenceShow';
 import CrossRefType from '../../kit/shared/choices/CrossRefType';
-import { FormattedScientificNameWithStatus } from './FormattedScientificNameWithStatus';
+import { FormattedScientificNameWithStatus } from '../../kit/taxon-names/FormattedScientificNameWithStatus';
 // eslint-disable-next-line max-len
 import { CrossReferenceRowForm } from '../Cross_references/CrossReferenceRowForm';
 import { EmbeddedHierarchyShow } from '../Hierarchies/EmbeddedHierarchyShow';

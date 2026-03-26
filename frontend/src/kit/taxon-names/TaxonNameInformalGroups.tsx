@@ -1,14 +1,11 @@
 import React from 'react';
-import { Box, Card, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import makeStyles from 'lib/makeStyles';
 import {
-  Labeled,
-  ReferenceField,
   ChipField,
+  ReferenceField,
   ReferenceManyField,
   SingleFieldList,
-  Datagrid,
-  TextField,
 } from 'react-admin';
 
 const useStyles = makeStyles({
@@ -19,6 +16,7 @@ const useStyles = makeStyles({
 
 const TaxonNameInformalGroups = () => {
   const classes = useStyles();
+
   return (
     <Box mt="1.2em">
       <Box mt="2.2em">

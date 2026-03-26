@@ -1,11 +1,11 @@
 import { RichTextField, useRecordContext } from 'react-admin';
 import React from 'react';
-import { TaxonNameStatus } from './TaxonNameStatus';
 import makeStyles from 'lib/makeStyles';
 import { GlobalTheme } from '../../GlobalTheme';
+import { InfragenericData } from './infrageneric/TaxonTypes';
+import useFetchInfragenericNames from './infrageneric/useFetchInfragenericNames';
 import { TaxonName } from './TaxonName';
-import { InfragenericData } from '../../kit/taxon-names/infrageneric/TaxonTypes';
-import useFetchInfragenericNames from '../../kit/taxon-names/infrageneric/useFetchInfragenericNames';
+import { TaxonNameStatus } from './TaxonNameStatus';
 
 const useStyles = makeStyles({
   title: {
@@ -13,11 +13,13 @@ const useStyles = makeStyles({
     fontSize: '1em',
   },
 });
+
 type FormattedScientificNameWithStatusProps = {
   id?: number;
   truncate?: boolean;
   record?: TaxonName;
 };
+
 export const FormattedScientificNameWithStatus = ({
   truncate = false,
   record: recordProp,
@@ -29,10 +31,13 @@ export const FormattedScientificNameWithStatus = ({
   const classes = useStyles();
   const globalClasses = GlobalTheme();
   const { loading, infragenericNames } = useFetchInfragenericNames(safeId);
+
   if (!record || loading) return null;
+
   const infragenus = infragenericNames?.infrageneric_names.find(
     (d: InfragenericData) => d.name_version === 'Infragenus with rank'
   );
+
   return (
     <>
       <span className={truncate ? globalClasses.titleTruncation : ''}>

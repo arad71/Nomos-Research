@@ -1,20 +1,16 @@
 import React from 'react';
-import { Box, Card, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import makeStyles from 'lib/makeStyles';
 import {
-  Labeled,
+  FunctionField,
   ReferenceField,
-  ChipField,
   ReferenceManyField,
   SingleFieldList,
-  Datagrid,
-  TextField,
-  FunctionField,
 } from 'react-admin';
 import {
   ConservationShort,
   ConservationShortPillAdd,
-} from '../Conservation_codes/ConservationShort';
+} from '../../admin/Conservation_codes/ConservationShort';
 
 const useStyles = makeStyles({
   bold: {
@@ -31,6 +27,7 @@ const useStyles = makeStyles({
 
 const TaxonNameConscode = () => {
   const classes = useStyles();
+
   return (
     <Box mt="1.2em">
       <Box mt="2.2em">
@@ -58,8 +55,7 @@ const TaxonNameConscode = () => {
               <div className={classes.pill}>
                 <FunctionField
                   label="test"
-                  render={(record: any) => (
-                    // eslint-disable-next-line
+                  render={() => (
                     <ConservationShort source="record.conservation_code_id" />
                   )}
                 />

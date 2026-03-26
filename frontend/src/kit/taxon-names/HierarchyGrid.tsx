@@ -11,12 +11,13 @@ import {
 import { TablePagination } from '@mui/material';
 import { GlobalTheme } from '../../GlobalTheme';
 import { hierarchyRowClick } from './HierarchyRowClick';
+
 export interface HierarchyRecord {
   id: number;
   taxon_name_id: number;
   path?: [string];
 }
-// Based off of https://marmelab.com/react-admin/doc/3.19/List.html#rendering-datagrid-with-a-custom-query
+
 export function HierarchyGrid(props: PropsWithChildren<{}>) {
   const record: HierarchyRecord = useRecordContext();
   const globalClasses = GlobalTheme();
@@ -25,11 +26,13 @@ export function HierarchyGrid(props: PropsWithChildren<{}>) {
     taxon_name___scientific_name__gt: string;
     path__in_tree?: [string];
   } = { taxon_name___scientific_name__gt: '' };
-  let recordId: number = 0;
+  let recordId = 0;
+
   if (record?.path) {
     hierarchyFilter.path__in_tree = record.path;
     recordId = record.id;
   }
+
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(100);
   const [sort, setSort] = useState({ field: 'path', order: 'ASC' });
@@ -43,9 +46,11 @@ export function HierarchyGrid(props: PropsWithChildren<{}>) {
     sort,
     filter: hierarchyFilter,
   });
-  const rowStyle = (record: HierarchyRecord) => ({
-    backgroundColor: record.taxon_name_id == recordId ? 'lightgrey' : 'inherit',
+
+  const rowStyle = (nextRecord: HierarchyRecord) => ({
+    backgroundColor: nextRecord.taxon_name_id == recordId ? 'lightgrey' : 'inherit',
   });
+
   const formatError = (value: any): string => {
     if (!value) return 'Unknown error';
     if (typeof value === 'string') return value;
@@ -73,12 +78,15 @@ export function HierarchyGrid(props: PropsWithChildren<{}>) {
     }
     return String(value);
   };
+
   if (isLoading) {
     return <Loading />;
   }
+
   if (error) {
     return <p>ERROR: {formatError(error)}</p>;
   }
+
   return (
     <Fragment>
       <Datagrid
@@ -105,12 +113,11 @@ export function HierarchyGrid(props: PropsWithChildren<{}>) {
           label="Is current"
           sortBy="taxon_name___is_current"
         />
-
         <TextField
           source="taxon_name.all_vernaculars"
           label="Vernaculars"
           sortBy="taxon_name___all_vernaculars"
-        ></TextField>
+        />
       </Datagrid>
       <TablePagination
         component="div"

@@ -25,13 +25,13 @@ import { AuthorReferenceManyGrid } from '../Authors/AuthorReferenceManyGrid';
 import { ConscodeTaxonReferenceManyGrid } from '../Conscode_taxons/ConscodeTaxonReferenceManyGrid';
 import { VernacularReferenceManyGrid } from '../Vernaculars/VernacularReferenceManyGrid';
 // eslint-disable-next-line max-len
-import { FormattedScientificNameWithStatus } from './FormattedScientificNameWithStatus';
-import { NamePageSummary } from './NamePageSummary';
+import { FormattedScientificNameWithStatus } from '../../kit/taxon-names/FormattedScientificNameWithStatus';
+import { NamePageSummary } from '../../kit/taxon-names/NamePageSummary';
 import PostShowActions from '../../kit/shared/PostShowActions';
 import NestedLinkField from '../../kit/shared/NestedLinkField';
-import { HierarchyGrid } from './HierarchyGrid';
+import { HierarchyGrid } from '../../kit/taxon-names/HierarchyGrid';
 import { InfragenericNamesGrid } from '../../kit/taxon-names/infrageneric/InfragenericNamesGrid';
-import { TaxonName } from './TaxonName';
+import { TaxonName } from '../../kit/taxon-names/TaxonName';
 
 const useStyles = makeStyles(() => ({
   bottomPadding: {

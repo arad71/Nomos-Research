@@ -5,6 +5,7 @@ import { Tooltip } from '@mui/material';
 
 export const TaxonNameStatus = () => {
   const record = useRecordContext();
+
   return record && record.is_current ? (
     <Tooltip title="This name is current">
       <CheckCircleIcon

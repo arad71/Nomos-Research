@@ -1,4 +1,4 @@
 export type TaxonName = {
-  [key: string]: any; // 👈️ variable keys
+  [key: string]: any;
   taxon_name_id: number;
 };

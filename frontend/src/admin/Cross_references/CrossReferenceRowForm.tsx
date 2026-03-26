@@ -3,7 +3,7 @@ import { required, SelectInput, TextInput } from 'react-admin';
 import React from 'react';
 import CrossRefType from '../../kit/shared/choices/CrossRefType';
 import makeStyles from 'lib/makeStyles';
-import ScientificNameReference from '../Taxon_names/ScientificNameReference';
+import ScientificNameReference from '../../kit/taxon-names/ScientificNameReference';
 
 const useStyles = makeStyles({
   xRefTypeWidth: {

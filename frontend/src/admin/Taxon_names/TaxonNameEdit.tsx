@@ -4,7 +4,7 @@ import TaxonNameAside from '../../kit/shared/TaxonNameAside';
 import PostEditActions from '../../kit/shared/PostEditActions';
 import { TaxonNameCreateEdit } from './TaxonNameCreateEdit';
 // eslint-disable-next-line max-len
-import { FormattedScientificNameWithStatus } from './FormattedScientificNameWithStatus';
+import { FormattedScientificNameWithStatus } from '../../kit/taxon-names/FormattedScientificNameWithStatus';
 
 export const TaxonNameEdit: FC = (props) => {
   return (

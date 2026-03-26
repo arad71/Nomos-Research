@@ -9,7 +9,7 @@ import {
   useRecordContext,
 } from 'react-admin';
 import { Box, Typography } from '@mui/material';
-import { hierarchyRowClick, hierarchyCodeRowClick } from './HierarchyRowClick';
+import { hierarchyCodeRowClick, hierarchyRowClick } from './HierarchyRowClick';
 
 const useStyles = makeStyles({
   bold: {
@@ -20,18 +20,13 @@ const useStyles = makeStyles({
 const TaxonHierarchy = () => {
   const classes = useStyles();
   const record = useRecordContext();
-  const currentURL = window.location.href; // returns the absolute URL of a page
+  const currentURL = window.location.href;
   const splitUrl = currentURL.split('/');
-  //console.log(splitUrl[4]);
-  let sourcecode = null;
-  if (splitUrl[4] === 'taxon_names_code') {
-    sourcecode = true;
-  }
+  const sourcecode = splitUrl[4] === 'taxon_names_code' ? true : null;
 
   let source = null;
   if (record?.path) {
-    source = record.path.hasOwnProperty('path') ? 'path.path' : 'path';
-    // console.log(JSON.stringify(record));
+    source = Object.prototype.hasOwnProperty.call(record.path, 'path') ? 'path.path' : 'path';
   }
 
   return (

@@ -5,7 +5,7 @@ import {
   Labeled,
 } from 'react-admin';
 import makeStyles from 'lib/makeStyles';
-import { FormattedScientificNameWithStatus } from '../Taxon_names/FormattedScientificNameWithStatus';
+import { FormattedScientificNameWithStatus } from '../../kit/taxon-names/FormattedScientificNameWithStatus';
 import CrossRefType from '../../kit/shared/choices/CrossRefType';
 import React, { FC } from 'react';
 import { GlobalTheme } from '../../GlobalTheme';

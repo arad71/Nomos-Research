@@ -5,7 +5,7 @@ import {
   SelectArrayInput,
 } from 'react-admin';
 import TaxonRank from '../../kit/shared/choices/TaxonRank';
-import ScientificNameReference from '../Taxon_names/ScientificNameReference';
+import ScientificNameReference from '../../kit/taxon-names/ScientificNameReference';
 import { addDeletedFilterIfApplicable } from '../../kit/shared/SelectableFilters';
 
 export const HierarchyFilters = () => {
