@@ -49,12 +49,6 @@ import {
   TaxonNameCodeShow,
 } from './Taxon_names_code';
 import {
-  InformalGroupCreate,
-  InformalGroupEdit,
-  InformalGroupList,
-  InformalGroupShow,
-} from './Informal_groups';
-import {
   ConscodeTaxonCreate,
   ConscodeTaxonEdit,
   ConscodeTaxonList,
@@ -386,13 +380,6 @@ export const Admin: FC = () => {
       <Resource name="taxon_names_ancestors/Species" />
       <Resource name="taxon_names_ancestors/Subspecies" />
       <Resource name="taxon_names_infrageneric_names" />
-      <Resource
-        name="informal_groups"
-        list={InformalGroupList}
-        show={InformalGroupShow}
-        edit={InformalGroupEdit}
-        create={InformalGroupCreate}
-      />
       <Resource
         name="conservation_codes"
         list={ConservationCodesList}
