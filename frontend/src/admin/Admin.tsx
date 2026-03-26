@@ -42,8 +42,6 @@ import {
   HierarchyList,
   HierarchyShow,
 } from './Hierarchies';
-import { RolesShow } from './Roles/RolesShow';
-import { RolesList } from './Roles/RolesList';
 import { InfragenericData } from './Taxon_names/TaxonTypes';
 
 const httpClient = (url: any, options?: any) => {
@@ -356,7 +354,6 @@ export const Admin: FC = () => {
         edit={HierarchyEdit}
         create={HierarchyCreate}
       />
-      <Resource name="roles" show={RolesShow} list={RolesList} />
     </ReactAdmin>
   );
 };
