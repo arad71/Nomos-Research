@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import decodeJwt from 'jwt-decode';
-import { CanAccess } from 'react-admin';
 import {
   ChevronLeft,
   ChevronRight,
@@ -14,7 +13,12 @@ import {
   ListTree,
 } from 'lucide-react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { adminNavSections, getStoredRoles, hasAnyRole } from '../../adminShell';
+import {
+  adminNavSections,
+  type AdminNavSection,
+  getStoredRoles,
+  hasAnyRole,
+} from '../../adminShell';
 import authProvider, { clearLocalStorage } from '../app/authProvider';
 import Role from './role';
 import { Badge } from '../../components/ui/badge';
@@ -94,6 +98,8 @@ const AdminKitLayout = () => {
   const [theme, setTheme] = React.useState<'light' | 'dark'>('light');
   const [userMenuOpen, setUserMenuOpen] = React.useState(false);
   const [roles, setRoles] = React.useState<string[]>(() => getStoredRoles());
+  const [visibleSections, setVisibleSections] =
+    React.useState<AdminNavSection[]>(adminNavSections);
   const [originalRoles, setOriginalRoles] = React.useState<string[]>(() =>
     parseRoleStorage(localStorage.getItem(ORIGINAL_SCOPES_STORAGE_KEY))
   );
@@ -178,6 +184,47 @@ const AdminKitLayout = () => {
     window.addEventListener('storage', syncRoles);
     return () => window.removeEventListener('storage', syncRoles);
   }, []);
+
+  React.useEffect(() => {
+    let active = true;
+
+    const resolveVisibleSections = async () => {
+      const nextSections = (
+        await Promise.all(
+          adminNavSections.map(async (section) => {
+            const items = (
+              await Promise.all(
+                section.items.map(async (item) => {
+                  if (!item.resource || !item.action) {
+                    return hasAnyRole(roles, item.roles) ? item : null;
+                  }
+
+                  const canAccess = await authProvider.canAccess({
+                    resource: item.resource,
+                    action: item.action,
+                  });
+
+                  return canAccess ? item : null;
+                })
+              )
+            ).filter(Boolean) as AdminNavSection['items'];
+
+            return { ...section, items };
+          })
+        )
+      ).filter((section) => section.items.length > 0);
+
+      if (active) {
+        setVisibleSections(nextSections);
+      }
+    };
+
+    void resolveVisibleSections();
+
+    return () => {
+      active = false;
+    };
+  }, [roles]);
 
   React.useEffect(() => {
     let active = true;
@@ -428,10 +475,8 @@ const AdminKitLayout = () => {
           <Card className="flex flex-col rounded-none border-t-0 bg-card h-full">
             <nav className="flex-1 p-3">
               <div className="space-y-5">
-                {adminNavSections.map((section) => {
-                  const items = section.items.filter((item) =>
-                    hasAnyRole(roles, item.roles)
-                  );
+                {visibleSections.map((section) => {
+                  const { items } = section;
 
                   if (!items.length) {
                     return null;
@@ -474,19 +519,7 @@ const AdminKitLayout = () => {
                             </Link>
                           );
 
-                          if (!item.resource || !item.action) {
-                            return <React.Fragment key={item.to}>{navLink}</React.Fragment>;
-                          }
-
-                          return (
-                            <CanAccess
-                              key={item.to}
-                              resource={item.resource}
-                              action={item.action}
-                            >
-                              {navLink}
-                            </CanAccess>
-                          );
+                          return <React.Fragment key={item.to}>{navLink}</React.Fragment>;
                         })}
                       </div>
                     </div>

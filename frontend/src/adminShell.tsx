@@ -172,7 +172,6 @@ export const adminNavSections: AdminNavSection[] = [
         to: '/users',
         label: 'Users',
         icon: <ShieldOutlinedIcon fontSize="small" />,
-        roles: ['SUPER_ADMIN', 'APPLICATION_SUPPORT'],
         resource: 'users',
         action: 'list',
       },

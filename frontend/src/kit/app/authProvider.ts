@@ -109,10 +109,18 @@ const parseStoredScopes = (): string[] => {
 
 const getRolesDefinition = (): Permissions => {
   const permissions: Permissions = {};
-  permissions[Role.READER] = [{ action: ['show', 'list', 'export'], resource: '*' }];
+  permissions[Role.READER] = [
+    { action: ['show', 'list', 'export'], resource: '*' },
+    { action: ['show', 'list', 'export'], resource: 'users', type: 'deny' },
+    { action: ['show', 'list', 'export'], resource: 'roles', type: 'deny' },
+    { action: ['show', 'list', 'export'], resource: 'user_roles', type: 'deny' },
+  ];
 
   permissions[Role.OFFICER] = [
     { action: ['show', 'list', 'export'], resource: '*' },
+    { action: ['show', 'list', 'export'], resource: 'users', type: 'deny' },
+    { action: ['show', 'list', 'export'], resource: 'roles', type: 'deny' },
+    { action: ['show', 'list', 'export'], resource: 'user_roles', type: 'deny' },
     { action: 'delete', resource: '*', type: 'deny' },
     { action: ['create', 'edit'], resource: 'authors' },
     { action: ['create', 'edit'], resource: 'citations' },
@@ -125,6 +133,9 @@ const getRolesDefinition = (): Permissions => {
 
   permissions[Role.MANAGER] = [
     { action: ['show', 'list', 'export'], resource: '*' },
+    { action: ['show', 'list', 'export'], resource: 'users', type: 'deny' },
+    { action: ['show', 'list', 'export'], resource: 'roles', type: 'deny' },
+    { action: ['show', 'list', 'export'], resource: 'user_roles', type: 'deny' },
     { action: ['create', 'edit', 'delete'], resource: 'authors' },
     { action: ['create', 'edit', 'delete'], resource: 'citations' },
     { action: ['create', 'edit', 'delete'], resource: 'cross_references' },

@@ -104,8 +104,6 @@ import {
 } from './Vernaculars';
 import { RolesShow } from './Roles/RolesShow';
 import { RolesList } from './Roles/RolesList';
-import { UserRoleList } from './User_Role/UserRoleList';
-import { UserRoleShow } from './User_Role/UserRoleShow';
 import { InfragenericData } from './Taxon_names/TaxonTypes';
 
 const httpClient = (url: any, options?: any) => {
@@ -488,7 +486,6 @@ export const Admin: FC = () => {
         edit={VernacularEdit}
         create={VernacularCreate}
       />
-      <Resource name="user_roles" show={UserRoleShow} list={UserRoleList} />
       <Resource name="roles" show={RolesShow} list={RolesList} />
     </ReactAdmin>
   );
