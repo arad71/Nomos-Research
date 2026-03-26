@@ -48,7 +48,7 @@ import { NamePageSummary } from './NamePageSummary';
 // eslint-disable-next-line max-len
 import { EmbeddedCrossReferenceShow } from '../Cross_references/EmbeddedCrossReferenceShow';
 import CrossRefType from '../../kit/shared/choices/CrossRefType';
-import { FormattedScientificNameWithStatus } from '../Taxon_names';
+import { FormattedScientificNameWithStatus } from './FormattedScientificNameWithStatus';
 // eslint-disable-next-line max-len
 import { CrossReferenceRowForm } from '../Cross_references/CrossReferenceRowForm';
 import { EmbeddedHierarchyShow, HierarchyRowForm } from '../Hierarchies';
