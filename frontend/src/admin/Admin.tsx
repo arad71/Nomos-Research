@@ -30,12 +30,6 @@ import {
   ConservationCodesCreate,
 } from './Conservation_codes';
 import {
-  KingdomCreate,
-  KingdomEdit,
-  KingdomList,
-  KingdomShow,
-} from './Kingdoms';
-import {
   ClassificationSystemCreate,
   ClassificationSystemEdit,
   ClassificationSystemList,
@@ -48,18 +42,6 @@ import {
   TaxonRankList,
   TaxonRankShow,
 } from './Taxon_rank';
-import {
-  PublicationCreate,
-  PublicationEdit,
-  PublicationList,
-  PublicationShow,
-} from './Publication';
-import {
-  CitationCreate,
-  CitationEdit,
-  CitationList,
-  CitationShow,
-} from './Citations';
 import {
   TaxonNameCreate,
   TaxonNameEdit,
@@ -90,12 +72,6 @@ import {
   HierarchyList,
   HierarchyShow,
 } from './Hierarchies';
-import {
-  CrossReferenceCreate,
-  CrossReferenceEdit,
-  CrossReferenceList,
-  CrossReferenceShow,
-} from './Cross_references';
 import {
   VernacularCreate,
   VernacularEdit,
@@ -370,13 +346,6 @@ export const Admin: FC = () => {
         create={UserCreate}
       />
       <Resource
-        name="kingdoms"
-        list={KingdomList}
-        show={KingdomShow}
-        edit={KingdomEdit}
-        create={KingdomCreate}
-      />
-      <Resource
         name="classification_systems"
         list={ClassificationSystemList}
         show={ClassificationSystemShow}
@@ -398,25 +367,11 @@ export const Admin: FC = () => {
         create={TaxonRankCreate}
       />
       <Resource
-        name="publications"
-        list={PublicationList}
-        show={PublicationShow}
-        edit={PublicationEdit}
-        create={PublicationCreate}
-      />
-      <Resource
         name="conscode_taxons"
         list={ConscodeTaxonList}
         show={ConscodeTaxonShow}
         edit={ConscodeTaxonEdit}
         create={ConscodeTaxonCreate}
-      />
-      <Resource
-        name="citations"
-        list={CitationList}
-        show={CitationShow}
-        edit={CitationEdit}
-        create={CitationCreate}
       />
       <Resource
         name="taxon_names"
@@ -471,13 +426,6 @@ export const Admin: FC = () => {
         show={HierarchyShow}
         edit={HierarchyEdit}
         create={HierarchyCreate}
-      />
-      <Resource
-        name="cross_references"
-        list={CrossReferenceList}
-        show={CrossReferenceShow}
-        edit={CrossReferenceEdit}
-        create={CrossReferenceCreate}
       />
       <Resource
         name="vernaculars"

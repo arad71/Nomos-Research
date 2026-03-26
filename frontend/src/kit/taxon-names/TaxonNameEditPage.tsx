@@ -33,7 +33,7 @@ const TaxonNameEditPage = () => (
               <TaxonNameRelatedSections
                 editable
                 embedded
-                sections={['authors', 'publication', 'vernaculars', 'hierarchy', 'conservationCodes']}
+                sections={['authors', 'publication', 'vernaculars', 'hierarchy', 'relatedNames', 'conservationCodes']}
               />
             }
           />

@@ -1,9 +1,11 @@
 import * as React from "react";
-import { X } from "lucide-react";
+import { ChevronsUpDown, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   Command,
+  CommandEmpty,
   CommandGroup,
+  CommandInput,
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
@@ -13,7 +15,11 @@ import {
   FormField,
   FormLabel,
 } from "@/components/admin/form";
-import { Command as CommandPrimitive } from "cmdk";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import type { ChoicesProps, InputProps } from "ra-core";
 import {
   useChoices,
@@ -97,7 +103,6 @@ export const AutocompleteArrayInput = (
     translateChoice: props.translateChoice ?? !isFromReference,
   });
 
-  const inputRef = React.useRef<HTMLInputElement>(null);
   const [open, setOpen] = React.useState(false);
 
   const handleUnselect = useEvent((choice: any) => {
@@ -106,17 +111,12 @@ export const AutocompleteArrayInput = (
     );
   });
 
-  const handleKeyDown = useEvent((e: React.KeyboardEvent<HTMLDivElement>) => {
-    const input = inputRef.current;
-    if (input) {
-      if (e.key === "Delete" || e.key === "Backspace") {
-        if (input.value === "") {
-          field.onChange(field.value.slice(0, -1));
-        }
-      }
-      // This is not a default behavior of the <input /> field
-      if (e.key === "Escape") {
-        input.blur();
+  const handleOpenChange = useEvent((isOpen: boolean) => {
+    setOpen(isOpen);
+    if (!isOpen) {
+      setFilterValue("");
+      if (isFromReference) {
+        setFilters(filterToQuery(""));
       }
     }
   });
@@ -155,95 +155,89 @@ export const AutocompleteArrayInput = (
         </FormLabel>
       )}
       <FormControl>
-        <Command
-          onKeyDown={handleKeyDown}
-          shouldFilter={!isFromReference}
-          className="overflow-visible bg-transparent"
-        >
-          <div className="group rounded-md bg-transparent dark:bg-input/30 border border-input px-3 py-1.75 text-sm transition-all ring-offset-background focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]">
-            <div className="flex flex-wrap gap-1">
-              {selectedChoices.map((choice) => (
-                <Badge key={getChoiceValue(choice)} variant="outline">
-                  {getInputText(choice)}
-                  <button
-                    className="ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        handleUnselect(choice);
-                      }
-                    }}
-                    onMouseDown={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleUnselect(choice);
-                    }}
-                  >
-                    <span className="sr-only">
-                      {translate("ra.action.remove", {
-                        _: "Remove",
-                      })}
-                    </span>
-                    <X className="h-3 w-3" />
-                  </button>
-                </Badge>
-              ))}
-              {/* Avoid having the "Search" Icon by not using CommandInput */}
-              <CommandPrimitive.Input
-                ref={inputRef}
+        <Popover open={open} onOpenChange={handleOpenChange}>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              className="flex min-h-10 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-1.75 text-left text-sm transition-all ring-offset-background focus-visible:border-ring focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+            >
+              <div className="flex flex-1 flex-wrap gap-1">
+                {selectedChoices.length > 0 ? (
+                  selectedChoices.map((choice) => (
+                    <Badge key={getChoiceValue(choice)} variant="outline">
+                      {getInputText(choice)}
+                      <button
+                        type="button"
+                        className="ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            handleUnselect(choice);
+                          }
+                        }}
+                        onMouseDown={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleUnselect(choice);
+                        }}
+                      >
+                        <span className="sr-only">
+                          {translate("ra.action.remove", {
+                            _: "Remove",
+                          })}
+                        </span>
+                        <X className="h-3 w-3" />
+                      </button>
+                    </Badge>
+                  ))
+                ) : (
+                  <span className="text-muted-foreground">{placeholder}</span>
+                )}
+              </div>
+              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-full max-w-(--radix-popover-trigger-width) p-0">
+            <Command shouldFilter={!isFromReference}>
+              <CommandInput
+                placeholder={placeholder}
                 value={filterValue}
                 onValueChange={(filter) => {
                   setFilterValue(filter);
-                  // We don't want the ChoicesContext to filter the choices if the input
-                  // is not from a reference as it would also filter out the selected values
                   if (isFromReference) {
                     setFilters(filterToQuery(filter), undefined, true);
                   }
                 }}
-                onBlur={() => setOpen(false)}
-                onFocus={() => setOpen(true)}
-                placeholder={placeholder}
-                className="ml-2 flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
               />
-            </div>
-          </div>
-          <div className="relative">
-            <CommandList>
-              {open && availableChoices.length > 0 ? (
-                <div className="absolute top-2 z-10 w-full rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in">
-                  <CommandGroup className="h-full overflow-auto">
-                    {availableChoices.map((choice) => {
-                      return (
-                        <CommandItem
-                          key={getChoiceValue(choice)}
-                          onMouseDown={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                          }}
-                          onSelect={() => {
-                            setFilterValue("");
-                            if (isFromReference) {
-                              setFilters(filterToQuery(""));
-                            }
-                            field.onChange([
-                              ...field.value,
-                              getChoiceValue(choice),
-                            ]);
-                          }}
-                          className="cursor-pointer"
-                        >
-                          {getChoiceText(choice)}
-                        </CommandItem>
-                      );
-                    })}
-                  </CommandGroup>
-                </div>
-              ) : null}
-            </CommandList>
-          </div>
-        </Command>
+              <CommandList>
+                <CommandEmpty>No matching item found.</CommandEmpty>
+                <CommandGroup>
+                  {availableChoices.map((choice) => (
+                    <CommandItem
+                      key={getChoiceValue(choice)}
+                      onSelect={() => {
+                        setFilterValue("");
+                        if (isFromReference) {
+                          setFilters(filterToQuery(""));
+                        }
+                        field.onChange([
+                          ...field.value,
+                          getChoiceValue(choice),
+                        ]);
+                      }}
+                      className="cursor-pointer"
+                    >
+                      {getChoiceText(choice)}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
       </FormControl>
       <InputHelperText helperText={props.helperText} />
       <FormError />

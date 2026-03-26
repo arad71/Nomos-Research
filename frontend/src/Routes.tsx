@@ -6,6 +6,7 @@ import { SignUp } from './views';
 import NewLogin from './views/NewLogin';
 import AdminKitApp from './kit/app/AdminKitApp';
 import AccessGuard from './kit/shared/AccessGuard';
+import AccessDeniedPage from './kit/shared/AccessDeniedPage';
 import KitAdminProvider from './kit/app/KitAdminProvider';
 import AdminKitLayout from './kit/app/AdminKitLayout';
 import AuthorCreatePage from './kit/authors/AuthorCreatePage';
@@ -110,6 +111,7 @@ export const Routes: FC = () => {
       >
         <Route path="/" element={<AdminKitApp />} />
         <Route path="/kit" element={<AdminKitApp />} />
+        <Route path="/access-denied" element={<AccessDeniedPage />} />
         <Route
           path="/taxon_names"
           element={withAccess('taxon_names', 'list', <TaxonNamesPage />)}

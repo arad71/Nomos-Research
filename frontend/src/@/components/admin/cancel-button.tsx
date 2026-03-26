@@ -1,4 +1,5 @@
 import { CircleX } from "lucide-react";
+import { useFormDialogContext } from "@react-admin/ra-form-layout";
 import { Translate } from "ra-core";
 import { useNavigate } from "react-router-dom";
 
@@ -31,11 +32,18 @@ import { Button } from "../ui/button";
  */
 export function CancelButton(props: React.ComponentProps<"button">) {
   const navigate = useNavigate();
+  const dialogContext = useFormDialogContext();
   return (
     <Button
       type="button"
       variant="ghost"
-      onClick={() => navigate(-1)}
+      onClick={() => {
+        if (dialogContext?.close) {
+          dialogContext.close();
+          return;
+        }
+        navigate(-1);
+      }}
       className="cursor-pointer"
       {...props}
     >

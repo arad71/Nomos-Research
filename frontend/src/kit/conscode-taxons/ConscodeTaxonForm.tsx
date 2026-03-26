@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { maxValue, required } from 'ra-core';
+import { AutocompleteInput } from '@/components/admin/autocomplete-input';
 import { DateInput } from '@/components/admin/date-input';
 import { ReferenceInput } from '@/components/admin/reference-input';
 import { SelectInput } from '@/components/admin/select-input';
@@ -31,7 +32,7 @@ const ConscodeTaxonForm = () => (
           scientific_name__ilike: `%${searchText}%`,
         })}
       >
-        <SelectInput
+        <AutocompleteInput
           label="Taxon name"
           optionText="scientific_name"
           validate={requiredValue}

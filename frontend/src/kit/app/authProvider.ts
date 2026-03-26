@@ -124,10 +124,17 @@ const getRolesDefinition = (): Permissions => {
     { action: 'delete', resource: '*', type: 'deny' },
     { action: ['create', 'edit'], resource: 'authors' },
     { action: ['create', 'edit'], resource: 'citations' },
+    { action: ['create', 'edit'], resource: 'classification_systems' },
+    { action: ['create', 'edit'], resource: 'conservation_codes' },
+    { action: ['create', 'edit'], resource: 'conscode_taxons' },
     { action: ['create', 'edit'], resource: 'cross_references' },
+    { action: ['create', 'edit'], resource: 'hierarchies' },
+    { action: ['create', 'edit'], resource: 'informal_groups' },
+    { action: ['create', 'edit'], resource: 'kingdoms' },
     { action: ['create', 'edit'], resource: 'publications' },
     { action: ['create', 'edit'], resource: 'publication_authors' },
     { action: ['create', 'edit'], resource: 'taxon_names' },
+    { action: ['create', 'edit'], resource: 'taxon_ranks' },
     { action: ['create', 'edit'], resource: 'vernaculars' },
   ];
 
@@ -147,6 +154,17 @@ const getRolesDefinition = (): Permissions => {
     { action: ['create', 'edit'], resource: 'publication_authors' },
     { action: ['create', 'edit', 'delete'], resource: 'taxon_names' },
     { action: ['create', 'edit', 'delete'], resource: 'vernaculars' },
+  ];
+
+  permissions[Role.CONSERVATION_OFFICER] = [
+    { action: ['show', 'list', 'export'], resource: '*' },
+    { action: ['show', 'list', 'export'], resource: 'users', type: 'deny' },
+    { action: ['show', 'list', 'export'], resource: 'roles', type: 'deny' },
+    { action: ['show', 'list', 'export'], resource: 'user_roles', type: 'deny' },
+    { action: 'delete', resource: '*', type: 'deny' },
+    { action: ['create', 'edit'], resource: 'conservation_codes' },
+    { action: ['create', 'edit'], resource: 'conscode_taxons' },
+    { action: ['edit', 'create'], resource: 'taxon_names', type: 'deny' },
   ];
 
   permissions[Role.APPLICATION_SUPPORT] = [
