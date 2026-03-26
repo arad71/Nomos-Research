@@ -10,7 +10,7 @@ import {
 import {
   ConservationShort,
   ConservationShortPillAdd,
-} from '../../admin/Conservation_codes/ConservationShort';
+} from '../conservation-codes/ConservationShort';
 
 const useStyles = makeStyles({
   bold: {
