@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { useCanAccess, useRecordContext } from 'ra-core';
-import { DeleteButton } from '@/components/admin/delete-button';
+import { useRecordContext } from 'ra-core';
 import { Badge } from '@/components/ui/badge';
 import { Edit } from '@/components/admin/edit';
 import CitationForm from './CitationForm';
@@ -20,14 +19,12 @@ const CitationEditTitle = () => {
 
 const CitationEditActions = () => {
   const record = useRecordContext<{ id?: string | number }>();
-  const { canAccess } = useCanAccess({ resource: 'citations', action: 'delete' });
 
   return (
     <RecordPageActions
       resource="citations"
       listTo="/citations"
       showTo={record?.id != null ? `/citations/${record.id}/show` : null}
-      extra={record?.id != null && canAccess ? <DeleteButton resource="citations" /> : null}
       restoreable
     />
   );

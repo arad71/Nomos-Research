@@ -48,6 +48,7 @@ const VernacularShowActions = () => {
       listTo="/vernaculars"
       editTo={record?.id != null ? `/vernaculars/${record.id}` : null}
       restoreable
+      showDelete={false}
     />
   );
 };

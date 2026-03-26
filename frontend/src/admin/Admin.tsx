@@ -54,12 +54,6 @@ import {
   HierarchyList,
   HierarchyShow,
 } from './Hierarchies';
-import {
-  VernacularCreate,
-  VernacularEdit,
-  VernacularList,
-  VernacularShow,
-} from './Vernaculars';
 import { RolesShow } from './Roles/RolesShow';
 import { RolesList } from './Roles/RolesList';
 import { InfragenericData } from './Taxon_names/TaxonTypes';
@@ -387,13 +381,6 @@ export const Admin: FC = () => {
         show={HierarchyShow}
         edit={HierarchyEdit}
         create={HierarchyCreate}
-      />
-      <Resource
-        name="vernaculars"
-        list={VernacularList}
-        show={VernacularShow}
-        edit={VernacularEdit}
-        create={VernacularCreate}
       />
       <Resource name="roles" show={RolesShow} list={RolesList} />
     </ReactAdmin>

@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { useCanAccess, useRecordContext } from 'ra-core';
-import { DeleteButton } from '@/components/admin/delete-button';
+import { useRecordContext } from 'ra-core';
 import { Badge } from '@/components/ui/badge';
 import { Edit } from '@/components/admin/edit';
 import HierarchyForm from './HierarchyForm';
@@ -20,14 +19,12 @@ const HierarchyEditTitle = () => {
 
 const HierarchyEditActions = () => {
   const record = useRecordContext<{ id?: string | number }>();
-  const { canAccess } = useCanAccess({ resource: 'hierarchies', action: 'delete' });
 
   return (
     <RecordPageActions
       resource="hierarchies"
       listTo="/hierarchies"
       showTo={record?.id != null ? `/hierarchies/${record.id}/show` : null}
-      extra={record?.id != null && canAccess ? <DeleteButton resource="hierarchies" /> : null}
       restoreable
     />
   );
