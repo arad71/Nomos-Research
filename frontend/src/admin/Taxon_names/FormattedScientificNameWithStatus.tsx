@@ -4,8 +4,8 @@ import { TaxonNameStatus } from './TaxonNameStatus';
 import makeStyles from 'lib/makeStyles';
 import { GlobalTheme } from '../../GlobalTheme';
 import { TaxonName } from './TaxonName';
-import { InfragenericData } from './TaxonTypes';
-import useFetchInfragenericNames from './useFetchInfragenericNames';
+import { InfragenericData } from '../../kit/taxon-names/infrageneric/TaxonTypes';
+import useFetchInfragenericNames from '../../kit/taxon-names/infrageneric/useFetchInfragenericNames';
 
 const useStyles = makeStyles({
   title: {

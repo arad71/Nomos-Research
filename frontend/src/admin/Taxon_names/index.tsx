@@ -4,7 +4,7 @@ export * from './TaxonNameCreate';
 export * from './TaxonNameShow';
 export * from './TaxonNameCreateEdit';
 export * from './TaxonNameFilters';
-export * from './TaxonRank';
+export * from '../../kit/shared/choices/TaxonRank';
 export * from './TaxonNameStatus';
 export * from './FormattedScientificNameWithStatus';
 export * from './ScientificNameReference';

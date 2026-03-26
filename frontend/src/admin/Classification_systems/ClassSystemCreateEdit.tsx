@@ -8,7 +8,7 @@ import {
   minValue,
 } from 'react-admin';
 import React, { FC } from 'react';
-import ClassificationType from './ClassificationType';
+import ClassificationType from '../../kit/shared/choices/ClassificationType';
 import { GlobalTheme } from '../../GlobalTheme';
 import { Box, Typography } from '@mui/material';
 import makeStyles from 'lib/makeStyles';

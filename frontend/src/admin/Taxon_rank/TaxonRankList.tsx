@@ -9,7 +9,7 @@ import {
   TextField,
   BooleanField,
 } from 'react-admin';
-import RankAbbreviation from './RankAbbreviation';
+import RankAbbreviation from '../../kit/shared/choices/RankAbbreviation';
 import { List } from '@react-admin/ra-rbac';
 import { CanAccess as IfCanAccess } from 'react-admin';
 import {

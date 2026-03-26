@@ -6,7 +6,7 @@ import {
   DateInput,
 } from 'react-admin';
 import React, { FC } from 'react';
-import ConservationType from './ConservationType';
+import ConservationType from '../../kit/shared/choices/ConservationType';
 import { GlobalTheme } from '../../GlobalTheme';
 import { Box, Typography } from '@mui/material';
 import makeStyles from 'lib/makeStyles';

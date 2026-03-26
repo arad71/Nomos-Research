@@ -9,7 +9,7 @@ import {
 } from 'react-admin';
 import { Show } from 'react-admin';
 import makeStyles from 'lib/makeStyles';
-import AuthorType from './AuthorType';
+import AuthorType from '../../kit/shared/choices/AuthorType';
 import Aside from '../shared/Aside';
 import { GlobalTheme } from '../../GlobalTheme';
 import { Box, Typography } from '@mui/material';

@@ -11,7 +11,7 @@ import makeStyles from 'lib/makeStyles';
 import { Show } from 'react-admin';
 import { Box, Typography } from '@mui/material';
 import Aside from '../shared/Aside';
-import ConservationType from './ConservationType';
+import ConservationType from '../../kit/shared/choices/ConservationType';
 import { GlobalTheme } from '../../GlobalTheme';
 import { ConservationDescription } from './ConservationDescription';
 import { ConscodeTaxonReferenceManyGridTaxon } from '../Conscode_taxons';

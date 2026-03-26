@@ -4,7 +4,7 @@ export * from './PostShowActions';
 export * from './PostEditActions';
 export * from './EditToolbar';
 export * from './CustomAction';
-export { useCanBulkDelete } from './useCanBulkDelete';
+export { useCanBulkDelete } from '../../kit/shared/useCanBulkDelete';
 export { DefaultPagination } from './DefaultPagination';
 export { selectableFilters } from './SelectableFilters';
 export * from './NestedLinkField';

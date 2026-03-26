@@ -8,7 +8,7 @@ import {
 } from 'react-admin';
 import { EmbeddedCrossReferenceShow } from './EmbeddedCrossReferenceShow';
 
-import CrossRefType from './CrossRefType';
+import CrossRefType from '../../kit/shared/choices/CrossRefType';
 import { FormattedScientificNameWithStatus } from '../Taxon_names';
 import { GlobalTheme } from '../../GlobalTheme';
 import { Box, Typography } from '@mui/material';

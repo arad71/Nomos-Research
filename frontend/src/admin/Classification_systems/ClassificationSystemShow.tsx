@@ -4,7 +4,7 @@ import makeStyles from 'lib/makeStyles';
 import { Show } from 'react-admin';
 import { Box, Typography } from '@mui/material';
 import Aside from '../shared/Aside';
-import ClassificationType from './ClassificationType';
+import ClassificationType from '../../kit/shared/choices/ClassificationType';
 import { GlobalTheme } from '../../GlobalTheme';
 import { ClassificationDescription } from './ClassificationDescription';
 

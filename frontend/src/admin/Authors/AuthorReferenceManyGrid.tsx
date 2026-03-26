@@ -8,7 +8,7 @@ import {
   TextField,
 } from 'react-admin';
 import { Box, Typography } from '@mui/material';
-import AuthorType from '../Citations/AuthorType';
+import AuthorType from '../../kit/shared/choices/AuthorType';
 import { GlobalTheme } from '../../GlobalTheme';
 
 const Empty = () => (

@@ -1,3 +1,3 @@
 export * from './Admin';
-export * from './role';
-export * from './authProvider';
+export * from '../kit/app/role';
+export * from '../kit/app/authProvider';

@@ -10,7 +10,7 @@ import {
   SelectField,
   TextField,
 } from 'react-admin';
-import AuthorType from './AuthorType';
+import AuthorType from '../../kit/shared/choices/AuthorType';
 import { List } from '@react-admin/ra-rbac';
 import { CanAccess as IfCanAccess } from 'react-admin';
 import {

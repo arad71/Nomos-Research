@@ -6,7 +6,7 @@ import { FormDataConsumer, SelectInput } from 'react-admin';
 import React from 'react';
 
 import { dependentNameInput } from './DependentNameInput';
-import TaxonRank from '../Taxon_names/TaxonRank';
+import TaxonRank from '../../kit/shared/choices/TaxonRank';
 import { ClassificationReference } from '../Classification_systems';
 
 export const HierarchyRowForm = (props: RowFormProps) => (

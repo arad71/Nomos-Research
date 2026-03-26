@@ -10,7 +10,7 @@ import {
   TextInput,
   minValue,
 } from 'react-admin';
-import LanguageType from './LanguageType';
+import LanguageType from '../../kit/shared/choices/LanguageType';
 import React from 'react';
 import makeStyles from 'lib/makeStyles';
 

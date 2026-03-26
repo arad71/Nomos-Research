@@ -4,7 +4,7 @@ import {
 } from '../shared/InlineRowForm';
 import { AuthorAutocomplete } from '../Authors';
 import { NumberInput, required, minValue, SelectInput } from 'react-admin';
-import AuthorType from './AuthorType';
+import AuthorType from '../../kit/shared/choices/AuthorType';
 import React from 'react';
 import makeStyles from 'lib/makeStyles';
 

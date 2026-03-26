@@ -1,7 +1,7 @@
 import React from 'react';
 import { SearchInput, SelectArrayInput } from 'react-admin';
 import { addDeletedFilterIfApplicable } from '../shared/SelectableFilters';
-import CrossRefType from './CrossRefType';
+import CrossRefType from '../../kit/shared/choices/CrossRefType';
 
 export const CrossReferenceFilters = () => {
   const filters = [

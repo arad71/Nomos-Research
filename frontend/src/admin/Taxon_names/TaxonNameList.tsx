@@ -16,8 +16,8 @@ import {
   TextField,
   TopToolbar,
 } from 'react-admin';
-import NaturalisedStatus from './NaturalisedStatus';
-import PublicationStatus from './PublicationStatus';
+import NaturalisedStatus from '../../kit/shared/choices/NaturalisedStatus';
+import PublicationStatus from '../../kit/shared/choices/PublicationStatus';
 import { List } from '@react-admin/ra-rbac';
 import { CanAccess as IfCanAccess } from 'react-admin';
 import DeleteIcon from '@mui/icons-material/Delete';

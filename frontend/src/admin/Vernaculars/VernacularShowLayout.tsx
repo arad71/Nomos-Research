@@ -8,7 +8,7 @@ import {
   TextField,
   BooleanField,
 } from 'react-admin';
-import LanguageType from './LanguageType';
+import LanguageType from '../../kit/shared/choices/LanguageType';
 import { GlobalTheme } from '../../GlobalTheme';
 import { Box, Typography } from '@mui/material';
 import makeStyles from 'lib/makeStyles';

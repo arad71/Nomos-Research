@@ -9,7 +9,7 @@ import {
   SelectField,
   TextField,
 } from 'react-admin';
-import CrossRefType from './CrossRefType';
+import CrossRefType from '../../kit/shared/choices/CrossRefType';
 import { List } from '@react-admin/ra-rbac';
 import { CanAccess as IfCanAccess } from 'react-admin';
 import { DefaultPagination, useCanBulkDelete } from '../shared';

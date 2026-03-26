@@ -10,7 +10,7 @@ import {
   TextField,
   BooleanField,
 } from 'react-admin';
-import LanguageType from './LanguageType';
+import LanguageType from '../../kit/shared/choices/LanguageType';
 import { List } from '@react-admin/ra-rbac';
 import { CanAccess as IfCanAccess } from 'react-admin';
 import {

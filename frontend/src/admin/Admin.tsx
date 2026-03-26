@@ -14,7 +14,7 @@ import type {
 } from 'ra-core';
 import simpleRestProvider from 'ra-data-simple-rest';
 import { AUTH_PROVIDER, BACKEND_URL } from '../config';
-import authProvider from './authProvider';
+import authProvider from '../kit/app/authProvider';
 import MyLoginPage from '../views/NewLogin';
 import MyLayout from '../MyLayout';
 import Dashboard from '../Dashboard';

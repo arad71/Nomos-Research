@@ -6,7 +6,7 @@ import {
   BooleanInput,
 } from 'react-admin';
 import React, { FC } from 'react';
-import CrossRefType from './CrossRefType';
+import CrossRefType from '../../kit/shared/choices/CrossRefType';
 import { GlobalTheme } from '../../GlobalTheme';
 import { Box, Typography } from '@mui/material';
 import makeStyles from 'lib/makeStyles';

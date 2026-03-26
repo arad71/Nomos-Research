@@ -4,7 +4,7 @@ import {
   SearchInput,
   SelectArrayInput,
 } from 'react-admin';
-import TaxonRank from '../Taxon_names/TaxonRank';
+import TaxonRank from '../../kit/shared/choices/TaxonRank';
 import ScientificNameReference from '../Taxon_names/ScientificNameReference';
 import { addDeletedFilterIfApplicable } from '../shared/SelectableFilters';
 

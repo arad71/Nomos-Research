@@ -6,7 +6,7 @@ import {
 } from 'react-admin';
 import makeStyles from 'lib/makeStyles';
 import { FormattedScientificNameWithStatus } from '../Taxon_names';
-import CrossRefType from './CrossRefType';
+import CrossRefType from '../../kit/shared/choices/CrossRefType';
 import React, { FC } from 'react';
 import { GlobalTheme } from '../../GlobalTheme';
 import { Box, Typography } from '@mui/material';

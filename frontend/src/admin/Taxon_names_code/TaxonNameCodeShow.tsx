@@ -15,8 +15,8 @@ import {
 } from 'react-admin';
 import { Show } from 'react-admin';
 import Aside from '../shared/Aside';
-import NaturalisedStatus from '../Taxon_names/NaturalisedStatus';
-import PublicationStatus from '../Taxon_names/PublicationStatus';
+import NaturalisedStatus from '../../kit/shared/choices/NaturalisedStatus';
+import PublicationStatus from '../../kit/shared/choices/PublicationStatus';
 import makeStyles from 'lib/makeStyles';
 import { Box, Typography } from '@mui/material';
 import { GlobalTheme } from '../../GlobalTheme';

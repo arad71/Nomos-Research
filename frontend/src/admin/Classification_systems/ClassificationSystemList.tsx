@@ -11,7 +11,7 @@ import {
   FilterButton,
   CreateButton,
 } from 'react-admin';
-import ClassificationType from './ClassificationType';
+import ClassificationType from '../../kit/shared/choices/ClassificationType';
 import { List } from '@react-admin/ra-rbac';
 import { CanAccess as IfCanAccess } from 'react-admin';
 import { DefaultPagination, useCanBulkDelete } from '../shared';

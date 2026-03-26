@@ -8,7 +8,7 @@ import {
   AutocompleteInput,
 } from 'react-admin';
 import React, { FC } from 'react';
-import RankAbbreviation from './RankAbbreviation';
+import RankAbbreviation from '../../kit/shared/choices/RankAbbreviation';
 import { GlobalTheme } from '../../GlobalTheme';
 import { Box, Typography } from '@mui/material';
 import makeStyles from 'lib/makeStyles';

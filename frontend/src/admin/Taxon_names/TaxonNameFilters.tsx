@@ -11,9 +11,9 @@ import {
   minValue,
   number,
 } from 'react-admin';
-import TaxonRank from './TaxonRank';
-import PublicationStatus from './PublicationStatus';
-import ConservationType from '../Conservation_codes/ConservationType';
+import TaxonRank from '../../kit/shared/choices/TaxonRank';
+import PublicationStatus from '../../kit/shared/choices/PublicationStatus';
+import ConservationType from '../../kit/shared/choices/ConservationType';
 import { addDeletedFilterIfApplicable } from '../shared/SelectableFilters';
 
 const validateNumber = [number(), minValue(0)];

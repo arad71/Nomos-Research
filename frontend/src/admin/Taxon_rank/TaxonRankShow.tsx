@@ -10,7 +10,7 @@ import {
 } from 'react-admin';
 import { Show } from 'react-admin';
 import Aside from '../shared/Aside';
-import RankAbbreviation from './RankAbbreviation';
+import RankAbbreviation from '../../kit/shared/choices/RankAbbreviation';
 import { GlobalTheme } from '../../GlobalTheme';
 import makeStyles from 'lib/makeStyles';
 import { Box, Typography } from '@mui/material';

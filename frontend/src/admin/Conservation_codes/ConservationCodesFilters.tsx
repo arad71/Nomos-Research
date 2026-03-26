@@ -9,7 +9,7 @@ import {
   minValue,
   number,
 } from 'react-admin';
-import ConservationType from './ConservationType';
+import ConservationType from '../../kit/shared/choices/ConservationType';
 import { addDeletedFilterIfApplicable } from '../shared/SelectableFilters';
 
 export const ConservationCodesFilters = function () {

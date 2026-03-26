@@ -9,7 +9,7 @@ import {
 } from 'react-admin';
 import { GlobalTheme } from '../../GlobalTheme';
 
-import LanguageType from './LanguageType';
+import LanguageType from '../../kit/shared/choices/LanguageType';
 import { EmbeddedVernacularShow } from './EmbeddedVernacularShow';
 
 export const VernacularReferenceManyGrid = (props: {

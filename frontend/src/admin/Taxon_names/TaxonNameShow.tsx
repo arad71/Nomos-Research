@@ -15,8 +15,8 @@ import {
 } from 'react-admin';
 import { Show } from 'react-admin';
 import Aside from '../shared/Aside';
-import NaturalisedStatus from './NaturalisedStatus';
-import PublicationStatus from './PublicationStatus';
+import NaturalisedStatus from '../../kit/shared/choices/NaturalisedStatus';
+import PublicationStatus from '../../kit/shared/choices/PublicationStatus';
 import makeStyles from 'lib/makeStyles';
 import { Box, Typography } from '@mui/material';
 import { GlobalTheme } from '../../GlobalTheme';
@@ -30,7 +30,7 @@ import { NamePageSummary } from './NamePageSummary';
 import PostShowActions from '../shared/PostShowActions';
 import NestedLinkField from '../shared/NestedLinkField';
 import { HierarchyGrid } from './HierarchyGrid';
-import { InfragenericNamesGrid } from './InfragenericNamesGrid';
+import { InfragenericNamesGrid } from '../../kit/taxon-names/infrageneric/InfragenericNamesGrid';
 import { TaxonName } from './TaxonName';
 
 const useStyles = makeStyles(() => ({

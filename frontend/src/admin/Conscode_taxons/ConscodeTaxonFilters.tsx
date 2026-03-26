@@ -8,7 +8,7 @@ import {
   ReferenceArrayInput,
   AutocompleteArrayInput,
 } from 'react-admin';
-import ConservationType from '../Conservation_codes/ConservationType';
+import ConservationType from '../../kit/shared/choices/ConservationType';
 import { addDeletedFilterIfApplicable } from '../shared/SelectableFilters';
 
 export const ConscodeTaxonFilters = function () {

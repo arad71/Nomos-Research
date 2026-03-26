@@ -30,11 +30,11 @@ import {
 } from 'react-admin';
 import { EditableDatagrid } from '@react-admin/ra-editable-datagrid';
 import React, { FC, PropsWithChildren } from 'react';
-import NaturalisedStatus from '../Taxon_names/NaturalisedStatus';
-import PublicationStatus from '../Taxon_names/PublicationStatus';
+import NaturalisedStatus from '../../kit/shared/choices/NaturalisedStatus';
+import PublicationStatus from '../../kit/shared/choices/PublicationStatus';
 import makeStyles from 'lib/makeStyles';
-import AuthorType from '../Citations/AuthorType';
-import LanguageType from '../Vernaculars/LanguageType';
+import AuthorType from '../../kit/shared/choices/AuthorType';
+import LanguageType from '../../kit/shared/choices/LanguageType';
 import { Box, Typography } from '@mui/material';
 import { CitationRowForm } from '../Citations';
 import { ConscodesTaxonRowForm } from '../Conscode_taxons';
@@ -44,7 +44,7 @@ import { GlobalGridTheme, GlobalTheme } from '../../GlobalTheme';
 import { NamePageSummary } from '../Taxon_names/NamePageSummary';
 // eslint-disable-next-line max-len
 import { EmbeddedCrossReferenceShow } from '../Cross_references/EmbeddedCrossReferenceShow';
-import CrossRefType from '../Cross_references/CrossRefType';
+import CrossRefType from '../../kit/shared/choices/CrossRefType';
 import { FormattedScientificNameWithStatus } from '../Taxon_names';
 // eslint-disable-next-line max-len
 import { CrossReferenceRowForm } from '../Cross_references/CrossReferenceRowForm';

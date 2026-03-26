@@ -11,7 +11,7 @@ import {
   FilterButton,
   CreateButton,
 } from 'react-admin';
-import ConservationType from './ConservationType';
+import ConservationType from '../../kit/shared/choices/ConservationType';
 import { List } from '@react-admin/ra-rbac';
 import { CanAccess as IfCanAccess } from 'react-admin';
 import { DefaultPagination, useCanBulkDelete } from '../shared';

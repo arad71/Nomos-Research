@@ -8,7 +8,7 @@ import {
   minValue,
 } from 'react-admin';
 import React, { FC } from 'react';
-import LanguageType from './LanguageType';
+import LanguageType from '../../kit/shared/choices/LanguageType';
 import { Box, Typography } from '@mui/material';
 import makeStyles from 'lib/makeStyles';
 import { GlobalTheme } from '../../GlobalTheme';
