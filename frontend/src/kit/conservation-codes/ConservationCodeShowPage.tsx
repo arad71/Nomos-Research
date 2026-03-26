@@ -39,6 +39,7 @@ const ConservationCodeShowActions = () => {
       listTo="/conservation_codes"
       editTo={record?.id != null ? `/conservation_codes/${record.id}` : null}
       restoreable
+      showDelete={false}
     />
   );
 };

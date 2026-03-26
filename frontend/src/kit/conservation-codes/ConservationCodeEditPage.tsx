@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { useCanAccess, useRecordContext } from 'ra-core';
-import { DeleteButton } from '@/components/admin/delete-button';
+import { useRecordContext } from 'ra-core';
 import { Badge } from '@/components/ui/badge';
 import { Edit } from '@/components/admin/edit';
 import ConservationCodeForm from './ConservationCodeForm';
@@ -33,16 +32,12 @@ const ConservationCodeEditTitle = () => {
 
 const ConservationCodeEditActions = () => {
   const record = useRecordContext<{ id?: string | number }>();
-  const { canAccess } = useCanAccess({ resource: 'conservation_codes', action: 'delete' });
 
   return (
     <RecordPageActions
       resource="conservation_codes"
       listTo="/conservation_codes"
       showTo={record?.id != null ? `/conservation_codes/${record.id}/show` : null}
-      extra={
-        record?.id != null && canAccess ? <DeleteButton resource="conservation_codes" /> : null
-      }
       restoreable
     />
   );

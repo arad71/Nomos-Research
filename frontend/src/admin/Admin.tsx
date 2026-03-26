@@ -23,12 +23,6 @@ import { LogoutButton } from '../LogoutButton';
 import SafeNotification from './shared/SafeNotification';
 
 import { UserCreate, UserEdit, UserList, UserShow } from './Users';
-import {
-  ConservationCodesList,
-  ConservationCodesShow,
-  ConservationCodesEdit,
-  ConservationCodesCreate,
-} from './Conservation_codes';
 import { AuthorCreate, AuthorEdit, AuthorList, AuthorShow } from './Authors';
 import {
   TaxonNameCreate,
@@ -361,13 +355,6 @@ export const Admin: FC = () => {
       <Resource name="taxon_names_ancestors/Species" />
       <Resource name="taxon_names_ancestors/Subspecies" />
       <Resource name="taxon_names_infrageneric_names" />
-      <Resource
-        name="conservation_codes"
-        list={ConservationCodesList}
-        show={ConservationCodesShow}
-        edit={ConservationCodesEdit}
-        create={ConservationCodesCreate}
-      />
       <Resource
         name="hierarchies"
         list={HierarchyList}
