@@ -3,8 +3,8 @@ import { useRecordContext } from 'ra-core';
 import { Badge } from '@/components/ui/badge';
 import { RecordField } from '@/components/admin/record-field';
 import { Show } from '@/components/admin/show';
-import HistoryInfoBox from './HistoryInfoBox';
-import RecordPageActions from './RecordPageActions';
+import HistoryInfoBox from './shared/HistoryInfoBox';
+import RecordPageActions from './shared/RecordPageActions';
 
 const ConservationCodeShowTitle = () => {
   const record = useRecordContext<{

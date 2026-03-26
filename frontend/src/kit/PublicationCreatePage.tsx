@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Create } from '@/components/admin/create';
 import PublicationForm from './PublicationForm';
-import { transformPublicationPayload } from './publicationDoi';
+import { transformPublicationPayload } from './shared/publicationDoi';
 
 const PublicationCreatePage = () => (
   <Create

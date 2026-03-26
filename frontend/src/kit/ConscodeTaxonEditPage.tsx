@@ -2,8 +2,8 @@ import * as React from 'react';
 import { useRecordContext } from 'ra-core';
 import { Edit } from '@/components/admin/edit';
 import ConscodeTaxonForm from './ConscodeTaxonForm';
-import HistoryInfoBox from './HistoryInfoBox';
-import RecordPageActions from './RecordPageActions';
+import HistoryInfoBox from './shared/HistoryInfoBox';
+import RecordPageActions from './shared/RecordPageActions';
 
 const ConscodeTaxonEditTitle = () => {
   const record = useRecordContext<{ id?: string | number }>();

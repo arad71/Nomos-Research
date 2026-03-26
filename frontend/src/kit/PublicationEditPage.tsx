@@ -3,10 +3,10 @@ import { useCanAccess, useRecordContext } from 'ra-core';
 import { DeleteButton } from '@/components/admin/delete-button';
 import { Badge } from '@/components/ui/badge';
 import { Edit } from '@/components/admin/edit';
-import HistoryInfoBox from './HistoryInfoBox';
+import HistoryInfoBox from './shared/HistoryInfoBox';
 import PublicationForm from './PublicationForm';
-import RecordPageActions from './RecordPageActions';
-import { transformPublicationPayload } from './publicationDoi';
+import RecordPageActions from './shared/RecordPageActions';
+import { transformPublicationPayload } from './shared/publicationDoi';
 
 const PublicationEditTitle = () => {
   const record = useRecordContext<{ display_title?: string; abbreviated_title?: string; deleted?: boolean | null }>();

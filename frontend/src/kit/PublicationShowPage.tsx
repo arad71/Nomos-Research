@@ -6,9 +6,9 @@ import { ReferenceArrayField } from '@/components/admin/reference-array-field';
 import { ReferenceField } from '@/components/admin/reference-field';
 import { Show } from '@/components/admin/show';
 import { SingleFieldList } from '@/components/admin/single-field-list';
-import HistoryInfoBox from './HistoryInfoBox';
-import RecordPageActions from './RecordPageActions';
-import { normalizeDoi, sanitizeExternalUrl } from './publicationDoi';
+import HistoryInfoBox from './shared/HistoryInfoBox';
+import RecordPageActions from './shared/RecordPageActions';
+import { normalizeDoi, sanitizeExternalUrl } from './shared/publicationDoi';
 
 const HtmlValue = ({ value }: { value?: string | null }) => {
   if (!value) {

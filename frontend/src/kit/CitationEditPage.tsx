@@ -4,8 +4,8 @@ import { DeleteButton } from '@/components/admin/delete-button';
 import { Badge } from '@/components/ui/badge';
 import { Edit } from '@/components/admin/edit';
 import CitationForm from './CitationForm';
-import HistoryInfoBox from './HistoryInfoBox';
-import RecordPageActions from './RecordPageActions';
+import HistoryInfoBox from './shared/HistoryInfoBox';
+import RecordPageActions from './shared/RecordPageActions';
 
 const CitationEditTitle = () => {
   const record = useRecordContext<{ id?: string | number; deleted?: boolean | null }>();

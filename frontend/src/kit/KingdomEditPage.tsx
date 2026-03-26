@@ -3,8 +3,8 @@ import { useCanAccess, useRecordContext } from 'ra-core';
 import { DeleteButton } from '@/components/admin/delete-button';
 import { Edit } from '@/components/admin/edit';
 import KingdomForm from './KingdomForm';
-import HistoryInfoBox from './HistoryInfoBox';
-import RecordPageActions from './RecordPageActions';
+import HistoryInfoBox from './shared/HistoryInfoBox';
+import RecordPageActions from './shared/RecordPageActions';
 
 const KingdomEditTitle = () => {
   const record = useRecordContext<{ kingdom_name?: string }>();

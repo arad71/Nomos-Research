@@ -9,7 +9,7 @@ import { RecordField } from '@/components/admin/record-field';
 import { ReferenceField } from '@/components/admin/reference-field';
 import { ReferenceManyField } from '@/components/admin/reference-many-field';
 import { Button } from '@/components/ui/button';
-import TaxonNameTitle from './TaxonNameTitle';
+import TaxonNameTitle from './taxon-names/TaxonNameTitle';
 import PublicationStatus from '../admin/Taxon_names/PublicationStatus';
 import ConscodeTaxonForm from './ConscodeTaxonForm';
 

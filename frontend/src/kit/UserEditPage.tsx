@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { useRecordContext } from 'ra-core';
 import { Edit } from '@/components/admin/edit';
-import HistoryInfoBox from './HistoryInfoBox';
+import HistoryInfoBox from './shared/HistoryInfoBox';
 import UserForm from './UserForm';
-import RecordPageActions from './RecordPageActions';
+import RecordPageActions from './shared/RecordPageActions';
 import { Badge } from '../components/ui/badge';
 
 const UserEditTitle = () => {

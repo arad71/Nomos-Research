@@ -3,7 +3,7 @@ import { CanAccess } from 'react-admin';
 import { useRecordContext } from 'ra-core';
 import { Link } from 'react-router-dom';
 import { DeleteButton } from '@/components/admin/delete-button';
-import { Button } from '../components/ui/button';
+import { Button } from '../../components/ui/button';
 import { HardDeleteButton } from '@/components/admin/hard-delete-button';
 import { RestoreButton } from '@/components/admin/restore-button';
 import { getRememberedListLocation } from './listNavigation';

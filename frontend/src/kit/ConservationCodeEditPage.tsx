@@ -4,8 +4,8 @@ import { DeleteButton } from '@/components/admin/delete-button';
 import { Badge } from '@/components/ui/badge';
 import { Edit } from '@/components/admin/edit';
 import ConservationCodeForm from './ConservationCodeForm';
-import HistoryInfoBox from './HistoryInfoBox';
-import RecordPageActions from './RecordPageActions';
+import HistoryInfoBox from './shared/HistoryInfoBox';
+import RecordPageActions from './shared/RecordPageActions';
 
 const ConservationCodeEditTitle = () => {
   const record = useRecordContext<{

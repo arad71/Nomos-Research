@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { useRecordContext } from 'ra-core';
 import { Show } from '@/components/admin/show';
-import HistoryInfoBox from './HistoryInfoBox';
+import HistoryInfoBox from './shared/HistoryInfoBox';
 import { TaxonNameCodeDetails, TaxonNameCodeTitle } from './TaxonNameCodeDetails';
-import RecordPageActions from './RecordPageActions';
+import RecordPageActions from './shared/RecordPageActions';
 
 const TaxonNameCodeShowActions = () => {
   const record = useRecordContext<{ id?: string | number }>();

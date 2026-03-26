@@ -3,10 +3,10 @@ import { useRecordContext } from 'ra-core';
 import { Edit } from '@/components/admin/edit';
 import TaxonNameForm from './TaxonNameForm';
 import TaxonNameRelatedSections from './TaxonNameRelatedSections';
-import HistoryInfoBox from './HistoryInfoBox';
+import HistoryInfoBox from '../shared/HistoryInfoBox';
 import TaxonNameTitle from './TaxonNameTitle';
 import TaxonNameSidebarCards from './TaxonNameSidebarCards';
-import RecordPageActions from './RecordPageActions';
+import RecordPageActions from '../shared/RecordPageActions';
 
 const TaxonNameEditTitle = () => <TaxonNameTitle fallback="Edit taxon name" />;
 

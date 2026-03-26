@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { CanAccess } from 'react-admin';
 import { Link } from 'react-router-dom';
-import { Button } from '../components/ui/button';
-import { cn } from '../lib/utils';
+import { Button } from '../../components/ui/button';
+import { cn } from '../../lib/utils';
 
 type RecordActionButtonsProps = {
   resource: string;

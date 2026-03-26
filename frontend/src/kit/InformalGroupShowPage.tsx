@@ -4,8 +4,8 @@ import { Badge } from '@/components/ui/badge';
 import { RecordField } from '@/components/admin/record-field';
 import { ReferenceField } from '@/components/admin/reference-field';
 import { Show } from '@/components/admin/show';
-import HistoryInfoBox from './HistoryInfoBox';
-import RecordPageActions from './RecordPageActions';
+import HistoryInfoBox from './shared/HistoryInfoBox';
+import RecordPageActions from './shared/RecordPageActions';
 
 const ScientificNameValue = ({ value }: { value?: string | null }) => {
   if (!value) {

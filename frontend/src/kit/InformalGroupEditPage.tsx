@@ -3,9 +3,9 @@ import { useCanAccess, useRecordContext } from 'ra-core';
 import { DeleteButton } from '@/components/admin/delete-button';
 import { Badge } from '@/components/ui/badge';
 import { Edit } from '@/components/admin/edit';
-import HistoryInfoBox from './HistoryInfoBox';
+import HistoryInfoBox from './shared/HistoryInfoBox';
 import InformalGroupForm from './InformalGroupForm';
-import RecordPageActions from './RecordPageActions';
+import RecordPageActions from './shared/RecordPageActions';
 
 const InformalGroupEditTitle = () => {
   const record = useRecordContext<{ id?: string | number; deleted?: boolean | null }>();

@@ -2,8 +2,8 @@ import * as React from 'react';
 import { useRecordContext } from 'ra-core';
 import { Edit } from '@/components/admin/edit';
 import ClassificationSystemForm from './ClassificationSystemForm';
-import HistoryInfoBox from './HistoryInfoBox';
-import RecordPageActions from './RecordPageActions';
+import HistoryInfoBox from './shared/HistoryInfoBox';
+import RecordPageActions from './shared/RecordPageActions';
 
 const ClassificationSystemEditTitle = () => {
   const record = useRecordContext<{ class_desc?: string }>();

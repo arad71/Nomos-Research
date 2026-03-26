@@ -4,8 +4,8 @@ import { DeleteButton } from '@/components/admin/delete-button';
 import { Badge } from '@/components/ui/badge';
 import { Edit } from '@/components/admin/edit';
 import AuthorForm from './AuthorForm';
-import HistoryInfoBox from './HistoryInfoBox';
-import RecordPageActions from './RecordPageActions';
+import HistoryInfoBox from './shared/HistoryInfoBox';
+import RecordPageActions from './shared/RecordPageActions';
 
 const AuthorEditTitle = () => {
   const record = useRecordContext<{ abbreviation?: string; display_name?: string; deleted?: boolean | null }>();

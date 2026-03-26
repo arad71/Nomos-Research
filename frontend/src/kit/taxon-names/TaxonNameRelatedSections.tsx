@@ -28,16 +28,16 @@ import {
   BooleanField as RaBooleanField,
   NumberField as RaNumberField,
 } from 'react-admin';
-import CrossRefType from '../admin/Cross_references/CrossRefType';
-import NaturalisedStatus from '../admin/Taxon_names/NaturalisedStatus';
-import PublicationStatus from '../admin/Taxon_names/PublicationStatus';
-import CitationForm from './CitationForm';
-import ConscodeTaxonForm from './ConscodeTaxonForm';
-import CrossReferenceForm from './CrossReferenceForm';
-import HierarchyForm from './HierarchyForm';
-import PublicationForm from './PublicationForm';
-import { normalizeDoi, transformPublicationPayload } from './publicationDoi';
-import VernacularForm from './VernacularForm';
+import CrossRefType from '../../admin/Cross_references/CrossRefType';
+import NaturalisedStatus from '../../admin/Taxon_names/NaturalisedStatus';
+import PublicationStatus from '../../admin/Taxon_names/PublicationStatus';
+import CitationForm from '../CitationForm';
+import ConscodeTaxonForm from '../ConscodeTaxonForm';
+import CrossReferenceForm from '../CrossReferenceForm';
+import HierarchyForm from '../HierarchyForm';
+import PublicationForm from '../PublicationForm';
+import { normalizeDoi, transformPublicationPayload } from '../shared/publicationDoi';
+import VernacularForm from '../VernacularForm';
 
 const crossRefTypeMap = CrossRefType.reduce<Record<string, string>>((acc, item) => {
   acc[item.id] = item.name;

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { CanAccess } from 'react-admin';
 import { Link } from 'react-router-dom';
-import { Button, type ButtonProps } from '../components/ui/button';
+import { Button, type ButtonProps } from '../../components/ui/button';
 
 type AuthorizedButtonLinkProps = Omit<ButtonProps, 'asChild'> & {
   resource: string;

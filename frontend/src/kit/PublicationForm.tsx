@@ -7,7 +7,7 @@ import { ReferenceArrayInput } from '@/components/admin/reference-array-input';
 import { ReferenceInput } from '@/components/admin/reference-input';
 import { SimpleForm } from '@/components/admin/simple-form';
 import { TextInput } from '@/components/admin/text-input';
-import { validateOptionalDoi, validateOptionalHttpUrl } from './publicationDoi';
+import { validateOptionalDoi, validateOptionalHttpUrl } from './shared/publicationDoi';
 
 const requiredValue = required();
 const minDay = minValue(1);

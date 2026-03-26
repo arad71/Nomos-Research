@@ -5,8 +5,8 @@ import { RecordField } from '@/components/admin/record-field';
 import { ReferenceField } from '@/components/admin/reference-field';
 import { Show } from '@/components/admin/show';
 import CrossRefType from '../admin/Cross_references/CrossRefType';
-import HistoryInfoBox from './HistoryInfoBox';
-import RecordPageActions from './RecordPageActions';
+import HistoryInfoBox from './shared/HistoryInfoBox';
+import RecordPageActions from './shared/RecordPageActions';
 
 const crossRefTypeMap = CrossRefType.reduce<Record<string, string>>((acc, item) => {
   acc[item.id] = item.name;

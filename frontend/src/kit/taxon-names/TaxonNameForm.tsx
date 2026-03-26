@@ -11,8 +11,8 @@ import { ReferenceInput } from '@/components/admin/reference-input';
 import { SelectInput } from '@/components/admin/select-input';
 import { SimpleForm } from '@/components/admin/simple-form';
 import { TextInput } from '@/components/admin/text-input';
-import NaturalisedStatus from '../admin/Taxon_names/NaturalisedStatus';
-import PublicationStatus from '../admin/Taxon_names/PublicationStatus';
+import NaturalisedStatus from '../../admin/Taxon_names/NaturalisedStatus';
+import PublicationStatus from '../../admin/Taxon_names/PublicationStatus';
 
 const requiredValue = required();
 const minYear = minValue(1735);

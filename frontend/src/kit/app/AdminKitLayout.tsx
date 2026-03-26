@@ -14,15 +14,15 @@ import {
   ListTree,
 } from 'lucide-react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { adminNavSections, getStoredRoles, hasAnyRole } from '../adminShell';
-import authProvider, { clearLocalStorage } from '../admin/authProvider';
-import Role from '../admin/role';
-import { Badge } from '../components/ui/badge';
-import { Button } from '../components/ui/button';
-import { Card } from '../components/ui/card';
-import { Separator } from '../components/ui/separator';
-import { cn } from '../lib/utils';
-import { rememberListLocation } from './listNavigation';
+import { adminNavSections, getStoredRoles, hasAnyRole } from '../../adminShell';
+import authProvider, { clearLocalStorage } from '../../admin/authProvider';
+import Role from '../../admin/role';
+import { Badge } from '../../components/ui/badge';
+import { Button } from '../../components/ui/button';
+import { Card } from '../../components/ui/card';
+import { Separator } from '../../components/ui/separator';
+import { cn } from '../../lib/utils';
+import { rememberListLocation } from '../shared/listNavigation';
 
 const legacyPath = (path: string) => `/legacy${path === '/' ? '' : path}`;
 const THEME_STORAGE_KEY = 'nomos-kit-theme';

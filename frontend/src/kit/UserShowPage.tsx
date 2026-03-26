@@ -4,8 +4,8 @@ import { RecordField } from '@/components/admin/record-field';
 import { ReferenceArrayField } from '@/components/admin/reference-array-field';
 import { Show } from '@/components/admin/show';
 import { SingleFieldList } from '@/components/admin/single-field-list';
-import HistoryInfoBox from './HistoryInfoBox';
-import RecordPageActions from './RecordPageActions';
+import HistoryInfoBox from './shared/HistoryInfoBox';
+import RecordPageActions from './shared/RecordPageActions';
 import { Badge } from '../components/ui/badge';
 
 const renderBoolean = (value?: boolean | null) => {

@@ -2,9 +2,9 @@ import * as React from 'react';
 import { useCanAccess, useRecordContext } from 'ra-core';
 import { DeleteButton } from '@/components/admin/delete-button';
 import { Edit } from '@/components/admin/edit';
-import HistoryInfoBox from './HistoryInfoBox';
+import HistoryInfoBox from './shared/HistoryInfoBox';
 import TaxonRankForm from './TaxonRankForm';
-import RecordPageActions from './RecordPageActions';
+import RecordPageActions from './shared/RecordPageActions';
 
 const TaxonRankEditTitle = () => {
   const record = useRecordContext<{ rank_name?: string }>();

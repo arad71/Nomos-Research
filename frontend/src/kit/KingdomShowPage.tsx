@@ -2,8 +2,8 @@ import * as React from 'react';
 import { useRecordContext } from 'ra-core';
 import { RecordField } from '@/components/admin/record-field';
 import { Show } from '@/components/admin/show';
-import HistoryInfoBox from './HistoryInfoBox';
-import RecordPageActions from './RecordPageActions';
+import HistoryInfoBox from './shared/HistoryInfoBox';
+import RecordPageActions from './shared/RecordPageActions';
 
 const KingdomShowTitle = () => {
   const record = useRecordContext<{ id?: string | number; kingdom_name?: string }>();

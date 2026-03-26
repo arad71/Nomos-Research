@@ -3,9 +3,9 @@ import { useCanAccess, useRecordContext } from 'ra-core';
 import { DeleteButton } from '@/components/admin/delete-button';
 import { Badge } from '@/components/ui/badge';
 import { Edit } from '@/components/admin/edit';
-import HistoryInfoBox from './HistoryInfoBox';
+import HistoryInfoBox from './shared/HistoryInfoBox';
 import VernacularForm from './VernacularForm';
-import RecordPageActions from './RecordPageActions';
+import RecordPageActions from './shared/RecordPageActions';
 
 const VernacularEditTitle = () => {
   const record = useRecordContext<{ vernacular_name?: string; deleted?: boolean | null }>();

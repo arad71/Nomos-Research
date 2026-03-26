@@ -16,17 +16,17 @@ import { ColumnsButton } from '@/components/admin/columns-button';
 import { DataTable } from '@/components/admin/data-table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useDataProvider, useNotify } from 'react-admin';
-import authProvider from '../admin/authProvider';
-import AuthorizedButtonLink from './AuthorizedButtonLink';
-import RecordActionButtons from './RecordActionButtons';
-import ConservationType from '../admin/Conservation_codes/ConservationType';
-import PublicationStatus from '../admin/Taxon_names/PublicationStatus';
-import TaxonRank from '../admin/Taxon_names/TaxonRank';
-import { useCanBulkDelete } from '../admin/shared';
-import { BACKEND_URL } from '../config';
-import { Badge } from '../components/ui/badge';
-import { Button } from '../components/ui/button';
-import { Card } from '../components/ui/card';
+import authProvider from '../../admin/authProvider';
+import AuthorizedButtonLink from '../shared/AuthorizedButtonLink';
+import RecordActionButtons from '../shared/RecordActionButtons';
+import ConservationType from '../../admin/Conservation_codes/ConservationType';
+import PublicationStatus from '../../admin/Taxon_names/PublicationStatus';
+import TaxonRank from '../../admin/Taxon_names/TaxonRank';
+import { useCanBulkDelete } from '../../admin/shared';
+import { BACKEND_URL } from '../../config';
+import { Badge } from '../../components/ui/badge';
+import { Button } from '../../components/ui/button';
+import { Card } from '../../components/ui/card';
 
 type TaxonNameRecord = {
   id?: number;
