@@ -1,23 +1,6 @@
 import { useRecordContext, Link } from 'react-admin';
 import React from 'react';
-import makeStyles from 'lib/makeStyles';
-
-const useStyles = makeStyles({
-  bold: {
-    fontWeight: 'bold',
-  },
-  pill: {
-    background: 'rgba(44, 83, 49, 0.2)',
-    borderRadius: '1rem',
-    padding: '0.3rem 1rem',
-    marginRight: '0.3rem',
-    textWrap: 'nowrap',
-  },
-  container: {
-    display: 'flex',
-    marginBlockStart: '1rem',
-  },
-});
+import { Badge } from '@/components/ui/badge';
 
 export const ConservationShort = (props: any) => {
   const record = useRecordContext(props);
@@ -32,20 +15,18 @@ export const ConservationShort = (props: any) => {
 
 export const ConservationShortPill = (props: any) => {
   const record = useRecordContext(props);
-  const classes = useStyles();
 
   if (!record) return null;
 
   return (
-    <span className={classes.pill}>
+    <Badge variant="outline" className="mr-1 whitespace-nowrap rounded-full px-3 py-1">
       {record.authorising_org}:<strong>{record.conservation_code_value}</strong>
-    </span>
+    </Badge>
   );
 };
 
 export const ConservationShortPillAdd = (props: any) => {
   const record = useRecordContext(props);
-  const classes = useStyles();
 
   if (!record) return null;
 
@@ -56,9 +37,9 @@ export const ConservationShortPillAdd = (props: any) => {
         search: `?source=${JSON.stringify({ taxon_name_id: record.id })}`,
         state: { record: { taxon_name_id: record.id } },
       }}
-      className={classes.container}
+      className="mt-4 flex"
     >
-      <span className={classes.pill}>+</span>
+      <Badge variant="outline" className="rounded-full px-3 py-1">+</Badge>
     </Link>
   );
 };
