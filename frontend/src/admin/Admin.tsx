@@ -29,12 +29,6 @@ import {
   ConservationCodesEdit,
   ConservationCodesCreate,
 } from './Conservation_codes';
-import {
-  ClassificationSystemCreate,
-  ClassificationSystemEdit,
-  ClassificationSystemList,
-  ClassificationSystemShow,
-} from './Classification_systems';
 import { AuthorCreate, AuthorEdit, AuthorList, AuthorShow } from './Authors';
 import {
   TaxonRankCreate,
@@ -344,13 +338,6 @@ export const Admin: FC = () => {
         show={UserShow}
         edit={UserEdit}
         create={UserCreate}
-      />
-      <Resource
-        name="classification_systems"
-        list={ClassificationSystemList}
-        show={ClassificationSystemShow}
-        edit={ClassificationSystemEdit}
-        create={ClassificationSystemCreate}
       />
       <Resource
         name="authors"
