@@ -20,10 +20,10 @@ import PublicationStatus from '../../kit/shared/choices/PublicationStatus';
 import makeStyles from 'lib/makeStyles';
 import { Box, Typography } from '@mui/material';
 import { GlobalTheme } from '../../GlobalTheme';
-import { CrossReferenceManyGrid } from '../Cross_references';
-import { AuthorReferenceManyGrid } from '../Authors';
-import { ConscodeTaxonReferenceManyGrid } from '../Conscode_taxons';
-import { VernacularReferenceManyGrid } from '../Vernaculars';
+import { CrossReferenceManyGrid } from '../Cross_references/CrossReferenceManyGrid';
+import { AuthorReferenceManyGrid } from '../Authors/AuthorReferenceManyGrid';
+import { ConscodeTaxonReferenceManyGrid } from '../Conscode_taxons/ConscodeTaxonReferenceManyGrid';
+import { VernacularReferenceManyGrid } from '../Vernaculars/VernacularReferenceManyGrid';
 // eslint-disable-next-line max-len
 import { FormattedScientificNameWithStatus } from './FormattedScientificNameWithStatus';
 import { NamePageSummary } from './NamePageSummary';

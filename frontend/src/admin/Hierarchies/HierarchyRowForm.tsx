@@ -7,7 +7,7 @@ import React from 'react';
 
 import { dependentNameInput } from './DependentNameInput';
 import TaxonRank from '../../kit/shared/choices/TaxonRank';
-import { ClassificationReference } from '../Classification_systems';
+import { ClassificationReference } from '../Classification_systems/ClassificationReference';
 
 export const HierarchyRowForm = (props: RowFormProps) => (
   <RowForm {...props}>

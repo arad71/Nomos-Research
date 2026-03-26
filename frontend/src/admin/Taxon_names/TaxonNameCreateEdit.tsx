@@ -37,12 +37,13 @@ import makeStyles from 'lib/makeStyles';
 import AuthorType from '../../kit/shared/choices/AuthorType';
 import LanguageType from '../../kit/shared/choices/LanguageType';
 import { Box, Typography } from '@mui/material';
-import { CitationRowForm } from '../Citations';
-import { ConscodesTaxonRowForm } from '../Conscode_taxons';
+import { CitationRowForm } from '../Citations/CitationRowForm';
+import { ConscodesTaxonRowForm } from '../Conscode_taxons/ConscodesTaxonRowForm';
 import { ConservationShort } from '../Conservation_codes/ConservationShort';
 // eslint-disable-next-line max-len
 import { ConscodeTaxonReferenceManyGrid } from '../Conscode_taxons/ConscodeTaxonReferenceManyGrid';
-import { EmbeddedVernacularShow, VernacularRowForm } from '../Vernaculars';
+import { EmbeddedVernacularShow } from '../Vernaculars/EmbeddedVernacularShow';
+import { VernacularRowForm } from '../Vernaculars/VernacularRowForm';
 import { GlobalGridTheme, GlobalTheme } from '../../GlobalTheme';
 import { NamePageSummary } from './NamePageSummary';
 // eslint-disable-next-line max-len
@@ -51,7 +52,8 @@ import CrossRefType from '../../kit/shared/choices/CrossRefType';
 import { FormattedScientificNameWithStatus } from './FormattedScientificNameWithStatus';
 // eslint-disable-next-line max-len
 import { CrossReferenceRowForm } from '../Cross_references/CrossReferenceRowForm';
-import { EmbeddedHierarchyShow, HierarchyRowForm } from '../Hierarchies';
+import { EmbeddedHierarchyShow } from '../Hierarchies/EmbeddedHierarchyShow';
+import { HierarchyRowForm } from '../Hierarchies/HierarchyRowForm';
 import EditToolbar from '../shared/EditToolbar';
 import { usePermissions } from 'react-admin';
 import { canAccess } from '@react-admin/ra-rbac';

@@ -14,7 +14,7 @@ import {
 import {
   ConservationShort,
   ConservationShortPillAdd,
-} from '../Conservation_codes';
+} from '../Conservation_codes/ConservationShort';
 
 const useStyles = makeStyles({
   bold: {

@@ -12,7 +12,7 @@ import EditToolbar from '../shared/EditToolbar';
 import ScientificNameReference from '../Taxon_names/ScientificNameReference';
 import TaxonRank from '../../kit/shared/choices/TaxonRank';
 import { dependentNameInput } from './DependentNameInput';
-import { ClassificationReference } from '../Classification_systems';
+import { ClassificationReference } from '../Classification_systems/ClassificationReference';
 
 const useStyles = makeStyles((theme: any) => ({
   mainGrid: {

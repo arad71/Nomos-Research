@@ -11,7 +11,7 @@ import {
 } from 'react-admin';
 import { Box, Typography } from '@mui/material';
 import { GlobalTheme } from '../../GlobalTheme';
-import { ConservationShort } from '../Conservation_codes';
+import { ConservationShort } from '../Conservation_codes/ConservationShort';
 
 const Empty = () => (
   <Box>
