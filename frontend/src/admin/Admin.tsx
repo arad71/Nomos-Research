@@ -23,7 +23,6 @@ import { LogoutButton } from '../LogoutButton';
 import SafeNotification from './shared/SafeNotification';
 
 import { UserCreate, UserEdit, UserList, UserShow } from './Users';
-import { AuthorCreate, AuthorEdit, AuthorList, AuthorShow } from './Authors';
 import {
   TaxonNameCreate,
   TaxonNameEdit,
@@ -306,13 +305,6 @@ export const Admin: FC = () => {
         show={UserShow}
         edit={UserEdit}
         create={UserCreate}
-      />
-      <Resource
-        name="authors"
-        list={AuthorList}
-        show={AuthorShow}
-        edit={AuthorEdit}
-        create={AuthorCreate}
       />
       <Resource
         name="taxon_names"

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Download, Plus, Search } from 'lucide-react';
+import { useCanAccess } from 'ra-core';
 import { Link, useSearchParams } from 'react-router-dom';
 import { ColumnsButton } from '@/components/admin/columns-button';
 import { DataTable } from '@/components/admin/data-table';
@@ -32,6 +33,7 @@ type AuthorsResponse = {
 
 type AuthorFilters = {
   q: string;
+  deleted: string;
 };
 
 type ColumnKey =
@@ -147,7 +149,11 @@ const fetchAuthors = async (
 ): Promise<AuthorsResponse> => {
   const sort = encodeURIComponent(JSON.stringify([sortField, sortOrder]));
   const range = encodeURIComponent(JSON.stringify([(page - 1) * perPage, page * perPage - 1]));
-  const filter = encodeURIComponent(JSON.stringify(filters.q ? { q: filters.q } : {}));
+  const filterObject = {
+    ...(filters.q ? { q: filters.q } : {}),
+    ...(filters.deleted ? { deleted: filters.deleted === 'true' } : {}),
+  };
+  const filter = encodeURIComponent(JSON.stringify(filterObject));
   const response = await fetch(
     `${BACKEND_URL}/authors?sort=${sort}&range=${range}&filter=${filter}`,
     { headers: buildHeaders() }
@@ -193,10 +199,17 @@ const downloadCsv = (filename: string, content: string) => {
 };
 
 const AuthorsPage = () => {
+  const { canAccess: canUseDeletedFilter } = useCanAccess({
+    resource: 'authors',
+    action: 'deletedfilter',
+  });
   const [searchParams, setSearchParams] = useSearchParams();
   const filters = React.useMemo<AuthorFilters>(
-    () => ({ q: searchParams.get('q') || '' }),
-    [searchParams]
+    () => ({
+      q: searchParams.get('q') || '',
+      deleted: canUseDeletedFilter ? searchParams.get('deleted') || '' : '',
+    }),
+    [canUseDeletedFilter, searchParams]
   );
   const page = Math.max(Number(searchParams.get('page') || '1'), 1);
   const perPage = React.useMemo(() => {
@@ -243,7 +256,10 @@ const AuthorsPage = () => {
   }, [state.data]);
 
   const totalPages = Math.max(Math.ceil(state.total / perPage), 1);
-  const activeFilterBadges = filters.q ? [{ label: 'Query', value: filters.q }] : [];
+  const activeFilterBadges = [
+    ...(filters.q ? [{ label: 'Query', value: filters.q }] : []),
+    ...(canUseDeletedFilter && filters.deleted ? [{ label: 'Deleted only', value: 'Yes' }] : []),
+  ];
 
   const updateParams = (updates: Record<string, string | number | null>) => {
     const next = new URLSearchParams(searchParams);
@@ -256,11 +272,15 @@ const AuthorsPage = () => {
 
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    updateParams({ q: draftFilters.q || null, page: 1 });
+    updateParams({
+      q: draftFilters.q || null,
+      deleted: canUseDeletedFilter ? draftFilters.deleted || null : null,
+      page: 1,
+    });
   };
 
   const clearAllFilters = () => {
-    setDraftFilters({ q: '' });
+    setDraftFilters({ q: '', deleted: '' });
     setSearchParams(new URLSearchParams());
   };
 
@@ -388,12 +408,30 @@ const AuthorsPage = () => {
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <input
                 value={draftFilters.q}
-                onChange={(event) => setDraftFilters({ q: event.target.value })}
+                onChange={(event) =>
+                  setDraftFilters((current) => ({ ...current, q: event.target.value }))
+                }
                 placeholder="Search authors"
                 className="h-10 w-full rounded-xl border border-border bg-background pl-9 pr-3 text-sm outline-none ring-offset-background transition placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
               />
             </div>
           </div>
+          {canUseDeletedFilter ? (
+            <label className="flex items-center gap-2 text-sm font-medium">
+              <input
+                type="checkbox"
+                checked={draftFilters.deleted === 'true'}
+                onChange={(event) =>
+                  setDraftFilters((current) => ({
+                    ...current,
+                    deleted: event.target.checked ? 'true' : '',
+                  }))
+                }
+                className="h-4 w-4 rounded border-border text-primary focus:ring-ring"
+              />
+              Show deleted only
+            </label>
+          ) : null}
           <div className="flex flex-wrap gap-2">
             <Button type="submit">Apply filters</Button>
             <Button type="button" variant="outline" onClick={clearAllFilters}>
