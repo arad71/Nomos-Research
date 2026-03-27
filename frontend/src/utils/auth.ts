@@ -1,6 +1,6 @@
 import decodeJwt from 'jwt-decode';
 import { BASE_URL } from '../config';
-import { clearLocalStorage } from '../admin';
+import { clearLocalStorage } from '../kit/app/authProvider';
 
 export const isAuthenticated = () => {
   const permissions = localStorage.getItem('permissions');

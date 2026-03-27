@@ -161,3 +161,26 @@ async def Conservation_code_delete(
     return ConservationcodeCrud.delete_item(
         db, current_user, conservation_code_id, True
     )
+
+
+@r.post(
+    "/{conservation_code_id}/restore",
+    response_model=Conservationcode,
+    response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
+async def conservation_code_restore(
+    conservation_code_id: int,
+    db=Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+):
+    """
+    Restore a soft deleted code
+    """
+    return ConservationcodeCrud.undelete_item(db, current_user, conservation_code_id)

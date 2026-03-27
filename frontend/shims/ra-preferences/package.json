@@ -2,5 +2,13 @@
   "name": "@react-admin/ra-preferences",
   "version": "4.0.0-shim.0",
   "main": "index.js",
+  "module": "index.mjs",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.mjs",
+      "require": "./index.js"
+    }
+  },
   "types": "index.d.ts"
 }

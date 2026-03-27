@@ -1,4 +1,4 @@
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.schema import Index
 from sqlalchemy.types import Enum
@@ -64,9 +64,13 @@ class CrossReference(BaseModel, TableMixin):
     authorised_mn = Column(Integer, index=True, comment="The month of authorisation")
     authorised_dy = Column(Integer, index=True, comment="The day of authorisation")
     authorised_by = Column(String(60), comment=AUTHORISED_BY, doc=AUTHORISED_BY)
-    authorised_on = Column(String(10), comment=AUTHORISED_ON, doc=AUTHORISED_ON)
-    contributed_by = Column(String(60), comment=CONTRIBUTED_BY, doc=CONTRIBUTED_BY)
-    contributed_on = Column(String(10), comment=CONTRIBUTED_ON, doc=CONTRIBUTED_ON)
+    authorised_on = Column(
+        DateTime(timezone=True), comment=AUTHORISED_ON, doc=AUTHORISED_ON
+    )
+    contributed_by = Column(String(100), comment=CONTRIBUTED_BY, doc=CONTRIBUTED_BY)
+    contributed_on = Column(
+        DateTime(timezone=True), comment=CONTRIBUTED_ON, doc=CONTRIBUTED_ON
+    )
     reference_comments = Column(String(1000), comment=COMMENTS, doc=COMMENTS)
     notes = Column(String(3000))
     legacy_id = Column(Integer)

@@ -149,3 +149,26 @@ async def vernacular_delete(
     Delete existing vernacular
     """
     return VernacularCrud.delete_item(db, current_user, vernacular_id, True)
+
+
+@r.post(
+    "/{vernacular_id}/restore",
+    response_model=Vernacular,
+    response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
+async def vernacular_restore(
+    vernacular_id: int,
+    db=Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+):
+    """
+    Restore a soft deleted vernacular
+    """
+    return VernacularCrud.undelete_item(db, current_user, vernacular_id)

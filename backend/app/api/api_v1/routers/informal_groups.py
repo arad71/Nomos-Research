@@ -153,3 +153,26 @@ async def informal_group_delete(
     Delete existing informal_group
     """
     return InformalGroupCrud.delete_item(db, current_user, informal_group_id, True)
+
+
+@r.post(
+    "/{informal_group_id}/restore",
+    response_model=InformalGroup,
+    response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
+async def informal_group_restore(
+    informal_group_id: int,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
+):
+    """
+    Restore a soft deleted informal_group
+    """
+    return InformalGroupCrud.undelete_item(db, current_user, informal_group_id)

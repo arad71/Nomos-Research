@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { useRedirect } from 'react-admin';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
-import { clearLocalStorage } from './admin';
+import { clearLocalStorage } from './kit/app/authProvider';
 import Button from '@mui/material/Button';
 
 export const LogoutButton: FC = () => {
@@ -15,7 +15,18 @@ export const LogoutButton: FC = () => {
     redirect(logoutLink);
   };
   return (
-    <Button onClick={handleClick} startIcon={<PowerSettingsNewIcon />}>
+    <Button
+      onClick={handleClick}
+      startIcon={<PowerSettingsNewIcon />}
+      color="inherit"
+      sx={{
+        borderRadius: '10px',
+        border: '1px solid',
+        borderColor: 'divider',
+        px: 1.5,
+        textTransform: 'none',
+      }}
+    >
       Logout
     </Button>
   );

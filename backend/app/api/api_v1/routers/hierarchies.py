@@ -169,6 +169,31 @@ async def hierarchy_delete(
 
 
 @r.post(
+    "/{hierarchy_id}/restore",
+    response_model=Hierarchy,
+    response_model_exclude_none=True,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
+async def hierarchy_restore(
+    hierarchy_id: int,
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_active_user),
+):
+    """
+    Restore a soft deleted hierarchy
+    """
+    ret = HierarchyCrud.undelete_item(db, current_user, hierarchy_id)
+    ret.calculate_path_for_children(db)
+    return ret
+
+
+@r.post(
     "/rebuild",
     status_code=status.HTTP_202_ACCEPTED,
     dependencies=[

@@ -23,7 +23,7 @@ const rules = {
 
 module.exports = {
   extends: ['plugin:prettier/recommended', 'prettier'],
-  parser: 'babel-eslint',
+  parser: '@typescript-eslint/parser',
   rules,
   env: {
     browser: true,
