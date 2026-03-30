@@ -73,9 +73,14 @@ class PublicationCrud(crud.Crud):
             ).delete()
             current_author_ids = [
                 author_id[0]
-                for author_id in db.query(PublicationAuthor.author_id)
-                .filter(PublicationAuthor.publication_id == publication_id)
-                .all()
+                # for author_id in db.query(PublicationAuthor.author_id)
+                # .filter(PublicationAuthor.publication_id == publication_id)
+                # .all()
+                for author_id in (
+                    db.query(PublicationAuthor.author_id)
+                    .filter(PublicationAuthor.publication_id == publication_id)
+                    .all()
+                )
             ]
             new_author_ids = set(author_ids) ^ set(current_author_ids)
             for author_id in new_author_ids:
