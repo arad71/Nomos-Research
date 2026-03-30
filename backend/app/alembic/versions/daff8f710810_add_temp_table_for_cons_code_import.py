@@ -39,8 +39,7 @@ def upgrade():
         ),
     )
 
-    op.execute(
-        """ CREATE OR REPLACE PROCEDURE import_conscode_taxon(
+    op.execute(""" CREATE OR REPLACE PROCEDURE import_conscode_taxon(
                 source character,
                 userid integer)
             LANGUAGE 'sql'
