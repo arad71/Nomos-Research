@@ -16,7 +16,7 @@ def test_get_classification_systems(
             # "classification_system_id": test_classification_system.classification_system_id,
             "classification_system_id": (
                 test_classification_system.classification_system_id
-                ),
+            ),
             "class_desc": test_classification_system.class_desc,
             "class_type": test_classification_system.class_type.value,
             "preferred": test_classification_system.preferred,
