@@ -70,8 +70,7 @@ def downgrade():
         "user",
         sa.Column("is_superuser", sa.BOOLEAN(), autoincrement=False, nullable=True),
     )
-    op.execute(
-        """
+    op.execute("""
 UPDATE "user"
 SET is_superuser = TRUE
 WHERE user_id IN (SELECT DISTINCT user_id
@@ -79,8 +78,7 @@ WHERE user_id IN (SELECT DISTINCT user_id
                            JOIN role r on user_role.role_id = r.role_id
                   WHERE r.name = 'SUPER_ADMIN'
                   )
-    """
-    )
+    """)
     op.execute('UPDATE "user" SET is_superuser = FALSE WHERE is_superuser IS NULL')
     op.alter_column("user", "is_superuser", nullable=False)
     op.drop_table("user_role")
