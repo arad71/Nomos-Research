@@ -6,10 +6,10 @@ function backend() {
     docker compose run --rm backend "$@"
 }
 # Check whitespace for better diffs
-backend black --diff --check --color .
+backend black --diff --check --color app
 # Sort imports
-backend isort --diff --check .
+backend isort --diff --check app
 # stop the build if there are Python syntax errors or undefined names
-backend flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+backend flake8 app --count --select=E9,F63,F7,F82 --show-source --statistics
 # exit-zero treats all errors as warnings.
-backend flake8 . --count --exit-zero --max-complexity=10 --statistics
+backend flake8 app --count --exit-zero --max-complexity=10 --statistics
