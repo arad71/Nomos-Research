@@ -16,9 +16,6 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
-      - name: Install lint tools
-        run: |
-          pip install black==26.3.1 isort==5.13.2 flake8==7.0.0
       - name: Install dependencies
         run: |
           cd backend
@@ -33,13 +30,13 @@ jobs:
           cd backend
           # copy of scripts/lint.sh
           # Check whitespace for better diffs
-          black --diff --check --color app
+          poetry run black --diff --check --color app
           # Sort imports
-          isort --diff --check --color .
+          poetry run isort --diff --check --color .
           # stop the build if there are Python syntax errors or undefined names
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          poetry run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
           # exit-zero treats all errors as warnings.
-          flake8 . --count --exit-zero --max-complexity=10 --statistics
+          poetry run flake8 . --count --exit-zero --max-complexity=10 --statistics
 
   lint-frontend:
     runs-on: ubuntu-latest
