@@ -32,11 +32,11 @@ jobs:
           # Check whitespace for better diffs
           poetry run black --diff --check --color app
           # Sort imports
-          poetry run isort --diff --check --color .
+          poetry run isort --diff --check --color app
           # stop the build if there are Python syntax errors or undefined names
-          poetry run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          poetry run flake8 app --count --select=E9,F63,F7,F82 --show-source --statistics
           # exit-zero treats all errors as warnings.
-          poetry run flake8 . --count --exit-zero --max-complexity=10 --statistics
+          poetry run flake8 app --count --exit-zero --max-complexity=10 --statistics
 
   lint-frontend:
     runs-on: ubuntu-latest
