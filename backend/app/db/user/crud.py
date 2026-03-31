@@ -93,9 +93,12 @@ class UserCrud(crud.Crud):
             ).delete()
             current_role_ids = [
                 role_id[0]
-                for role_id in db.query(UserRole.role_id)
-                .filter(UserRole.user_id == user_id)
-                .all()
+                # for role_id in db.query(UserRole.role_id)
+                # .filter(UserRole.user_id == user_id)
+                # .all()
+                for role_id in(
+                    db.query(UserRole.role_id).filter(UserRole.user_id == user_id).all()
+                )
             ]
             new_role_ids = set(role_ids) ^ set(current_role_ids)
             for role_id in new_role_ids:

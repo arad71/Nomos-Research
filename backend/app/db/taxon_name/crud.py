@@ -161,11 +161,16 @@ class TaxonNameCrud(crud.Crud):
             ).delete()
             current_classification_system_ids = [
                 classification_system_id[0]
-                for classification_system_id in db.query(
-                    InformalGroup.classification_system_id
+                # for classification_system_id in db.query(
+                #     InformalGroup.classification_system_id
+                # )
+                # .filter(InformalGroup.taxon_name_id == taxon_name_id)
+                # .all()
+                for classification_system_id in (
+                    db.query(InformalGroup.classification_system_id)
+                    .filter(InformalGroup.taxon_name_id == taxon_name_id)
+                    .all()
                 )
-                .filter(InformalGroup.taxon_name_id == taxon_name_id)
-                .all()
             ]
             new_classification_system_ids = set(classification_system_ids) ^ set(
                 current_classification_system_ids
