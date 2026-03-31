@@ -665,18 +665,18 @@ standard-no-fastapi-cloud-cli = ["email-validator (>=2.0.0)", "fastapi-cli[stand
 
 [[package]]
 name = "fastapi-key-auth"
-version = "0.12.0"
+version = "0.15.5"
 description = "API key validation Middleware"
 optional = false
-python-versions = ">=3.8,<4.0"
+python-versions = "<4.0,>=3.9"
 groups = ["main"]
 files = [
-    {file = "fastapi_key_auth-0.12.0-py3-none-any.whl", hash = "sha256:686c55bba4f23ba0a1d9806dc1438213cc0366b22eb27f869a6bfca22adeefce"},
-    {file = "fastapi_key_auth-0.12.0.tar.gz", hash = "sha256:19174c1f662a0f24b61800ad3b5b208c60497c9b39a871b65cee2cc9f345a3e2"},
+    {file = "fastapi_key_auth-0.15.5-py3-none-any.whl", hash = "sha256:a761917de22f8befe8a311163f3e8370325bb4e9d082e1bda4a7e485d19dd200"},
+    {file = "fastapi_key_auth-0.15.5.tar.gz", hash = "sha256:f84d0e65b8399747241d506a36e06a64cc90a9f483556f48e4a80cbe2ec9e973"},
 ]
 
 [package.dependencies]
-fastapi = ">=0.95.0"
+fastapi = ">=0.100.0"
 starlette = ">=0.25.0"
 
 [[package]]
@@ -2604,4 +2604,4 @@ dev = ["black (>=19.3b0) ; python_version >= \"3.6\"", "pytest (>=4.6.2)"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10"
-content-hash = "29eddc6ed0b7bd813b5458cffeab0d541413b9094359306c8d337e10fb43b90f"
+content-hash = "ba29c9aa416b383e4339569a22dd0793c7ad1d632a1cd3c433e2fa03c67e6348"
