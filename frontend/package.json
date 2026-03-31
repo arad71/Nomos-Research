@@ -28,7 +28,7 @@
     "@react-admin/ra-preferences": "file:./shims/ra-preferences",
     "@react-admin/ra-rbac": "6.2.1",
     "@react-admin/ra-relationships": "5.7.1",
-    "@tailwindcss/vite": "^4.2.1",
+    "@tailwindcss/vite": "^4.2.2",
     "@tanstack/react-query": "^5.90.21",
     "autoprefixer": "^10.4.27",
     "class-variance-authority": "^0.7.1",
@@ -57,7 +57,7 @@
     "react-final-form": "^6.5.9",
     "react-hook-form": "^7.71.2",
     "react-router": "^7.13.1",
-    "react-router-dom": "^6.30.1",
+    "react-router-dom": "^7.13.2",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.5.0",
     "tailwindcss": "^4.2.1",
@@ -117,7 +117,7 @@
     "typescript": "^5.9.3",
     "vite": "^7.1.7",
     "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^3.2.4",
+    "vitest": "^4.1.2",
     "yaml": "^2.8.2"
   }
 }
