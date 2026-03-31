@@ -41,7 +41,7 @@ def get_or_create_author(test_db, user_id, initials, surname, abbreviation):
             surname=surname,
             abbreviation=abbreviation,
             created_by=user_id,
-            initials=initials
+            initials=initials,
         )
         test_db.add(author)
         test_db.commit()
