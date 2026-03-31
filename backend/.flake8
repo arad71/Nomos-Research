@@ -7,5 +7,11 @@ exclude =
     .mypy_cache,
     .pytest_cache,
     tests,
-    app/alembic/env.py,
+    .venv,
+    venv,
+    env,
+    .tox,
+    build,
+    dist,
+    app/alembic/env.py
     app/alembic/versions/
