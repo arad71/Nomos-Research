@@ -7,13 +7,13 @@ case $1 in
     if [ "$NODE_ENV" == "production" ]
     then
       npm run build
-      serve -s build
+      npm run preview -- --host 0.0.0.0 --port "${PORT:-4173}"
     else
       npm start | cat
     fi
     ;;
   build)
-    npm build
+    npm run build
     ;;
   test)
     npm test $@
