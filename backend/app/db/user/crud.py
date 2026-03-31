@@ -96,7 +96,7 @@ class UserCrud(crud.Crud):
                 # for role_id in db.query(UserRole.role_id)
                 # .filter(UserRole.user_id == user_id)
                 # .all()
-                for role_id in(
+                for role_id in (
                     db.query(UserRole.role_id).filter(UserRole.user_id == user_id).all()
                 )
             ]
