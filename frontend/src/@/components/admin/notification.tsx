@@ -1,5 +1,12 @@
 import * as React from "react";
 import { useCallback, useEffect } from "react";
+import {
+  CircleCheck,
+  Info,
+  LoaderCircle,
+  OctagonX,
+  TriangleAlert,
+} from "lucide-react";
 import type { ToasterProps } from "sonner";
 import { Toaster, toast } from "sonner";
 import { useTheme } from "@/components/admin/use-theme";
@@ -44,6 +51,15 @@ export const Notification = (props: ToasterProps) => {
         const { message, type = "info", notificationOptions } = notification;
         const { messageArgs, undoable, autoHideDuration } =
           notificationOptions || {};
+        const normalizedType =
+          type === "info" &&
+          typeof message === "string" &&
+          (message === "ra.notification.created" ||
+            message === "ra.notification.updated" ||
+            message.endsWith(".notifications.created") ||
+            message.endsWith(".notifications.updated"))
+            ? "success"
+            : type;
 
         const beforeunload = (e: BeforeUnloadEvent) => {
           e.preventDefault();
@@ -85,7 +101,7 @@ export const Notification = (props: ToasterProps) => {
         const duration =
           autoHideDuration === null ? Infinity : autoHideDuration;
 
-        toast[type](finalMessage, {
+        toast[normalizedType](finalMessage, {
           duration,
           action: undoable
             ? {
@@ -108,10 +124,27 @@ export const Notification = (props: ToasterProps) => {
   return (
     <CloseNotificationContext.Provider value={handleRequestClose}>
       <Toaster
-        richColors
         theme={theme}
-        closeButton
         position="bottom-center"
+        className="toaster group"
+        icons={{
+          success: <CircleCheck className="h-4 w-4" />,
+          info: <Info className="h-4 w-4" />,
+          warning: <TriangleAlert className="h-4 w-4" />,
+          error: <OctagonX className="h-4 w-4" />,
+          loading: <LoaderCircle className="h-4 w-4 animate-spin" />,
+        }}
+        toastOptions={{
+          classNames: {
+            toast:
+              "group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg",
+            description: "group-[.toast]:text-muted-foreground",
+            actionButton:
+              "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",
+            cancelButton:
+              "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
+          },
+        }}
         {...props}
       />
     </CloseNotificationContext.Provider>

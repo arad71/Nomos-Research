@@ -5,6 +5,7 @@ import { RecordField } from '@/components/admin/record-field';
 import { ReferenceField } from '@/components/admin/reference-field';
 import { Show } from '@/components/admin/show';
 import CrossRefType from '../shared/choices/CrossRefType';
+import { formatDateOnly } from '../shared/dateOnlyDateTime';
 import HistoryInfoBox from '../shared/HistoryInfoBox';
 import RecordPageActions from '../shared/RecordPageActions';
 
@@ -19,15 +20,6 @@ const HtmlValue = ({ value }: { value?: string | null }) => {
   }
 
   return <span dangerouslySetInnerHTML={{ __html: value }} />;
-};
-
-const formatDateTime = (value?: string | null) => {
-  if (!value) {
-    return '';
-  }
-
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? value : date.toLocaleString();
 };
 
 const CrossReferenceShowTitle = () => {
@@ -105,12 +97,12 @@ const CrossReferenceShowPage = () => (
             <RecordField source="authorised_by" label="Authorised by" />
             <RecordField
               label="Authorised on"
-              render={(record: { authorised_on?: string | null }) => formatDateTime(record.authorised_on)}
+              render={(record: { authorised_on?: string | null }) => formatDateOnly(record.authorised_on)}
             />
             <RecordField source="contributed_by" label="Contributed by" />
             <RecordField
               label="Contributed on"
-              render={(record: { contributed_on?: string | null }) => formatDateTime(record.contributed_on)}
+              render={(record: { contributed_on?: string | null }) => formatDateOnly(record.contributed_on)}
             />
           </div>
         </section>
