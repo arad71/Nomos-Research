@@ -82,7 +82,7 @@ const TaxonHierarchyCard = ({
       {data.map((row) => (
         <div
           key={row.id}
-          className="min-w-0 space-y-1 border-b border-border pb-3 last:border-b-0 last:pb-0"
+          className="min-w-0 space-y-1 border-b border-border pb-3 last:border-b-0 last:pb-0 cursor-pointer"
           onDoubleClick={() => {
             if (row.taxon_name_id != null) {
               navigate(`/taxon_names/${row.taxon_name_id}/show`);

@@ -526,7 +526,7 @@ const TaxonNameRelatedSections = ({
                       label=""
                       render={(kingdom: { kingdom_name?: string | null; id?: string | number | null }) => (
                         <span
-                          className="cursor-default"
+                          className="cursor-pointer"
                           onDoubleClick={() => {
                             if (kingdom.id != null) {
                               navigate(`/kingdoms/${kingdom.id}/show`);
@@ -546,7 +546,7 @@ const TaxonNameRelatedSections = ({
                       label=""
                       render={(rank: { rank_name?: string | null; id?: string | number | null }) => (
                         <span
-                          className="cursor-default"
+                          className="cursor-pointer"
                           onDoubleClick={() => {
                             if (rank.id != null) {
                               navigate(`/taxon_ranks/${rank.id}/show`);
