@@ -1,10 +1,7 @@
 import * as React from 'react';
-import { BadgeField } from '@/components/admin/badge-field';
-import { useRecordContext } from 'ra-core';
+import { useGetMany, useRecordContext } from 'ra-core';
 import { RecordField } from '@/components/admin/record-field';
-import { ReferenceArrayField } from '@/components/admin/reference-array-field';
 import { Show } from '@/components/admin/show';
-import { SingleFieldList } from '@/components/admin/single-field-list';
 import HistoryInfoBox from '../shared/HistoryInfoBox';
 import RecordPageActions from '../shared/RecordPageActions';
 import { Badge } from '../../components/ui/badge';
@@ -21,6 +18,46 @@ const SectionTitle = ({ children }: { children: React.ReactNode }) => (
     <h3 className="text-base font-semibold tracking-tight">{children}</h3>
   </div>
 );
+
+const UserRolesField = () => {
+  const record = useRecordContext<{
+    role_ids?: Array<string | number>;
+  }>();
+  const roleIds = React.useMemo(
+    () =>
+      Array.from(
+        new Set(
+          (record?.role_ids ?? [])
+            .map((roleId) => Number(roleId))
+            .filter((roleId) => !Number.isNaN(roleId)),
+        ),
+      ),
+    [record?.role_ids],
+  );
+  const { data: roleRecords = [] } = useGetMany(
+    'roles',
+    { ids: roleIds },
+    { enabled: roleIds.length > 0 },
+  );
+  const roleNames = React.useMemo(
+    () => roleRecords.map((role) => role?.name).filter(Boolean) as string[],
+    [roleRecords],
+  );
+
+  if (!roleNames.length) {
+    return null;
+  }
+
+  return (
+    <div className="flex flex-wrap gap-2">
+      {roleNames.map((roleName) => (
+        <Badge key={roleName} variant="outline">
+          {roleName}
+        </Badge>
+      ))}
+    </div>
+  );
+};
 
 const UserShowTitle = () => {
   const record = useRecordContext<{
@@ -64,11 +101,7 @@ const UserShowPage = () => (
 
           <SectionTitle>Access</SectionTitle>
           <RecordField label="Roles" className="md:col-span-2">
-            <ReferenceArrayField reference="roles" source="role_ids">
-              <SingleFieldList>
-                <BadgeField source="name" variant="outline" />
-              </SingleFieldList>
-            </ReferenceArrayField>
+            <UserRolesField />
           </RecordField>
           <RecordField
             label="Deleted"
