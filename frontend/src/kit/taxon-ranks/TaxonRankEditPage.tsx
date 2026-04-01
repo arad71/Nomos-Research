@@ -3,12 +3,10 @@ import { useRecordContext } from 'ra-core';
 import { Edit } from '@/components/admin/edit';
 import HistoryInfoBox from '../shared/HistoryInfoBox';
 import TaxonRankForm from './TaxonRankForm';
+import TaxonRankTitle from './TaxonRankTitle';
 import RecordPageActions from '../shared/RecordPageActions';
 
-const TaxonRankEditTitle = () => {
-  const record = useRecordContext<{ rank_name?: string }>();
-  return record?.rank_name || 'Edit taxon rank';
-};
+const TaxonRankEditTitle = () => <TaxonRankTitle fallback="Edit taxon rank" />;
 
 const TaxonRankEditActions = () => {
   const record = useRecordContext<{ id?: string | number }>();

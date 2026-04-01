@@ -5,6 +5,7 @@ import { ReferenceField } from '@/components/admin/reference-field';
 import { Show } from '@/components/admin/show';
 import HistoryInfoBox from '../shared/HistoryInfoBox';
 import RecordPageActions from '../shared/RecordPageActions';
+import TaxonRankTitle from './TaxonRankTitle';
 
 const renderBoolean = (value?: boolean | null) => {
   if (value === null || value === undefined) {
@@ -13,10 +14,7 @@ const renderBoolean = (value?: boolean | null) => {
   return value ? 'Yes' : 'No';
 };
 
-const TaxonRankShowTitle = () => {
-  const record = useRecordContext<{ rank_name?: string }>();
-  return record?.rank_name || 'Taxon rank';
-};
+const TaxonRankShowTitle = () => <TaxonRankTitle fallback="Taxon rank" />;
 
 const TaxonRankShowActions = () => {
   const record = useRecordContext<{ id?: string | number }>();
