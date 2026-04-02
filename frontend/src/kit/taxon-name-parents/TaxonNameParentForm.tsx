@@ -95,9 +95,14 @@ type TaxonNameParentFormProps = {
 };
 
 const TaxonNameParentForm = ({ hideTaxonName = false }: TaxonNameParentFormProps) => (
-  <SimpleForm className="max-w-none">
-    <TaxonNameParentFormFields hideTaxonName={hideTaxonName} />
-  </SimpleForm>
+  <div
+    onClick={(event) => event.stopPropagation()}
+    onDoubleClick={(event) => event.stopPropagation()}
+  >
+    <SimpleForm className="max-w-none">
+      <TaxonNameParentFormFields hideTaxonName={hideTaxonName} />
+    </SimpleForm>
+  </div>
 );
 
 export default TaxonNameParentForm;

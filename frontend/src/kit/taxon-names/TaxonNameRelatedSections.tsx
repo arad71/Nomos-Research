@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { useCanAccess, useGetOne, useRecordContext } from 'ra-core';
+import { useCanAccess, useDataProvider, useGetOne, useListContext, useNotify, useRecordContext, useRefresh } from 'ra-core';
 import { useFormContext } from 'react-hook-form';
-import { CircleHelp } from 'lucide-react';
+import { ArrowDown, ArrowUp, CircleHelp } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { CreateInDialogButton, EditInDialogButton } from '@react-admin/ra-form-layout';
 import { ThemeProvider, createTheme } from '@mui/material';
@@ -222,6 +222,148 @@ const TaxonNameParentsPreviewByRecord = ({ recordId }: { recordId?: string | num
   }
 
   return <TaxonNameParentsPreview rows={data} isLoadingRows={isPending} />;
+};
+
+const CreateParentNameRowButton = ({ recordId }: { recordId: string | number }) => {
+  const { data = [], isPending } = useGetList<ParentLinkRecord>(
+    'taxon_name_parents',
+    {
+      filter: { taxon_name_id: recordId },
+      pagination: { page: 1, perPage: 100 },
+      sort: { field: 'sequence', order: 'DESC' },
+    },
+    { enabled: Boolean(recordId) },
+  );
+
+  const nextSequence = React.useMemo(() => {
+    const maxSequence = data.reduce((currentMax, row) => {
+      const value = Number(row.sequence ?? 0);
+      return Number.isFinite(value) ? Math.max(currentMax, value) : currentMax;
+    }, 0);
+
+    return maxSequence + 1;
+  }, [data]);
+
+  return (
+    <CreateInDialogButton
+      resource="taxon_name_parents"
+      record={{ taxon_name_id: recordId, sequence: nextSequence }}
+      fullWidth
+      maxWidth="md"
+      title="Create parent name row"
+      label="Create parent name row"
+      ButtonProps={{ ...relatedDialogButtonProps, disabled: isPending }}
+    >
+      <DialogFormPadding>
+        <TaxonNameParentForm hideTaxonName />
+      </DialogFormPadding>
+    </CreateInDialogButton>
+  );
+};
+
+const ParentSequenceButtons = () => {
+  const record = useRecordContext<ParentLinkRecord>();
+  const { data = [] } = useListContext<ParentLinkRecord>();
+  const dataProvider = useDataProvider();
+  const notify = useNotify();
+  const refresh = useRefresh();
+  const [isMoving, setIsMoving] = React.useState(false);
+
+  const orderedRows = React.useMemo(
+    () => [...data].sort((left, right) => Number(left.sequence ?? 0) - Number(right.sequence ?? 0)),
+    [data],
+  );
+
+  const currentIndex = React.useMemo(
+    () => orderedRows.findIndex((row) => String(row.id ?? '') === String(record?.id ?? '')),
+    [orderedRows, record?.id],
+  );
+
+  const moveRow = React.useCallback(async (direction: -1 | 1) => {
+    if (!record?.id || currentIndex < 0) {
+      return;
+    }
+
+    const swapIndex = currentIndex + direction;
+    if (swapIndex < 0 || swapIndex >= orderedRows.length) {
+      return;
+    }
+
+    const currentRow = orderedRows[currentIndex];
+    const targetRow = orderedRows[swapIndex];
+
+    if (!targetRow?.id) {
+      return;
+    }
+
+    const currentSequence = Number(currentRow.sequence ?? 0);
+    const targetSequence = Number(targetRow.sequence ?? 0);
+    const temporarySequence = orderedRows.reduce((maxValue, row) => {
+      const value = Number(row.sequence ?? 0);
+      return Number.isFinite(value) ? Math.max(maxValue, value) : maxValue;
+    }, 0) + 1;
+
+    setIsMoving(true);
+
+    try {
+      await dataProvider.update('taxon_name_parents', {
+        id: currentRow.id,
+        data: { ...currentRow, sequence: temporarySequence },
+        previousData: currentRow,
+      });
+      await dataProvider.update('taxon_name_parents', {
+        id: targetRow.id,
+        data: { ...targetRow, sequence: currentSequence },
+        previousData: targetRow,
+      });
+      await dataProvider.update('taxon_name_parents', {
+        id: currentRow.id,
+        data: { ...currentRow, sequence: targetSequence },
+        previousData: currentRow,
+      });
+      refresh();
+    } catch (error) {
+      notify(error instanceof Error ? error.message : 'Failed to update parent order', { type: 'error' });
+    } finally {
+      setIsMoving(false);
+    }
+  }, [currentIndex, dataProvider, notify, orderedRows, record?.id, refresh]);
+
+  if (!record?.id || currentIndex < 0 || orderedRows.length < 2) {
+    return null;
+  }
+
+  const isFirst = currentIndex === 0;
+  const isLast = currentIndex === orderedRows.length - 1;
+
+  return (
+    <div className="flex items-center gap-2">
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        className="cursor-pointer"
+        onClick={() => void moveRow(-1)}
+        disabled={isMoving || isFirst}
+        aria-label="Move parent name row up"
+      >
+        <ArrowUp />
+        Up
+      </Button>
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        className="cursor-pointer"
+        onClick={() => void moveRow(1)}
+        disabled={isMoving || isLast}
+        aria-label="Move parent name row down"
+      >
+        <ArrowDown />
+        Down
+      </Button>
+    </div>
+  );
 };
 
 const DerivedUninomialSummaryField = () => {
@@ -905,7 +1047,7 @@ const TaxonNameRelatedSections = ({
               sort={{ field: 'author_order', order: 'ASC' }}
               empty={<EmptyState>No citations linked to this taxon name yet.</EmptyState>}
             >
-              <DataTable bulkActionButtons={false}>
+              <DataTable rowClick={false} bulkActionButtons={false}>
                 <DataTable.Col label="Author">
                   <ReferenceField source="author_id" reference="authors" link="show">
                     <RecordField source="abbreviation" label="" />
@@ -975,19 +1117,7 @@ const TaxonNameRelatedSections = ({
           description="Ordered parent-name rows used to support hybrids and derived uninomial generation during migration."
           action={
             editable && recordId ? (
-              <CreateInDialogButton
-                resource="taxon_name_parents"
-                record={{ taxon_name_id: recordId, sequence: 1 }}
-                fullWidth
-                maxWidth="md"
-                title="Create parent name row"
-                label="Create parent name row"
-                ButtonProps={relatedDialogButtonProps}
-              >
-                <DialogFormPadding>
-                  <TaxonNameParentForm hideTaxonName />
-                </DialogFormPadding>
-              </CreateInDialogButton>
+              <CreateParentNameRowButton recordId={recordId} />
             ) : undefined
           }
         />
@@ -999,7 +1129,7 @@ const TaxonNameRelatedSections = ({
               sort={{ field: 'sequence', order: 'ASC' }}
               empty={<EmptyState>No parent-name rows linked to this taxon name yet.</EmptyState>}
             >
-              <DataTable bulkActionButtons={false}>
+              <DataTable rowClick={false} bulkActionButtons={false}>
                 <DataTable.Col source="sequence" label="Sequence" />
                 <DataTable.Col label="Parent name">
                   <ReferenceField source="parent_taxon_name_id" reference="taxon_names" link="show">
@@ -1011,6 +1141,7 @@ const TaxonNameRelatedSections = ({
                 </DataTable.Col>
                 <DataTable.Col label="Actions">
                   <div className="flex items-center gap-2">
+                    <ParentSequenceButtons />
                     <EditRelatedButton label="Edit parent name row">
                       <DialogFormPadding>
                         <TaxonNameParentForm hideTaxonName />
