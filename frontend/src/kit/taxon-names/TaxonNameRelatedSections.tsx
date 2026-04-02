@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useCanAccess, useGetOne, useRecordContext } from 'ra-core';
 import { useFormContext } from 'react-hook-form';
+import { CircleHelp } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { CreateInDialogButton, EditInDialogButton } from '@react-admin/ra-form-layout';
 import { ThemeProvider, createTheme } from '@mui/material';
@@ -27,6 +28,8 @@ import {
 import {
   BooleanField as RaBooleanField,
   NumberField as RaNumberField,
+  useGetMany,
+  useGetList,
 } from 'react-admin';
 import CrossRefType from '../shared/choices/CrossRefType';
 import { formatDateOnly } from '../shared/dateOnlyDateTime';
@@ -36,9 +39,11 @@ import CitationForm from '../citations/CitationForm';
 import ConscodeTaxonForm from '../conscode-taxons/ConscodeTaxonForm';
 import CrossReferenceForm from '../cross-references/CrossReferenceForm';
 import HierarchyForm from '../hierarchies/HierarchyForm';
+import TaxonNameParentForm from '../taxon-name-parents/TaxonNameParentForm';
 import PublicationForm from '../publications/PublicationForm';
 import { normalizeDoi, transformPublicationPayload } from '../shared/publicationDoi';
 import VernacularForm from '../vernaculars/VernacularForm';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 const crossRefTypeMap = CrossRefType.reduce<Record<string, string>>((acc, item) => {
   acc[item.id] = item.name;
@@ -51,6 +56,206 @@ const HtmlValue = ({ value }: { value?: string | null }) => {
   }
 
   return <span dangerouslySetInnerHTML={{ __html: value }} />;
+};
+
+const renderScientificName = (taxon?: {
+  formatted_scientific_name?: string | null;
+  scientific_name?: string | null;
+}) => {
+  if (taxon?.formatted_scientific_name) {
+    return <HtmlValue value={taxon.formatted_scientific_name} />;
+  }
+
+  return taxon?.scientific_name ?? '';
+};
+
+type ParentLinkRecord = {
+  id?: string | number;
+  taxon_name_id?: string | number;
+  parent_taxon_name_id?: string | number;
+  sequence?: number | string | null;
+};
+
+type ParentTaxonRecord = {
+  id?: string | number;
+  taxon_name_id?: string | number;
+  scientific_name?: string | null;
+  canonical_name?: string | null;
+  uninomial?: string | null;
+  formatted_scientific_name?: string | null;
+};
+
+const formatParentPreviewName = (taxon?: ParentTaxonRecord) =>
+  taxon?.uninomial?.trim()
+  || taxon?.scientific_name?.trim()
+  || taxon?.canonical_name?.trim()
+  || '';
+
+const deriveParentValue = (rows: ParentLinkRecord[], parentMap: Map<string, ParentTaxonRecord>) =>
+  [...rows]
+    .sort((left, right) => Number(left.sequence ?? 0) - Number(right.sequence ?? 0))
+    .map((row) => parentMap.get(String(row.parent_taxon_name_id ?? '')))
+    .map(formatParentPreviewName)
+    .filter(Boolean)
+    .join(' × ');
+
+const MigrationHint = ({ children }: { children: React.ReactNode }) => (
+  <Tooltip>
+    <TooltipTrigger asChild>
+      <button
+        type="button"
+        className="inline-flex items-center text-muted-foreground transition-colors hover:text-foreground"
+        aria-label="Migration guidance"
+      >
+        <CircleHelp className="h-4 w-4" />
+      </button>
+    </TooltipTrigger>
+    <TooltipContent side="top" sideOffset={6}>
+      {children}
+    </TooltipContent>
+  </Tooltip>
+);
+
+const TaxonNameParentsPreview = ({ rows }: { rows: ParentLinkRecord[] }) => {
+  const orderedRows = React.useMemo(
+    () => [...rows].sort((left, right) => Number(left.sequence ?? 0) - Number(right.sequence ?? 0)),
+    [rows],
+  );
+
+  const parentIds = React.useMemo(
+    () =>
+      orderedRows
+        .map((row) => row.parent_taxon_name_id)
+        .filter((value): value is string | number => value !== null && value !== undefined && value !== ''),
+    [orderedRows],
+  );
+
+  const { data: parentRecords = [], isPending } = useGetMany<ParentTaxonRecord>(
+    'taxon_names',
+    { ids: parentIds },
+    { enabled: parentIds.length > 0 },
+  );
+
+  const parentMap = React.useMemo(
+    () =>
+      new Map(
+        parentRecords.map((record) => [String(record.id ?? record.taxon_name_id ?? ''), record]),
+      ),
+    [parentRecords],
+  );
+
+  const derivedValue = React.useMemo(
+    () =>
+      orderedRows
+        .map((row) => parentMap.get(String(row.parent_taxon_name_id ?? '')))
+        .map(formatParentPreviewName)
+        .filter(Boolean)
+        .join(' × '),
+    [orderedRows, parentMap],
+  );
+
+  const record = useRecordContext<{ uninomial?: string | null }>();
+  const legacyValue = record?.uninomial?.trim() ?? '';
+  const hasRows = orderedRows.length > 0;
+  const mismatch = Boolean(legacyValue && derivedValue && legacyValue !== derivedValue);
+
+  if (!hasRows) {
+    return (
+      <div className="rounded-xl border border-dashed border-border p-4 text-sm text-muted-foreground">
+        No parent-name rows yet. Add one or more parent rows to preview a derived uninomial.
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-xl border border-border bg-muted/20 p-4">
+      <div className="grid gap-3 md:grid-cols-2">
+        <div className="space-y-1">
+          <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Legacy uninomial</div>
+          <div className="text-sm">{legacyValue || 'None set'}</div>
+        </div>
+        <div className="space-y-1">
+          <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Derived from parents</div>
+          <div className="text-sm">{isPending ? 'Loading parent preview...' : derivedValue || 'Unable to derive yet'}</div>
+        </div>
+      </div>
+      {mismatch ? (
+        <div className="mt-3">
+          <Badge variant="outline">Mismatch with legacy uninomial</Badge>
+        </div>
+      ) : legacyValue && derivedValue ? (
+        <div className="mt-3">
+          <Badge variant="secondary">Matches legacy uninomial</Badge>
+        </div>
+      ) : null}
+    </div>
+  );
+};
+
+const DerivedUninomialSummaryField = () => {
+  const record = useRecordContext<{ id?: string | number; uninomial?: string | null }>();
+  const taxonNameId = record?.id;
+
+  const { data: parentRows = [], isPending: parentRowsPending } = useGetList(
+    'taxon_name_parents',
+    {
+      pagination: { page: 1, perPage: 100 },
+      sort: { field: 'sequence', order: 'ASC' },
+      filter: { taxon_name_id: taxonNameId },
+    },
+    { enabled: taxonNameId != null },
+  );
+
+  const parentIds = React.useMemo(
+    () =>
+      (Array.isArray(parentRows) ? parentRows : [])
+        .map((row: ParentLinkRecord) => row.parent_taxon_name_id)
+        .filter((value): value is string | number => value !== null && value !== undefined && value !== ''),
+    [parentRows],
+  );
+
+  const { data: parentRecords = [], isPending: parentRecordsPending } = useGetMany(
+    'taxon_names',
+    { ids: parentIds },
+    { enabled: parentIds.length > 0 },
+  );
+
+  const parentMap = React.useMemo(
+    () =>
+      new Map(
+        (Array.isArray(parentRecords) ? parentRecords : []).map((parent: ParentTaxonRecord) => [
+          String(parent.id ?? parent.taxon_name_id ?? ''),
+          parent,
+        ]),
+      ),
+    [parentRecords],
+  );
+
+  const derivedValue = React.useMemo(
+    () => deriveParentValue((Array.isArray(parentRows) ? parentRows : []) as ParentLinkRecord[], parentMap),
+    [parentMap, parentRows],
+  );
+
+  const legacyValue = record?.uninomial?.trim() ?? '';
+  const mismatch = Boolean(legacyValue && derivedValue && legacyValue !== derivedValue);
+  const isPending = parentRowsPending || parentRecordsPending;
+
+  return (
+    <div className="space-y-2 rounded-xl border border-border bg-muted/20 p-4 md:col-span-2 xl:col-span-4">
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="text-sm font-medium">Derived uninomial</div>
+        <MigrationHint>
+          Temporary migration field generated from ordered parent-name rows in `taxon_name_parents`.
+        </MigrationHint>
+        {mismatch ? <Badge variant="outline">Legacy mismatch</Badge> : null}
+        {!mismatch && legacyValue && derivedValue ? <Badge variant="secondary">Matches legacy</Badge> : null}
+      </div>
+      <div className="text-sm">{isPending ? 'Loading derived uninomial...' : derivedValue || 'No derived uninomial yet'}</div>
+      <div className="text-xs text-muted-foreground">
+        This is a temporary reviewer aid while legacy `uninomial` is compared against the normalized parent model.
+      </div>
+    </div>
+  );
 };
 
 const renderBoolean = (value?: boolean | null) => {
@@ -466,6 +671,7 @@ const EditPublicationButton = () => {
 type RelatedSectionKey =
   | 'authors'
   | 'publication'
+  | 'parents'
   | 'vernaculars'
   | 'hierarchy'
   | 'relatedNames'
@@ -486,7 +692,7 @@ const TaxonNameRelatedSections = ({
   const recordId = record?.id;
   const navigate = useNavigate();
   const visibleSections = new Set<RelatedSectionKey>(
-    sections ?? ['authors', 'publication', 'vernaculars', 'hierarchy', 'relatedNames', 'conservationCodes']
+    sections ?? ['authors', 'publication', 'parents', 'vernaculars', 'hierarchy', 'relatedNames', 'conservationCodes']
   );
 
   return (
@@ -559,6 +765,7 @@ const TaxonNameRelatedSections = ({
                     />
                   </ReferenceField>
                 </RecordField>
+                <DerivedUninomialSummaryField />
                 <div className="hidden md:block md:col-span-2 xl:col-span-4" aria-hidden="true" />
                 <RecordField source="publication_status" label="Publication status">
                   <RecordField
@@ -730,6 +937,94 @@ const TaxonNameRelatedSections = ({
         ) : (
           <PublicationReadOnlySection />
         )}
+        </section>
+        ) : null}
+
+        {visibleSections.has('parents') ? (
+        <section className="mt-12 space-y-4 border-t border-border pt-12">
+        <SectionHeader
+          title="Parent names"
+          description="Ordered parent-name rows used to support hybrids and derived uninomial generation during migration."
+          action={
+            editable && recordId ? (
+              <CreateInDialogButton
+                resource="taxon_name_parents"
+                record={{ taxon_name_id: recordId, sequence: 1 }}
+                fullWidth
+                maxWidth="md"
+                mutationMode="pessimistic"
+                title="Create parent name row"
+                label="Create parent name row"
+                ButtonProps={relatedDialogButtonProps}
+              >
+                <DialogFormPadding>
+                  <TaxonNameParentForm hideTaxonName />
+                </DialogFormPadding>
+              </CreateInDialogButton>
+            ) : undefined
+          }
+        />
+        <div className="flex flex-wrap items-center gap-2 rounded-xl border border-dashed border-border px-4 py-3 text-sm text-muted-foreground">
+          <span>Temporary migration view: compare the legacy `uninomial` with the value derived from ordered parent rows.</span>
+          <MigrationHint>
+            Reviewers can use this section to validate whether the new normalized parent model produces the same result as the current legacy field.
+          </MigrationHint>
+        </div>
+        {editable ? (
+          recordId ? (
+            <ReferenceManyField
+              reference="taxon_name_parents"
+              target="taxon_name_id"
+              sort={{ field: 'sequence', order: 'ASC' }}
+              empty={<EmptyState>No parent-name rows linked to this taxon name yet.</EmptyState>}
+              render={(listContext) => <TaxonNameParentsPreview rows={listContext.data as ParentLinkRecord[]} />}
+            >
+              <DataTable bulkActionButtons={false}>
+                <DataTable.Col source="sequence" label="Sequence" />
+                <DataTable.Col label="Parent name">
+                  <ReferenceField source="parent_taxon_name_id" reference="taxon_names" link="show">
+                    <RecordField
+                      label=""
+                      render={renderScientificName}
+                    />
+                  </ReferenceField>
+                </DataTable.Col>
+                <DataTable.Col label="Actions">
+                  <div className="flex items-center gap-2">
+                    <EditRelatedButton label="Edit parent name row">
+                      <DialogFormPadding>
+                        <TaxonNameParentForm hideTaxonName />
+                      </DialogFormPadding>
+                    </EditRelatedButton>
+                    <DeleteRelatedButton resource="taxon_name_parents" />
+                  </div>
+                </DataTable.Col>
+              </DataTable>
+            </ReferenceManyField>
+          ) : (
+            <EmptyState>Save the taxon name first, then you can add parent-name rows inline here.</EmptyState>
+          )
+        ) : recordId ? (
+          <ReferenceManyField
+            reference="taxon_name_parents"
+            target="taxon_name_id"
+            sort={{ field: 'sequence', order: 'ASC' }}
+            empty={<EmptyState>No parent-name rows linked to this taxon name yet.</EmptyState>}
+            render={(listContext) => <TaxonNameParentsPreview rows={listContext.data as ParentLinkRecord[]} />}
+          >
+            <DataTable rowClick={false} bulkActionButtons={false}>
+              <DataTable.Col source="sequence" label="Sequence" />
+              <DataTable.Col label="Parent name">
+                <ReferenceField source="parent_taxon_name_id" reference="taxon_names" link={false}>
+                  <RecordField
+                    label=""
+                    render={renderScientificName}
+                  />
+                </ReferenceField>
+              </DataTable.Col>
+            </DataTable>
+          </ReferenceManyField>
+        ) : null}
         </section>
         ) : null}
 

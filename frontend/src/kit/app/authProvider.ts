@@ -126,6 +126,7 @@ const getRolesDefinition = (): Permissions => {
     { action: ['create', 'edit'], resource: 'publications' },
     { action: ['create', 'edit'], resource: 'publication_authors' },
     { action: ['create', 'edit'], resource: 'taxon_names' },
+    { action: ['create', 'edit'], resource: 'taxon_name_parents' },
     { action: ['create', 'edit'], resource: 'taxon_ranks' },
     { action: ['create', 'edit'], resource: 'vernaculars' },
   ];
@@ -142,6 +143,7 @@ const getRolesDefinition = (): Permissions => {
     { action: ['create', 'edit', 'delete'], resource: 'publications' },
     { action: ['create', 'edit'], resource: 'publication_authors' },
     { action: ['create', 'edit', 'delete'], resource: 'taxon_names' },
+    { action: ['create', 'edit', 'delete'], resource: 'taxon_name_parents' },
     { action: ['create', 'edit', 'delete'], resource: 'vernaculars' },
   ];
 

@@ -8,6 +8,13 @@ const TaxonNameCreatePage = () => (
     <div className="grid gap-6">
       <div className="rounded-2xl border border-border bg-card p-6">
         <TaxonNameForm
+          topContent={
+            <TaxonNameRelatedSections
+              editable
+              embedded
+              sections={['parents']}
+            />
+          }
           relatedSections={
             <TaxonNameRelatedSections
               editable

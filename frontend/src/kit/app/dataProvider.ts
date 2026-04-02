@@ -63,6 +63,7 @@ const resourceIdMap: Record<string, string> = {
   publications: 'publication_id',
   citations: 'citation_id',
   taxon_names: 'taxon_name_id',
+  taxon_name_parents: 'taxon_name_parent_id',
   taxon_names_code: 'taxon_name_id',
   informal_groups: 'informal_group_id',
   hierarchies: 'hierarchy_id',
