@@ -116,7 +116,13 @@ const MigrationHint = ({ children }: { children: React.ReactNode }) => (
   </Tooltip>
 );
 
-const TaxonNameParentsPreview = ({ rows }: { rows: ParentLinkRecord[] }) => {
+const TaxonNameParentsPreview = ({
+  rows,
+  isLoadingRows = false,
+}: {
+  rows: ParentLinkRecord[];
+  isLoadingRows?: boolean;
+}) => {
   const orderedRows = React.useMemo(
     () => [...rows].sort((left, right) => Number(left.sequence ?? 0) - Number(right.sequence ?? 0)),
     [rows],
@@ -159,6 +165,14 @@ const TaxonNameParentsPreview = ({ rows }: { rows: ParentLinkRecord[] }) => {
   const hasRows = orderedRows.length > 0;
   const mismatch = Boolean(legacyValue && derivedValue && legacyValue !== derivedValue);
 
+  if (isLoadingRows) {
+    return (
+      <div className="rounded-xl border border-dashed border-border p-4 text-sm text-muted-foreground">
+        Loading parent-name rows...
+      </div>
+    );
+  }
+
   if (!hasRows) {
     return (
       <div className="rounded-xl border border-dashed border-border p-4 text-sm text-muted-foreground">
@@ -190,6 +204,24 @@ const TaxonNameParentsPreview = ({ rows }: { rows: ParentLinkRecord[] }) => {
       ) : null}
     </div>
   );
+};
+
+const TaxonNameParentsPreviewByRecord = ({ recordId }: { recordId?: string | number }) => {
+  const { data = [], isPending } = useGetList<ParentLinkRecord>(
+    'taxon_name_parents',
+    {
+      filter: { taxon_name_id: recordId },
+      pagination: { page: 1, perPage: 100 },
+      sort: { field: 'sequence', order: 'ASC' },
+    },
+    { enabled: Boolean(recordId) },
+  );
+
+  if (!recordId) {
+    return null;
+  }
+
+  return <TaxonNameParentsPreview rows={data} isLoadingRows={isPending} />;
 };
 
 const DerivedUninomialSummaryField = () => {
@@ -437,7 +469,6 @@ const EditRelatedButton = ({
   <EditInDialogButton
     fullWidth
     maxWidth="md"
-    mutationMode="pessimistic"
     title={label}
     label={label}
     ButtonProps={{
@@ -600,7 +631,6 @@ const CreatePublicationButton = () => {
       resource="publications"
       fullWidth
       maxWidth="lg"
-      mutationMode="pessimistic"
       transform={transformPublicationPayload}
       title="Create publication"
       label="Create publication"
@@ -639,7 +669,6 @@ const EditPublicationButton = () => {
       id={publicationId}
       fullWidth
       maxWidth="lg"
-      mutationMode="pessimistic"
       transform={transformPublicationPayload}
       title="Edit publication"
       label="Edit publication"
@@ -846,7 +875,7 @@ const TaxonNameRelatedSections = ({
         ) : null}
 
         {visibleSections.has('authors') ? (
-        <section className="mt-12 space-y-4 border-t border-border pt-12">
+        <section className="mt-12 space-y-4">
         <SectionHeader
           title="Authors"
           description="Citation author rows linked to this taxon name."
@@ -857,7 +886,6 @@ const TaxonNameRelatedSections = ({
                 record={{ taxon_name_id: recordId, author_order: 0 }}
                 fullWidth
                 maxWidth="md"
-                mutationMode="pessimistic"
                 title="Create citation"
                 label="Create citation"
                 ButtonProps={relatedDialogButtonProps}
@@ -922,7 +950,7 @@ const TaxonNameRelatedSections = ({
         ) : null}
 
         {visibleSections.has('publication') ? (
-        <section className="mt-12 space-y-4 border-t border-border pt-12">
+        <section className="mt-12 space-y-4">
         <SectionHeader
           title="Publication"
           description="Linked publication for this taxon name."
@@ -941,7 +969,7 @@ const TaxonNameRelatedSections = ({
         ) : null}
 
         {visibleSections.has('parents') ? (
-        <section className="mt-12 space-y-4 border-t border-border pt-12">
+        <section className="mt-12 space-y-4">
         <SectionHeader
           title="Parent names"
           description="Ordered parent-name rows used to support hybrids and derived uninomial generation during migration."
@@ -952,7 +980,6 @@ const TaxonNameRelatedSections = ({
                 record={{ taxon_name_id: recordId, sequence: 1 }}
                 fullWidth
                 maxWidth="md"
-                mutationMode="pessimistic"
                 title="Create parent name row"
                 label="Create parent name row"
                 ButtonProps={relatedDialogButtonProps}
@@ -964,12 +991,6 @@ const TaxonNameRelatedSections = ({
             ) : undefined
           }
         />
-        <div className="flex flex-wrap items-center gap-2 rounded-xl border border-dashed border-border px-4 py-3 text-sm text-muted-foreground">
-          <span>Temporary migration view: compare the legacy `uninomial` with the value derived from ordered parent rows.</span>
-          <MigrationHint>
-            Reviewers can use this section to validate whether the new normalized parent model produces the same result as the current legacy field.
-          </MigrationHint>
-        </div>
         {editable ? (
           recordId ? (
             <ReferenceManyField
@@ -977,7 +998,6 @@ const TaxonNameRelatedSections = ({
               target="taxon_name_id"
               sort={{ field: 'sequence', order: 'ASC' }}
               empty={<EmptyState>No parent-name rows linked to this taxon name yet.</EmptyState>}
-              render={(listContext) => <TaxonNameParentsPreview rows={listContext.data as ParentLinkRecord[]} />}
             >
               <DataTable bulkActionButtons={false}>
                 <DataTable.Col source="sequence" label="Sequence" />
@@ -1010,7 +1030,6 @@ const TaxonNameRelatedSections = ({
             target="taxon_name_id"
             sort={{ field: 'sequence', order: 'ASC' }}
             empty={<EmptyState>No parent-name rows linked to this taxon name yet.</EmptyState>}
-            render={(listContext) => <TaxonNameParentsPreview rows={listContext.data as ParentLinkRecord[]} />}
           >
             <DataTable rowClick={false} bulkActionButtons={false}>
               <DataTable.Col source="sequence" label="Sequence" />
@@ -1025,6 +1044,13 @@ const TaxonNameRelatedSections = ({
             </DataTable>
           </ReferenceManyField>
         ) : null}
+        <div className="flex flex-wrap items-center gap-2 rounded-xl border border-dashed border-border px-4 py-3 text-sm text-muted-foreground">
+          <span>Temporary migration view: compare the legacy `uninomial` with the value derived from ordered parent rows.</span>
+          <MigrationHint>
+            Reviewers can use this section to validate whether the new normalized parent model produces the same result as the current legacy field.
+          </MigrationHint>
+        </div>
+        <TaxonNameParentsPreviewByRecord recordId={recordId} />
         </section>
         ) : null}
 
@@ -1040,7 +1066,6 @@ const TaxonNameRelatedSections = ({
                 record={{ taxon_name_id: recordId, sort_order: 0 }}
                 fullWidth
                 maxWidth="md"
-                mutationMode="pessimistic"
                 title="Create vernacular"
                 label="Create vernacular"
                 ButtonProps={relatedDialogButtonProps}
@@ -1132,7 +1157,6 @@ const TaxonNameRelatedSections = ({
                 record={{ taxon_name_id: recordId }}
                 fullWidth
                 maxWidth="md"
-                mutationMode="pessimistic"
                 title="Create hierarchy row"
                 label="Create hierarchy row"
                 ButtonProps={relatedDialogButtonProps}
@@ -1231,7 +1255,6 @@ const TaxonNameRelatedSections = ({
                       record={{ new_name_id: recordId }}
                       fullWidth
                       maxWidth="md"
-                      mutationMode="pessimistic"
                       title="Create previous name"
                       label="Create previous name"
                       ButtonProps={relatedDialogButtonProps}
@@ -1292,7 +1315,6 @@ const TaxonNameRelatedSections = ({
                       record={{ old_name_id: recordId }}
                       fullWidth
                       maxWidth="md"
-                      mutationMode="pessimistic"
                       title="Create subsequent name"
                       label="Create subsequent name"
                       ButtonProps={relatedDialogButtonProps}
@@ -1433,7 +1455,6 @@ const TaxonNameRelatedSections = ({
                 record={{ taxon_name_id: recordId }}
                 fullWidth
                 maxWidth="md"
-                mutationMode="pessimistic"
                 title="Create conservation code"
                 label="+ Create conservation code"
                 ButtonProps={relatedDialogButtonProps}

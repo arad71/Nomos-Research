@@ -122,7 +122,6 @@ const EditRelatedButton = ({
   <EditInDialogButton
     fullWidth
     maxWidth="md"
-    mutationMode="pessimistic"
     title={label}
     label={label}
     ButtonProps={{
@@ -159,7 +158,6 @@ const AddConservationCodeButton = () => {
       record={{ taxon_name_id: record.id }}
       fullWidth
       maxWidth="md"
-      mutationMode="pessimistic"
       title="Create conservation code"
       label="+ Create conservation code"
       ButtonProps={relatedDialogButtonProps}
