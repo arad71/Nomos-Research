@@ -72,6 +72,20 @@ class TaxonName(BaseModel, TableMixin):
         comment=constants.REVIEW_REASON,
         doc=constants.REVIEW_REASON,
     )
+    is_hybrid = sqlalchemy.Column(
+        sqlalchemy.Boolean,
+        nullable=False,
+        default=False,
+        server_default=sqlalchemy.text("false"),
+        comment=constants.IS_HYBRID,
+        doc=constants.IS_HYBRID,
+    )
+    hybrid_category = sqlalchemy.Column(
+        Enum(enums.HybridCategory, name=__tablename__ + "__hybrid_category"),
+        nullable=True,
+        comment=constants.HYBRID_CATEGORY,
+        doc=constants.HYBRID_CATEGORY,
+    )
     publication_id = sqlalchemy.Column(
         sqlalchemy.Integer,
         sqlalchemy.ForeignKey("publication.publication_id"),

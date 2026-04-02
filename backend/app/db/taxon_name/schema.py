@@ -20,6 +20,10 @@ class TaxonNameBase(BaseModel):
     specific_epithet: Optional[str] = None
     infraspecific_epithet: Optional[str] = None
     is_autonym: Optional[bool] = Field(default=None, description=constants.AUTONYM)
+    is_hybrid: Optional[bool] = Field(default=False, description=constants.IS_HYBRID)
+    hybrid_category: Optional[enums.HybridCategory] = Field(
+        default=None, description=constants.HYBRID_CATEGORY
+    )
 
     review: Optional[bool] = Field(default=None, description=constants.REVIEW)
     review_reason: Optional[str] = Field(
@@ -113,6 +117,18 @@ class TaxonNameBase(BaseModel):
         if self.review and not self.review_reason:
             raise ValueError(
                 "If review is set then you need to specify a review reason"
+            )
+        return self
+
+    @model_validator(mode="after")
+    def _validate_hybrid_fields(self) -> "TaxonNameBase":
+        if self.is_hybrid and not self.hybrid_category:
+            raise ValueError(
+                "If is_hybrid is true then you need to specify a hybrid_category"
+            )
+        if not self.is_hybrid and self.hybrid_category is not None:
+            raise ValueError(
+                "hybrid_category must be null unless is_hybrid is true"
             )
         return self
 

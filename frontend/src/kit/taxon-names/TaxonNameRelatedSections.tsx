@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useCanAccess, useDataProvider, useGetOne, useListContext, useNotify, useRecordContext, useRefresh } from 'ra-core';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { ArrowDown, ArrowUp, CircleHelp } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { CreateInDialogButton, EditInDialogButton } from '@react-admin/ra-form-layout';
@@ -15,6 +15,7 @@ import { ReferenceInput } from '@/components/admin/reference-input';
 import { ReferenceArrayField } from '@/components/admin/reference-array-field';
 import { ReferenceField } from '@/components/admin/reference-field';
 import { ReferenceManyField } from '@/components/admin/reference-many-field';
+import { SelectInput } from '@/components/admin/select-input';
 import { SingleFieldList } from '@/components/admin/single-field-list';
 import { DateField } from '@/components/admin/date-field';
 import {
@@ -41,6 +42,7 @@ import CrossReferenceForm from '../cross-references/CrossReferenceForm';
 import HierarchyForm from '../hierarchies/HierarchyForm';
 import TaxonNameParentForm from '../taxon-name-parents/TaxonNameParentForm';
 import PublicationForm from '../publications/PublicationForm';
+import HybridCategory from '../shared/choices/HybridCategory';
 import { normalizeDoi, transformPublicationPayload } from '../shared/publicationDoi';
 import VernacularForm from '../vernaculars/VernacularForm';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
@@ -91,13 +93,30 @@ const formatParentPreviewName = (taxon?: ParentTaxonRecord) =>
   || taxon?.canonical_name?.trim()
   || '';
 
-const deriveParentValue = (rows: ParentLinkRecord[], parentMap: Map<string, ParentTaxonRecord>) =>
+const getOrderedParentNames = (rows: ParentLinkRecord[], parentMap: Map<string, ParentTaxonRecord>) =>
   [...rows]
     .sort((left, right) => Number(left.sequence ?? 0) - Number(right.sequence ?? 0))
     .map((row) => parentMap.get(String(row.parent_taxon_name_id ?? '')))
     .map(formatParentPreviewName)
-    .filter(Boolean)
-    .join(' × ');
+    .filter(Boolean);
+
+const deriveParentValue = (
+  rows: ParentLinkRecord[],
+  parentMap: Map<string, ParentTaxonRecord>,
+  hybridCategory?: string | null,
+) => {
+  const orderedParentNames = getOrderedParentNames(rows, parentMap);
+
+  if (hybridCategory === 'hybrid_formula') {
+    return orderedParentNames.join(' × ');
+  }
+
+  if (hybridCategory === 'intergrade') {
+    return orderedParentNames.join(' - ');
+  }
+
+  return orderedParentNames.join(' × ');
+};
 
 const MigrationHint = ({ children }: { children: React.ReactNode }) => (
   <Tooltip>
@@ -116,12 +135,81 @@ const MigrationHint = ({ children }: { children: React.ReactNode }) => (
   </Tooltip>
 );
 
+const validateHybridCategory = (value?: string | null, allValues?: { is_hybrid?: boolean }) => {
+  if (allValues?.is_hybrid && !value) {
+    return 'Hybrid category is required when this taxon name is marked as a hybrid';
+  }
+
+  return undefined;
+};
+
+const ParentHybridFields = ({ editable }: { editable?: boolean }) => {
+  const record = useRecordContext<{ id?: string | number; is_hybrid?: boolean | null; hybrid_category?: string | null }>();
+
+  if (editable) {
+    const { setValue } = useFormContext<{ is_hybrid?: boolean; hybrid_category?: string | null }>();
+    const hybridCategory = useWatch({ name: 'hybrid_category' });
+    const recordId = record?.id;
+    const { data: parentRows = [] } = useGetList(
+      'taxon_name_parents',
+      {
+        filter: { taxon_name_id: recordId },
+        pagination: { page: 1, perPage: 100 },
+        sort: { field: 'sequence', order: 'ASC' },
+      },
+      { enabled: Boolean(recordId) },
+    );
+    const hasMultipleParents = parentRows.length > 1;
+
+    React.useEffect(() => {
+      if (!hasMultipleParents) {
+        setValue('hybrid_category', null, { shouldDirty: true, shouldValidate: true });
+      }
+    }, [hasMultipleParents, setValue]);
+
+    React.useEffect(() => {
+      const nextHybridValue = hasMultipleParents || Boolean(hybridCategory);
+      setValue('is_hybrid', nextHybridValue, { shouldDirty: true, shouldValidate: true });
+    }, [hasMultipleParents, hybridCategory, setValue]);
+
+    return (
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        {hasMultipleParents ? (
+          <SelectInput
+            source="hybrid_category"
+            label="Hybrid category"
+            choices={HybridCategory}
+            validate={validateHybridCategory}
+          />
+        ) : null}
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <RecordField label="Hybrid" render={(taxon: { is_hybrid?: boolean | null }) => renderBoolean(taxon.is_hybrid)} record={record} />
+      <RecordField source="hybrid_category" label="Hybrid category" record={record}>
+        <RecordField
+          label=""
+          record={record}
+          render={(taxon: { hybrid_category?: string | null }) =>
+            renderChoice(HybridCategory, taxon.hybrid_category)
+          }
+        />
+      </RecordField>
+    </div>
+  );
+};
+
 const TaxonNameParentsPreview = ({
   rows,
   isLoadingRows = false,
+  hybridCategoryOverride,
 }: {
   rows: ParentLinkRecord[];
   isLoadingRows?: boolean;
+  hybridCategoryOverride?: string | null;
 }) => {
   const orderedRows = React.useMemo(
     () => [...rows].sort((left, right) => Number(left.sequence ?? 0) - Number(right.sequence ?? 0)),
@@ -150,17 +238,13 @@ const TaxonNameParentsPreview = ({
     [parentRecords],
   );
 
+  const record = useRecordContext<{ uninomial?: string | null; hybrid_category?: string | null }>();
+  const effectiveHybridCategory = hybridCategoryOverride ?? record?.hybrid_category;
   const derivedValue = React.useMemo(
-    () =>
-      orderedRows
-        .map((row) => parentMap.get(String(row.parent_taxon_name_id ?? '')))
-        .map(formatParentPreviewName)
-        .filter(Boolean)
-        .join(' × '),
-    [orderedRows, parentMap],
+    () => deriveParentValue(orderedRows, parentMap, effectiveHybridCategory),
+    [orderedRows, parentMap, effectiveHybridCategory],
   );
 
-  const record = useRecordContext<{ uninomial?: string | null }>();
   const legacyValue = record?.uninomial?.trim() ?? '';
   const hasRows = orderedRows.length > 0;
   const mismatch = Boolean(legacyValue && derivedValue && legacyValue !== derivedValue);
@@ -206,7 +290,13 @@ const TaxonNameParentsPreview = ({
   );
 };
 
-const TaxonNameParentsPreviewByRecord = ({ recordId }: { recordId?: string | number }) => {
+const TaxonNameParentsPreviewByRecord = ({
+  recordId,
+  hybridCategoryOverride,
+}: {
+  recordId?: string | number;
+  hybridCategoryOverride?: string | null;
+}) => {
   const { data = [], isPending } = useGetList<ParentLinkRecord>(
     'taxon_name_parents',
     {
@@ -221,7 +311,13 @@ const TaxonNameParentsPreviewByRecord = ({ recordId }: { recordId?: string | num
     return null;
   }
 
-  return <TaxonNameParentsPreview rows={data} isLoadingRows={isPending} />;
+  return <TaxonNameParentsPreview rows={data} isLoadingRows={isPending} hybridCategoryOverride={hybridCategoryOverride} />;
+};
+
+const EditableTaxonNameParentsPreviewByRecord = ({ recordId }: { recordId?: string | number }) => {
+  const hybridCategory = useWatch({ name: 'hybrid_category' });
+
+  return <TaxonNameParentsPreviewByRecord recordId={recordId} hybridCategoryOverride={hybridCategory} />;
 };
 
 const CreateParentNameRowButton = ({ recordId }: { recordId: string | number }) => {
@@ -367,7 +463,7 @@ const ParentSequenceButtons = () => {
 };
 
 const DerivedUninomialSummaryField = () => {
-  const record = useRecordContext<{ id?: string | number; uninomial?: string | null }>();
+  const record = useRecordContext<{ id?: string | number; uninomial?: string | null; hybrid_category?: string | null }>();
   const taxonNameId = record?.id;
 
   const { data: parentRows = [], isPending: parentRowsPending } = useGetList(
@@ -406,8 +502,8 @@ const DerivedUninomialSummaryField = () => {
   );
 
   const derivedValue = React.useMemo(
-    () => deriveParentValue((Array.isArray(parentRows) ? parentRows : []) as ParentLinkRecord[], parentMap),
-    [parentMap, parentRows],
+    () => deriveParentValue((Array.isArray(parentRows) ? parentRows : []) as ParentLinkRecord[], parentMap, record?.hybrid_category),
+    [parentMap, parentRows, record?.hybrid_category],
   );
 
   const legacyValue = record?.uninomial?.trim() ?? '';
@@ -1175,13 +1271,18 @@ const TaxonNameRelatedSections = ({
             </DataTable>
           </ReferenceManyField>
         ) : null}
+        <ParentHybridFields editable={editable} />
         <div className="flex flex-wrap items-center gap-2 rounded-xl border border-dashed border-border px-4 py-3 text-sm text-muted-foreground">
           <span>Temporary migration view: compare the legacy `uninomial` with the value derived from ordered parent rows.</span>
           <MigrationHint>
             Reviewers can use this section to validate whether the new normalized parent model produces the same result as the current legacy field.
           </MigrationHint>
         </div>
-        <TaxonNameParentsPreviewByRecord recordId={recordId} />
+        {editable ? (
+          <EditableTaxonNameParentsPreviewByRecord recordId={recordId} />
+        ) : (
+          <TaxonNameParentsPreviewByRecord recordId={recordId} />
+        )}
         </section>
         ) : null}
 

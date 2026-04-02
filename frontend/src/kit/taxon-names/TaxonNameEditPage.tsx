@@ -7,6 +7,7 @@ import HistoryInfoBox from '../shared/HistoryInfoBox';
 import TaxonNameTitle from './TaxonNameTitle';
 import TaxonNameSidebarCards from './TaxonNameSidebarCards';
 import RecordPageActions from '../shared/RecordPageActions';
+import { normalizeTaxonNameHybridFields } from './hybridFields';
 
 const TaxonNameEditTitle = () => <TaxonNameTitle fallback="Edit taxon name" />;
 
@@ -24,7 +25,14 @@ const TaxonNameEditActions = () => {
 };
 
 const TaxonNameEditPage = () => (
-  <Edit resource="taxon_names" title={<TaxonNameEditTitle />} mutationMode="pessimistic" redirect={false} actions={<TaxonNameEditActions />}>
+  <Edit
+    resource="taxon_names"
+    title={<TaxonNameEditTitle />}
+    mutationMode="pessimistic"
+    redirect={false}
+    actions={<TaxonNameEditActions />}
+    transform={normalizeTaxonNameHybridFields}
+  >
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
       <div className="grid gap-6">
         <div className="rounded-2xl border border-border bg-card p-6">

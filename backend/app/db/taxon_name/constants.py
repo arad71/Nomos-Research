@@ -63,5 +63,7 @@ AUTONYM = (
 )
 REVIEW = "Mark this taxon name for periodic review."
 REVIEW_REASON = "Specify reason for the review of the name."
+IS_HYBRID = "Flag indicating whether this taxon name should follow hybrid naming rules."
+HYBRID_CATEGORY = "Hybrid construction category used to drive deterministic name behaviour."
 LEGACY_ID = "Legacy ID"
 IS_WA_RECOGNISED = "Flag indicating whether this name is recognised by the WA Herbarium"
