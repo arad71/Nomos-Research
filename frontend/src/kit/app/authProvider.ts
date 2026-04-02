@@ -29,7 +29,6 @@ type Actions = Action[] | Action;
 interface Permission {
   action: Actions;
   resource: string;
-  type?: 'deny' | 'allow';
 }
 
 interface Permissions {
@@ -111,17 +110,10 @@ const getRolesDefinition = (): Permissions => {
   const permissions: Permissions = {};
   permissions[Role.READER] = [
     { action: ['show', 'list', 'export'], resource: '*' },
-    { action: ['show', 'list', 'export'], resource: 'users', type: 'deny' },
-    { action: ['show', 'list', 'export'], resource: 'roles', type: 'deny' },
-    { action: ['show', 'list', 'export'], resource: 'user_roles', type: 'deny' },
   ];
 
   permissions[Role.OFFICER] = [
     { action: ['show', 'list', 'export'], resource: '*' },
-    { action: ['show', 'list', 'export'], resource: 'users', type: 'deny' },
-    { action: ['show', 'list', 'export'], resource: 'roles', type: 'deny' },
-    { action: ['show', 'list', 'export'], resource: 'user_roles', type: 'deny' },
-    { action: 'delete', resource: '*', type: 'deny' },
     { action: ['create', 'edit'], resource: 'authors' },
     { action: ['create', 'edit'], resource: 'citations' },
     { action: ['create', 'edit'], resource: 'classification_systems' },
@@ -140,9 +132,6 @@ const getRolesDefinition = (): Permissions => {
 
   permissions[Role.MANAGER] = [
     { action: ['show', 'list', 'export'], resource: '*' },
-    { action: ['show', 'list', 'export'], resource: 'users', type: 'deny' },
-    { action: ['show', 'list', 'export'], resource: 'roles', type: 'deny' },
-    { action: ['show', 'list', 'export'], resource: 'user_roles', type: 'deny' },
     { action: ['create', 'edit', 'delete'], resource: 'authors' },
     { action: ['create', 'edit', 'delete'], resource: 'citations' },
     { action: ['create', 'edit', 'delete'], resource: 'cross_references' },
@@ -158,13 +147,8 @@ const getRolesDefinition = (): Permissions => {
 
   permissions[Role.CONSERVATION_OFFICER] = [
     { action: ['show', 'list', 'export'], resource: '*' },
-    { action: ['show', 'list', 'export'], resource: 'users', type: 'deny' },
-    { action: ['show', 'list', 'export'], resource: 'roles', type: 'deny' },
-    { action: ['show', 'list', 'export'], resource: 'user_roles', type: 'deny' },
-    { action: 'delete', resource: '*', type: 'deny' },
     { action: ['create', 'edit'], resource: 'conservation_codes' },
     { action: ['create', 'edit'], resource: 'conscode_taxons' },
-    { action: ['edit', 'create'], resource: 'taxon_names', type: 'deny' },
   ];
 
   permissions[Role.APPLICATION_SUPPORT] = [
@@ -200,6 +184,9 @@ const getRolesDefinition = (): Permissions => {
 const matchesResource = (permissionResource: string, resource: string) =>
   permissionResource === '*' || permissionResource === resource;
 
+const ADMIN_ONLY_RESOURCES = new Set(['users', 'roles', 'user_roles']);
+const ADMIN_ACCESS_ROLES = new Set([Role.APPLICATION_SUPPORT, Role.SUPER_ADMIN]);
+
 const matchesAction = (permissionAction: Actions, action: string) => {
   if (permissionAction === '*') {
     return true;
@@ -213,18 +200,19 @@ const matchesAction = (permissionAction: Actions, action: string) => {
 };
 
 const canAccessWithScopes = (scopes: string[], { action, resource }: CanAccessParams) => {
+  if (ADMIN_ONLY_RESOURCES.has(resource)) {
+    const hasAdminAccessRole = scopes.some((scope) => ADMIN_ACCESS_ROLES.has(scope as keyof typeof Role));
+    if (!hasAdminAccessRole) {
+      return false;
+    }
+  }
+
   const permissions = scopes.flatMap((roleName) => getRolesDefinition()[roleName] || []);
-  const matchingPermissions = permissions.filter(
+  return permissions.some(
     (permission) =>
       matchesResource(permission.resource, resource) &&
       matchesAction(permission.action, action)
   );
-
-  if (matchingPermissions.some((permission) => permission.type === 'deny')) {
-    return false;
-  }
-
-  return matchingPermissions.some((permission) => permission.type !== 'deny');
 };
 
 export function clearLocalStorage() {

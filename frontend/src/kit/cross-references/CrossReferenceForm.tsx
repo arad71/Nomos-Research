@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { required } from 'ra-core';
 import { AutocompleteInput } from '@/components/admin/autocomplete-input';
-import { DateTimeInput } from '@/components/admin/date-time-input';
+import { DateInput } from '@/components/admin/date-input';
 import { ReferenceInput } from '@/components/admin/reference-input';
 import { SelectInput } from '@/components/admin/select-input';
 import { SimpleForm } from '@/components/admin/simple-form';
 import { TextInput } from '@/components/admin/text-input';
 import CrossRefType from '../shared/choices/CrossRefType';
+import { parseDateOnlyToDateTime } from '../shared/dateOnlyDateTime';
 
 const requiredValue = required();
 
@@ -72,9 +73,9 @@ const CrossReferenceForm = ({
         </div>
         <div className="grid max-w-5xl gap-4 md:grid-cols-2 xl:grid-cols-4">
           <TextInput source="authorised_by" label="Authorised by" className="xl:col-span-2" />
-          <DateTimeInput source="authorised_on" label="Authorised on" className="xl:col-span-2" />
+          <DateInput source="authorised_on" label="Authorised on" parse={parseDateOnlyToDateTime} className="xl:col-span-2" />
           <TextInput source="contributed_by" label="Contributed by" className="xl:col-span-2" />
-          <DateTimeInput source="contributed_on" label="Contributed on" className="xl:col-span-2" />
+          <DateInput source="contributed_on" label="Contributed on" parse={parseDateOnlyToDateTime} className="xl:col-span-2" />
         </div>
       </section>
 

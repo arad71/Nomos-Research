@@ -338,15 +338,17 @@ const parseTotal = (response: Response, rows: unknown[]) => {
 
 const buildFilterObject = (filters: TaxonNameFilters) => {
   const nextFilter: Record<string, string | boolean> = {};
-  const isExactNomosIdSearch = /^\d+$/.test(filters.q);
+  const trimmedQuery = filters.q.trim();
+  const trimmedId = filters.id.trim();
+  const isExactNomosIdSearch = /^\d+$/.test(trimmedQuery);
 
-  if (filters.q && !isExactNomosIdSearch) {
-    nextFilter.q = filters.q;
+  if (trimmedQuery && !isExactNomosIdSearch) {
+    nextFilter.q = trimmedQuery;
   }
-  if (filters.id) {
-    nextFilter.id = filters.id;
+  if (trimmedId) {
+    nextFilter.taxon_name_id = trimmedId;
   } else if (isExactNomosIdSearch) {
-    nextFilter.id = filters.q;
+    nextFilter.taxon_name_id = trimmedQuery;
   }
   if (filters.legacyId) {
     nextFilter.legacy_id__contains = filters.legacyId;

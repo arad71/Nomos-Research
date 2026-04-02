@@ -29,6 +29,7 @@ import {
   NumberField as RaNumberField,
 } from 'react-admin';
 import CrossRefType from '../shared/choices/CrossRefType';
+import { formatDateOnly } from '../shared/dateOnlyDateTime';
 import NaturalisedStatus from '../shared/choices/NaturalisedStatus';
 import PublicationStatus from '../shared/choices/PublicationStatus';
 import CitationForm from '../citations/CitationForm';
@@ -60,17 +61,6 @@ const renderBoolean = (value?: boolean | null) => {
 const renderChoice = (choices: Array<{ id: string; name: string }>, value?: string | null) => {
   if (!value) return '';
   return choices.find((choice) => choice.id === value)?.name ?? value;
-};
-
-const formatDateTime = (value?: string | null) => {
-  if (!value) return '';
-
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) {
-    return value;
-  }
-
-  return parsed.toLocaleString();
 };
 
 const SectionHeader = ({
@@ -536,7 +526,7 @@ const TaxonNameRelatedSections = ({
                       label=""
                       render={(kingdom: { kingdom_name?: string | null; id?: string | number | null }) => (
                         <span
-                          className="cursor-default"
+                          className="cursor-pointer"
                           onDoubleClick={() => {
                             if (kingdom.id != null) {
                               navigate(`/kingdoms/${kingdom.id}/show`);
@@ -556,7 +546,7 @@ const TaxonNameRelatedSections = ({
                       label=""
                       render={(rank: { rank_name?: string | null; id?: string | number | null }) => (
                         <span
-                          className="cursor-default"
+                          className="cursor-pointer"
                           onDoubleClick={() => {
                             if (rank.id != null) {
                               navigate(`/taxon_ranks/${rank.id}/show`);
@@ -600,7 +590,7 @@ const TaxonNameRelatedSections = ({
                   <RecordField
                     label=""
                     render={(taxon: { authorised_on?: string | null }) =>
-                      taxon.authorised_on ? formatDateTime(taxon.authorised_on) : ''
+                      taxon.authorised_on ? formatDateOnly(taxon.authorised_on) : ''
                     }
                   />
                 </RecordField>
@@ -609,7 +599,7 @@ const TaxonNameRelatedSections = ({
                   <RecordField
                     label=""
                     render={(taxon: { contributed_on?: string | null }) =>
-                      taxon.contributed_on ? formatDateTime(taxon.contributed_on) : ''
+                      taxon.contributed_on ? formatDateOnly(taxon.contributed_on) : ''
                     }
                   />
                 </RecordField>

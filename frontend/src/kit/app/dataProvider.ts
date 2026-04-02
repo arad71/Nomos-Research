@@ -185,6 +185,13 @@ export const myDataProvider: DataProvider = {
     if (resource === 'taxon_names_code') {
       resource = 'taxon_names';
     }
+    if (resource === 'roles') {
+      return Promise.all(
+        params.ids.map((id) => dataProvider.getOne(resource, { id })),
+      ).then((responses) => ({
+        data: responses.map((response) => response.data),
+      }));
+    }
     const idKey = resourceIdMap[resource] || 'id';
     if (idKey === 'id') {
       return dataProvider.getMany(resource, params);

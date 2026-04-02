@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useRecordContext } from 'ra-core';
+import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { RecordField } from '@/components/admin/record-field';
 import { ReferenceField } from '@/components/admin/reference-field';
@@ -53,20 +54,38 @@ const VernacularShowActions = () => {
   );
 };
 
+const VernacularTaxonNameField = () => {
+  const navigate = useNavigate();
+  const vernacular = useRecordContext<{ taxon_name_id?: string | number | null }>();
+
+  return (
+    <ReferenceField source="taxon_name_id" reference="taxon_names">
+      <RecordField
+        label=""
+        render={(record: { formatted_scientific_name?: string | null }) => (
+          <span
+            className={vernacular?.taxon_name_id != null ? 'cursor-pointer' : undefined}
+            onDoubleClick={() => {
+              if (vernacular?.taxon_name_id != null) {
+                navigate(`/taxon_names/${vernacular.taxon_name_id}/show`);
+              }
+            }}
+          >
+            <HtmlValue value={record.formatted_scientific_name} />
+          </span>
+        )}
+      />
+    </ReferenceField>
+  );
+};
+
 const VernacularShowPage = () => (
   <Show resource="vernaculars" title={<VernacularShowTitle />} actions={<VernacularShowActions />}>
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
       <div className="grid gap-6 rounded-2xl border border-border bg-card p-6 md:grid-cols-2">
         <RecordField source="vernacular_name" label="Vernacular" />
         <RecordField label="Taxon name" source="taxon_name_id">
-          <ReferenceField source="taxon_name_id" reference="taxon_names">
-            <RecordField
-              label=""
-              render={(record: { formatted_scientific_name?: string | null }) => (
-                <HtmlValue value={record.formatted_scientific_name} />
-              )}
-            />
-          </ReferenceField>
+          <VernacularTaxonNameField />
         </RecordField>
         <RecordField source="source" label="Source" className="md:col-span-2" />
         <RecordField

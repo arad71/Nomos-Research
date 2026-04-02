@@ -4,13 +4,14 @@ import { maxValue, minValue, number, required } from 'ra-core';
 import { AutocompleteArrayInput } from '@/components/admin/autocomplete-array-input';
 import { AutocompleteInput } from '@/components/admin/autocomplete-input';
 import { BooleanInput } from '@/components/admin/boolean-input';
-import { DateTimeInput } from '@/components/admin/date-time-input';
+import { DateInput } from '@/components/admin/date-input';
 import { NumberInput } from '@/components/admin/number-input';
 import { ReferenceArrayInput } from '@/components/admin/reference-array-input';
 import { ReferenceInput } from '@/components/admin/reference-input';
 import { SelectInput } from '@/components/admin/select-input';
 import { SimpleForm } from '@/components/admin/simple-form';
 import { TextInput } from '@/components/admin/text-input';
+import { parseDateOnlyToDateTime } from '../shared/dateOnlyDateTime';
 import NaturalisedStatus from '../shared/choices/NaturalisedStatus';
 import PublicationStatus from '../shared/choices/PublicationStatus';
 
@@ -199,9 +200,9 @@ const TaxonNameFormInner = ({ relatedSections }: { relatedSections?: React.React
         </div>
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <TextInput source="authorised_by" label="Authorised by" className="xl:col-span-2" />
-          <DateTimeInput source="authorised_on" label="Authorised on" className="xl:col-span-2" />
+          <DateInput source="authorised_on" label="Authorised on" parse={parseDateOnlyToDateTime} className="xl:col-span-2" />
           <TextInput source="contributed_by" label="Contributed by" className="xl:col-span-2" />
-          <DateTimeInput source="contributed_on" label="Contributed on" className="xl:col-span-2" />
+          <DateInput source="contributed_on" label="Contributed on" parse={parseDateOnlyToDateTime} className="xl:col-span-2" />
         </div>
       </section>
 

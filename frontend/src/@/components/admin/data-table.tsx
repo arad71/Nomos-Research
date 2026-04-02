@@ -281,7 +281,7 @@ const DataTableRow = ({
       key={record.id}
       onClick={handleClick}
       onDoubleClick={handleDoubleClick}
-      className={cn(rowClick !== false && "cursor-pointer", className)}
+      className={cn("cursor-pointer", className)}
     >
       {hasBulkActions ? (
         <TableCell className="flex w-8" onClick={handleToggle}>

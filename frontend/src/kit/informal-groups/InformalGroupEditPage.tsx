@@ -30,21 +30,23 @@ const InformalGroupEditActions = () => {
   );
 };
 
-const InformalGroupEditPage = () => (
-  <Edit
-    resource="informal_groups"
-    title={<InformalGroupEditTitle />}
-    mutationMode="pessimistic"
-    redirect={false}
-    actions={<InformalGroupEditActions />}
-  >
-    <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
-      <InformalGroupForm />
-      <div className="xl:sticky xl:top-6 xl:self-start">
-        <HistoryInfoBox />
+const InformalGroupEditPage = () => {
+  return (
+    <Edit
+      resource="informal_groups"
+      title={<InformalGroupEditTitle />}
+      mutationMode="pessimistic"
+      redirect={false}
+      actions={<InformalGroupEditActions />}
+    >
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
+        <InformalGroupForm />
+        <div className="xl:sticky xl:top-6 xl:self-start">
+          <HistoryInfoBox />
+        </div>
       </div>
-    </div>
-  </Edit>
-);
+    </Edit>
+  );
+};
 
 export default InformalGroupEditPage;
