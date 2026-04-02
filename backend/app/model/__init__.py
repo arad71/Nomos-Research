@@ -12,6 +12,7 @@ from app.db.kingdom.model import Kingdom
 from app.db.publication.model import Publication
 from app.db.role.model import Role
 from app.db.taxon_name.model import TaxonName
+from app.db.taxon_name_parent.model import TaxonNameParent
 from app.db.taxon_rank.model import TaxonRank
 from app.db.user.model import User
 from app.db.user_role.model import UserRole

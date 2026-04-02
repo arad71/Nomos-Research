@@ -23,6 +23,7 @@ from app.api.api_v1.routers.kingdoms import kingdoms_router
 from app.api.api_v1.routers.publications import publications_router
 from app.api.api_v1.routers.roles import roles_router
 from app.api.api_v1.routers.taxon_names import taxon_names_router
+from app.api.api_v1.routers.taxon_name_parents import taxon_name_parents_router
 from app.api.api_v1.routers.taxon_ranks import taxon_ranks_router
 from app.api.api_v1.routers.user_roles import user_roles_router
 from app.api.api_v1.routers.users import users_router
@@ -167,6 +168,13 @@ app.include_router(
     taxon_names_router,
     prefix=API_V1_URL,
     tags=["taxon_names"],
+    dependencies=[Depends(get_current_active_user)],
+)
+
+app.include_router(
+    taxon_name_parents_router,
+    prefix=API_V1_URL,
+    tags=["taxon_name_parents"],
     dependencies=[Depends(get_current_active_user)],
 )
 
