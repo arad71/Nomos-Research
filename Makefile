@@ -99,6 +99,10 @@ autogenerate:
 calculate_names:
 	docker compose run --rm backend app/tools/taxon_name_calculation.py
 
+# backfill_taxon_name_parents: Backfill taxon_name_parents from exact uninomial matches
+backfill_taxon_name_parents:
+	docker compose run --rm backend python app/tools/backfill_taxon_name_parents.py $(if $(ARGS),$(ARGS),--skip-populated --dry-run)
+
 # shell:		Run bash in the backend
 shell:
 	@docker compose exec backend bash

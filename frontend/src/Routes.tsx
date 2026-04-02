@@ -54,6 +54,7 @@ import TaxonNameCreatePage from './kit/taxon-names/TaxonNameCreatePage';
 import TaxonNameEditPage from './kit/taxon-names/TaxonNameEditPage';
 import TaxonNameShowPage from './kit/taxon-names/TaxonNameShowPage';
 import TaxonNamesPage from './kit/taxon-names/TaxonNamesPage';
+import TaxonNameParentReviewsPage from './kit/taxon-name-parent-reviews/TaxonNameParentReviewsPage';
 import TaxonNameCodeCreatePage from './kit/taxon-name-codes/TaxonNameCodeCreatePage';
 import TaxonNameCodeEditPage from './kit/taxon-name-codes/TaxonNameCodeEditPage';
 import TaxonNameCodeShowPage from './kit/taxon-name-codes/TaxonNameCodeShowPage';
@@ -127,6 +128,10 @@ export const Routes: FC = () => {
         <Route
           path="/taxon_names/:id/show"
           element={withAccess('taxon_names', 'show', <TaxonNameShowPage />)}
+        />
+        <Route
+          path="/taxon_name_parent_reviews"
+          element={withAccess('taxon_name_parent_reviews', 'list', <TaxonNameParentReviewsPage />)}
         />
         <Route
           path="/taxon_names_code"

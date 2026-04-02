@@ -15,6 +15,7 @@ import GroupWorkIcon from '@mui/icons-material/GroupWork';
 import LinkIcon from '@mui/icons-material/Link';
 import ReportIcon from '@mui/icons-material/Report';
 import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined';
+import RuleIcon from '@mui/icons-material/Rule';
 
 export interface AdminNavItem {
   to: string;
@@ -88,6 +89,13 @@ export const adminNavSections: AdminNavSection[] = [
         label: 'Taxon Ranks',
         icon: <GroupWorkIcon fontSize="small" />,
         resource: 'taxon_ranks',
+        action: 'list',
+      },
+      {
+        to: '/taxon_name_parent_reviews',
+        label: 'Parent Review Queue',
+        icon: <RuleIcon fontSize="small" />,
+        resource: 'taxon_name_parent_reviews',
         action: 'list',
       },
       {

@@ -43,6 +43,7 @@ const kitRoutes = new Set([
   '/',
   '/kit',
   '/taxon_names',
+  '/taxon_name_parent_reviews',
   '/taxon_names_code',
   '/vernaculars',
   '/hierarchies',

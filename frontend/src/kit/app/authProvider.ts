@@ -127,6 +127,7 @@ const getRolesDefinition = (): Permissions => {
     { action: ['create', 'edit'], resource: 'publication_authors' },
     { action: ['create', 'edit'], resource: 'taxon_names' },
     { action: ['create', 'edit'], resource: 'taxon_name_parents' },
+    { action: ['create', 'edit'], resource: 'taxon_name_parent_reviews' },
     { action: ['create', 'edit'], resource: 'taxon_ranks' },
     { action: ['create', 'edit'], resource: 'vernaculars' },
   ];
@@ -144,6 +145,7 @@ const getRolesDefinition = (): Permissions => {
     { action: ['create', 'edit'], resource: 'publication_authors' },
     { action: ['create', 'edit', 'delete'], resource: 'taxon_names' },
     { action: ['create', 'edit', 'delete'], resource: 'taxon_name_parents' },
+    { action: ['create', 'edit', 'delete'], resource: 'taxon_name_parent_reviews' },
     { action: ['create', 'edit', 'delete'], resource: 'vernaculars' },
   ];
 
@@ -188,6 +190,13 @@ const matchesResource = (permissionResource: string, resource: string) =>
 
 const ADMIN_ONLY_RESOURCES = new Set(['users', 'roles', 'user_roles']);
 const ADMIN_ACCESS_ROLES = new Set([Role.APPLICATION_SUPPORT, Role.SUPER_ADMIN]);
+const REVIEW_QUEUE_RESOURCES = new Set(['taxon_name_parent_reviews']);
+const REVIEW_QUEUE_ACCESS_ROLES = new Set([
+  Role.OFFICER,
+  Role.MANAGER,
+  Role.APPLICATION_SUPPORT,
+  Role.SUPER_ADMIN,
+]);
 
 const matchesAction = (permissionAction: Actions, action: string) => {
   if (permissionAction === '*') {
@@ -205,6 +214,15 @@ const canAccessWithScopes = (scopes: string[], { action, resource }: CanAccessPa
   if (ADMIN_ONLY_RESOURCES.has(resource)) {
     const hasAdminAccessRole = scopes.some((scope) => ADMIN_ACCESS_ROLES.has(scope as keyof typeof Role));
     if (!hasAdminAccessRole) {
+      return false;
+    }
+  }
+
+  if (REVIEW_QUEUE_RESOURCES.has(resource)) {
+    const hasReviewQueueAccessRole = scopes.some((scope) =>
+      REVIEW_QUEUE_ACCESS_ROLES.has(scope as keyof typeof Role)
+    );
+    if (!hasReviewQueueAccessRole) {
       return false;
     }
   }
