@@ -211,6 +211,8 @@ class Crud:
                 for search_field in cls.search_fields:
                     conditions[f"{search_field}__contains"] = filter_value
                 filters[or_] = conditions
+        elif column == "id" and cls.id_key and cls.id_key != "id":
+            filters[cls.id_key] = filter_value
         elif column == "deleted":
             # Let super admin and application support override the filter
             if Security(
