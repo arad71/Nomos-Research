@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useCanAccess, useDataProvider, useGetOne, useListContext, useNotify, useRecordContext, useRefresh } from 'ra-core';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { ArrowDown, ArrowUp, CircleHelp } from 'lucide-react';
+import { ArrowDown, ArrowUp } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { CreateInDialogButton, EditInDialogButton } from '@react-admin/ra-form-layout';
 import { ThemeProvider, createTheme } from '@mui/material';
@@ -46,7 +46,6 @@ import PublicationForm from '../publications/PublicationForm';
 import HybridCategory from '../shared/choices/HybridCategory';
 import { normalizeDoi, transformPublicationPayload } from '../shared/publicationDoi';
 import VernacularForm from '../vernaculars/VernacularForm';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 const crossRefTypeMap = CrossRefType.reduce<Record<string, string>>((acc, item) => {
   acc[item.id] = item.name;
@@ -160,23 +159,6 @@ const deriveParentValue = (
   return orderedParentNames.join(' × ');
 };
 
-const MigrationHint = ({ children }: { children: React.ReactNode }) => (
-  <Tooltip>
-    <TooltipTrigger asChild>
-      <button
-        type="button"
-        className="inline-flex items-center text-muted-foreground transition-colors hover:text-foreground"
-        aria-label="Migration guidance"
-      >
-        <CircleHelp className="h-4 w-4" />
-      </button>
-    </TooltipTrigger>
-    <TooltipContent side="top" sideOffset={6}>
-      {children}
-    </TooltipContent>
-  </Tooltip>
-);
-
 const validateHybridCategory = (value?: string | null, allValues?: { is_hybrid?: boolean }) => {
   if (allValues?.is_hybrid && !value) {
     return 'Hybrid category is required when this taxon name is marked as a hybrid';
@@ -217,7 +199,7 @@ const ParentHybridFields = ({ editable }: { editable?: boolean }) => {
     }, [hasMultipleParents, isHybrid, setValue]);
 
     return (
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid items-start gap-4 md:grid-cols-2 xl:grid-cols-4">
         <SelectInput
           source="is_hybrid"
           label="Hybrid"
@@ -255,7 +237,7 @@ const ParentHybridFields = ({ editable }: { editable?: boolean }) => {
   }
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <div className="grid items-start gap-4 md:grid-cols-2 xl:grid-cols-4">
       <RecordField label="Hybrid" render={(taxon: { is_hybrid?: boolean | null }) => renderBoolean(taxon.is_hybrid)} record={record} />
       <RecordField source="hybrid_category" label="Hybrid category" record={record}>
         <RecordField
@@ -527,124 +509,6 @@ const ParallelNameOverridesPanel = ({ editable }: { editable?: boolean }) => {
   );
 };
 
-const TaxonNameParentsPreview = ({
-  rows,
-  isLoadingRows = false,
-  hybridCategoryOverride,
-}: {
-  rows: ParentLinkRecord[];
-  isLoadingRows?: boolean;
-  hybridCategoryOverride?: string | null;
-}) => {
-  const orderedRows = React.useMemo(
-    () => [...rows].sort((left, right) => Number(left.sequence ?? 0) - Number(right.sequence ?? 0)),
-    [rows],
-  );
-
-  const parentIds = React.useMemo(
-    () =>
-      orderedRows
-        .map((row) => row.parent_taxon_name_id)
-        .filter((value): value is string | number => value !== null && value !== undefined && value !== ''),
-    [orderedRows],
-  );
-
-  const { data: parentRecords = [], isPending } = useGetMany<ParentTaxonRecord>(
-    'taxon_names',
-    { ids: parentIds },
-    { enabled: parentIds.length > 0 },
-  );
-
-  const parentMap = React.useMemo(
-    () =>
-      new Map(
-        parentRecords.map((record) => [String(record.id ?? record.taxon_name_id ?? ''), record]),
-      ),
-    [parentRecords],
-  );
-
-  const record = useRecordContext<{ uninomial?: string | null; hybrid_category?: string | null }>();
-  const effectiveHybridCategory = hybridCategoryOverride ?? record?.hybrid_category;
-  const derivedValue = React.useMemo(
-    () => deriveParentValue(orderedRows, parentMap, effectiveHybridCategory),
-    [orderedRows, parentMap, effectiveHybridCategory],
-  );
-
-  const legacyValue = record?.uninomial?.trim() ?? '';
-  const hasRows = orderedRows.length > 0;
-  const mismatch = Boolean(legacyValue && derivedValue && legacyValue !== derivedValue);
-
-  if (isLoadingRows) {
-    return (
-      <div className="rounded-xl border border-dashed border-border p-4 text-sm text-muted-foreground">
-        Loading parent-name rows...
-      </div>
-    );
-  }
-
-  if (!hasRows) {
-    return (
-      <div className="rounded-xl border border-dashed border-border p-4 text-sm text-muted-foreground">
-        No parent-name rows yet. Add one or more parent rows to preview a derived uninomial.
-      </div>
-    );
-  }
-
-  return (
-    <div className="rounded-xl border border-border bg-muted/20 p-4">
-      <div className="grid gap-3 md:grid-cols-2">
-        <div className="space-y-1">
-          <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Legacy uninomial</div>
-          <div className="text-sm">{legacyValue || 'None set'}</div>
-        </div>
-        <div className="space-y-1">
-          <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Derived from parents</div>
-          <div className="text-sm">{isPending ? 'Loading parent preview...' : derivedValue || 'Unable to derive yet'}</div>
-        </div>
-      </div>
-      {mismatch ? (
-        <div className="mt-3">
-          <Badge variant="outline">Mismatch with legacy uninomial</Badge>
-        </div>
-      ) : legacyValue && derivedValue ? (
-        <div className="mt-3">
-          <Badge variant="secondary">Matches legacy uninomial</Badge>
-        </div>
-      ) : null}
-    </div>
-  );
-};
-
-const TaxonNameParentsPreviewByRecord = ({
-  recordId,
-  hybridCategoryOverride,
-}: {
-  recordId?: string | number;
-  hybridCategoryOverride?: string | null;
-}) => {
-  const { data = [], isPending } = useGetList<ParentLinkRecord>(
-    'taxon_name_parents',
-    {
-      filter: { taxon_name_id: recordId },
-      pagination: { page: 1, perPage: 100 },
-      sort: { field: 'sequence', order: 'ASC' },
-    },
-    { enabled: Boolean(recordId) },
-  );
-
-  if (!recordId) {
-    return null;
-  }
-
-  return <TaxonNameParentsPreview rows={data} isLoadingRows={isPending} hybridCategoryOverride={hybridCategoryOverride} />;
-};
-
-const EditableTaxonNameParentsPreviewByRecord = ({ recordId }: { recordId?: string | number }) => {
-  const hybridCategory = useWatch({ name: 'hybrid_category' });
-
-  return <TaxonNameParentsPreviewByRecord recordId={recordId} hybridCategoryOverride={hybridCategory} />;
-};
-
 const ParallelNamePreviewPanel = ({ recordId }: { recordId?: string | number }) => {
   const { data, isPending, error } = useGetOne<ParallelNamePreviewRecord>(
     'taxon_names_parallel_name_preview',
@@ -679,15 +543,21 @@ const ParallelNamePreviewPanel = ({ recordId }: { recordId?: string | number }) 
   const notes = Array.isArray(data.notes) ? data.notes.filter(Boolean) : [];
 
   return (
-    <div className="rounded-xl border border-border bg-muted/20 p-4">
+    <div className="rounded-xl border border-sky-200 bg-sky-50/80 p-4 dark:border-sky-900/60 dark:bg-sky-950/20">
         <div className="flex flex-wrap items-center gap-2">
         <div className="text-sm font-medium">Parallel name engine preview</div>
-        <Badge variant="outline">{formatPreviewTitle(data.strategy)}</Badge>
+        <Badge className="border-sky-300 bg-sky-100 text-sky-900 hover:bg-sky-100 dark:border-sky-800 dark:bg-sky-900/50 dark:text-sky-100">
+          {formatPreviewTitle(data.strategy)}
+        </Badge>
         {data.matches_current_scientific_name ? (
-          <Badge variant="secondary">Scientific name matches current</Badge>
+          <Badge className="border-emerald-300 bg-emerald-100 text-emerald-900 hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-100">
+            Scientific name matches current
+          </Badge>
         ) : null}
         {data.matches_current_uninomial ? (
-          <Badge variant="secondary">Uninomial matches current</Badge>
+          <Badge className="border-emerald-300 bg-emerald-100 text-emerald-900 hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-100">
+            Uninomial matches current
+          </Badge>
         ) : null}
       </div>
       <div className="mt-3 grid gap-3 md:grid-cols-2">
@@ -734,6 +604,36 @@ const ParallelNamePreviewPanel = ({ recordId }: { recordId?: string | number }) 
         This preview uses the parallel engine and does not replace the current saved name fields.
       </div>
     </div>
+  );
+};
+
+const DerivedScientificNameSummaryField = ({ recordId }: { recordId?: string | number }) => {
+  const { data, isPending } = useGetOne<ParallelNamePreviewRecord>(
+    'taxon_names_parallel_name_preview',
+    { id: recordId as string | number },
+    { enabled: recordId != null },
+  );
+
+  if (recordId == null) {
+    return null;
+  }
+
+  return (
+    <RecordField
+      label="Derived scientific name"
+      className="md:col-span-1 xl:min-w-0"
+      render={() => {
+        if (isPending) {
+          return 'Loading...';
+        }
+
+        if (data?.derived_formatted_scientific_name) {
+          return <HtmlValue value={data.derived_formatted_scientific_name} />;
+        }
+
+        return data?.derived_scientific_name ?? 'Not set';
+      }}
+    />
   );
 };
 
@@ -875,72 +775,6 @@ const ParentSequenceButtons = () => {
         <ArrowDown />
         Down
       </Button>
-    </div>
-  );
-};
-
-const DerivedUninomialSummaryField = () => {
-  const record = useRecordContext<{ id?: string | number; uninomial?: string | null; hybrid_category?: string | null }>();
-  const taxonNameId = record?.id;
-
-  const { data: parentRows = [], isPending: parentRowsPending } = useGetList(
-    'taxon_name_parents',
-    {
-      pagination: { page: 1, perPage: 100 },
-      sort: { field: 'sequence', order: 'ASC' },
-      filter: { taxon_name_id: taxonNameId },
-    },
-    { enabled: taxonNameId != null },
-  );
-
-  const parentIds = React.useMemo(
-    () =>
-      (Array.isArray(parentRows) ? parentRows : [])
-        .map((row: ParentLinkRecord) => row.parent_taxon_name_id)
-        .filter((value): value is string | number => value !== null && value !== undefined && value !== ''),
-    [parentRows],
-  );
-
-  const { data: parentRecords = [], isPending: parentRecordsPending } = useGetMany(
-    'taxon_names',
-    { ids: parentIds },
-    { enabled: parentIds.length > 0 },
-  );
-
-  const parentMap = React.useMemo(
-    () =>
-      new Map(
-        (Array.isArray(parentRecords) ? parentRecords : []).map((parent: ParentTaxonRecord) => [
-          String(parent.id ?? parent.taxon_name_id ?? ''),
-          parent,
-        ]),
-      ),
-    [parentRecords],
-  );
-
-  const derivedValue = React.useMemo(
-    () => deriveParentValue((Array.isArray(parentRows) ? parentRows : []) as ParentLinkRecord[], parentMap, record?.hybrid_category),
-    [parentMap, parentRows, record?.hybrid_category],
-  );
-
-  const legacyValue = record?.uninomial?.trim() ?? '';
-  const mismatch = Boolean(legacyValue && derivedValue && legacyValue !== derivedValue);
-  const isPending = parentRowsPending || parentRecordsPending;
-
-  return (
-    <div className="space-y-2 rounded-xl border border-border bg-muted/20 p-4 md:col-span-2 xl:col-span-4">
-      <div className="flex flex-wrap items-center gap-2">
-        <div className="text-sm font-medium">Derived uninomial</div>
-        <MigrationHint>
-          Temporary migration field generated from ordered parent-name rows in `taxon_name_parents`.
-        </MigrationHint>
-        {mismatch ? <Badge variant="outline">Legacy mismatch</Badge> : null}
-        {!mismatch && legacyValue && derivedValue ? <Badge variant="secondary">Matches legacy</Badge> : null}
-      </div>
-      <div className="text-sm">{isPending ? 'Loading derived uninomial...' : derivedValue || 'No derived uninomial yet'}</div>
-      <div className="text-xs text-muted-foreground">
-        This is a temporary reviewer aid while legacy `uninomial` is compared against the normalized parent model.
-      </div>
     </div>
   );
 };
@@ -1392,21 +1226,22 @@ const TaxonNameRelatedSections = ({
           <>
             <section className="space-y-4">
               <SectionHeader title="Taxon name summary" />
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)_minmax(0,1.5fr)]">
                 <RecordField
                   label="NomosID"
-                  className="xl:col-span-1"
+                  className="xl:min-w-0"
                   render={(taxon: { id?: string | number | null; taxon_name_id?: string | number | null }) =>
                     taxon.taxon_name_id ?? taxon.id ?? ''
                   }
                 />
                 <RecordField
                   label="Formatted scientific name"
-                  className="md:col-span-1 xl:col-span-3"
+                  className="md:col-span-1 xl:min-w-0"
                   render={(taxon: { formatted_scientific_name?: string | null }) => (
                     <HtmlValue value={taxon.formatted_scientific_name} />
                   )}
                 />
+                <DerivedScientificNameSummaryField recordId={recordId} />
               </div>
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                 <RecordField label="Kingdom" source="kingdom_id">
@@ -1449,7 +1284,6 @@ const TaxonNameRelatedSections = ({
                     />
                   </ReferenceField>
                 </RecordField>
-                <DerivedUninomialSummaryField />
                 <div className="hidden md:block md:col-span-2 xl:col-span-4" aria-hidden="true" />
                 <RecordField source="publication_status" label="Publication status">
                   <RecordField
@@ -1530,85 +1364,79 @@ const TaxonNameRelatedSections = ({
         ) : null}
 
         {visibleSections.has('parents') ? (
-        <section className="mt-12 space-y-4">
-        <SectionHeader
-          title="Parent names"
-          description="Ordered parent-name rows used to support hybrids and derived uninomial generation during migration."
-          action={
-            editable && recordId ? (
-              <CreateParentNameRowButton recordId={recordId} />
-            ) : undefined
-          }
-        />
-        {editable ? (
-          recordId ? (
-            <ReferenceManyField
-              reference="taxon_name_parents"
-              target="taxon_name_id"
-              sort={{ field: 'sequence', order: 'ASC' }}
-              empty={<EmptyState>No parent-name rows linked to this taxon name yet.</EmptyState>}
-            >
-              <DataTable rowClick={false} bulkActionButtons={false}>
-                <DataTable.Col source="sequence" label="Sequence" />
-                <DataTable.Col label="Parent name">
-                  <ReferenceField source="parent_taxon_name_id" reference="taxon_names" link="show">
-                    <RecordField
-                      label=""
-                      render={renderScientificName}
-                    />
-                  </ReferenceField>
-                </DataTable.Col>
-                <DataTable.Col label="Actions">
-                  <div className="flex items-center gap-2">
-                    <ParentSequenceButtons />
-                    <EditRelatedButton label="Edit parent name row">
-                      <DialogFormPadding>
-                        <TaxonNameParentForm hideTaxonName />
-                      </DialogFormPadding>
-                    </EditRelatedButton>
-                    <DeleteRelatedButton resource="taxon_name_parents" />
-                  </div>
-                </DataTable.Col>
-              </DataTable>
-            </ReferenceManyField>
-          ) : (
-            <EmptyState>Save the taxon name first, then you can add parent-name rows inline here.</EmptyState>
-          )
-        ) : recordId ? (
-          <ReferenceManyField
-            reference="taxon_name_parents"
-            target="taxon_name_id"
-            sort={{ field: 'sequence', order: 'ASC' }}
-            empty={<EmptyState>No parent-name rows linked to this taxon name yet.</EmptyState>}
-          >
-            <DataTable rowClick={false} bulkActionButtons={false}>
-              <DataTable.Col source="sequence" label="Sequence" />
-              <DataTable.Col label="Parent name">
-                <ReferenceField source="parent_taxon_name_id" reference="taxon_names" link={false}>
-                  <RecordField
-                    label=""
-                    render={renderScientificName}
-                  />
-                </ReferenceField>
-              </DataTable.Col>
-            </DataTable>
-          </ReferenceManyField>
-        ) : null}
-        <ParallelNameOverridesPanel editable={editable} />
-        <ParentHybridFields editable={editable} />
-        <div className="flex flex-wrap items-center gap-2 rounded-xl border border-dashed border-border px-4 py-3 text-sm text-muted-foreground">
-          <span>Temporary migration view: compare the legacy `uninomial` and current name outputs with the derived values from ordered parent rows and the parallel name engine.</span>
-          <MigrationHint>
-            Reviewers can use this section to validate whether the new normalized parent model and parallel name engine produce the same result as the current stored taxon-name fields.
-          </MigrationHint>
-        </div>
-        {editable ? (
-          <EditableTaxonNameParentsPreviewByRecord recordId={recordId} />
-        ) : (
-          <TaxonNameParentsPreviewByRecord recordId={recordId} />
-        )}
-        <ParallelNamePreviewPanel recordId={recordId} />
-        </section>
+          <>
+            <section className="space-y-4">
+              <ParallelNamePreviewPanel recordId={recordId} />
+            </section>
+
+            <section className="mt-12 space-y-4">
+              <SectionHeader
+                title="Parent names"
+                description="Ordered parent-name rows used to support hybrids and derived uninomial generation during migration."
+                action={
+                  editable && recordId ? (
+                    <CreateParentNameRowButton recordId={recordId} />
+                  ) : undefined
+                }
+              />
+              {editable ? (
+                recordId ? (
+                  <ReferenceManyField
+                    reference="taxon_name_parents"
+                    target="taxon_name_id"
+                    sort={{ field: 'sequence', order: 'ASC' }}
+                    empty={<EmptyState>No parent-name rows linked to this taxon name yet.</EmptyState>}
+                  >
+                    <DataTable rowClick={false} bulkActionButtons={false}>
+                      <DataTable.Col source="sequence" label="Sequence" />
+                      <DataTable.Col label="Parent name">
+                        <ReferenceField source="parent_taxon_name_id" reference="taxon_names" link="show">
+                          <RecordField
+                            label=""
+                            render={renderScientificName}
+                          />
+                        </ReferenceField>
+                      </DataTable.Col>
+                      <DataTable.Col label="Actions">
+                        <div className="flex items-center gap-2">
+                          <ParentSequenceButtons />
+                          <EditRelatedButton label="Edit parent name row">
+                            <DialogFormPadding>
+                              <TaxonNameParentForm hideTaxonName />
+                            </DialogFormPadding>
+                          </EditRelatedButton>
+                          <DeleteRelatedButton resource="taxon_name_parents" />
+                        </div>
+                      </DataTable.Col>
+                    </DataTable>
+                  </ReferenceManyField>
+                ) : (
+                  <EmptyState>Save the taxon name first, then you can add parent-name rows inline here.</EmptyState>
+                )
+              ) : recordId ? (
+                <ReferenceManyField
+                  reference="taxon_name_parents"
+                  target="taxon_name_id"
+                  sort={{ field: 'sequence', order: 'ASC' }}
+                  empty={<EmptyState>No parent-name rows linked to this taxon name yet.</EmptyState>}
+                >
+                  <DataTable rowClick={false} bulkActionButtons={false}>
+                    <DataTable.Col source="sequence" label="Sequence" />
+                    <DataTable.Col label="Parent name">
+                      <ReferenceField source="parent_taxon_name_id" reference="taxon_names" link={false}>
+                        <RecordField
+                          label=""
+                          render={renderScientificName}
+                        />
+                      </ReferenceField>
+                    </DataTable.Col>
+                  </DataTable>
+                </ReferenceManyField>
+              ) : null}
+              <ParallelNameOverridesPanel editable={editable} />
+              <ParentHybridFields editable={editable} />
+            </section>
+          </>
         ) : null}
 
         {visibleSections.has('authors') ? (
