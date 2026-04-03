@@ -17,8 +17,11 @@ class TaxonNameBase(BaseModel):
     kingdom_id: int = Field(description=constants.KINGDOM_ID)
     rank_id: int = Field(description=constants.RANK_ID)
     uninomial: Optional[str] = None
+    parallel_override_uninomial: Optional[str] = None
     specific_epithet: Optional[str] = None
+    parallel_override_specific_epithet: Optional[str] = None
     infraspecific_epithet: Optional[str] = None
+    parallel_override_infraspecific_epithet: Optional[str] = None
     is_autonym: Optional[bool] = Field(default=None, description=constants.AUTONYM)
     is_hybrid: Optional[bool] = Field(default=False, description=constants.IS_HYBRID)
     hybrid_category: Optional[enums.HybridCategory] = Field(

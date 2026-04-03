@@ -17,6 +17,7 @@ import { ReferenceField } from '@/components/admin/reference-field';
 import { ReferenceManyField } from '@/components/admin/reference-many-field';
 import { SelectInput } from '@/components/admin/select-input';
 import { SingleFieldList } from '@/components/admin/single-field-list';
+import { TextInput } from '@/components/admin/text-input';
 import { DateField } from '@/components/admin/date-field';
 import {
   Table,
@@ -59,6 +60,29 @@ const HtmlValue = ({ value }: { value?: string | null }) => {
 
   return <span dangerouslySetInnerHTML={{ __html: value }} />;
 };
+
+const formatPreviewTitle = (value?: string | null) => {
+  if (!value) {
+    return 'Not set';
+  }
+
+  return value
+    .split('_')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+};
+
+const formatTitle = formatPreviewTitle;
+
+const parseNullableText = (value?: string | null) => {
+  if (typeof value !== 'string') {
+    return value ?? null;
+  }
+  const trimmed = value.trim();
+  return trimmed ? trimmed : null;
+};
+
+const formatNullableText = (value?: string | null) => value ?? '';
 
 const renderScientificName = (taxon?: {
   formatted_scientific_name?: string | null;
@@ -246,6 +270,57 @@ const ParentHybridFields = ({ editable }: { editable?: boolean }) => {
   );
 };
 
+const ParallelNameOverridesPanel = ({ editable }: { editable?: boolean }) => {
+  if (editable) {
+    return (
+      <div className="space-y-3 rounded-2xl border border-border/80 bg-muted/10 p-4">
+        <div className="space-y-1">
+          <div className="text-sm font-medium">Parallel name fields</div>
+          <p className="text-sm text-muted-foreground">
+            These fields drive the parallel name engine separately from the current saved taxon-name fields. They are seeded from the current values, but can then diverge safely.
+          </p>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <TextInput
+            source="parallel_override_uninomial"
+            label="Parallel uninomial"
+            parse={parseNullableText}
+            format={formatNullableText}
+          />
+          <TextInput
+            source="parallel_override_specific_epithet"
+            label="Parallel specific epithet"
+            parse={parseNullableText}
+            format={formatNullableText}
+          />
+          <TextInput
+            source="parallel_override_infraspecific_epithet"
+            label="Parallel infraspecific epithet"
+            parse={parseNullableText}
+            format={formatNullableText}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3 rounded-2xl border border-border/80 bg-muted/10 p-4">
+      <div className="space-y-1">
+        <div className="text-sm font-medium">Parallel name fields</div>
+        <p className="text-sm text-muted-foreground">
+          These fields drive the parallel name engine separately from the current saved taxon-name fields. They are seeded from the current values, but can then diverge safely.
+        </p>
+      </div>
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <RecordField source="parallel_override_uninomial" label="Parallel uninomial" />
+        <RecordField source="parallel_override_specific_epithet" label="Parallel specific epithet" />
+        <RecordField source="parallel_override_infraspecific_epithet" label="Parallel infraspecific epithet" />
+      </div>
+    </div>
+  );
+};
+
 const TaxonNameParentsPreview = ({
   rows,
   isLoadingRows = false,
@@ -399,9 +474,9 @@ const ParallelNamePreviewPanel = ({ recordId }: { recordId?: string | number }) 
 
   return (
     <div className="rounded-xl border border-border bg-muted/20 p-4">
-      <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
         <div className="text-sm font-medium">Parallel name engine preview</div>
-        <Badge variant="outline">{formatTitle(data.strategy)}</Badge>
+        <Badge variant="outline">{formatPreviewTitle(data.strategy)}</Badge>
         {data.matches_current_scientific_name ? (
           <Badge variant="secondary">Scientific name matches current</Badge>
         ) : null}
@@ -1313,6 +1388,7 @@ const TaxonNameRelatedSections = ({
             </DataTable>
           </ReferenceManyField>
         ) : null}
+        <ParallelNameOverridesPanel editable={editable} />
         <ParentHybridFields editable={editable} />
         <div className="flex flex-wrap items-center gap-2 rounded-xl border border-dashed border-border px-4 py-3 text-sm text-muted-foreground">
           <span>Temporary migration view: compare the legacy `uninomial` and current name outputs with the derived values from ordered parent rows and the parallel name engine.</span>

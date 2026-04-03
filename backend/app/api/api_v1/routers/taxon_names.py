@@ -66,6 +66,10 @@ async def taxon_infrageneric_name_list(
     "_parallel_name_preview/{taxon_name_id}",
     response_model=TaxonNameParallelPreview,
 )
+@r.get(
+    "/_parallel_name_preview/{taxon_name_id}",
+    response_model=TaxonNameParallelPreview,
+)
 async def taxon_parallel_name_preview(
     taxon_name_id: int,
     db: Session = Depends(get_db),

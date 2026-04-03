@@ -53,6 +53,15 @@ class TaxonNameCrud(crud.Crud):
     calculation_count: int = 0
     calculation_total: int = 0
 
+    @staticmethod
+    def _seed_parallel_name_fields_from_current(values) -> None:
+        if not getattr(values, "parallel_override_uninomial", None):
+            values.parallel_override_uninomial = values.uninomial
+        if not getattr(values, "parallel_override_specific_epithet", None):
+            values.parallel_override_specific_epithet = values.specific_epithet
+        if not getattr(values, "parallel_override_infraspecific_epithet", None):
+            values.parallel_override_infraspecific_epithet = values.infraspecific_epithet
+
     @classmethod
     def create_item(
         cls,
@@ -82,6 +91,7 @@ class TaxonNameCrud(crud.Crud):
         db_session.close()
         ```
         """
+        cls._seed_parallel_name_fields_from_current(taxon_name)
         create_data = taxon_name.dict(exclude_unset=True)
         delattr(taxon_name, "classification_system_ids")
         db_taxon_name = super().create_item(db, taxon_name, current_user=current_user)

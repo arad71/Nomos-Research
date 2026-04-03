@@ -75,6 +75,29 @@ def derive_parallel_name(db: Session, taxon_name: TaxonName) -> dict[str, object
     components = calculated.get_name_components(taxon_name)
     parent_taxa = ordered_parent_taxa(taxon_name)
     rank_name = ((taxon_name.rank_name or taxon_name.taxon_rank.rank_name) or "").strip().lower()
+    has_uninomial_override = bool(taxon_name.parallel_override_uninomial)
+    has_specific_epithet_override = bool(taxon_name.parallel_override_specific_epithet)
+    has_infraspecific_epithet_override = bool(
+        taxon_name.parallel_override_infraspecific_epithet
+    )
+
+    if taxon_name.parallel_override_uninomial is not None:
+        components.uninomial = taxon_name.parallel_override_uninomial
+        if taxon_name.parallel_override_uninomial != taxon_name.uninomial:
+            notes.append("Used the parallel uninomial field.")
+    if taxon_name.parallel_override_specific_epithet is not None:
+        components.specific_epithet = taxon_name.parallel_override_specific_epithet
+        if taxon_name.parallel_override_specific_epithet != taxon_name.specific_epithet:
+            notes.append("Used the parallel specific epithet field.")
+    if taxon_name.parallel_override_infraspecific_epithet is not None:
+        components.infraspecific_epithet = (
+            taxon_name.parallel_override_infraspecific_epithet
+        )
+        if (
+            taxon_name.parallel_override_infraspecific_epithet
+            != taxon_name.infraspecific_epithet
+        ):
+            notes.append("Used the parallel infraspecific epithet field.")
 
     if parent_taxa:
         if len(parent_taxa) >= 2:
@@ -91,22 +114,55 @@ def derive_parallel_name(db: Session, taxon_name: TaxonName) -> dict[str, object
             }
 
         parent = parent_taxa[0]
-        components.uninomial = parent.uninomial or components.uninomial
-        notes.append(
-            f"Inherited uninomial from linked parent taxon {parent.taxon_name_id}."
-        )
+        parent_rank_name = ((parent.rank_name or parent.taxon_rank.rank_name) or "").strip().lower()
+        parent_is_infrageneric = parent_rank_name == "subgenus"
+
+        if not parent_is_infrageneric and not has_uninomial_override:
+            components.uninomial = parent.uninomial or components.uninomial
+            notes.append(
+                f"Inherited uninomial from linked parent taxon {parent.taxon_name_id}."
+            )
+        elif parent_is_infrageneric:
+            notes.append(
+                f"Linked parent taxon {parent.taxon_name_id} is treated as an infrageneric component, so the current genus/uninomial was retained."
+            )
+        else:
+            notes.append(
+                f"Retained the parallel uninomial field instead of inheriting uninomial from linked parent taxon {parent.taxon_name_id}."
+            )
 
         if rank_name == SPECIES_RANK_NAME:
-            strategy = "single_parent_species_inheritance"
-            notes.append("Kept the child specific epithet and author while deriving the genus/uninomial from the linked parent.")
+            strategy = (
+                "infrageneric_overlay"
+                if parent_is_infrageneric
+                else "single_parent_species_inheritance"
+            )
+            if parent_is_infrageneric:
+                notes.append(
+                    "Kept the child specific epithet and author while using the linked parent only for infrageneric scientific-name context."
+                )
+            else:
+                notes.append("Kept the child specific epithet and author while deriving the genus/uninomial from the linked parent.")
         elif rank_name in INFRASPECIFIC_RANK_NAMES:
-            strategy = "single_parent_infraspecific_inheritance"
-            if parent.specific_epithet:
+            strategy = (
+                "infrageneric_overlay"
+                if parent_is_infrageneric
+                else "single_parent_infraspecific_inheritance"
+            )
+            if (
+                not parent_is_infrageneric
+                and parent.specific_epithet
+                and not has_specific_epithet_override
+            ):
                 components.specific_epithet = parent.specific_epithet
                 notes.append(
                     f"Inherited specific epithet from linked parent taxon {parent.taxon_name_id}."
                 )
-            else:
+            elif not parent_is_infrageneric and has_specific_epithet_override:
+                notes.append(
+                    f"Retained the parallel specific epithet field instead of inheriting from linked parent taxon {parent.taxon_name_id}."
+                )
+            elif not parent_is_infrageneric:
                 notes.append("Linked parent did not provide a specific epithet, so the child value was retained.")
 
     derived_canonical_name = calculated.filter_join(
@@ -138,9 +194,39 @@ def derive_parallel_name(db: Session, taxon_name: TaxonName) -> dict[str, object
         notes.append(
             "Applied the current infrageneric formatter as a parallel overlay for bracketed or hierarchy-derived name parts."
         )
-        derived_scientific_name = infrageneric_overlay["scientific_name"] or derived_scientific_name
+        if rank_name not in {SPECIES_RANK_NAME, *INFRASPECIFIC_RANK_NAMES}:
+            if not has_uninomial_override:
+                components.uninomial = taxon_name.uninomial or components.uninomial
+            components.rank_abbreviation = None
+            derived_canonical_name = taxon_name.canonical_name or derived_canonical_name
+            if has_uninomial_override or has_specific_epithet_override or has_infraspecific_epithet_override:
+                notes.append(
+                    "Retained the current canonical name for higher-rank infrageneric records while applying the parallel fields to the scientific-name overlay."
+                )
+            else:
+                notes.append(
+                    "Retained the current uninomial and canonical name for higher-rank infrageneric names while applying the scientific-name overlay."
+                )
+        overlay_scientific_name = infrageneric_overlay["scientific_name"]
+        overlay_formatted_scientific_name = infrageneric_overlay["formatted_scientific_name"]
+        if has_uninomial_override or has_specific_epithet_override or has_infraspecific_epithet_override:
+            overlay_scientific_name = apply_components_to_overlay_name(
+                overlay_scientific_name,
+                taxon_name=taxon_name,
+                components=components,
+            )
+            overlay_formatted_scientific_name = apply_components_to_overlay_name(
+                overlay_formatted_scientific_name,
+                taxon_name=taxon_name,
+                components=components,
+                italicize=True,
+            )
+            notes.append(
+                "Applied the parallel overrides to the infrageneric scientific-name overlay."
+            )
+        derived_scientific_name = overlay_scientific_name or derived_scientific_name
         derived_formatted_scientific_name = (
-            infrageneric_overlay["formatted_scientific_name"] or derived_formatted_scientific_name
+            overlay_formatted_scientific_name or derived_formatted_scientific_name
         )
 
     return {
@@ -195,6 +281,38 @@ def best_parent_name_value(parent: TaxonName, italicize: bool = False) -> str | 
     if not value:
         return None
     return calculated.italicize_name(value) if italicize else value
+
+
+def apply_components_to_overlay_name(
+    overlay_name: str | None,
+    taxon_name: TaxonName,
+    components: schema.NameStringComponents,
+    italicize: bool = False,
+) -> str | None:
+    if not overlay_name:
+        return None
+
+    updated_name = overlay_name
+    replacements = [
+        (
+            taxon_name.uninomial,
+            calculated.italicize_name(components.uninomial) if italicize else components.uninomial,
+        ),
+        (
+            taxon_name.specific_epithet,
+            calculated.italicize_name(components.specific_epithet) if italicize else components.specific_epithet,
+        ),
+        (
+            taxon_name.infraspecific_epithet,
+            calculated.italicize_name(components.infraspecific_epithet) if italicize else components.infraspecific_epithet,
+        ),
+    ]
+
+    for current_value, derived_value in replacements:
+        if current_value and derived_value and current_value != derived_value:
+            updated_name = updated_name.replace(current_value, derived_value, 1)
+
+    return updated_name
 
 
 def get_infrageneric_overlay(

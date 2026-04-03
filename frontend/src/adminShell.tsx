@@ -183,6 +183,13 @@ export const adminNavSections: AdminNavSection[] = [
         resource: 'taxon_name_parent_reviews',
         action: 'list',
       },
+      {
+        to: '/parallel_name_review',
+        label: 'Parallel Name Review',
+        icon: <RuleIcon fontSize="small" />,
+        resource: 'taxon_names',
+        action: 'list',
+      },
     ],
   },
 ];

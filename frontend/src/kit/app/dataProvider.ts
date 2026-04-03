@@ -84,10 +84,19 @@ const toRaRecord = (resource: string, record: any) => {
     return record;
   }
   const idKey = resourceIdMap[resource];
-  if (!idKey || record.id !== undefined || record[idKey] === undefined) {
-    return record;
+  let nextRecord = record;
+  if (resource === 'taxon_names') {
+    nextRecord = {
+      parallel_override_uninomial: null,
+      parallel_override_specific_epithet: null,
+      parallel_override_infraspecific_epithet: null,
+      ...nextRecord,
+    };
   }
-  return { ...record, id: record[idKey] };
+  if (!idKey || nextRecord.id !== undefined || nextRecord[idKey] === undefined) {
+    return nextRecord;
+  }
+  return { ...nextRecord, id: nextRecord[idKey] };
 };
 
 const remapParamsForResource = (resource: string, params: any) => {
@@ -174,7 +183,7 @@ export const myDataProvider: DataProvider = {
       }));
     }
     if (resource === 'taxon_names_parallel_name_preview') {
-      const url = `${BACKEND_URL}/taxon_names/_parallel_name_preview/${params.id}`;
+      const url = `${BACKEND_URL}/taxon_names_parallel_name_preview/${params.id}`;
       return httpClient(url).then(({ json }: { json: Record<string, unknown> }) => ({
         data: { id: params.id, ...(json ?? {}) },
       }));
