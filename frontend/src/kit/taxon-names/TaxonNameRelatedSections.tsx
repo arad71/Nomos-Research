@@ -1224,6 +1224,12 @@ const TaxonNameRelatedSections = ({
       >
         {!editable ? (
           <>
+            {visibleSections.has('parents') ? (
+              <section className="space-y-4">
+                <ParallelNamePreviewPanel recordId={recordId} />
+              </section>
+            ) : null}
+
             <section className="space-y-4">
               <SectionHeader title="Taxon name summary" />
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)_minmax(0,1.5fr)]">
@@ -1365,9 +1371,11 @@ const TaxonNameRelatedSections = ({
 
         {visibleSections.has('parents') ? (
           <>
-            <section className="space-y-4">
-              <ParallelNamePreviewPanel recordId={recordId} />
-            </section>
+            {editable ? (
+              <section className="space-y-4">
+                <ParallelNamePreviewPanel recordId={recordId} />
+              </section>
+            ) : null}
 
             <section className="mt-12 space-y-4">
               <SectionHeader

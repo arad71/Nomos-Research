@@ -18,6 +18,7 @@ type ReviewRecord = {
   formatted_scientific_name?: string | null;
   canonical_name?: string | null;
   uninomial?: string | null;
+  parallel_override_uninomial?: string | null;
   is_current?: boolean | null;
   taxon_rank?: {
     rank_name?: string | null;
@@ -31,6 +32,7 @@ type ParallelPreview = {
   id?: string | number;
   taxon_name_id?: string | number;
   strategy?: string | null;
+  parent_taxon_name_ids?: Array<string | number> | null;
   current_canonical_name?: string | null;
   current_scientific_name?: string | null;
   current_formatted_scientific_name?: string | null;
@@ -45,6 +47,8 @@ type Filters = {
   q: string;
   kingdom: string;
   rank: string;
+  parallelUninomialOverride: string;
+  hasParentLink: string;
   currentOnly: boolean;
   onlyMismatches: boolean;
 };
@@ -154,6 +158,8 @@ const ParallelNameReviewPage = () => {
       q: searchParams.get('q') ?? '',
       kingdom: searchParams.get('kingdom') ?? '',
       rank: searchParams.get('rank') ?? '',
+      parallelUninomialOverride: searchParams.get('parallelUninomialOverride') ?? '',
+      hasParentLink: searchParams.get('hasParentLink') ?? '',
       currentOnly: searchParams.get('currentOnly') === 'true',
       onlyMismatches: searchParams.get('onlyMismatches') !== 'false',
     }),
@@ -249,17 +255,33 @@ const ParallelNameReviewPage = () => {
   }, [dataProvider, notify, state.data]);
 
   const displayedRecords = React.useMemo(() => {
-    if (!filters.onlyMismatches) {
-      return state.data;
-    }
     return state.data.filter((record) => {
+      const hasParallelUninomialOverride = Boolean(record.parallel_override_uninomial?.trim());
+      if (filters.parallelUninomialOverride === 'yes' && !hasParallelUninomialOverride) {
+        return false;
+      }
+      if (filters.parallelUninomialOverride === 'no' && hasParallelUninomialOverride) {
+        return false;
+      }
+
       const taxonId = record.taxon_name_id ?? record.id;
+      const preview = taxonId != null ? previewByTaxonId[String(taxonId)] : undefined;
+      const hasParentLink = Boolean(preview?.parent_taxon_name_ids?.length);
+      if (filters.hasParentLink === 'yes' && !hasParentLink) {
+        return false;
+      }
+      if (filters.hasParentLink === 'no' && hasParentLink) {
+        return false;
+      }
+
+      if (!filters.onlyMismatches) {
+        return true;
+      }
       if (taxonId == null) return false;
-      const preview = previewByTaxonId[String(taxonId)];
       if (!preview) return false;
       return !(preview.matches_current_scientific_name && preview.matches_current_uninomial);
     });
-  }, [filters.onlyMismatches, previewByTaxonId, state.data]);
+  }, [filters.hasParentLink, filters.onlyMismatches, filters.parallelUninomialOverride, previewByTaxonId, state.data]);
 
   const totalPages = Math.max(1, Math.ceil(state.total / perPage));
 
@@ -269,6 +291,8 @@ const ParallelNameReviewPage = () => {
       q: formFilters.q,
       kingdom: formFilters.kingdom,
       rank: formFilters.rank,
+      parallelUninomialOverride: formFilters.parallelUninomialOverride,
+      hasParentLink: formFilters.hasParentLink,
       currentOnly: formFilters.currentOnly ? 'true' : null,
       onlyMismatches: formFilters.onlyMismatches ? 'true' : 'false',
       page: 1,
@@ -276,7 +300,15 @@ const ParallelNameReviewPage = () => {
   };
 
   const clearAllFilters = () => {
-    setFormFilters({ q: '', kingdom: '', rank: '', currentOnly: false, onlyMismatches: true });
+    setFormFilters({
+      q: '',
+      kingdom: '',
+      rank: '',
+      parallelUninomialOverride: '',
+      hasParentLink: '',
+      currentOnly: false,
+      onlyMismatches: true,
+    });
     setSearchParams(new URLSearchParams(), { replace: true });
   };
 
@@ -374,7 +406,7 @@ const ParallelNameReviewPage = () => {
 
       <Card className="rounded-3xl border border-border/80 p-5 shadow-sm">
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-          <div className="grid gap-4 md:grid-cols-4">
+          <div className="grid gap-4 md:grid-cols-5">
             <label className="space-y-2 text-sm font-medium text-foreground">
               Search
               <div className="relative">
@@ -404,6 +436,40 @@ const ParallelNameReviewPage = () => {
                 placeholder="e.g. Species"
                 className="h-11 w-full rounded-xl border border-border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
               />
+            </label>
+            <label className="space-y-2 text-sm font-medium text-foreground">
+              Parallel uninomial override
+              <select
+                value={formFilters.parallelUninomialOverride}
+                onChange={(event) =>
+                  setFormFilters((current) => ({
+                    ...current,
+                    parallelUninomialOverride: event.target.value,
+                  }))
+                }
+                className="h-11 w-full rounded-xl border border-border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <option value="">Any</option>
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+              </select>
+            </label>
+            <label className="space-y-2 text-sm font-medium text-foreground">
+              Has parent link
+              <select
+                value={formFilters.hasParentLink}
+                onChange={(event) =>
+                  setFormFilters((current) => ({
+                    ...current,
+                    hasParentLink: event.target.value,
+                  }))
+                }
+                className="h-11 w-full rounded-xl border border-border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <option value="">Any</option>
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+              </select>
             </label>
           </div>
           <div className="flex flex-wrap gap-4">
