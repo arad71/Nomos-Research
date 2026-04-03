@@ -17,6 +17,7 @@ from app.db.taxon_name.infrageneric_names import (
     InfraGenericNames,
 )
 from app.db.taxon_name.model import TaxonName
+from app.db.taxon_name_parent.model import TaxonNameParent
 from app.db.taxon_name.parallel_name_preview import generate_parallel_name_preview
 from app.db.taxon_rank.model import TaxonRank
 from app.db.user.model import User
@@ -61,6 +62,58 @@ class TaxonNameCrud(crud.Crud):
             values.parallel_override_specific_epithet = values.specific_epithet
         if not getattr(values, "parallel_override_infraspecific_epithet", None):
             values.parallel_override_infraspecific_epithet = values.infraspecific_epithet
+
+    @staticmethod
+    def _derive_parent_uninomial_value(db: orm.Session, taxon_name_id: int) -> str | None:
+        parent_rows = (
+            db.query(TaxonNameParent)
+            .join(TaxonName, TaxonNameParent.parent_taxon_name_id == TaxonName.taxon_name_id)
+            .filter(
+                TaxonNameParent.deleted == False,  # noqa: E712
+                TaxonName.deleted == False,  # noqa: E712
+                TaxonNameParent.taxon_name_id == taxon_name_id,
+            )
+            .order_by(TaxonNameParent.sequence.asc(), TaxonNameParent.parent_taxon_name_id.asc())
+            .all()
+        )
+        if not parent_rows:
+            return None
+        ordered_parent_names = [
+            (row.parent_taxon_name.uninomial or row.parent_taxon_name.scientific_name or row.parent_taxon_name.canonical_name or "").strip()
+            for row in parent_rows
+            if row.parent_taxon_name
+        ]
+        ordered_parent_names = [name for name in ordered_parent_names if name]
+        if not ordered_parent_names:
+            return None
+        taxon_name = db.query(TaxonName).filter(TaxonName.taxon_name_id == taxon_name_id).first()
+        hybrid_category = getattr(getattr(taxon_name, "hybrid_category", None), "value", None)
+        if hybrid_category == "intergrade":
+            return " - ".join(ordered_parent_names)
+        return " × ".join(ordered_parent_names)
+
+    @classmethod
+    def _clear_redundant_parallel_uninomial(
+        cls,
+        db: orm.Session,
+        taxon_name_id: int,
+    ) -> None:
+        db_taxon_name = db.query(TaxonName).filter(TaxonName.taxon_name_id == taxon_name_id).first()
+        if not db_taxon_name:
+            return
+        if not db_taxon_name.parallel_override_uninomial:
+            return
+        parent_derived_value = cls._derive_parent_uninomial_value(db, taxon_name_id)
+        if not parent_derived_value:
+            return
+        if (db_taxon_name.uninomial or "").strip() != parent_derived_value.strip():
+            return
+        if db_taxon_name.parallel_override_uninomial.strip() != parent_derived_value.strip():
+            return
+        db_taxon_name.parallel_override_uninomial = None
+        db.add(db_taxon_name)
+        db.commit()
+        db.refresh(db_taxon_name)
 
     @classmethod
     def create_item(
@@ -109,6 +162,7 @@ class TaxonNameCrud(crud.Crud):
                 db.add(informal_group)
             db.commit()
         cls.calculate_name_formats(db, db_taxon_name.taxon_name_id)
+        cls._clear_redundant_parallel_uninomial(db, db_taxon_name.taxon_name_id)
         return db_taxon_name
 
     @classmethod
@@ -198,6 +252,7 @@ class TaxonNameCrud(crud.Crud):
             delattr(taxon_name, "classification_system_ids")
         db_taxon_name = super().edit_item(db, current_user, taxon_name_id, taxon_name)
         cls.calculate_name_formats(db, db_taxon_name.taxon_name_id)
+        cls._clear_redundant_parallel_uninomial(db, db_taxon_name.taxon_name_id)
         return db_taxon_name
 
     @classmethod

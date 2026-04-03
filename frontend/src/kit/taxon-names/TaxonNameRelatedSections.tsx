@@ -270,6 +270,217 @@ const ParentHybridFields = ({ editable }: { editable?: boolean }) => {
   );
 };
 
+const useParentDerivedUninomial = ({
+  recordId,
+  hybridCategory,
+}: {
+  recordId?: string | number;
+  hybridCategory?: string | null;
+}) => {
+  const { data: parentRows = [], isPending: parentRowsPending } = useGetList<ParentLinkRecord>(
+    'taxon_name_parents',
+    {
+      filter: { taxon_name_id: recordId },
+      pagination: { page: 1, perPage: 100 },
+      sort: { field: 'sequence', order: 'ASC' },
+    },
+    { enabled: recordId != null },
+  );
+
+  const parentIds = React.useMemo(
+    () =>
+      (Array.isArray(parentRows) ? parentRows : [])
+        .map((row) => row.parent_taxon_name_id)
+        .filter((value): value is string | number => value !== null && value !== undefined && value !== ''),
+    [parentRows],
+  );
+
+  const { data: parentRecords = [], isPending: parentRecordsPending } = useGetMany<ParentTaxonRecord>(
+    'taxon_names',
+    { ids: parentIds },
+    { enabled: parentIds.length > 0 },
+  );
+
+  const parentMap = React.useMemo(
+    () =>
+      new Map(
+        (Array.isArray(parentRecords) ? parentRecords : []).map((parent) => [
+          String(parent.id ?? parent.taxon_name_id ?? ''),
+          parent,
+        ]),
+      ),
+    [parentRecords],
+  );
+
+  const parentDerivedValue = React.useMemo(
+    () => deriveParentValue((Array.isArray(parentRows) ? parentRows : []) as ParentLinkRecord[], parentMap, hybridCategory),
+    [hybridCategory, parentMap, parentRows],
+  );
+
+  return { parentDerivedValue, isPending: parentRowsPending || parentRecordsPending };
+};
+
+const ReadOnlyParallelUninomialField = () => {
+  const record = useRecordContext<{
+    id?: string | number;
+    hybrid_category?: string | null;
+    parallel_override_uninomial?: string | null;
+  }>();
+  const recordId = record?.id;
+  const { parentDerivedValue } = useParentDerivedUninomial({
+    recordId,
+    hybridCategory: record?.hybrid_category,
+  });
+
+  const parallelUninomial = record?.parallel_override_uninomial;
+  const hasOverride = Boolean(parallelUninomial && parallelUninomial.trim());
+  const matchesParentDerived = Boolean(
+    hasOverride &&
+    parentDerivedValue &&
+    parallelUninomial.trim() === parentDerivedValue.trim()
+  );
+
+  return (
+    <div className="space-y-2 xl:col-span-2">
+      <div className="text-sm font-medium">Parallel uninomial</div>
+      <div className="flex flex-wrap items-center gap-2">
+        {hasOverride && !matchesParentDerived ? (
+          <>
+            <Badge variant="outline">{parallelUninomial}</Badge>
+            <span className="text-xs text-muted-foreground">Explicit parallel override</span>
+          </>
+        ) : parentDerivedValue ? (
+          <>
+            <Badge variant="secondary">{parentDerivedValue}</Badge>
+            <span className="text-xs text-muted-foreground">Using the parent-derived value</span>
+          </>
+        ) : (
+          <span className="text-sm text-muted-foreground">Not set</span>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const EditableParallelUninomialField = () => {
+  const record = useRecordContext<{
+    id?: string | number;
+    hybrid_category?: string | null;
+  }>();
+  const form = useFormContext();
+  const hybridCategory = useWatch({ name: 'hybrid_category' });
+  const parallelUninomial = useWatch({ name: 'parallel_override_uninomial' });
+  const recordId = record?.id;
+  const { parentDerivedValue, isPending } = useParentDerivedUninomial({
+    recordId,
+    hybridCategory,
+  });
+
+  const hasOverride = Boolean(parallelUninomial && String(parallelUninomial).trim());
+  const matchesParentDerived = Boolean(
+    hasOverride &&
+    parentDerivedValue &&
+    String(parallelUninomial).trim() === parentDerivedValue.trim()
+  );
+  const [showOverrideInput, setShowOverrideInput] = React.useState(
+    !parentDerivedValue || (hasOverride && !matchesParentDerived)
+  );
+  const [stashedOverrideValue, setStashedOverrideValue] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    setShowOverrideInput(!parentDerivedValue || (hasOverride && !matchesParentDerived));
+  }, [hasOverride, matchesParentDerived, parentDerivedValue]);
+
+  React.useEffect(() => {
+    if (hasOverride) {
+      setStashedOverrideValue(String(parallelUninomial).trim());
+    }
+  }, [hasOverride, parallelUninomial]);
+
+  if (!showOverrideInput && parentDerivedValue) {
+    return (
+      <div className="grid gap-2 xl:col-span-2">
+        <div className="flex items-center gap-2 text-sm leading-none font-medium">Parallel uninomial</div>
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex min-h-10 flex-1 flex-wrap items-center gap-2 rounded-xl border border-border bg-background px-3 py-2">
+            <Badge variant="secondary">{parentDerivedValue}</Badge>
+            <span className="text-sm text-muted-foreground">Using the parent-derived value.</span>
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setShowOverrideInput(true);
+              form.setValue('parallel_override_uninomial', stashedOverrideValue ?? null, {
+                shouldDirty: true,
+                shouldTouch: true,
+                shouldValidate: true,
+              });
+            }}
+          >
+            Override
+          </Button>
+        </div>
+        <div className="text-xs text-muted-foreground">
+          Set an override only when the parallel uninomial should differ from the parent-derived value.
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid gap-2 xl:col-span-2">
+      <div className="flex flex-wrap items-start gap-2">
+        <TextInput
+          source="parallel_override_uninomial"
+          label="Parallel uninomial"
+          parse={parseNullableText}
+          format={formatNullableText}
+          className="min-w-[260px] flex-1"
+        />
+        {parentDerivedValue ? (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="mt-7"
+            onClick={() => {
+              const currentValue =
+                typeof parallelUninomial === 'string' ? parallelUninomial.trim() : '';
+              if (currentValue) {
+                setStashedOverrideValue(currentValue);
+              }
+              form.setValue('parallel_override_uninomial', null, {
+                shouldDirty: true,
+                shouldTouch: true,
+                shouldValidate: true,
+              });
+              setShowOverrideInput(false);
+            }}
+          >
+            Use parent
+          </Button>
+        ) : null}
+      </div>
+      <div className="flex flex-wrap items-center gap-2">
+        {isPending ? (
+          <span className="text-xs text-muted-foreground">Loading parent-derived value...</span>
+        ) : parentDerivedValue ? (
+          <>
+            <Badge variant="outline">{parentDerivedValue}</Badge>
+            <span className="text-xs text-muted-foreground">Parent-derived default</span>
+          </>
+        ) : (
+          <span className="text-xs text-muted-foreground">
+            No parent-derived uninomial is available, so this field acts as the parallel fallback.
+          </span>
+        )}
+      </div>
+    </div>
+  );
+};
+
 const ParallelNameOverridesPanel = ({ editable }: { editable?: boolean }) => {
   if (editable) {
     return (
@@ -280,13 +491,8 @@ const ParallelNameOverridesPanel = ({ editable }: { editable?: boolean }) => {
             These fields drive the parallel name engine separately from the current saved taxon-name fields. They are seeded from the current values, but can then diverge safely.
           </p>
         </div>
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <TextInput
-            source="parallel_override_uninomial"
-            label="Parallel uninomial"
-            parse={parseNullableText}
-            format={formatNullableText}
-          />
+        <div className="grid items-start gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <EditableParallelUninomialField />
           <TextInput
             source="parallel_override_specific_epithet"
             label="Parallel specific epithet"
@@ -312,8 +518,8 @@ const ParallelNameOverridesPanel = ({ editable }: { editable?: boolean }) => {
           These fields drive the parallel name engine separately from the current saved taxon-name fields. They are seeded from the current values, but can then diverge safely.
         </p>
       </div>
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <RecordField source="parallel_override_uninomial" label="Parallel uninomial" />
+      <div className="grid items-start gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <ReadOnlyParallelUninomialField />
         <RecordField source="parallel_override_specific_epithet" label="Parallel specific epithet" />
         <RecordField source="parallel_override_infraspecific_epithet" label="Parallel infraspecific epithet" />
       </div>
