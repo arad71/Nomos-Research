@@ -166,6 +166,7 @@ const ParentHybridFields = ({ editable }: { editable?: boolean }) => {
 
   if (editable) {
     const { setValue } = useFormContext<{ is_hybrid?: boolean; hybrid_category?: string | null }>();
+    const isHybrid = useWatch({ name: 'is_hybrid' });
     const hybridCategory = useWatch({ name: 'hybrid_category' });
     const recordId = record?.id;
     const { data: parentRows = [] } = useGetList(
@@ -180,19 +181,44 @@ const ParentHybridFields = ({ editable }: { editable?: boolean }) => {
     const hasMultipleParents = parentRows.length > 1;
 
     React.useEffect(() => {
-      if (!hasMultipleParents) {
+      if (!isHybrid) {
         setValue('hybrid_category', null, { shouldDirty: true, shouldValidate: true });
       }
-    }, [hasMultipleParents, setValue]);
+    }, [isHybrid, setValue]);
 
     React.useEffect(() => {
-      const nextHybridValue = hasMultipleParents || Boolean(hybridCategory);
-      setValue('is_hybrid', nextHybridValue, { shouldDirty: true, shouldValidate: true });
-    }, [hasMultipleParents, hybridCategory, setValue]);
+      if (hasMultipleParents && !isHybrid) {
+        setValue('is_hybrid', true, { shouldDirty: true, shouldValidate: true });
+      }
+    }, [hasMultipleParents, isHybrid, setValue]);
 
     return (
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {hasMultipleParents ? (
+        <SelectInput
+          source="is_hybrid"
+          label="Hybrid"
+          choices={[
+            { id: true, name: 'Yes' },
+            { id: false, name: 'No' },
+          ]}
+          format={(value) => {
+            if (value === true || value === 'true') return true;
+            if (value === false || value === 'false') return false;
+            return value;
+          }}
+          parse={(value) => {
+            if (value === true || value === 'true') return true;
+            if (value === false || value === 'false') return false;
+            return value;
+          }}
+          disabled={hasMultipleParents}
+          helperText={
+            hasMultipleParents
+              ? 'Automatically set to Yes when more than one parent row exists.'
+              : undefined
+          }
+        />
+        {isHybrid ? (
           <SelectInput
             source="hybrid_category"
             label="Hybrid category"
@@ -1222,6 +1248,87 @@ const TaxonNameRelatedSections = ({
           </>
         ) : null}
 
+        {visibleSections.has('parents') ? (
+        <section className="mt-12 space-y-4">
+        <SectionHeader
+          title="Parent names"
+          description="Ordered parent-name rows used to support hybrids and derived uninomial generation during migration."
+          action={
+            editable && recordId ? (
+              <CreateParentNameRowButton recordId={recordId} />
+            ) : undefined
+          }
+        />
+        {editable ? (
+          recordId ? (
+            <ReferenceManyField
+              reference="taxon_name_parents"
+              target="taxon_name_id"
+              sort={{ field: 'sequence', order: 'ASC' }}
+              empty={<EmptyState>No parent-name rows linked to this taxon name yet.</EmptyState>}
+            >
+              <DataTable rowClick={false} bulkActionButtons={false}>
+                <DataTable.Col source="sequence" label="Sequence" />
+                <DataTable.Col label="Parent name">
+                  <ReferenceField source="parent_taxon_name_id" reference="taxon_names" link="show">
+                    <RecordField
+                      label=""
+                      render={renderScientificName}
+                    />
+                  </ReferenceField>
+                </DataTable.Col>
+                <DataTable.Col label="Actions">
+                  <div className="flex items-center gap-2">
+                    <ParentSequenceButtons />
+                    <EditRelatedButton label="Edit parent name row">
+                      <DialogFormPadding>
+                        <TaxonNameParentForm hideTaxonName />
+                      </DialogFormPadding>
+                    </EditRelatedButton>
+                    <DeleteRelatedButton resource="taxon_name_parents" />
+                  </div>
+                </DataTable.Col>
+              </DataTable>
+            </ReferenceManyField>
+          ) : (
+            <EmptyState>Save the taxon name first, then you can add parent-name rows inline here.</EmptyState>
+          )
+        ) : recordId ? (
+          <ReferenceManyField
+            reference="taxon_name_parents"
+            target="taxon_name_id"
+            sort={{ field: 'sequence', order: 'ASC' }}
+            empty={<EmptyState>No parent-name rows linked to this taxon name yet.</EmptyState>}
+          >
+            <DataTable rowClick={false} bulkActionButtons={false}>
+              <DataTable.Col source="sequence" label="Sequence" />
+              <DataTable.Col label="Parent name">
+                <ReferenceField source="parent_taxon_name_id" reference="taxon_names" link={false}>
+                  <RecordField
+                    label=""
+                    render={renderScientificName}
+                  />
+                </ReferenceField>
+              </DataTable.Col>
+            </DataTable>
+          </ReferenceManyField>
+        ) : null}
+        <ParentHybridFields editable={editable} />
+        <div className="flex flex-wrap items-center gap-2 rounded-xl border border-dashed border-border px-4 py-3 text-sm text-muted-foreground">
+          <span>Temporary migration view: compare the legacy `uninomial` and current name outputs with the derived values from ordered parent rows and the parallel name engine.</span>
+          <MigrationHint>
+            Reviewers can use this section to validate whether the new normalized parent model and parallel name engine produce the same result as the current stored taxon-name fields.
+          </MigrationHint>
+        </div>
+        {editable ? (
+          <EditableTaxonNameParentsPreviewByRecord recordId={recordId} />
+        ) : (
+          <TaxonNameParentsPreviewByRecord recordId={recordId} />
+        )}
+        <ParallelNamePreviewPanel recordId={recordId} />
+        </section>
+        ) : null}
+
         {visibleSections.has('authors') ? (
         <section className="mt-12 space-y-4">
         <SectionHeader
@@ -1313,87 +1420,6 @@ const TaxonNameRelatedSections = ({
         ) : (
           <PublicationReadOnlySection />
         )}
-        </section>
-        ) : null}
-
-        {visibleSections.has('parents') ? (
-        <section className="mt-12 space-y-4">
-        <SectionHeader
-          title="Parent names"
-          description="Ordered parent-name rows used to support hybrids and derived uninomial generation during migration."
-          action={
-            editable && recordId ? (
-              <CreateParentNameRowButton recordId={recordId} />
-            ) : undefined
-          }
-        />
-        {editable ? (
-          recordId ? (
-            <ReferenceManyField
-              reference="taxon_name_parents"
-              target="taxon_name_id"
-              sort={{ field: 'sequence', order: 'ASC' }}
-              empty={<EmptyState>No parent-name rows linked to this taxon name yet.</EmptyState>}
-            >
-              <DataTable rowClick={false} bulkActionButtons={false}>
-                <DataTable.Col source="sequence" label="Sequence" />
-                <DataTable.Col label="Parent name">
-                  <ReferenceField source="parent_taxon_name_id" reference="taxon_names" link="show">
-                    <RecordField
-                      label=""
-                      render={renderScientificName}
-                    />
-                  </ReferenceField>
-                </DataTable.Col>
-                <DataTable.Col label="Actions">
-                  <div className="flex items-center gap-2">
-                    <ParentSequenceButtons />
-                    <EditRelatedButton label="Edit parent name row">
-                      <DialogFormPadding>
-                        <TaxonNameParentForm hideTaxonName />
-                      </DialogFormPadding>
-                    </EditRelatedButton>
-                    <DeleteRelatedButton resource="taxon_name_parents" />
-                  </div>
-                </DataTable.Col>
-              </DataTable>
-            </ReferenceManyField>
-          ) : (
-            <EmptyState>Save the taxon name first, then you can add parent-name rows inline here.</EmptyState>
-          )
-        ) : recordId ? (
-          <ReferenceManyField
-            reference="taxon_name_parents"
-            target="taxon_name_id"
-            sort={{ field: 'sequence', order: 'ASC' }}
-            empty={<EmptyState>No parent-name rows linked to this taxon name yet.</EmptyState>}
-          >
-            <DataTable rowClick={false} bulkActionButtons={false}>
-              <DataTable.Col source="sequence" label="Sequence" />
-              <DataTable.Col label="Parent name">
-                <ReferenceField source="parent_taxon_name_id" reference="taxon_names" link={false}>
-                  <RecordField
-                    label=""
-                    render={renderScientificName}
-                  />
-                </ReferenceField>
-              </DataTable.Col>
-            </DataTable>
-          </ReferenceManyField>
-        ) : null}
-        <ParentHybridFields editable={editable} />
-        <div className="flex flex-wrap items-center gap-2 rounded-xl border border-dashed border-border px-4 py-3 text-sm text-muted-foreground">
-          <span>Temporary migration view: compare the legacy `uninomial` and current name outputs with the derived values from ordered parent rows and the parallel name engine.</span>
-          <MigrationHint>
-            Reviewers can use this section to validate whether the new normalized parent model and parallel name engine produce the same result as the current stored taxon-name fields.
-          </MigrationHint>
-        </div>
-        {editable ? (
-          <EditableTaxonNameParentsPreviewByRecord recordId={recordId} />
-        ) : (
-          <TaxonNameParentsPreviewByRecord recordId={recordId} />
-        )}
-        <ParallelNamePreviewPanel recordId={recordId} />
         </section>
         ) : null}
 
