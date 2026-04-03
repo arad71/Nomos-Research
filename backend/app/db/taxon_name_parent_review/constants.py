@@ -12,4 +12,13 @@ HYBRID_CATEGORY = "Hybrid category captured when the queue row was generated"
 REVIEW_NOTES = "Manual reviewer notes"
 REVIEWED_BY = "User who reviewed this queue row"
 REVIEWED_ON = "When this queue row was reviewed"
-
+HIERARCHY_CONFIRMED = "Whether the current linked or candidate parent is confirmed by hierarchy data"
+HIERARCHY_CONFIRMATION_NOTE = "Summary of hierarchy-based confirmation for the current row"
+HAS_HIERARCHY_ROWS = "Whether this taxon name has any active hierarchy rows in Nomos"
+INFRAGENERIC_CONFIRMED = (
+    "Whether a bracketed infrageneric segment in the scientific name matches a "
+    "subgenus signal in Nomos"
+)
+INFRAGENERIC_CONFIRMATION_NOTE = (
+    "Summary of bracketed scientific-name matching against subgenus data"
+)

@@ -191,3 +191,25 @@ class NameStringComponents(BaseModel):
     author: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class TaxonNameParallelPreview(BaseModel):
+    taxon_name_id: int
+    strategy: str
+    notes: list[str] = Field(default_factory=list)
+    parent_taxon_name_ids: list[int] = Field(default_factory=list)
+
+    current_uninomial: Optional[str] = None
+    current_canonical_name: Optional[str] = None
+    current_scientific_name: Optional[str] = None
+    current_formatted_scientific_name: Optional[str] = None
+
+    derived_uninomial: Optional[str] = None
+    derived_canonical_name: Optional[str] = None
+    derived_scientific_name: Optional[str] = None
+    derived_formatted_scientific_name: Optional[str] = None
+
+    matches_current_uninomial: bool = False
+    matches_current_scientific_name: bool = False
+
+    model_config = ConfigDict(from_attributes=True)

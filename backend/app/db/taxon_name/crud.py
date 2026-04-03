@@ -17,6 +17,7 @@ from app.db.taxon_name.infrageneric_names import (
     InfraGenericNames,
 )
 from app.db.taxon_name.model import TaxonName
+from app.db.taxon_name.parallel_name_preview import generate_parallel_name_preview
 from app.db.taxon_rank.model import TaxonRank
 from app.db.user.model import User
 
@@ -218,6 +219,14 @@ class TaxonNameCrud(crud.Crud):
         infrageneric_names = InfraGenericNames.generate_names(taxon_name_id, rows)
 
         return infrageneric_names
+
+    @classmethod
+    def generate_parallel_name_preview(
+        cls,
+        db: orm.Session,
+        taxon_name_id: int,
+    ) -> schema.TaxonNameParallelPreview:
+        return generate_parallel_name_preview(db, taxon_name_id)
 
     @classmethod
     def get_infrageneric_name_query(

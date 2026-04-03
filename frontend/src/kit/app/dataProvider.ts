@@ -66,6 +66,7 @@ const resourceIdMap: Record<string, string> = {
   taxon_name_parents: 'taxon_name_parent_id',
   taxon_name_parent_reviews: 'taxon_name_parent_review_id',
   taxon_names_code: 'taxon_name_id',
+  taxon_names_parallel_name_preview: 'taxon_name_id',
   informal_groups: 'informal_group_id',
   hierarchies: 'hierarchy_id',
   'hierarchies/parents': 'taxon_name_id',
@@ -170,6 +171,12 @@ export const myDataProvider: DataProvider = {
       const url = `${BACKEND_URL}/${resource}/${params.id}`;
       return httpClient(url).then(({ json }: { json: [InfragenericData] }) => ({
         data: { id: params.id, infrageneric_names: json },
+      }));
+    }
+    if (resource === 'taxon_names_parallel_name_preview') {
+      const url = `${BACKEND_URL}/taxon_names/_parallel_name_preview/${params.id}`;
+      return httpClient(url).then(({ json }: { json: Record<string, unknown> }) => ({
+        data: { id: params.id, ...(json ?? {}) },
       }));
     }
     if (resource === 'taxon_names_code') {

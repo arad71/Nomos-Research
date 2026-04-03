@@ -6,6 +6,11 @@ This document proposes a new `taxon_name_parents` model to support hybrid names 
 
 It is intended as a briefing note for the technical team working on the Hybrids PR and related follow-up work.
 
+Related follow-up design note:
+
+- [Parent Name Change Propagation Proposal](./parent-name-change-propagation.md)
+- [Parallel Name Engine Proposal](./parallel-name-engine-proposal.md)
+
 ## Executive Summary
 
 ### Recommendation

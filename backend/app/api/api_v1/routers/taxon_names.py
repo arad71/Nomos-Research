@@ -14,7 +14,12 @@ from app.db.session import get_db
 from app.db.taxon_name.crud import CALCULATE_LOG, TaxonNameCrud
 from app.db.taxon_name.infrageneric_names import InfraGenericNameModel
 from app.db.taxon_name.model import TaxonName as TaxonNameModel
-from app.db.taxon_name.schema import TaxonName, TaxonNameCreate, TaxonNameEdit
+from app.db.taxon_name.schema import (
+    TaxonName,
+    TaxonNameCreate,
+    TaxonNameEdit,
+    TaxonNameParallelPreview,
+)
 from app.db.taxon_rank.model import TaxonRank
 from app.db.user.model import User
 
@@ -55,6 +60,17 @@ async def taxon_infrageneric_name_list(
 ):
     result = TaxonNameCrud.generate_infrageneric_names(db, taxon_name_id)
     return result
+
+
+@r.get(
+    "_parallel_name_preview/{taxon_name_id}",
+    response_model=TaxonNameParallelPreview,
+)
+async def taxon_parallel_name_preview(
+    taxon_name_id: int,
+    db: Session = Depends(get_db),
+):
+    return TaxonNameCrud.generate_parallel_name_preview(db, taxon_name_id)
 
 
 @r.get(

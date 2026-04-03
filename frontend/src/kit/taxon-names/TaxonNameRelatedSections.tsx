@@ -87,6 +87,24 @@ type ParentTaxonRecord = {
   formatted_scientific_name?: string | null;
 };
 
+type ParallelNamePreviewRecord = {
+  id?: string | number;
+  taxon_name_id?: string | number;
+  strategy?: string | null;
+  notes?: string[] | null;
+  current_uninomial?: string | null;
+  current_canonical_name?: string | null;
+  current_scientific_name?: string | null;
+  current_formatted_scientific_name?: string | null;
+  derived_uninomial?: string | null;
+  derived_canonical_name?: string | null;
+  derived_scientific_name?: string | null;
+  derived_formatted_scientific_name?: string | null;
+  matches_current_uninomial?: boolean;
+  matches_current_scientific_name?: boolean;
+  parent_taxon_name_ids?: Array<string | number> | null;
+};
+
 const formatParentPreviewName = (taxon?: ParentTaxonRecord) =>
   taxon?.uninomial?.trim()
   || taxon?.scientific_name?.trim()
@@ -318,6 +336,98 @@ const EditableTaxonNameParentsPreviewByRecord = ({ recordId }: { recordId?: stri
   const hybridCategory = useWatch({ name: 'hybrid_category' });
 
   return <TaxonNameParentsPreviewByRecord recordId={recordId} hybridCategoryOverride={hybridCategory} />;
+};
+
+const ParallelNamePreviewPanel = ({ recordId }: { recordId?: string | number }) => {
+  const { data, isPending, error } = useGetOne<ParallelNamePreviewRecord>(
+    'taxon_names_parallel_name_preview',
+    { id: recordId },
+    { enabled: recordId != null },
+  );
+
+  if (!recordId) {
+    return null;
+  }
+
+  if (isPending) {
+    return (
+      <div className="rounded-xl border border-dashed border-border p-4 text-sm text-muted-foreground">
+        Loading parallel name preview...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-xl border border-dashed border-border p-4 text-sm text-muted-foreground">
+        Unable to load the parallel name preview right now.
+      </div>
+    );
+  }
+
+  if (!data) {
+    return null;
+  }
+
+  const notes = Array.isArray(data.notes) ? data.notes.filter(Boolean) : [];
+
+  return (
+    <div className="rounded-xl border border-border bg-muted/20 p-4">
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="text-sm font-medium">Parallel name engine preview</div>
+        <Badge variant="outline">{formatTitle(data.strategy)}</Badge>
+        {data.matches_current_scientific_name ? (
+          <Badge variant="secondary">Scientific name matches current</Badge>
+        ) : null}
+        {data.matches_current_uninomial ? (
+          <Badge variant="secondary">Uninomial matches current</Badge>
+        ) : null}
+      </div>
+      <div className="mt-3 grid gap-3 md:grid-cols-2">
+        <div className="space-y-1">
+          <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Current scientific name</div>
+          <div className="text-sm">
+            {data.current_formatted_scientific_name ? (
+              <HtmlValue value={data.current_formatted_scientific_name} />
+            ) : (
+              data.current_scientific_name || 'Not set'
+            )}
+          </div>
+        </div>
+        <div className="space-y-1">
+          <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Derived scientific name</div>
+          <div className="text-sm">
+            {data.derived_formatted_scientific_name ? (
+              <HtmlValue value={data.derived_formatted_scientific_name} />
+            ) : (
+              data.derived_scientific_name || 'Unable to derive yet'
+            )}
+          </div>
+        </div>
+        <div className="space-y-1">
+          <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Current canonical name</div>
+          <div className="text-sm">{data.current_canonical_name || 'Not set'}</div>
+        </div>
+        <div className="space-y-1">
+          <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Derived canonical name</div>
+          <div className="text-sm">{data.derived_canonical_name || 'Unable to derive yet'}</div>
+        </div>
+      </div>
+      {notes.length ? (
+        <div className="mt-3 space-y-2">
+          <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Notes</div>
+          <div className="space-y-1 text-sm text-muted-foreground">
+            {notes.map((note) => (
+              <div key={note}>{note}</div>
+            ))}
+          </div>
+        </div>
+      ) : null}
+      <div className="mt-3 text-xs text-muted-foreground">
+        This preview uses the parallel engine and does not replace the current saved name fields.
+      </div>
+    </div>
+  );
 };
 
 const CreateParentNameRowButton = ({ recordId }: { recordId: string | number }) => {
@@ -1273,9 +1383,9 @@ const TaxonNameRelatedSections = ({
         ) : null}
         <ParentHybridFields editable={editable} />
         <div className="flex flex-wrap items-center gap-2 rounded-xl border border-dashed border-border px-4 py-3 text-sm text-muted-foreground">
-          <span>Temporary migration view: compare the legacy `uninomial` with the value derived from ordered parent rows.</span>
+          <span>Temporary migration view: compare the legacy `uninomial` and current name outputs with the derived values from ordered parent rows and the parallel name engine.</span>
           <MigrationHint>
-            Reviewers can use this section to validate whether the new normalized parent model produces the same result as the current legacy field.
+            Reviewers can use this section to validate whether the new normalized parent model and parallel name engine produce the same result as the current stored taxon-name fields.
           </MigrationHint>
         </div>
         {editable ? (
@@ -1283,6 +1393,7 @@ const TaxonNameRelatedSections = ({
         ) : (
           <TaxonNameParentsPreviewByRecord recordId={recordId} />
         )}
+        <ParallelNamePreviewPanel recordId={recordId} />
         </section>
         ) : null}
 

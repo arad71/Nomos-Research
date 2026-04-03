@@ -75,6 +75,36 @@ class TaxonNameParentReview(BaseModel, TableMixin):
         comment=constants.HYBRID_CATEGORY,
         doc=constants.HYBRID_CATEGORY,
     )
+    hierarchy_confirmed = sqlalchemy.Column(
+        sqlalchemy.Boolean,
+        nullable=True,
+        comment=constants.HIERARCHY_CONFIRMED,
+        doc=constants.HIERARCHY_CONFIRMED,
+    )
+    hierarchy_confirmation_note = sqlalchemy.Column(
+        sqlalchemy.String(255),
+        nullable=True,
+        comment=constants.HIERARCHY_CONFIRMATION_NOTE,
+        doc=constants.HIERARCHY_CONFIRMATION_NOTE,
+    )
+    has_hierarchy_rows = sqlalchemy.Column(
+        sqlalchemy.Boolean,
+        nullable=True,
+        comment=constants.HAS_HIERARCHY_ROWS,
+        doc=constants.HAS_HIERARCHY_ROWS,
+    )
+    infrageneric_confirmed = sqlalchemy.Column(
+        sqlalchemy.Boolean,
+        nullable=True,
+        comment=constants.INFRAGENERIC_CONFIRMED,
+        doc=constants.INFRAGENERIC_CONFIRMED,
+    )
+    infrageneric_confirmation_note = sqlalchemy.Column(
+        sqlalchemy.String(255),
+        nullable=True,
+        comment=constants.INFRAGENERIC_CONFIRMATION_NOTE,
+        doc=constants.INFRAGENERIC_CONFIRMATION_NOTE,
+    )
     review_notes = sqlalchemy.Column(
         sqlalchemy.String(1000),
         nullable=True,
@@ -108,4 +138,3 @@ class TaxonNameParentReview(BaseModel, TableMixin):
         ),
         {"comment": constants.TABLE_DESCRIPTION},
     )
-

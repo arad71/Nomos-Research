@@ -92,13 +92,6 @@ export const adminNavSections: AdminNavSection[] = [
         action: 'list',
       },
       {
-        to: '/taxon_name_parent_reviews',
-        label: 'Parent Review Queue',
-        icon: <RuleIcon fontSize="small" />,
-        resource: 'taxon_name_parent_reviews',
-        action: 'list',
-      },
-      {
         to: '/kingdoms',
         label: 'Kingdoms',
         icon: <FiberManualRecordIcon fontSize="small" />,
@@ -181,6 +174,13 @@ export const adminNavSections: AdminNavSection[] = [
         label: 'Users',
         icon: <ShieldOutlinedIcon fontSize="small" />,
         resource: 'users',
+        action: 'list',
+      },
+      {
+        to: '/taxon_name_parent_reviews',
+        label: 'Parent Review Queue',
+        icon: <RuleIcon fontSize="small" />,
+        resource: 'taxon_name_parent_reviews',
         action: 'list',
       },
     ],

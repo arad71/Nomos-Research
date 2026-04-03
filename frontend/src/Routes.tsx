@@ -134,6 +134,14 @@ export const Routes: FC = () => {
           element={withAccess('taxon_name_parent_reviews', 'list', <TaxonNameParentReviewsPage />)}
         />
         <Route
+          path="/taxon_name_parent_reviews/:id"
+          element={<Navigate to="/taxon_name_parent_reviews" replace />}
+        />
+        <Route
+          path="/taxon_name_parent_reviews/:id/show"
+          element={<Navigate to="/taxon_name_parent_reviews" replace />}
+        />
+        <Route
           path="/taxon_names_code"
           element={withAccess('taxon_names', 'list', <TaxonNamesCodePage />)}
         />
