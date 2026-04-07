@@ -1,6 +1,7 @@
 [tool.poetry]
 name = "Nomos"
 version = "2.0.7"
+requires-python = ">=3.12"
 description = "Nomos - Taxonomic Names Management Tool"
 authors = [
     "Bri Williams <bri.williams@gaiaresources.com.au>",
