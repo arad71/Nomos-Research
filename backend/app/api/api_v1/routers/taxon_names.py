@@ -72,9 +72,10 @@ async def taxon_infrageneric_name_list(
 )
 async def taxon_parallel_name_preview(
     taxon_name_id: int,
+    strict: bool = False,
     db: Session = Depends(get_db),
 ):
-    return TaxonNameCrud.generate_parallel_name_preview(db, taxon_name_id)
+    return TaxonNameCrud.generate_parallel_name_preview(db, taxon_name_id, strict=strict)
 
 
 @r.get(

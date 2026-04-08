@@ -192,6 +192,8 @@ class NameStringComponents(BaseModel):
     rank_abbreviation: Optional[str] = None
     infraspecific_epithet: Optional[str] = None
     author: Optional[str] = None
+    is_hybrid_formula: bool = False
+    hybrid_marker_on_specific_epithet: bool = False
 
     model_config = ConfigDict(from_attributes=True)
 

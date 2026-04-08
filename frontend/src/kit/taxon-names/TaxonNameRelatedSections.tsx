@@ -509,10 +509,14 @@ const ParallelNameOverridesPanel = ({ editable }: { editable?: boolean }) => {
   );
 };
 
-const ParallelNamePreviewPanel = ({ recordId }: { recordId?: string | number }) => {
+const ParallelNamePreviewPanel = ({
+  recordId,
+}: {
+  recordId?: string | number;
+}) => {
   const { data, isPending, error } = useGetOne<ParallelNamePreviewRecord>(
     'taxon_names_parallel_name_preview',
-    { id: recordId },
+    { id: recordId, meta: { strict: true } },
     { enabled: recordId != null },
   );
 
@@ -544,6 +548,7 @@ const ParallelNamePreviewPanel = ({ recordId }: { recordId?: string | number }) 
 
   return (
     <div className="rounded-xl border border-sky-200 bg-sky-50/80 p-4 dark:border-sky-900/60 dark:bg-sky-950/20">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">
         <div className="text-sm font-medium">Parallel name engine preview</div>
         <Badge className="border-sky-300 bg-sky-100 text-sky-900 hover:bg-sky-100 dark:border-sky-800 dark:bg-sky-900/50 dark:text-sky-100">
@@ -559,6 +564,10 @@ const ParallelNamePreviewPanel = ({ recordId }: { recordId?: string | number }) 
             Uninomial matches current
           </Badge>
         ) : null}
+        </div>
+        <Badge className="border-sky-300 bg-sky-100 text-sky-900 hover:bg-sky-100 dark:border-sky-800 dark:bg-sky-900/50 dark:text-sky-100">
+          Strict parallel mode
+        </Badge>
       </div>
       <div className="mt-3 grid gap-3 md:grid-cols-2">
         <div className="space-y-1">
@@ -607,10 +616,14 @@ const ParallelNamePreviewPanel = ({ recordId }: { recordId?: string | number }) 
   );
 };
 
-const DerivedScientificNameSummaryField = ({ recordId }: { recordId?: string | number }) => {
+const DerivedScientificNameSummaryField = ({
+  recordId,
+}: {
+  recordId?: string | number;
+}) => {
   const { data, isPending } = useGetOne<ParallelNamePreviewRecord>(
     'taxon_names_parallel_name_preview',
-    { id: recordId as string | number },
+    { id: recordId as string | number, meta: { strict: true } },
     { enabled: recordId != null },
   );
 
@@ -1226,7 +1239,9 @@ const TaxonNameRelatedSections = ({
           <>
             {visibleSections.has('parents') ? (
               <section className="space-y-4">
-                <ParallelNamePreviewPanel recordId={recordId} />
+                <ParallelNamePreviewPanel
+                  recordId={recordId}
+                />
               </section>
             ) : null}
 
@@ -1247,7 +1262,9 @@ const TaxonNameRelatedSections = ({
                     <HtmlValue value={taxon.formatted_scientific_name} />
                   )}
                 />
-                <DerivedScientificNameSummaryField recordId={recordId} />
+                <DerivedScientificNameSummaryField
+                  recordId={recordId}
+                />
               </div>
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                 <RecordField label="Kingdom" source="kingdom_id">
@@ -1373,7 +1390,9 @@ const TaxonNameRelatedSections = ({
           <>
             {editable ? (
               <section className="space-y-4">
-                <ParallelNamePreviewPanel recordId={recordId} />
+                <ParallelNamePreviewPanel
+                  recordId={recordId}
+                />
               </section>
             ) : null}
 

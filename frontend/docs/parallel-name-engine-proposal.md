@@ -4,6 +4,10 @@
 
 This document proposes a parallel name-generation engine for Nomos.
 
+Current rule reference:
+
+- [Parallel Name Rules Matrix](./parallel-name-rules-matrix.md)
+
 The goal is to build the new parent-aware and hierarchy-aware naming logic alongside
 the current system, rather than replacing the current calculation path immediately.
 

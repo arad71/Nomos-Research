@@ -183,7 +183,10 @@ export const myDataProvider: DataProvider = {
       }));
     }
     if (resource === 'taxon_names_parallel_name_preview') {
-      const url = `${BACKEND_URL}/taxon_names_parallel_name_preview/${params.id}`;
+      const strict = params?.meta && typeof params.meta === 'object' && 'strict' in params.meta
+        ? Boolean((params.meta as { strict?: boolean }).strict)
+        : false;
+      const url = `${BACKEND_URL}/taxon_names_parallel_name_preview/${params.id}${strict ? '?strict=true' : ''}`;
       return httpClient(url).then(({ json }: { json: Record<string, unknown> }) => ({
         data: { id: params.id, ...(json ?? {}) },
       }));

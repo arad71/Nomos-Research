@@ -22,6 +22,26 @@ from app.db.taxon_rank.model import TaxonRank
 
 READ_BATCH_SIZE_DEFAULT = 1000
 BRACKETED_INFRAGENERIC_RE = re.compile(r"^\S+\s+\(([^)]+)\)\s+\S+")
+INFRAGENERIC_PARENT_LINK_RANK_NAMES = {
+    "subgenus",
+    "section",
+    "subsection",
+    "series",
+    "subseries",
+}
+ALLOWED_PARENT_RANKS_BY_CHILD_RANK = {
+    "species": {"genus", "subgenus"},
+    "subspecies": {"genus", "species", "subgenus"},
+    "variety": {"genus", "species", "subgenus"},
+    "subvariety": {"genus", "species", "subgenus"},
+    "form": {"genus", "species", "subgenus"},
+    "subform": {"genus", "species", "subgenus"},
+    "subgenus": {"genus"},
+    "section": {"genus"},
+    "subsection": {"genus"},
+    "series": {"genus"},
+    "subseries": {"genus"},
+}
 PARENT_REVIEW_IN_SCOPE_RANK_NAMES = {
     "species",
     "subspecies",
@@ -30,7 +50,7 @@ PARENT_REVIEW_IN_SCOPE_RANK_NAMES = {
     "form",
     "subform",
     "hybrid",
-}
+} | INFRAGENERIC_PARENT_LINK_RANK_NAMES
 
 
 @dataclass
@@ -200,6 +220,84 @@ def run_backfill(
                     log_progress(stats, log_every)
                     continue
 
+                hierarchy_direct_parents = (
+                    filter_valid_parent_candidates(
+                        context=context,
+                        taxon_name=taxon_name,
+                        matches=find_direct_hierarchy_parent_candidates(
+                            context=context,
+                            taxon_name=taxon_name,
+                        ),
+                    )
+                    if is_infrageneric_parent_link_rank(context, taxon_name)
+                    else []
+                )
+                if len(hierarchy_direct_parents) == 1:
+                    parent = hierarchy_direct_parents[0]
+                    stats.created += 1
+
+                    if dry_run:
+                        status, reason = classify_candidate_match_state(
+                            context=context,
+                            taxon_name=taxon_name,
+                            derived_uninomial=parent.uninomial,
+                            fallback_reason="auto_matched_infrageneric_hierarchy_parent",
+                            hierarchy_confirmed=True,
+                            infrageneric_confirmed=True,
+                        )
+                        if upsert_review_row(
+                            db=db,
+                            context=context,
+                            taxon_name=taxon_name,
+                            status=status,
+                            reason=reason,
+                            candidate_parent_ids=[parent.taxon_name_id],
+                            candidate_parent_names=[parent.uninomial or parent.scientific_name or ""],
+                            derived_uninomial=parent.uninomial,
+                            hierarchy_confirmed=True,
+                            hierarchy_confirmation_note="Matched direct hierarchy parent for infrageneric rank",
+                            has_hierarchy_rows=has_hierarchy_rows(
+                                context=context,
+                                taxon_name_id=taxon_name.taxon_name_id,
+                            ),
+                            infrageneric_confirmed=True,
+                            infrageneric_confirmation_note="Linked direct hierarchy parent for infrageneric rank",
+                        ):
+                            since_commit = maybe_commit(
+                                db=db,
+                                dry_run=dry_run,
+                                commit_every=commit_every,
+                                since_commit=since_commit + 1,
+                            )
+                        log_progress(stats, log_every)
+                        continue
+
+                    parent_row = TaxonNameParent(
+                        taxon_name_id=taxon_name.taxon_name_id,
+                        parent_taxon_name_id=parent.taxon_name_id,
+                        sequence=1,
+                        created_by=taxon_name.created_by,
+                        updated_by=taxon_name.updated_by,
+                    )
+                    db.add(parent_row)
+                    db.flush()
+                    context.active_parent_rows_by_taxon_id[taxon_name.taxon_name_id].append(parent_row)
+                    wrote_review = refresh_review_row_from_existing_parents(
+                        db=db,
+                        context=context,
+                        taxon_name=taxon_name,
+                        active_parent_rows=context.active_parent_rows_by_taxon_id[taxon_name.taxon_name_id],
+                        fallback_reason="auto_matched_infrageneric_hierarchy_parent",
+                    )
+                    since_commit = maybe_commit(
+                        db=db,
+                        dry_run=dry_run,
+                        commit_every=commit_every,
+                        since_commit=since_commit + 1 + (1 if wrote_review else 0),
+                    )
+                    log_progress(stats, log_every)
+                    continue
+
                 uninomial = (taxon_name.uninomial or "").strip()
                 if not uninomial:
                     stats.skipped_blank += 1
@@ -239,6 +337,7 @@ def run_backfill(
 
                     if dry_run:
                         status, reason = classify_candidate_match_state(
+                            context=context,
                             taxon_name=taxon_name,
                             derived_uninomial=parent.uninomial,
                             fallback_reason="auto_matched_infrageneric_parent",
@@ -300,10 +399,14 @@ def run_backfill(
                     log_progress(stats, log_every)
                     continue
 
-                hierarchy_matches = find_hierarchy_candidate_parents(
+                hierarchy_matches = filter_valid_parent_candidates(
                     context=context,
-                    taxon_name_id=taxon_name.taxon_name_id,
-                    uninomial=uninomial,
+                    taxon_name=taxon_name,
+                    matches=find_hierarchy_candidate_parents(
+                        context=context,
+                        taxon_name_id=taxon_name.taxon_name_id,
+                        uninomial=uninomial,
+                    ),
                 )
                 if len(hierarchy_matches) == 1:
                     parent = hierarchy_matches[0]
@@ -315,6 +418,7 @@ def run_backfill(
                             taxon_name=taxon_name,
                         )
                         status, reason = classify_candidate_match_state(
+                            context=context,
                             taxon_name=taxon_name,
                             derived_uninomial=parent.uninomial,
                             fallback_reason="auto_matched_hierarchy_first",
@@ -377,7 +481,13 @@ def run_backfill(
                 matches = (
                     hierarchy_matches
                     if len(hierarchy_matches) > 1
-                    else context.candidate_matches_by_taxon_id.get(taxon_name.taxon_name_id, [])
+                    else filter_valid_parent_candidates(
+                        context=context,
+                        taxon_name=taxon_name,
+                        matches=context.candidate_matches_by_taxon_id.get(
+                            taxon_name.taxon_name_id, []
+                        ),
+                    )
                 )
 
                 if not matches:
@@ -411,6 +521,11 @@ def run_backfill(
                         taxon_name_id=taxon_name.taxon_name_id,
                         matches=matches,
                     )
+                    hierarchy_confirmed_matches = filter_valid_parent_candidates(
+                        context=context,
+                        taxon_name=taxon_name,
+                        matches=hierarchy_confirmed_matches,
+                    )
                     if len(hierarchy_confirmed_matches) == 1:
                         parent = hierarchy_confirmed_matches[0]
                         stats.created += 1
@@ -421,6 +536,7 @@ def run_backfill(
                                 taxon_name=taxon_name,
                             )
                             status, reason = classify_candidate_match_state(
+                                context=context,
                                 taxon_name=taxon_name,
                                 derived_uninomial=parent.uninomial,
                                 fallback_reason="auto_matched_hierarchy_confirmed",
@@ -485,6 +601,11 @@ def run_backfill(
                         taxon_name=taxon_name,
                         matches=hierarchy_confirmed_matches or matches,
                     )
+                    reduced_matches = filter_valid_parent_candidates(
+                        context=context,
+                        taxon_name=taxon_name,
+                        matches=reduced_matches,
+                    )
                     if len(reduced_matches) == 1:
                         parent = reduced_matches[0]
                         stats.created += 1
@@ -500,6 +621,7 @@ def run_backfill(
                                 taxon_name=taxon_name,
                             )
                             status, reason = classify_candidate_match_state(
+                                context=context,
                                 taxon_name=taxon_name,
                                 derived_uninomial=parent.uninomial,
                                 fallback_reason=reduction_reason,
@@ -615,6 +737,7 @@ def run_backfill(
 
                 if dry_run:
                     status, reason = classify_candidate_match_state(
+                        context=context,
                         taxon_name=taxon_name,
                         derived_uninomial=parent.uninomial,
                         fallback_reason="auto_matched_unique_uninomial",
@@ -1037,6 +1160,7 @@ def classify_existing_parent_state(
 
 def classify_candidate_match_state(
     *,
+    context: BatchContext,
     taxon_name: TaxonName,
     derived_uninomial: str | None,
     fallback_reason: str,
@@ -1045,6 +1169,9 @@ def classify_candidate_match_state(
 ) -> tuple[str, str]:
     legacy_uninomial = (taxon_name.uninomial or "").strip()
     derived_value = (derived_uninomial or "").strip()
+
+    if is_infrageneric_parent_link_rank(context, taxon_name):
+        return "matched_needs_review", fallback_reason
 
     if legacy_uninomial and derived_value and legacy_uninomial != derived_value:
         if infrageneric_confirmed:
@@ -1064,13 +1191,82 @@ def is_rank_out_of_scope_for_parent_review(
     context: BatchContext,
     taxon_name: TaxonName,
 ) -> bool:
-    rank = context.taxon_ranks_by_id.get(taxon_name.rank_id)
-    if not rank:
-        return False
-    rank_name = (rank.rank_name or "").strip().lower()
+    rank_name = get_rank_name(context, taxon_name)
     if not rank_name:
         return False
     return rank_name not in PARENT_REVIEW_IN_SCOPE_RANK_NAMES
+
+
+def get_rank_name(
+    context: BatchContext,
+    taxon_name: TaxonName,
+) -> str:
+    rank = context.taxon_ranks_by_id.get(taxon_name.rank_id)
+    if not rank:
+        return ""
+    return (rank.rank_name or "").strip().lower()
+
+
+def parent_rank_allowed_for_backfill(
+    *,
+    child_rank_name: str,
+    parent_rank_name: str,
+) -> bool:
+    allowed_parent_ranks = ALLOWED_PARENT_RANKS_BY_CHILD_RANK.get(child_rank_name)
+    if allowed_parent_ranks is None:
+        return False
+    return parent_rank_name in allowed_parent_ranks
+
+
+def filter_valid_parent_candidates(
+    *,
+    context: BatchContext,
+    taxon_name: TaxonName,
+    matches: list[TaxonName],
+) -> list[TaxonName]:
+    child_rank_name = get_rank_name(context, taxon_name)
+    if not child_rank_name:
+        return matches
+
+    valid_matches: list[TaxonName] = []
+    seen_ids: set[int] = set()
+    for parent in matches:
+        if not parent or parent.taxon_name_id in seen_ids:
+            continue
+        parent_rank_name = get_rank_name(context, parent)
+        if not parent_rank_allowed_for_backfill(
+            child_rank_name=child_rank_name,
+            parent_rank_name=parent_rank_name,
+        ):
+            continue
+        valid_matches.append(parent)
+        seen_ids.add(parent.taxon_name_id)
+    return valid_matches
+
+
+def is_infrageneric_parent_link_rank(
+    context: BatchContext,
+    taxon_name: TaxonName,
+) -> bool:
+    return get_rank_name(context, taxon_name) in INFRAGENERIC_PARENT_LINK_RANK_NAMES
+
+
+def find_direct_hierarchy_parent_candidates(
+    *,
+    context: BatchContext,
+    taxon_name: TaxonName,
+) -> list[TaxonName]:
+    matches: list[TaxonName] = []
+    seen_ids: set[int] = set()
+    for row in context.active_hierarchies_by_taxon_id.get(taxon_name.taxon_name_id, []):
+        if not row.parent_nid or row.parent_nid == taxon_name.taxon_name_id:
+            continue
+        parent = context.taxon_names_by_id.get(row.parent_nid)
+        if not parent or parent.taxon_name_id in seen_ids:
+            continue
+        matches.append(parent)
+        seen_ids.add(parent.taxon_name_id)
+    return matches
 
 
 def reduce_ambiguous_matches(

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from typing import List, Optional
 
 import loguru
@@ -31,6 +32,7 @@ INFRAGENUS_WITH_RANK = "Infragenus with rank"
 CANONICAL = "Canonical"
 
 CANONICAL_WITHOUT_RANK = "Canonical without rank"
+HYBRID_FORMULA_PREFIX_RE = re.compile(r"^(?:×|x|X)\s+")
 
 
 class TaxonNameCrud(crud.Crud):
@@ -62,6 +64,92 @@ class TaxonNameCrud(crud.Crud):
             values.parallel_override_specific_epithet = values.specific_epithet
         if not getattr(values, "parallel_override_infraspecific_epithet", None):
             values.parallel_override_infraspecific_epithet = values.infraspecific_epithet
+
+    @staticmethod
+    def _normalize_hybrid_formula_prefix(value: str | None) -> str | None:
+        if value is None:
+            return None
+        normalized = value.strip()
+        if not normalized:
+            return None
+        if HYBRID_FORMULA_PREFIX_RE.match(normalized):
+            return HYBRID_FORMULA_PREFIX_RE.sub("", normalized, count=1).strip() or None
+        return normalized
+
+    @staticmethod
+    def _has_hybrid_formula_prefix(value: str | None) -> bool:
+        if value is None:
+            return False
+        return bool(HYBRID_FORMULA_PREFIX_RE.match(value.strip()))
+
+    @classmethod
+    def _normalize_hybrid_formula_fields(cls, values) -> None:
+        original_uninomial = getattr(values, "uninomial", None)
+        normalized_uninomial = cls._normalize_hybrid_formula_prefix(original_uninomial)
+        if normalized_uninomial is not None:
+            values.uninomial = normalized_uninomial
+
+        original_parallel_uninomial = getattr(values, "parallel_override_uninomial", None)
+        normalized_parallel_uninomial = cls._normalize_hybrid_formula_prefix(
+            original_parallel_uninomial
+        )
+        if normalized_parallel_uninomial is not None:
+            values.parallel_override_uninomial = normalized_parallel_uninomial
+
+        original_specific_epithet = getattr(values, "specific_epithet", None)
+        original_parallel_specific_epithet = getattr(
+            values, "parallel_override_specific_epithet", None
+        )
+
+        has_uninomial_hybrid_prefix = any(
+            [
+                cls._has_hybrid_formula_prefix(original_uninomial),
+                cls._has_hybrid_formula_prefix(original_parallel_uninomial),
+            ]
+        )
+        has_specific_hybrid_prefix = any(
+            [
+                cls._has_hybrid_formula_prefix(original_specific_epithet),
+                cls._has_hybrid_formula_prefix(original_parallel_specific_epithet),
+            ]
+        )
+
+        if has_uninomial_hybrid_prefix or has_specific_hybrid_prefix:
+            values.is_hybrid = True
+            if has_uninomial_hybrid_prefix:
+                values.hybrid_category = schema.enums.HybridCategory.hybrid_formula
+            elif not getattr(values, "hybrid_category", None):
+                values.hybrid_category = schema.enums.HybridCategory.named_hybrid
+
+        if (
+            getattr(values, "is_hybrid", False)
+            and getattr(getattr(values, "hybrid_category", None), "value", None)
+            == schema.enums.HybridCategory.hybrid_formula.value
+            and normalized_uninomial
+        ):
+            if (
+                original_parallel_uninomial is None
+                or cls._has_hybrid_formula_prefix(original_parallel_uninomial)
+            ):
+                values.parallel_override_uninomial = normalized_uninomial
+        elif (
+            getattr(values, "is_hybrid", False)
+            and getattr(getattr(values, "hybrid_category", None), "value", None)
+            == schema.enums.HybridCategory.named_hybrid.value
+        ):
+            normalized_parallel_specific_epithet = cls._normalize_hybrid_formula_prefix(
+                original_parallel_specific_epithet
+            )
+            normalized_specific_epithet = cls._normalize_hybrid_formula_prefix(
+                original_specific_epithet
+            )
+            if (
+                original_parallel_specific_epithet is None
+                or cls._has_hybrid_formula_prefix(original_parallel_specific_epithet)
+            ) and normalized_specific_epithet:
+                values.parallel_override_specific_epithet = normalized_specific_epithet
+            elif normalized_parallel_specific_epithet:
+                values.parallel_override_specific_epithet = normalized_parallel_specific_epithet
 
     @staticmethod
     def _derive_parent_uninomial_value(db: orm.Session, taxon_name_id: int) -> str | None:
@@ -144,6 +232,7 @@ class TaxonNameCrud(crud.Crud):
         db_session.close()
         ```
         """
+        cls._normalize_hybrid_formula_fields(taxon_name)
         cls._seed_parallel_name_fields_from_current(taxon_name)
         create_data = taxon_name.dict(exclude_unset=True)
         delattr(taxon_name, "classification_system_ids")
@@ -218,6 +307,7 @@ class TaxonNameCrud(crud.Crud):
         taxon_name_edit)
         """
         update_data = taxon_name.dict(exclude_unset=True)
+        cls._normalize_hybrid_formula_fields(taxon_name)
         if "classification_system_ids" in update_data:
             classification_system_ids = update_data["classification_system_ids"]
             db.query(InformalGroup).filter(
@@ -290,8 +380,9 @@ class TaxonNameCrud(crud.Crud):
         cls,
         db: orm.Session,
         taxon_name_id: int,
+        strict: bool = False,
     ) -> schema.TaxonNameParallelPreview:
-        return generate_parallel_name_preview(db, taxon_name_id)
+        return generate_parallel_name_preview(db, taxon_name_id, strict=strict)
 
     @classmethod
     def get_infrageneric_name_query(

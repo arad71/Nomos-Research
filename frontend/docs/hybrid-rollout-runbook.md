@@ -185,6 +185,143 @@ Notes:
 - `--only-unresolved` will not touch rows already approved as `resolved`
 - `--read-batch-size 250` is the safer operational value for reruns
 
+## Long-Term Cleanup Items
+
+These are not blockers for the current rollout, but they should remain on the
+cleanup plan so they are not forgotten.
+
+### Malformed bracketed component cleanup
+
+Some legacy records appear to store a bracketed infrageneric component in the
+wrong field, especially where:
+
+- `specific_epithet` contains a bracketed value such as `(Aspidosiphon)`
+- the scientific name also contains that same bracketed component
+
+In the strict engine this is now handled defensively in runtime logic, but the
+underlying data should still be cleaned later so that:
+
+- the bracketed infrageneric component is not stored inside `specific_epithet`
+- the actual species epithet remains in the species-epithet slot
+- the scientific-name overlay is the only place where the bracketed component is
+  introduced
+
+Suggested future cleanup scope:
+
+- identify records where `specific_epithet` is bracketed
+- compare against the stored bracketed scientific-name component
+- move those records to the correct structural field pattern under a controlled
+  review process
+
+### Stale current-name refresh
+
+Some current stored names appear to be stale relative to the underlying citation
+author ordering or other current source fields.
+
+Suggested future cleanup scope:
+
+- identify records where the current stored `scientific_name` does not match the
+  current calculated author ordering
+- treat these as current-name refresh candidates rather than strict-engine logic
+  failures
+- refresh them in bulk only after confirming the recalculation source of truth
+
+### Author-only mismatch review
+
+The audit now separates author-only scientific mismatches from core structural
+name mismatches.
+
+Suggested future cleanup scope:
+
+- review author-only mismatch records as a separate class
+- decide whether they should be bulk-refreshed from citation ordering
+- avoid treating them as parent-link or hybrid-rule failures
+
+### Formula and group-label cleanup
+
+Some names contain literal group markers or bracketed group labels, such as:
+
+- `[Pytinaea group] ...`
+- `"GROUP"` names
+
+Suggested future cleanup scope:
+
+- identify these records as a special stored-name class
+- confirm whether they should remain stored special cases
+- or define a more explicit model for them if they need structured generation
+
+### Informal genus-only infraspecific placeholder review
+
+Some infraspecific names follow a genus-only pattern such as:
+
+- `Dodonaea J.G.West subsp. sinuolata`
+
+These are now handled in strict runtime logic, but they should still be reviewed
+as a distinct data class.
+
+Suggested future cleanup scope:
+
+- identify genus-only infraspecific placeholder patterns
+- confirm whether they should remain stored special cases
+- or whether any deeper structural cleanup is appropriate
+
+### Same-genus hybrid formula review
+
+The strict engine now compacts same-genus hybrid formulas so the shared genus is
+not repeated unnecessarily on the second side.
+
+Suggested future cleanup scope:
+
+- confirm that this compact form is the preferred presentation in all relevant
+  stakeholder groups
+- identify any exception cases where repeating the genus on both sides should be
+  retained
+
+### Parent-link semantic review for special formula names
+
+Some names are taxonomically related to a parent but should not necessarily use
+that parent as a composition parent in the strict derived-name engine.
+
+Suggested future cleanup scope:
+
+- identify special formula-like names where a simple single parent is not a
+  complete composition model
+- review whether those names should use:
+  - no parent link
+  - multiple parent links
+  - or a stored special-case rule instead
+
+### Residual manual-intervention queue
+
+The strict audit is now down to a very small set of true core-name mismatches.
+
+Suggested future cleanup scope:
+
+- keep a controlled list of the remaining core mismatches separate from the
+  larger author-only refresh bucket
+- review those residual records one by one with the herbarium team where hybrid
+  rules, literal labels, or parent-link interpretation still need a decision
+- record whether each case is best resolved by:
+  - data cleanup
+  - parent-link cleanup
+  - hybrid-rule refinement
+  - or an accepted stored special case
+
+### Current-name regeneration review
+
+Some remaining differences are no longer structural naming failures, but signs
+that the current stored `scientific_name` may not have been regenerated after
+source changes such as citation author reordering.
+
+Suggested future cleanup scope:
+
+- define when a current name should be bulk-regenerated from the current source
+  fields
+- separate this from strict-engine QA so stale current data does not look like a
+  rule failure
+- document the operational process for rerunning regeneration safely in staging
+  and production
+
 ## Staging Validation Checklist
 
 After the backfill completes, validate the following in staging.

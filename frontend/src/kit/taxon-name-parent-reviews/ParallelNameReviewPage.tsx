@@ -232,7 +232,10 @@ const ParallelNameReviewPage = () => {
     setPreviewLoading(true);
     Promise.all(
       taxonIds.map(async (taxonId) => {
-        const response = await dataProvider.getOne('taxon_names_parallel_name_preview', { id: taxonId });
+        const response = await dataProvider.getOne('taxon_names_parallel_name_preview', {
+          id: taxonId,
+          meta: { strict: true },
+        });
         return [String(taxonId), response.data as ParallelPreview] as const;
       }),
     )
@@ -400,7 +403,7 @@ const ParallelNameReviewPage = () => {
       <div className="space-y-2">
         <h1 className="text-3xl font-semibold tracking-tight">Parallel Name Review</h1>
         <p className="max-w-3xl text-sm text-muted-foreground">
-          Compare current stored names with the parallel name engine across the taxon-name register, page by page.
+          Compare current stored names with the strict parallel name engine across the taxon-name register, page by page.
         </p>
       </div>
 
@@ -473,6 +476,9 @@ const ParallelNameReviewPage = () => {
             </label>
           </div>
           <div className="flex flex-wrap gap-4">
+            <Badge variant="outline" className="self-center">
+              Strict parallel mode
+            </Badge>
             <label className="flex items-center gap-2 text-sm text-foreground">
               <input
                 type="checkbox"

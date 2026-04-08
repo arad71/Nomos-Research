@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from itertools import groupby
 from operator import attrgetter
 from typing import Optional
@@ -12,9 +13,13 @@ import app.db.taxon_name.schema as schema
 from app.db.author import model as author_model
 from app.db.citation.enums import AuthorType
 from app.db.taxon_name import model
+from app.db.taxon_name.enums import HybridCategory
 from app.db.taxon_rank.enums import RankAbbreviationVals
 
 from ..citation import enums
+
+
+HYBRID_FORMULA_PREFIX_RE = re.compile(r"^(?:×|x|X)\s+")
 
 
 def calculate_fields(
@@ -63,20 +68,10 @@ def calculate_name_fields(target: model.TaxonName):
     and the author as parameters.
     """
     canonical_parts = get_name_components(target)
-    target.canonical_name = filter_join(
-        [
-            canonical_parts.uninomial,
-            canonical_parts.specific_epithet,
-            canonical_parts.rank_abbreviation,
-            canonical_parts.infraspecific_epithet,
-        ]
-    )
-    target.canonical_name_without_rank = filter_join(
-        [
-            canonical_parts.uninomial,
-            canonical_parts.specific_epithet,
-            canonical_parts.infraspecific_epithet,
-        ]
+    target.canonical_name = calculate_canonical_name_string(canonical_parts)
+    target.canonical_name_without_rank = calculate_canonical_name_string(
+        canonical_parts,
+        include_rank=False,
     )
     if any([target.canonical_name, target.author]):
         target.scientific_name = calculate_scientific_name_string(
@@ -110,10 +105,23 @@ def calculate_scientific_name_string(
     if not isinstance(components, schema.NameStringComponents):
         raise TypeError("components must be an instance of NameStringComponents")
     parts = []
-    for field in ["uninomial", "specific_epithet"]:
-        value = components.__getattribute__(field)
-        if value:
-            parts.append(italicize_name(value) if italicize else value)
+    uninomial = format_uninomial_for_display(
+        components.uninomial,
+        is_hybrid_formula=(
+            components.is_hybrid_formula
+            and not components.hybrid_marker_on_specific_epithet
+        ),
+        italicize=italicize,
+    )
+    if uninomial:
+        parts.append(uninomial)
+    specific_epithet = format_specific_epithet_for_display(
+        components.specific_epithet,
+        hybrid_marker_on_specific_epithet=components.hybrid_marker_on_specific_epithet,
+        italicize=italicize,
+    )
+    if specific_epithet:
+        parts.append(specific_epithet)
     infraspecific_epithet = (
         italicize_name(components.infraspecific_epithet)
         if italicize
@@ -162,7 +170,7 @@ def get_name_components(
     the canonical name for TaxonName objects in the Plantae or Fungi kingdoms.
     """
     vals = schema.NameStringComponents()
-    vals.uninomial = target.uninomial
+    vals.uninomial = strip_hybrid_formula_prefix(target.uninomial)
     vals.specific_epithet = target.specific_epithet
     if include_rank and target.kingdom_name in (
         constants.PLANTAE_KINGDOM_NAME,
@@ -172,7 +180,86 @@ def get_name_components(
             vals.rank_abbreviation = RankAbbreviationVals[target.taxon_rank.rank_abbrev]
     vals.infraspecific_epithet = target.infraspecific_epithet
     vals.author = target.author
+    hybrid_category_value = getattr(getattr(target, "hybrid_category", None), "value", None)
+    vals.is_hybrid_formula = (
+        bool(getattr(target, "is_hybrid", False))
+        and hybrid_category_value == HybridCategory.hybrid_formula.value
+    )
     return vals
+
+
+def strip_hybrid_formula_prefix(value: str | None) -> str | None:
+    if value is None:
+        return None
+    normalized = value.strip()
+    if not normalized:
+        return None
+    normalized = HYBRID_FORMULA_PREFIX_RE.sub("", normalized, count=1).strip()
+    return normalized or None
+
+
+def format_uninomial_for_display(
+    uninomial: str | None,
+    *,
+    is_hybrid_formula: bool = False,
+    italicize: bool = False,
+) -> str | None:
+    normalized_uninomial = strip_hybrid_formula_prefix(uninomial)
+    if not normalized_uninomial:
+        return None
+    display_value = italicize_name(normalized_uninomial) if italicize else normalized_uninomial
+    if is_hybrid_formula:
+        return f"× {display_value}"
+    return display_value
+
+
+def format_specific_epithet_for_display(
+    specific_epithet: str | None,
+    *,
+    hybrid_marker_on_specific_epithet: bool = False,
+    italicize: bool = False,
+) -> str | None:
+    normalized_specific_epithet = (
+        strip_hybrid_formula_prefix(specific_epithet)
+        if hybrid_marker_on_specific_epithet
+        else specific_epithet
+    )
+    if not normalized_specific_epithet:
+        return None
+    display_value = (
+        italicize_name(normalized_specific_epithet)
+        if italicize
+        else normalized_specific_epithet
+    )
+    if hybrid_marker_on_specific_epithet:
+        return f"×{display_value}"
+    return display_value
+
+
+def calculate_canonical_name_string(
+    components: schema.NameStringComponents,
+    *,
+    include_rank: bool = True,
+) -> str | None:
+    return filter_join(
+        [
+            format_uninomial_for_display(
+                components.uninomial,
+                is_hybrid_formula=(
+                    components.is_hybrid_formula
+                    and not components.hybrid_marker_on_specific_epithet
+                ),
+                italicize=False,
+            ),
+            format_specific_epithet_for_display(
+                components.specific_epithet,
+                hybrid_marker_on_specific_epithet=components.hybrid_marker_on_specific_epithet,
+                italicize=False,
+            ),
+            components.rank_abbreviation if include_rank else None,
+            components.infraspecific_epithet,
+        ]
+    )
 
 
 def map_authors(
