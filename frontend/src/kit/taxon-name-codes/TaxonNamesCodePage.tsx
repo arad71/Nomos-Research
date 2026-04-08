@@ -110,7 +110,7 @@ const columnOptions: Array<{ key: ColumnKey; label: string }> = [
   { key: 'vernaculars', label: 'Vernaculars' },
   { key: 'conservationCodes', label: 'Conservation codes' },
   { key: 'updatedBy', label: 'Updated by' },
-  { key: 'updated', label: 'Updated' },
+  { key: 'updated', label: 'Updated on' },
   { key: 'deleted', label: 'Deleted' },
   { key: 'actions', label: 'Actions' },
 ];
@@ -701,49 +701,73 @@ const TaxonNamesCodePage = () => {
     setSearchParams(nextParams);
   };
 
-  const buildExportCsv = (records: TaxonNameRecord[]) => {
-    const headers = [
-      'Taxon name ID',
-      'Legacy ID',
-      'Taxon rank',
-      'Taxon name',
-      'Author',
-      'Kingdom',
-      'Year published',
-      'Publication',
-      'Publication status',
-      'Is current',
-      'Validated',
-      'Vernaculars',
-      'Conservation codes',
-      'Updated',
-    ];
+  const exportColumnOptions = columnOptions.filter((column) => column.key !== 'actions');
 
-    const rows = records.map((record) => {
-      const taxonNameId = record.taxon_name_id ?? record.id ?? 0;
-      return [
-        taxonNameId,
-        record.legacy_id ?? '',
-        typeof record.taxon_rank === 'string'
+  const stripHtml = (value?: string | null) =>
+    value ? value.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim() : '';
+
+  const getExportValue = (
+    column: ColumnKey,
+    record: TaxonNameRecord,
+    exportPublicationMap: Record<number, string>,
+    exportConservationCodeMap: Record<number, string[]>
+  ) => {
+    const taxonNameId = record.taxon_name_id ?? record.id ?? 0;
+    switch (column) {
+      case 'legacyId':
+        return record.legacy_id ?? '';
+      case 'rank':
+        return typeof record.taxon_rank === 'string'
           ? record.taxon_rank
-          : record.taxon_rank?.rank_name ?? '',
-        record.scientific_name ?? '',
-        record.author ?? '',
-        typeof record.kingdom === 'string'
+          : record.taxon_rank?.rank_name ?? '';
+      case 'name':
+        return stripHtml(record.formatted_scientific_name) || record.scientific_name || '';
+      case 'author':
+        return record.author ?? '';
+      case 'yearPublished':
+        return record.form_desc_yr ?? '';
+      case 'kingdom':
+        return typeof record.kingdom === 'string'
           ? record.kingdom
-          : record.kingdom?.kingdom_name ?? '',
-        record.form_desc_yr ?? '',
-        record.publication_id ? publicationMap[record.publication_id] ?? '' : '',
-        record.publication_status ?? '',
-        record.is_current === undefined ? '' : record.is_current ? 'Yes' : 'No',
-        record.validated === undefined ? '' : record.validated ? 'Yes' : 'No',
-        record.all_vernaculars ?? '',
-        (conservationCodeMap[taxonNameId] || []).join(' | '),
-        record.updated_on ?? '',
-      ];
-    });
+          : record.kingdom?.kingdom_name ?? '';
+      case 'canonicalName':
+        return stripHtml(record.canonical_name);
+      case 'publication':
+        return record.publication_id ? exportPublicationMap[record.publication_id] ?? '' : '';
+      case 'status':
+        return record.publication_status ?? '';
+      case 'isCurrent':
+        return record.is_current === undefined ? '' : record.is_current ? 'Yes' : 'No';
+      case 'validated':
+        return record.validated === undefined ? '' : record.validated ? 'Yes' : 'No';
+      case 'vernaculars':
+        return record.all_vernaculars ?? '';
+      case 'conservationCodes':
+        return (exportConservationCodeMap[taxonNameId] || []).join(' | ');
+      case 'updatedBy':
+        return (record.updated_by && userMap[record.updated_by]) ||
+          (record.updated_by ? `User ${record.updated_by}` : '');
+      case 'updated':
+        return record.updated_on ?? '';
+      case 'deleted':
+        return record.deleted === undefined ? '' : record.deleted ? 'Yes' : 'No';
+      default:
+        return '';
+    }
+  };
 
-    return [headers, ...rows]
+  const buildExportCsv = (
+    records: TaxonNameRecord[],
+    exportPublicationMap: Record<number, string>,
+    exportConservationCodeMap: Record<number, string[]>
+  ) => {
+    const rows = records.map((record) =>
+      exportColumnOptions.map((column) =>
+        getExportValue(column.key, record, exportPublicationMap, exportConservationCodeMap)
+      )
+    );
+
+    return [exportColumnOptions.map((column) => column.label), ...rows]
       .map((row) => row.map((value) => escapeCsvValue(value)).join(','))
       .join('\n');
   };
@@ -792,13 +816,7 @@ const TaxonNamesCodePage = () => {
         ),
       ]);
 
-      const previousPublicationMap = publicationMap;
-      const previousConservationCodeMap = conservationCodeMap;
-      setPublicationMap(nextPublicationMap);
-      setConservationCodeMap(nextConservationCodeMap);
-      const csv = buildExportCsv(allRecords);
-      setPublicationMap(previousPublicationMap);
-      setConservationCodeMap(previousConservationCodeMap);
+      const csv = buildExportCsv(allRecords, nextPublicationMap, nextConservationCodeMap);
 
       const dateStamp = new Date().toISOString().slice(0, 10);
       downloadCsv(`taxon_names_code_${dateStamp}.csv`, csv);

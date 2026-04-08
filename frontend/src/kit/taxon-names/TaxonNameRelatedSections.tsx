@@ -571,13 +571,13 @@ const TaxonNameRelatedSections = ({
                 <RecordField label="Current" render={(taxon: { is_current?: boolean | null }) => renderBoolean(taxon.is_current)} />
                 <RecordField label="Validated" render={(taxon: { validated?: boolean | null }) => renderBoolean(taxon.validated)} />
                 <RecordField
-                  label="WA recognised"
+                  label="WA census"
                   render={(taxon: { is_wa_recognised?: boolean | null }) => renderBoolean(taxon.is_wa_recognised)}
                 />
                 <RecordField label="Review" render={(taxon: { review?: boolean | null }) => renderBoolean(taxon.review)} />
                 <RecordField source="review_reason" label="Review reason" className="xl:col-span-2" />
                 <div className="hidden md:block md:col-span-2 xl:col-span-4" aria-hidden="true" />
-                <RecordField source="legacy_id" label="Legacy ID" className="xl:col-span-4" />
+                <RecordField source="legacy_id" label="LegacyID" className="xl:col-span-4" />
                 <RecordField source="comments" label="Comments" className="xl:col-span-4" />
               </div>
             </section>

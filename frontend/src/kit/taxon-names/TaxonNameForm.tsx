@@ -187,10 +187,10 @@ const TaxonNameFormInner = ({ relatedSections }: { relatedSections?: React.React
           <SelectInput source="publication_status" choices={PublicationStatus} />
           <BooleanInput source="is_current" label="Current" />
           <BooleanInput source="validated" label="Validated" />
-          <BooleanInput source="is_wa_recognised" label="WA recognised" />
+          <BooleanInput source="is_wa_recognised" label="WA census" />
 
           <div className="hidden md:block md:col-span-2 xl:col-span-4" aria-hidden="true" />
-          <TextInput source="legacy_id" label="Legacy ID" className="xl:col-span-4" />
+          <TextInput source="legacy_id" label="LegacyID" className="xl:col-span-4" />
         </div>
       </section>
 

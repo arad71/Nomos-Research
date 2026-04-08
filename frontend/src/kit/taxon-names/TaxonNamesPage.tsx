@@ -176,6 +176,7 @@ type TaxonNameFilters = {
   publicationStatus: string;
   review: string;
   isCurrent: string;
+  waCensus: string;
   validated: string;
   isAutonym: string;
   deleted: string;
@@ -203,8 +204,8 @@ const columnOptions: Array<{ key: ColumnKey; label: string }> = [
   { key: 'kingdom', label: 'Kingdom' },
   { key: 'yearPublished', label: 'Year published' },
   { key: 'status', label: 'Status' },
-  { key: 'updated', label: 'Updated' },
-  { key: 'legacyId', label: 'Legacy ID' },
+  { key: 'updated', label: 'Updated on' },
+  { key: 'legacyId', label: 'LegacyID' },
   { key: 'canonicalName', label: 'Canonical name' },
   { key: 'division', label: 'Division' },
   { key: 'phylum', label: 'Phylum' },
@@ -437,6 +438,9 @@ const buildFilterObject = (filters: TaxonNameFilters) => {
   }
   if (filters.isCurrent) {
     nextFilter.is_current = filters.isCurrent === 'true';
+  }
+  if (filters.waCensus) {
+    nextFilter.is_wa_recognised = filters.waCensus === 'true';
   }
   if (filters.validated) {
     nextFilter.validated = filters.validated === 'true';
@@ -765,40 +769,167 @@ const escapeCsvValue = (value: string | number | boolean | null | undefined) => 
   return stringValue;
 };
 
-const buildExportCsv = (records: TaxonNameRecord[]) => {
-  const headers = [
-    'NomosID',
-    'Legacy ID',
-    'Scientific name',
-    'Canonical name',
-    'Rank',
-    'Kingdom',
-    'Author',
-    'Year published',
-    'Publication status',
-    'Current',
-    'Review',
-    'Updated',
-  ];
+const stripHtml = (value?: string | null) =>
+  value ? value.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim() : '';
 
-  const rows = records.map((record) => [
-    record.taxon_name_id ?? record.id ?? '',
-    record.legacy_id ?? '',
-    record.scientific_name ?? '',
-    record.canonical_name ?? '',
-    typeof record.taxon_rank === 'string'
-      ? record.taxon_rank
-      : record.taxon_rank?.rank_name ?? '',
-    typeof record.kingdom === 'string'
-      ? record.kingdom
-      : record.kingdom?.kingdom_name ?? '',
-    record.author ?? '',
-    record.form_desc_yr ?? '',
-    record.publication_status ?? '',
-    record.is_current === undefined ? '' : record.is_current ? 'Yes' : 'No',
-    record.review === undefined ? '' : record.review ? 'Yes' : 'No',
-    record.updated_on ?? '',
-  ]);
+type ExportMaps = {
+  publicationMap: Record<number, string>;
+  userMap: Record<number, string>;
+  ancestorMaps: Partial<Record<AncestorResource, Record<number, string>>>;
+  familyNidMap: Record<number, string>;
+  conservationCodeMap: Record<number, string[]>;
+};
+
+const getExportValue = (
+  column: ColumnKey,
+  record: TaxonNameRecord,
+  maps: ExportMaps
+) => {
+  const taxonNameId = getTaxonNameId(record);
+
+  switch (column) {
+    case 'id':
+      return taxonNameId;
+    case 'name':
+      return stripHtml(record.formatted_scientific_name) || record.scientific_name || '';
+    case 'legacyId':
+      return record.legacy_id ?? '';
+    case 'scientificName':
+      return record.scientific_name ?? '';
+    case 'canonicalName':
+      return record.canonical_name ?? '';
+    case 'rank':
+      return typeof record.taxon_rank === 'string'
+        ? record.taxon_rank
+        : record.taxon_rank?.rank_name ?? '';
+    case 'kingdom':
+      return typeof record.kingdom === 'string'
+        ? record.kingdom
+        : record.kingdom?.kingdom_name ?? '';
+    case 'division':
+      return stripHtml(maps.ancestorMaps.Division?.[taxonNameId]);
+    case 'phylum':
+      return stripHtml(maps.ancestorMaps.Phylum?.[taxonNameId]);
+    case 'class':
+      return stripHtml(maps.ancestorMaps.Class?.[taxonNameId]);
+    case 'order':
+      return stripHtml(maps.ancestorMaps.Order?.[taxonNameId]);
+    case 'family':
+      return stripHtml(maps.ancestorMaps.Family?.[taxonNameId]);
+    case 'genus':
+      return stripHtml(maps.ancestorMaps.Genus?.[taxonNameId]);
+    case 'subgenus':
+      return stripHtml(maps.ancestorMaps.Subgenus?.[taxonNameId]);
+    case 'species':
+      return stripHtml(maps.ancestorMaps.Species?.[taxonNameId]);
+    case 'subspecies':
+      return stripHtml(maps.ancestorMaps.Subspecies?.[taxonNameId]);
+    case 'author':
+      return record.author ?? '';
+    case 'yearPublished':
+      return record.form_desc_yr ?? '';
+    case 'monthPublished':
+      return record.form_desc_mn ?? '';
+    case 'dayPublished':
+      return record.form_desc_dy ?? '';
+    case 'publication':
+      return (record.publication_id && maps.publicationMap[record.publication_id]) ||
+        (record.publication_id ? `Publication ${record.publication_id}` : '');
+    case 'volumeInformation':
+      return record.volume_information ?? '';
+    case 'status':
+      return [
+        record.publication_status,
+        record.review ? 'Review' : '',
+        record.is_current ? 'Current' : '',
+      ]
+        .filter(Boolean)
+        .join(', ');
+    case 'reviewFlag':
+      return booleanOrEmpty(record.review);
+    case 'isAutonym':
+      return booleanOrEmpty(record.is_autonym);
+    case 'vernaculars':
+      return record.all_vernaculars ?? '';
+    case 'vernacular':
+      return record.vernacular ?? '';
+    case 'conservationCodes':
+      return maps.conservationCodeMap[taxonNameId]?.join('; ') ?? '';
+    case 'reviewReason':
+      return record.review_reason ?? '';
+    case 'uninomial':
+      return record.uninomial ?? '';
+    case 'specificEpithet':
+      return record.specific_epithet ?? '';
+    case 'infraspecificEpithet':
+      return record.infraspecific_epithet ?? '';
+    case 'origin':
+      return record.origin ?? '';
+    case 'comments':
+      return record.comments ?? '';
+    case 'contributedBy':
+      return record.contributed_by ?? '';
+    case 'contributedOn':
+      return formatDate(record.contributed_on);
+    case 'validated':
+      return booleanOrEmpty(record.validated);
+    case 'source':
+      return record.source ?? '';
+    case 'externalId':
+      return record.external_id ?? '';
+    case 'familyCode':
+      return record.family_code ?? '';
+    case 'editor':
+      return record.editor ?? '';
+    case 'naturalisedStatus':
+      return record.naturalised_status ?? '';
+    case 'naturalisedCertainty':
+      return booleanOrEmpty(record.naturalised_certainty);
+    case 'isEradicated':
+      return record.is_eradicated ?? '';
+    case 'naturalisedComments':
+      return record.naturalised_comments ?? '';
+    case 'linearSequence':
+      return record.linear_sequence ?? '';
+    case 'familyNid':
+      return stripHtml(record.family_nid ? maps.familyNidMap[record.family_nid] : '');
+    case 'authorisedBy':
+      return record.authorised_by ?? '';
+    case 'authorisedOn':
+      return formatDate(record.authorised_on);
+    case 'createdBy':
+      return (record.created_by && maps.userMap[record.created_by]) ||
+        (record.created_by ? `User ${record.created_by}` : '');
+    case 'created':
+      return formatDate(record.created_on);
+    case 'notes':
+      return record.notes ?? '';
+    case 'adminComment':
+      return record.admin_comment ?? '';
+    case 'updatedBy':
+      return (record.updated_by && maps.userMap[record.updated_by]) ||
+        (record.updated_by ? `User ${record.updated_by}` : '');
+    case 'updated':
+      return formatDate(record.updated_on);
+    case 'deleted':
+      return booleanOrEmpty(record.deleted);
+    case 'actions':
+      return '';
+    default:
+      return '';
+  }
+};
+
+const buildExportCsv = (
+  records: TaxonNameRecord[],
+  columns: Array<{ key: ColumnKey; label: string }>,
+  maps: ExportMaps
+) => {
+  const headers = columns.map((column) => column.label);
+
+  const rows = records.map((record) =>
+    columns.map((column) => getExportValue(column.key, record, maps))
+  );
 
   return [headers, ...rows]
     .map((row) => row.map((value) => escapeCsvValue(value)).join(','))
@@ -931,6 +1062,7 @@ const TaxonNamesPage = () => {
       publicationStatus: searchParams.get('publication_status') || '',
       review: searchParams.get('review') || '',
       isCurrent: searchParams.get('is_current') || '',
+      waCensus: searchParams.get('is_wa_recognised') || '',
       validated: searchParams.get('validated') || '',
       isAutonym: searchParams.get('is_autonym') || '',
       deleted: canUseDeletedFilter ? searchParams.get('deleted') || '' : '',
@@ -1085,7 +1217,7 @@ const TaxonNamesPage = () => {
             }
           : null,
         filters.id ? { label: 'NomosID', value: filters.id } : null,
-        filters.legacyId ? { label: 'Legacy ID', value: filters.legacyId } : null,
+        filters.legacyId ? { label: 'LegacyID', value: filters.legacyId } : null,
         filters.scientificName
           ? { label: 'Scientific name', value: filters.scientificName }
           : null,
@@ -1097,6 +1229,9 @@ const TaxonNamesPage = () => {
         filters.review ? { label: 'Review', value: getBooleanLabel(filters.review) } : null,
         filters.isCurrent
           ? { label: 'Current', value: getBooleanLabel(filters.isCurrent) }
+          : null,
+        filters.waCensus
+          ? { label: 'WA census', value: getBooleanLabel(filters.waCensus) }
           : null,
         filters.yearPublished
           ? { label: 'Year', value: filters.yearPublished }
@@ -1210,6 +1345,7 @@ const TaxonNamesPage = () => {
       ['publication_status', next.publicationStatus],
       ['review', next.review],
       ['is_current', next.isCurrent],
+      ['is_wa_recognised', next.waCensus],
       ['validated', next.validated],
       ['is_autonym', next.isAutonym],
       ['deleted', next.deleted],
@@ -1263,6 +1399,7 @@ const TaxonNamesPage = () => {
       publicationStatus: draftFilters.publicationStatus,
       review: draftFilters.review,
       isCurrent: draftFilters.isCurrent,
+      waCensus: draftFilters.waCensus,
       validated: draftFilters.validated,
       isAutonym: draftFilters.isAutonym,
       deleted: draftFilters.deleted,
@@ -1544,6 +1681,7 @@ const TaxonNamesPage = () => {
       publicationStatus: '',
       review: '',
       isCurrent: '',
+      waCensus: '',
       validated: '',
       isAutonym: '',
       deleted: '',
@@ -1572,7 +1710,70 @@ const TaxonNamesPage = () => {
         allRecords.push(...result.data);
       }
 
-      const csv = buildExportCsv(allRecords);
+      const publicationIds = Array.from(
+        new Set(
+          allRecords
+            .map((record) => record.publication_id)
+            .filter((value): value is number => typeof value === 'number')
+        )
+      );
+      const userIds = Array.from(
+        new Set(
+          allRecords
+            .flatMap((record) => [record.created_by, record.updated_by])
+            .filter((value): value is number => typeof value === 'number')
+        )
+      );
+      const taxonNameIds = Array.from(
+        new Set(
+          allRecords
+            .map((record) => record.id)
+            .filter((value): value is number => typeof value === 'number')
+        )
+      );
+      const familyNidIds = Array.from(
+        new Set(
+          allRecords
+            .map((record) => record.family_nid)
+            .filter((value): value is number => typeof value === 'number')
+        )
+      );
+
+      const [
+        exportPublicationMap,
+        exportUserMap,
+        exportFamilyNidMap,
+        exportConservationCodeMap,
+        ...exportAncestorResults
+      ] = await Promise.all([
+        fetchReferenceMap('publications', publicationIds, 'publication_id', 'title'),
+        fetchReferenceMap('users', userIds, 'user_id', 'full_name'),
+        fetchReferenceMap(
+          'taxon_names',
+          familyNidIds,
+          'taxon_name_id',
+          'formatted_scientific_name'
+        ),
+        fetchConservationCodeMap(taxonNameIds),
+        ...ANCESTOR_RESOURCES.map((resource) => fetchAncestorMap(resource, taxonNameIds)),
+      ]);
+
+      const exportAncestorMaps =
+        exportAncestorResults.reduce<Partial<Record<AncestorResource, Record<number, string>>>>(
+          (acc, result, index) => {
+            acc[ANCESTOR_RESOURCES[index]] = result;
+            return acc;
+          },
+          {}
+        );
+
+      const csv = buildExportCsv(allRecords, exportColumnOptions, {
+        publicationMap: exportPublicationMap,
+        userMap: exportUserMap,
+        ancestorMaps: exportAncestorMaps,
+        familyNidMap: exportFamilyNidMap,
+        conservationCodeMap: exportConservationCodeMap,
+      });
       const dateStamp = new Date().toISOString().slice(0, 10);
       downloadCsv(`taxon_names_${dateStamp}.csv`, csv);
     } finally {
@@ -1586,6 +1787,11 @@ const TaxonNamesPage = () => {
         column.key === 'deleted' ? canViewDeleted : true
       ),
     [canViewDeleted]
+  );
+
+  const exportColumnOptions = React.useMemo(
+    () => visibleColumnOptions.filter((column) => column.key !== 'actions'),
+    [visibleColumnOptions]
   );
 
   return (
@@ -1660,7 +1866,7 @@ const TaxonNamesPage = () => {
 
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
               {renderTextFilter('NomosID', 'id')}
-              {renderTextFilter('Legacy ID', 'legacyId')}
+              {renderTextFilter('LegacyID', 'legacyId')}
             </div>
             {renderTextFilter('Scientific name', 'scientificName')}
             {renderTextFilter('Author', 'author')}
@@ -1682,6 +1888,7 @@ const TaxonNamesPage = () => {
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
               {renderSelectFilter('Review', 'review', booleanOptions)}
               {renderSelectFilter('Current', 'isCurrent', booleanOptions)}
+              {renderSelectFilter('WA census', 'waCensus', booleanOptions)}
             </div>
           </div>
 

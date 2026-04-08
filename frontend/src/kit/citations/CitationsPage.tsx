@@ -68,7 +68,7 @@ const columnOptions: Array<{ key: ColumnKey; label: string }> = [
   { key: 'authorType', label: 'Author type' },
   { key: 'authorOrder', label: 'Author order' },
   { key: 'updatedBy', label: 'Updated by' },
-  { key: 'updated', label: 'Updated' },
+  { key: 'updated', label: 'Updated on' },
   { key: 'deleted', label: 'Deleted' },
   { key: 'actions', label: 'Actions' },
 ];
@@ -291,6 +291,35 @@ const CitationsPage = () => {
     setSearchParams(new URLSearchParams());
   };
 
+  const exportColumnOptions = columnOptions.filter((column) => column.key !== 'actions');
+
+  const getExportValue = (
+    column: ColumnKey,
+    record: CitationRecord,
+    exportTaxonNameMap: Record<number, string>,
+    exportAuthorMap: Record<number, string>,
+    exportUserMap: Record<number, string>
+  ) => {
+    switch (column) {
+      case 'taxonName':
+        return record.taxon_name_id ? exportTaxonNameMap[record.taxon_name_id] ?? '' : '';
+      case 'author':
+        return record.author_id ? exportAuthorMap[record.author_id] ?? '' : '';
+      case 'authorType':
+        return record.author_type ? authorTypeMap[record.author_type] ?? record.author_type : '';
+      case 'authorOrder':
+        return record.author_order ?? '';
+      case 'updatedBy':
+        return record.updated_by ? exportUserMap[record.updated_by] ?? '' : '';
+      case 'updated':
+        return record.updated_on ?? '';
+      case 'deleted':
+        return renderBoolean(record.deleted);
+      default:
+        return '';
+    }
+  };
+
   const buildExportCsv = (
     records: CitationRecord[],
     exportTaxonNameMap: Record<number, string>,
@@ -298,17 +327,12 @@ const CitationsPage = () => {
     exportUserMap: Record<number, string>
   ) =>
     [
-      ['Citation ID', 'Taxon name', 'Author', 'Author type', 'Author order', 'Updated by', 'Updated', 'Deleted'],
-      ...records.map((record) => [
-        record.citation_id ?? record.id ?? '',
-        record.taxon_name_id ? exportTaxonNameMap[record.taxon_name_id] ?? '' : '',
-        record.author_id ? exportAuthorMap[record.author_id] ?? '' : '',
-        record.author_type ? authorTypeMap[record.author_type] ?? record.author_type : '',
-        record.author_order ?? '',
-        record.updated_by ? exportUserMap[record.updated_by] ?? '' : '',
-        record.updated_on ?? '',
-        renderBoolean(record.deleted),
-      ]),
+      exportColumnOptions.map((column) => column.label),
+      ...records.map((record) =>
+        exportColumnOptions.map((column) =>
+          getExportValue(column.key, record, exportTaxonNameMap, exportAuthorMap, exportUserMap)
+        )
+      ),
     ]
       .map((row) => row.map((value) => escapeCsvValue(value)).join(','))
       .join('\n');

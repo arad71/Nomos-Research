@@ -82,7 +82,7 @@ const columnOptions: Array<{ key: ColumnKey; label: string }> = [
   { key: 'referenceComments', label: 'Reference comments' },
   { key: 'notes', label: 'Notes' },
   { key: 'updatedBy', label: 'Updated by' },
-  { key: 'updated', label: 'Updated' },
+  { key: 'updated', label: 'Updated on' },
   { key: 'deleted', label: 'Deleted' },
   { key: 'actions', label: 'Actions' },
 ];
@@ -477,42 +477,58 @@ const CrossReferencesPage = () => {
     setSearchParams(new URLSearchParams());
   };
 
-  const buildExportCsv = (records: CrossReferenceRecord[]) => {
-    const headers = [
-      'Cross reference ID',
-      'Old name',
-      'New name',
-      'Cross reference type',
-      'Authorised by',
-      'Authorised on',
-      'Contributed by',
-      'Contributed on',
-      'Reference comments',
-      'Notes',
-      'Updated by',
-      'Updated',
-      'Deleted',
-    ];
+  const exportColumnOptions = columnOptions.filter((column) => column.key !== 'actions');
 
-    const rows = records.map((record) => [
-      record.cross_reference_id ?? record.id ?? '',
-      record.old_name_id ? taxonNameMap[record.old_name_id] ?? '' : '',
-      record.new_name_id ? taxonNameMap[record.new_name_id] ?? '' : '',
-      record.cross_reference_type
-        ? crossRefTypeMap[record.cross_reference_type] ?? record.cross_reference_type
-        : '',
-      record.authorised_by ?? '',
-      record.authorised_on ?? '',
-      record.contributed_by ?? '',
-      record.contributed_on ?? '',
-      record.reference_comments ?? '',
-      record.notes ?? '',
-      record.updated_by ? userMap[record.updated_by] ?? '' : '',
-      record.updated_on ?? '',
-      record.deleted === undefined ? '' : record.deleted ? 'Yes' : 'No',
-    ]);
+  const getExportValue = (
+    column: ColumnKey,
+    record: CrossReferenceRecord,
+    exportTaxonNameMap: Record<number, string>,
+    exportUserMap: Record<number, string>
+  ) => {
+    switch (column) {
+      case 'oldName':
+        return record.old_name_id ? exportTaxonNameMap[record.old_name_id] ?? '' : '';
+      case 'newName':
+        return record.new_name_id ? exportTaxonNameMap[record.new_name_id] ?? '' : '';
+      case 'crossReferenceType':
+        return record.cross_reference_type
+          ? crossRefTypeMap[record.cross_reference_type] ?? record.cross_reference_type
+          : '';
+      case 'authorisedBy':
+        return record.authorised_by ?? '';
+      case 'authorisedOn':
+        return record.authorised_on ?? '';
+      case 'contributedBy':
+        return record.contributed_by ?? '';
+      case 'contributedOn':
+        return record.contributed_on ?? '';
+      case 'referenceComments':
+        return record.reference_comments ?? '';
+      case 'notes':
+        return record.notes ?? '';
+      case 'updatedBy':
+        return record.updated_by ? exportUserMap[record.updated_by] ?? '' : '';
+      case 'updated':
+        return record.updated_on ?? '';
+      case 'deleted':
+        return record.deleted === undefined ? '' : record.deleted ? 'Yes' : 'No';
+      default:
+        return '';
+    }
+  };
 
-    return [headers, ...rows]
+  const buildExportCsv = (
+    records: CrossReferenceRecord[],
+    exportTaxonNameMap: Record<number, string>,
+    exportUserMap: Record<number, string>
+  ) => {
+    const rows = records.map((record) =>
+      exportColumnOptions.map((column) =>
+        getExportValue(column.key, record, exportTaxonNameMap, exportUserMap)
+      )
+    );
+
+    return [exportColumnOptions.map((column) => column.label), ...rows]
       .map((row) => row.map((value) => escapeCsvValue(value)).join(','))
       .join('\n');
   };
@@ -558,13 +574,7 @@ const CrossReferencesPage = () => {
         fetchReferenceMap('users', userIds, 'user_id', 'full_name'),
       ]);
 
-      const previousTaxonNameMap = taxonNameMap;
-      const previousUserMap = userMap;
-      setTaxonNameMap(nextTaxonNameMap);
-      setUserMap(nextUserMap);
-      const csv = buildExportCsv(allRecords);
-      setTaxonNameMap(previousTaxonNameMap);
-      setUserMap(previousUserMap);
+      const csv = buildExportCsv(allRecords, nextTaxonNameMap, nextUserMap);
 
       const dateStamp = new Date().toISOString().slice(0, 10);
       downloadCsv(`cross_references_${dateStamp}.csv`, csv);
