@@ -17,10 +17,30 @@ type PublicationRecord = {
   publication_id?: number;
   display_title?: string;
   author_name?: string;
+  author_ids?: number[];
   publication_year?: string | number;
+  publication_month?: string | number;
+  publication_day?: string | number;
   published?: boolean;
   abbreviated_title?: string;
   title?: string;
+  doi?: string;
+  publisher?: string;
+  parent_id?: number;
+  published_location?: string;
+  volume?: string;
+  edition?: string;
+  pages?: string;
+  legacy_id?: string | number;
+  isbn?: string;
+  issn?: string;
+  tl2?: string;
+  bhl_url?: string;
+  reference_type?: string;
+  reference_author_role?: string;
+  duplicate_of_id?: number;
+  language?: string;
+  notes?: string;
   bad_publication?: boolean;
   updated_by?: number;
   updated_on?: string;
@@ -39,10 +59,30 @@ type PublicationFilters = {
 type ColumnKey =
   | 'displayTitle'
   | 'authorName'
+  | 'authors'
   | 'publicationYear'
+  | 'publicationMonth'
+  | 'publicationDay'
   | 'published'
   | 'abbreviatedTitle'
   | 'title'
+  | 'doi'
+  | 'publisher'
+  | 'parentPublication'
+  | 'publishedLocation'
+  | 'volume'
+  | 'edition'
+  | 'pages'
+  | 'legacyId'
+  | 'isbn'
+  | 'issn'
+  | 'tl2'
+  | 'bhlUrl'
+  | 'referenceType'
+  | 'referenceAuthorRole'
+  | 'duplicateOf'
+  | 'language'
+  | 'notes'
   | 'badPublication'
   | 'updatedBy'
   | 'updated'
@@ -66,14 +106,34 @@ const defaultColumns: ColumnKey[] = [
 ];
 const columnOptions: Array<{ key: ColumnKey; label: string }> = [
   { key: 'displayTitle', label: 'Display title' },
-  { key: 'authorName', label: 'Author' },
+  { key: 'authorName', label: 'Publication authors' },
+  { key: 'authors', label: 'Authors' },
   { key: 'publicationYear', label: 'Year' },
+  { key: 'publicationMonth', label: 'Month' },
+  { key: 'publicationDay', label: 'Day' },
   { key: 'published', label: 'Published' },
   { key: 'abbreviatedTitle', label: 'Abbreviated title' },
   { key: 'title', label: 'Title' },
+  { key: 'doi', label: 'DOI' },
+  { key: 'publisher', label: 'Publisher' },
+  { key: 'parentPublication', label: 'Parent publication' },
+  { key: 'publishedLocation', label: 'Published location' },
+  { key: 'volume', label: 'Volume' },
+  { key: 'edition', label: 'Edition' },
+  { key: 'pages', label: 'Pages' },
+  { key: 'legacyId', label: 'Legacy ID' },
+  { key: 'isbn', label: 'ISBN' },
+  { key: 'issn', label: 'ISSN' },
+  { key: 'tl2', label: 'TL2' },
+  { key: 'bhlUrl', label: 'BHL URL' },
+  { key: 'referenceType', label: 'Reference type' },
+  { key: 'referenceAuthorRole', label: 'Reference author role' },
+  { key: 'duplicateOf', label: 'Duplicate of' },
+  { key: 'language', label: 'Language' },
+  { key: 'notes', label: 'Notes' },
   { key: 'badPublication', label: 'Bad publication' },
   { key: 'updatedBy', label: 'Updated by' },
-  { key: 'updated', label: 'Updated' },
+  { key: 'updated', label: 'Updated on' },
   { key: 'deleted', label: 'Deleted' },
   { key: 'actions', label: 'Actions' },
 ];
@@ -85,9 +145,28 @@ const sortableColumns: Partial<Record<ColumnKey, string>> = {
   displayTitle: 'display_title',
   authorName: 'author_name',
   publicationYear: 'publication_year',
+  publicationMonth: 'publication_month',
+  publicationDay: 'publication_day',
   published: 'published',
   abbreviatedTitle: 'abbreviated_title',
   title: 'title',
+  doi: 'doi',
+  publisher: 'publisher',
+  parentPublication: 'parent_id',
+  publishedLocation: 'published_location',
+  volume: 'volume',
+  edition: 'edition',
+  pages: 'pages',
+  legacyId: 'legacy_id',
+  isbn: 'isbn',
+  issn: 'issn',
+  tl2: 'tl2',
+  bhlUrl: 'bhl_url',
+  referenceType: 'reference_type',
+  referenceAuthorRole: 'reference_author_role',
+  duplicateOf: 'duplicate_of_id',
+  language: 'language',
+  notes: 'notes',
   badPublication: 'bad_publication',
   updatedBy: 'updated_by',
   updated: 'updated_on',
@@ -218,6 +297,8 @@ const PublicationsPage = () => {
     searchParams.get('sortOrder') === 'DESC' ? 'DESC' : DEFAULT_SORT_ORDER;
   const [draftFilters, setDraftFilters] = React.useState(filters);
   const [userMap, setUserMap] = React.useState<Record<number, string>>({});
+  const [authorMap, setAuthorMap] = React.useState<Record<number, string>>({});
+  const [publicationMap, setPublicationMap] = React.useState<Record<number, string>>({});
   const [isExporting, setIsExporting] = React.useState(false);
   const [state, setState] = React.useState<{
     loading: boolean;
@@ -247,7 +328,30 @@ const PublicationsPage = () => {
           .filter((value): value is number => typeof value === 'number')
       )
     );
-    fetchReferenceMap('users', userIds, 'user_id', 'full_name').then(setUserMap);
+    const authorIds = Array.from(
+      new Set(
+        state.data
+          .flatMap((record) => record.author_ids ?? [])
+          .filter((value): value is number => typeof value === 'number')
+      )
+    );
+    const publicationIds = Array.from(
+      new Set(
+        state.data
+          .flatMap((record) => [record.parent_id, record.duplicate_of_id])
+          .filter((value): value is number => typeof value === 'number')
+      )
+    );
+
+    void Promise.all([
+      fetchReferenceMap('users', userIds, 'user_id', 'full_name'),
+      fetchReferenceMap('authors', authorIds, 'author_id', 'abbreviation'),
+      fetchReferenceMap('publications', publicationIds, 'publication_id', 'abbreviated_title'),
+    ]).then(([nextUserMap, nextAuthorMap, nextPublicationMap]) => {
+      setUserMap(nextUserMap);
+      setAuthorMap(nextAuthorMap);
+      setPublicationMap(nextPublicationMap);
+    });
   }, [state.data]);
 
   const totalPages = Math.max(Math.ceil(state.total / perPage), 1);
@@ -272,34 +376,103 @@ const PublicationsPage = () => {
     setSearchParams(new URLSearchParams());
   };
 
-  const buildExportCsv = (records: PublicationRecord[], exportUserMap: Record<number, string>) =>
+  const exportColumnOptions = columnOptions.filter((column) => column.key !== 'actions');
+
+  const getExportValue = (
+    column: ColumnKey,
+    record: PublicationRecord,
+    exportUserMap: Record<number, string>,
+    exportAuthorMap: Record<number, string>,
+    exportPublicationMap: Record<number, string>
+  ) => {
+    switch (column) {
+      case 'displayTitle':
+        return record.display_title ?? '';
+      case 'authorName':
+        return record.author_name ?? '';
+      case 'authors':
+        return (record.author_ids ?? [])
+          .map((authorId) => exportAuthorMap[authorId])
+          .filter(Boolean)
+          .join(', ');
+      case 'publicationYear':
+        return record.publication_year ?? '';
+      case 'publicationMonth':
+        return record.publication_month ?? '';
+      case 'publicationDay':
+        return record.publication_day ?? '';
+      case 'published':
+        return renderBoolean(record.published);
+      case 'abbreviatedTitle':
+        return record.abbreviated_title ?? '';
+      case 'title':
+        return record.title ?? '';
+      case 'doi':
+        return record.doi ?? '';
+      case 'publisher':
+        return record.publisher ?? '';
+      case 'parentPublication':
+        return record.parent_id ? exportPublicationMap[record.parent_id] ?? '' : '';
+      case 'publishedLocation':
+        return record.published_location ?? '';
+      case 'volume':
+        return record.volume ?? '';
+      case 'edition':
+        return record.edition ?? '';
+      case 'pages':
+        return record.pages ?? '';
+      case 'legacyId':
+        return record.legacy_id ?? '';
+      case 'isbn':
+        return record.isbn ?? '';
+      case 'issn':
+        return record.issn ?? '';
+      case 'tl2':
+        return record.tl2 ?? '';
+      case 'bhlUrl':
+        return record.bhl_url ?? '';
+      case 'referenceType':
+        return record.reference_type ?? '';
+      case 'referenceAuthorRole':
+        return record.reference_author_role ?? '';
+      case 'duplicateOf':
+        return record.duplicate_of_id ? exportPublicationMap[record.duplicate_of_id] ?? '' : '';
+      case 'language':
+        return record.language ?? '';
+      case 'notes':
+        return record.notes ?? '';
+      case 'badPublication':
+        return renderBoolean(record.bad_publication);
+      case 'updatedBy':
+        return record.updated_by ? exportUserMap[record.updated_by] ?? '' : '';
+      case 'updated':
+        return record.updated_on ?? '';
+      case 'deleted':
+        return renderBoolean(record.deleted);
+      default:
+        return '';
+    }
+  };
+
+  const buildExportCsv = (
+    records: PublicationRecord[],
+    exportUserMap: Record<number, string>,
+    exportAuthorMap: Record<number, string>,
+    exportPublicationMap: Record<number, string>
+  ) =>
     [
-      [
-        'Publication ID',
-        'Display title',
-        'Author',
-        'Year',
-        'Published',
-        'Abbreviated title',
-        'Title',
-        'Bad publication',
-        'Updated by',
-        'Updated',
-        'Deleted',
-      ],
-      ...records.map((record) => [
-        record.publication_id ?? record.id ?? '',
-        record.display_title ?? '',
-        record.author_name ?? '',
-        record.publication_year ?? '',
-        renderBoolean(record.published),
-        record.abbreviated_title ?? '',
-        record.title ?? '',
-        renderBoolean(record.bad_publication),
-        record.updated_by ? exportUserMap[record.updated_by] ?? '' : '',
-        record.updated_on ?? '',
-        renderBoolean(record.deleted),
-      ]),
+      exportColumnOptions.map((column) => column.label),
+      ...records.map((record) =>
+        exportColumnOptions.map((column) =>
+          getExportValue(
+            column.key,
+            record,
+            exportUserMap,
+            exportAuthorMap,
+            exportPublicationMap
+          )
+        )
+      ),
     ]
       .map((row) => row.map((value) => escapeCsvValue(value)).join(','))
       .join('\n');
@@ -321,8 +494,31 @@ const PublicationsPage = () => {
             .filter((value): value is number => typeof value === 'number')
         )
       );
-      const exportUserMap = await fetchReferenceMap('users', userIds, 'user_id', 'full_name');
-      const csv = buildExportCsv(allRecords, exportUserMap);
+      const authorIds = Array.from(
+        new Set(
+          allRecords
+            .flatMap((record) => record.author_ids ?? [])
+            .filter((value): value is number => typeof value === 'number')
+        )
+      );
+      const publicationIds = Array.from(
+        new Set(
+          allRecords
+            .flatMap((record) => [record.parent_id, record.duplicate_of_id])
+            .filter((value): value is number => typeof value === 'number')
+        )
+      );
+      const [exportUserMap, exportAuthorMap, exportPublicationMap] = await Promise.all([
+        fetchReferenceMap('users', userIds, 'user_id', 'full_name'),
+        fetchReferenceMap('authors', authorIds, 'author_id', 'abbreviation'),
+        fetchReferenceMap('publications', publicationIds, 'publication_id', 'abbreviated_title'),
+      ]);
+      const csv = buildExportCsv(
+        allRecords,
+        exportUserMap,
+        exportAuthorMap,
+        exportPublicationMap
+      );
       downloadCsv(`publications_${new Date().toISOString().slice(0, 10)}.csv`, csv);
     } finally {
       setIsExporting(false);
@@ -341,14 +537,57 @@ const PublicationsPage = () => {
         );
       case 'authorName':
         return record.author_name ?? '';
+      case 'authors':
+        return (record.author_ids ?? [])
+          .map((authorId) => authorMap[authorId])
+          .filter(Boolean)
+          .join(', ');
       case 'publicationYear':
         return record.publication_year ?? '';
+      case 'publicationMonth':
+        return record.publication_month ?? '';
+      case 'publicationDay':
+        return record.publication_day ?? '';
       case 'published':
         return renderBoolean(record.published);
       case 'abbreviatedTitle':
         return record.abbreviated_title ?? '';
       case 'title':
         return record.title ?? '';
+      case 'doi':
+        return record.doi ?? '';
+      case 'publisher':
+        return record.publisher ?? '';
+      case 'parentPublication':
+        return record.parent_id ? publicationMap[record.parent_id] ?? '' : '';
+      case 'publishedLocation':
+        return record.published_location ?? '';
+      case 'volume':
+        return record.volume ?? '';
+      case 'edition':
+        return record.edition ?? '';
+      case 'pages':
+        return record.pages ?? '';
+      case 'legacyId':
+        return record.legacy_id ?? '';
+      case 'isbn':
+        return record.isbn ?? '';
+      case 'issn':
+        return record.issn ?? '';
+      case 'tl2':
+        return record.tl2 ?? '';
+      case 'bhlUrl':
+        return record.bhl_url ?? '';
+      case 'referenceType':
+        return record.reference_type ?? '';
+      case 'referenceAuthorRole':
+        return record.reference_author_role ?? '';
+      case 'duplicateOf':
+        return record.duplicate_of_id ? publicationMap[record.duplicate_of_id] ?? '' : '';
+      case 'language':
+        return record.language ?? '';
+      case 'notes':
+        return record.notes ?? '';
       case 'badPublication':
         return renderBoolean(record.bad_publication);
       case 'updatedBy':

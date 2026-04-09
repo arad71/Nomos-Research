@@ -74,7 +74,7 @@ const columnOptions: Array<{ key: ColumnKey; label: string }> = [
   { key: 'parentName', label: 'Parent name' },
   { key: 'classificationSystem', label: 'Classification system' },
   { key: 'updatedBy', label: 'Updated by' },
-  { key: 'updated', label: 'Updated' },
+  { key: 'updated', label: 'Updated on' },
   { key: 'deleted', label: 'Deleted' },
   { key: 'actions', label: 'Actions' },
 ];
@@ -542,30 +542,46 @@ const HierarchiesPage = () => {
     setSearchParams(new URLSearchParams());
   };
 
-  const buildExportCsv = (records: HierarchyRecord[]) => {
-    const headers = [
-      'Hierarchy ID',
-      'Taxon name',
-      'Parent name',
-      'Classification system',
-      'Updated by',
-      'Updated',
-      'Deleted',
-    ];
+  const exportColumnOptions = columnOptions.filter((column) => column.key !== 'actions');
 
-    const rows = records.map((record) => [
-      record.hierarchy_id ?? record.id ?? '',
-      record.taxon_name_id ? taxonNameMap[record.taxon_name_id] ?? '' : '',
-      record.parent_nid ? taxonNameMap[record.parent_nid] ?? '' : '',
-      record.classification_system_id
-        ? classificationSystemMap[record.classification_system_id] ?? ''
-        : '',
-      record.updated_by ? userMap[record.updated_by] ?? '' : '',
-      record.updated_on ?? '',
-      record.deleted === undefined ? '' : record.deleted ? 'Yes' : 'No',
-    ]);
+  const getExportValue = (
+    column: ColumnKey,
+    record: HierarchyRecord,
+    exportTaxonNameMap: Record<number, string>,
+    exportUserMap: Record<number, string>
+  ) => {
+    switch (column) {
+      case 'taxonName':
+        return record.taxon_name_id ? exportTaxonNameMap[record.taxon_name_id] ?? '' : '';
+      case 'parentName':
+        return record.parent_nid ? exportTaxonNameMap[record.parent_nid] ?? '' : '';
+      case 'classificationSystem':
+        return record.classification_system_id
+          ? classificationSystemMap[record.classification_system_id] ?? ''
+          : '';
+      case 'updatedBy':
+        return record.updated_by ? exportUserMap[record.updated_by] ?? '' : '';
+      case 'updated':
+        return record.updated_on ?? '';
+      case 'deleted':
+        return record.deleted === undefined ? '' : record.deleted ? 'Yes' : 'No';
+      default:
+        return '';
+    }
+  };
 
-    return [headers, ...rows]
+  const buildExportCsv = (
+    records: HierarchyRecord[],
+    exportTaxonNameMap: Record<number, string>,
+    exportUserMap: Record<number, string>
+  ) => {
+    const rows = records.map((record) =>
+      exportColumnOptions.map((column) =>
+        getExportValue(column.key, record, exportTaxonNameMap, exportUserMap)
+      )
+    );
+
+    return [exportColumnOptions.map((column) => column.label), ...rows]
       .map((row) => row.map((value) => escapeCsvValue(value)).join(','))
       .join('\n');
   };
@@ -611,13 +627,7 @@ const HierarchiesPage = () => {
         fetchReferenceMap('users', userIds, 'user_id', 'full_name'),
       ]);
 
-      const previousTaxonNameMap = taxonNameMap;
-      const previousUserMap = userMap;
-      setTaxonNameMap(nextTaxonNameMap);
-      setUserMap(nextUserMap);
-      const csv = buildExportCsv(allRecords);
-      setTaxonNameMap(previousTaxonNameMap);
-      setUserMap(previousUserMap);
+      const csv = buildExportCsv(allRecords, nextTaxonNameMap, nextUserMap);
 
       const dateStamp = new Date().toISOString().slice(0, 10);
       downloadCsv(`hierarchies_${dateStamp}.csv`, csv);

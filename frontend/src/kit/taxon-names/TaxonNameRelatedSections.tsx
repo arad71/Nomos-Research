@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Plus } from 'lucide-react';
 import { useCanAccess, useGetOne, useRecordContext } from 'ra-core';
 import { useFormContext } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
@@ -395,7 +396,6 @@ const CreatePublicationButton = () => {
       resource="publications"
       fullWidth
       maxWidth="lg"
-      mutationMode="pessimistic"
       transform={transformPublicationPayload}
       title="Create publication"
       label="Create publication"
@@ -571,13 +571,13 @@ const TaxonNameRelatedSections = ({
                 <RecordField label="Current" render={(taxon: { is_current?: boolean | null }) => renderBoolean(taxon.is_current)} />
                 <RecordField label="Validated" render={(taxon: { validated?: boolean | null }) => renderBoolean(taxon.validated)} />
                 <RecordField
-                  label="WA recognised"
+                  label="WA census"
                   render={(taxon: { is_wa_recognised?: boolean | null }) => renderBoolean(taxon.is_wa_recognised)}
                 />
                 <RecordField label="Review" render={(taxon: { review?: boolean | null }) => renderBoolean(taxon.review)} />
                 <RecordField source="review_reason" label="Review reason" className="xl:col-span-2" />
                 <div className="hidden md:block md:col-span-2 xl:col-span-4" aria-hidden="true" />
-                <RecordField source="legacy_id" label="Legacy ID" className="xl:col-span-4" />
+                <RecordField source="legacy_id" label="LegacyID" className="xl:col-span-4" />
                 <RecordField source="comments" label="Comments" className="xl:col-span-4" />
               </div>
             </section>
@@ -644,21 +644,33 @@ const TaxonNameRelatedSections = ({
           title="Authors"
           description="Citation author rows linked to this taxon name."
           action={
-            editable && recordId ? (
-              <CreateInDialogButton
-                resource="citations"
-                record={{ taxon_name_id: recordId, author_order: 0 }}
-                fullWidth
-                maxWidth="md"
-                mutationMode="pessimistic"
-                title="Create citation"
-                label="Create citation"
-                ButtonProps={relatedDialogButtonProps}
-              >
-                <DialogFormPadding>
-                  <CitationForm hideTaxonName />
-                </DialogFormPadding>
-              </CreateInDialogButton>
+            editable ? (
+              recordId ? (
+                <CreateInDialogButton
+                  resource="citations"
+                  record={{ taxon_name_id: recordId, author_order: 0 }}
+                  fullWidth
+                  maxWidth="md"
+                  title="Create citation"
+                  label="Create citation"
+                  ButtonProps={relatedDialogButtonProps}
+                >
+                  <DialogFormPadding>
+                    <CitationForm hideTaxonName />
+                  </DialogFormPadding>
+                </CreateInDialogButton>
+              ) : (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled
+                  className="gap-1.5 rounded-lg px-2.5 text-[0.8125rem] font-medium"
+                >
+                  <Plus className="h-4 w-4" />
+                  Create citation
+                </Button>
+              )
             ) : undefined
           }
         />
@@ -745,7 +757,6 @@ const TaxonNameRelatedSections = ({
                 record={{ taxon_name_id: recordId, sort_order: 0 }}
                 fullWidth
                 maxWidth="md"
-                mutationMode="pessimistic"
                 title="Create vernacular"
                 label="Create vernacular"
                 ButtonProps={relatedDialogButtonProps}
@@ -837,7 +848,6 @@ const TaxonNameRelatedSections = ({
                 record={{ taxon_name_id: recordId }}
                 fullWidth
                 maxWidth="md"
-                mutationMode="pessimistic"
                 title="Create hierarchy row"
                 label="Create hierarchy row"
                 ButtonProps={relatedDialogButtonProps}
@@ -936,7 +946,6 @@ const TaxonNameRelatedSections = ({
                       record={{ new_name_id: recordId }}
                       fullWidth
                       maxWidth="md"
-                      mutationMode="pessimistic"
                       title="Create previous name"
                       label="Create previous name"
                       ButtonProps={relatedDialogButtonProps}
@@ -997,7 +1006,6 @@ const TaxonNameRelatedSections = ({
                       record={{ old_name_id: recordId }}
                       fullWidth
                       maxWidth="md"
-                      mutationMode="pessimistic"
                       title="Create subsequent name"
                       label="Create subsequent name"
                       ButtonProps={relatedDialogButtonProps}
@@ -1138,7 +1146,6 @@ const TaxonNameRelatedSections = ({
                 record={{ taxon_name_id: recordId }}
                 fullWidth
                 maxWidth="md"
-                mutationMode="pessimistic"
                 title="Create conservation code"
                 label="+ Create conservation code"
                 ButtonProps={relatedDialogButtonProps}
