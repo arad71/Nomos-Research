@@ -62,6 +62,7 @@ type TaxonNameCodeFilters = {
 };
 
 type ColumnKey =
+  | 'id'
   | 'legacyId'
   | 'rank'
   | 'name'
@@ -88,6 +89,7 @@ const DEFAULT_SORT_ORDER: SortOrder = 'DESC';
 const EXPORT_BATCH_SIZE = 500;
 
 const defaultColumns: ColumnKey[] = [
+  'id',
   'rank',
   'name',
   'isCurrent',
@@ -96,7 +98,8 @@ const defaultColumns: ColumnKey[] = [
 ];
 
 const columnOptions: Array<{ key: ColumnKey; label: string }> = [
-  { key: 'legacyId', label: 'Legacy ID' },
+  { key: 'id', label: 'NomosID' },
+  { key: 'legacyId', label: 'LegacyID' },
   { key: 'rank', label: 'Taxon rank' },
   { key: 'name', label: 'Taxon name' },
   { key: 'author', label: 'Author' },
@@ -124,6 +127,7 @@ const columnLabelMap = columnOptions.reduce<Record<ColumnKey, string>>(
 );
 
 const sortableColumns: Partial<Record<ColumnKey, string>> = {
+  id: 'taxon_name_id',
   legacyId: 'legacy_id',
   rank: 'taxon_rank___rank_name',
   name: 'scientific_name',
@@ -600,8 +604,8 @@ const TaxonNamesCodePage = () => {
     () =>
       [
         filters.q ? { label: 'Query', value: filters.q } : null,
-        filters.id ? { label: 'Taxon name ID', value: filters.id } : null,
-        filters.legacyId ? { label: 'Legacy ID', value: filters.legacyId } : null,
+        filters.id ? { label: 'NomosID', value: filters.id } : null,
+        filters.legacyId ? { label: 'LegacyID', value: filters.legacyId } : null,
         filters.scientificName
           ? { label: 'Scientific name', value: filters.scientificName }
           : null,
@@ -714,6 +718,8 @@ const TaxonNamesCodePage = () => {
   ) => {
     const taxonNameId = record.taxon_name_id ?? record.id ?? 0;
     switch (column) {
+      case 'id':
+        return taxonNameId;
       case 'legacyId':
         return record.legacy_id ?? '';
       case 'rank':
@@ -829,6 +835,12 @@ const TaxonNamesCodePage = () => {
     const taxonNameId = record.taxon_name_id ?? record.id ?? 0;
 
     switch (column) {
+      case 'id':
+        return (
+          <span className="text-muted-foreground">
+            {textOrEmpty(taxonNameId)}
+          </span>
+        );
       case 'legacyId':
         return textOrEmpty(record.legacy_id);
       case 'rank':
@@ -962,7 +974,7 @@ const TaxonNamesCodePage = () => {
 
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
               <div className="space-y-2">
-                <label className="text-sm font-medium">Taxon name ID</label>
+                <label className="text-sm font-medium">NomosID</label>
                 <input
                   value={draftFilters.id}
                   onChange={(event) =>
@@ -972,7 +984,7 @@ const TaxonNamesCodePage = () => {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Legacy ID</label>
+                <label className="text-sm font-medium">LegacyID</label>
                 <input
                   value={draftFilters.legacyId}
                   onChange={(event) =>

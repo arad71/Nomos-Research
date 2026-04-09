@@ -47,6 +47,7 @@ type TaxonNameRecord = {
   review?: boolean;
   is_autonym?: boolean;
   is_current?: boolean;
+  is_wa_recognised?: boolean;
   vernacular?: string;
   all_vernaculars?: string;
   review_reason?: string;
@@ -111,6 +112,7 @@ type ColumnKey =
   | 'volumeInformation'
   | 'status'
   | 'reviewFlag'
+  | 'waCensusField'
   | 'isAutonym'
   | 'vernaculars'
   | 'vernacular'
@@ -133,7 +135,6 @@ type ColumnKey =
   | 'isEradicated'
   | 'naturalisedComments'
   | 'linearSequence'
-  | 'familyNid'
   | 'authorisedBy'
   | 'authorisedOn'
   | 'createdBy'
@@ -222,6 +223,7 @@ const columnOptions: Array<{ key: ColumnKey; label: string }> = [
   { key: 'publication', label: 'Publication' },
   { key: 'volumeInformation', label: 'Volume information' },
   { key: 'reviewFlag', label: 'Review?' },
+  { key: 'waCensusField', label: 'WA census' },
   { key: 'isAutonym', label: 'Is autonym?' },
   { key: 'vernaculars', label: 'Vernaculars' },
   { key: 'vernacular', label: 'Vernacular' },
@@ -242,7 +244,6 @@ const columnOptions: Array<{ key: ColumnKey; label: string }> = [
   { key: 'isEradicated', label: 'Is eradicated' },
   { key: 'naturalisedComments', label: 'Naturalised comments' },
   { key: 'linearSequence', label: 'Linear sequence' },
-  { key: 'familyNid', label: 'Family NID' },
   { key: 'createdBy', label: 'Created by' },
   { key: 'created', label: 'Created' },
   { key: 'notes', label: 'Notes' },
@@ -278,6 +279,7 @@ const sortableColumns: Partial<Record<ColumnKey, string>> = {
   publication: 'publication___title',
   volumeInformation: 'volume_information',
   reviewFlag: 'review',
+  waCensusField: 'is_wa_recognised',
   isAutonym: 'is_autonym',
   vernaculars: 'all_vernaculars',
   vernacular: 'vernacular',
@@ -299,7 +301,6 @@ const sortableColumns: Partial<Record<ColumnKey, string>> = {
   isEradicated: 'is_eradicated',
   naturalisedComments: 'naturalised_comments',
   linearSequence: 'linear_sequence',
-  familyNid: 'family',
   authorisedBy: 'authorised_by',
   authorisedOn: 'authorised_on',
   createdBy: 'created_by',
@@ -739,6 +740,17 @@ const publicationStatusOptions = [
   })),
 ];
 
+const publicationStatusLabelMap = PublicationStatus.reduce<Record<string, string>>(
+  (acc, option) => {
+    acc[option.id] = option.name;
+    return acc;
+  },
+  {}
+);
+
+const getPublicationStatusLabel = (value?: string | null) =>
+  value ? publicationStatusLabelMap[value] ?? value : '';
+
 const booleanOptions = [
   { label: 'Any', value: '' },
   { label: 'Yes', value: 'true' },
@@ -776,7 +788,6 @@ type ExportMaps = {
   publicationMap: Record<number, string>;
   userMap: Record<number, string>;
   ancestorMaps: Partial<Record<AncestorResource, Record<number, string>>>;
-  familyNidMap: Record<number, string>;
   conservationCodeMap: Record<number, string[]>;
 };
 
@@ -839,7 +850,7 @@ const getExportValue = (
       return record.volume_information ?? '';
     case 'status':
       return [
-        record.publication_status,
+        getPublicationStatusLabel(record.publication_status),
         record.review ? 'Review' : '',
         record.is_current ? 'Current' : '',
       ]
@@ -847,6 +858,8 @@ const getExportValue = (
         .join(', ');
     case 'reviewFlag':
       return booleanOrEmpty(record.review);
+    case 'waCensusField':
+      return booleanOrEmpty(record.is_wa_recognised);
     case 'isAutonym':
       return booleanOrEmpty(record.is_autonym);
     case 'vernaculars':
@@ -891,8 +904,6 @@ const getExportValue = (
       return record.naturalised_comments ?? '';
     case 'linearSequence':
       return record.linear_sequence ?? '';
-    case 'familyNid':
-      return stripHtml(record.family_nid ? maps.familyNidMap[record.family_nid] : '');
     case 'authorisedBy':
       return record.authorised_by ?? '';
     case 'authorisedOn':
@@ -1085,7 +1096,6 @@ const TaxonNamesPage = () => {
   const [ancestorMaps, setAncestorMaps] = React.useState<
     Partial<Record<AncestorResource, Record<number, string>>>
   >({});
-  const [familyNidMap, setFamilyNidMap] = React.useState<Record<number, string>>({});
   const [conservationCodeMap, setConservationCodeMap] = React.useState<
     Record<number, string[]>
   >({});
@@ -1162,33 +1172,19 @@ const TaxonNamesPage = () => {
           .filter((value): value is number => typeof value === 'number')
       )
     );
-    const familyNidIds = Array.from(
-      new Set(
-        state.data
-          .map((record) => record.family_nid)
-          .filter((value): value is number => typeof value === 'number')
-      )
-    );
     let active = true;
 
     Promise.all([
       fetchReferenceMap('publications', publicationIds, 'publication_id', 'title'),
       fetchReferenceMap('users', userIds, 'user_id', 'full_name'),
-      fetchReferenceMap(
-        'taxon_names',
-        familyNidIds,
-        'taxon_name_id',
-        'formatted_scientific_name'
-      ),
       fetchConservationCodeMap(taxonNameIds),
       ...ANCESTOR_RESOURCES.map((resource) => fetchAncestorMap(resource, taxonNameIds)),
-    ]).then(([publications, users, familyNames, conservationCodes, ...ancestorResults]) => {
+    ]).then(([publications, users, conservationCodes, ...ancestorResults]) => {
       if (!active) {
         return;
       }
       setPublicationMap(publications);
       setUserMap(users);
-      setFamilyNidMap(familyNames);
       setConservationCodeMap(conservationCodes);
       setAncestorMaps(
         ancestorResults.reduce<Partial<Record<AncestorResource, Record<number, string>>>>(
@@ -1485,8 +1481,10 @@ const TaxonNamesPage = () => {
       case 'status':
         return (
           <div className="flex flex-wrap gap-2">
-            {record.publication_status ? (
-              <Badge variant="outline">{record.publication_status}</Badge>
+            {getPublicationStatusLabel(record.publication_status) ? (
+              <Badge variant="outline">
+                {getPublicationStatusLabel(record.publication_status)}
+              </Badge>
             ) : null}
             {record.review ? <Badge variant="secondary">Review</Badge> : null}
             {record.is_current ? <Badge>Current</Badge> : null}
@@ -1494,6 +1492,8 @@ const TaxonNamesPage = () => {
         );
       case 'reviewFlag':
         return booleanOrEmpty(record.review);
+      case 'waCensusField':
+        return booleanOrEmpty(record.is_wa_recognised);
       case 'isAutonym':
         return booleanOrEmpty(record.is_autonym);
       case 'vernaculars':
@@ -1550,8 +1550,6 @@ const TaxonNamesPage = () => {
         return textOrEmpty(record.naturalised_comments);
       case 'linearSequence':
         return <span className="text-muted-foreground">{textOrEmpty(record.linear_sequence as number | null)}</span>;
-      case 'familyNid':
-        return renderHtmlOrFallback(record.family_nid ? familyNidMap[record.family_nid] : undefined);
       case 'authorisedBy':
         return textOrEmpty(record.authorised_by);
       case 'authorisedOn':
@@ -1731,29 +1729,14 @@ const TaxonNamesPage = () => {
             .filter((value): value is number => typeof value === 'number')
         )
       );
-      const familyNidIds = Array.from(
-        new Set(
-          allRecords
-            .map((record) => record.family_nid)
-            .filter((value): value is number => typeof value === 'number')
-        )
-      );
-
       const [
         exportPublicationMap,
         exportUserMap,
-        exportFamilyNidMap,
         exportConservationCodeMap,
         ...exportAncestorResults
       ] = await Promise.all([
         fetchReferenceMap('publications', publicationIds, 'publication_id', 'title'),
         fetchReferenceMap('users', userIds, 'user_id', 'full_name'),
-        fetchReferenceMap(
-          'taxon_names',
-          familyNidIds,
-          'taxon_name_id',
-          'formatted_scientific_name'
-        ),
         fetchConservationCodeMap(taxonNameIds),
         ...ANCESTOR_RESOURCES.map((resource) => fetchAncestorMap(resource, taxonNameIds)),
       ]);
@@ -1771,7 +1754,6 @@ const TaxonNamesPage = () => {
         publicationMap: exportPublicationMap,
         userMap: exportUserMap,
         ancestorMaps: exportAncestorMaps,
-        familyNidMap: exportFamilyNidMap,
         conservationCodeMap: exportConservationCodeMap,
       });
       const dateStamp = new Date().toISOString().slice(0, 10);
