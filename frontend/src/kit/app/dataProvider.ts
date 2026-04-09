@@ -190,7 +190,17 @@ export const myDataProvider: DataProvider = {
       return response;
     }
 
-    return dataProvider.getOne(resolvedResource, { id: recordId });
+    const freshRecord = await dataProvider.getOne(resolvedResource, { id: recordId });
+
+    return {
+      ...freshRecord,
+      data: {
+        ...(params.previousData ?? {}),
+        ...(freshRecord?.data ?? {}),
+        ...(params.data ?? {}),
+        id: freshRecord?.data?.id ?? recordId,
+      },
+    };
   },
   getList: (resource: string, params: GetListParams) => {
     if (resource === 'taxon_names_code') {
