@@ -175,6 +175,33 @@ export const myDataProvider: DataProvider = {
     }
     return dataProvider.getOne(resource, params);
   },
+  update: async (resource: string, params: UpdateParams) => {
+    const resolvedResource = resource === 'taxon_names_code' ? 'taxon_names' : resource;
+    const response = await dataProvider.update(
+      resolvedResource,
+      remapParamsForResource(resolvedResource, params)
+    );
+
+    const recordId =
+      response?.data?.id ??
+      (params.id != null ? params.id : undefined);
+
+    if (recordId == null) {
+      return response;
+    }
+
+    const freshRecord = await dataProvider.getOne(resolvedResource, { id: recordId });
+
+    return {
+      ...freshRecord,
+      data: {
+        ...(params.previousData ?? {}),
+        ...(freshRecord?.data ?? {}),
+        ...(params.data ?? {}),
+        id: freshRecord?.data?.id ?? recordId,
+      },
+    };
+  },
   getList: (resource: string, params: GetListParams) => {
     if (resource === 'taxon_names_code') {
       resource = 'taxon_names';
