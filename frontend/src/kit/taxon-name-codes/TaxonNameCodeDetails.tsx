@@ -159,7 +159,6 @@ const AddConservationCodeButton = () => {
       record={{ taxon_name_id: record.id }}
       fullWidth
       maxWidth="md"
-      mutationMode="pessimistic"
       title="Create conservation code"
       label="+ Create conservation code"
       ButtonProps={relatedDialogButtonProps}
