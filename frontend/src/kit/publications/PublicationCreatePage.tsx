@@ -8,6 +8,7 @@ const PublicationCreatePage = () => (
     resource="publications"
     title="Create publication"
     mutationMode="pessimistic"
+    redirect="edit"
     defaultValues={{ published: false }}
     transform={transformPublicationPayload}
   >

@@ -390,6 +390,11 @@ const PublicationReadOnlySection = () => {
 
 const CreatePublicationButton = () => {
   const form = useFormContext();
+  const publicationId = form.watch('publication_id');
+
+  if (publicationId) {
+    return null;
+  }
 
   return (
     <CreateInDialogButton
@@ -511,10 +516,12 @@ const TaxonNameRelatedSections = ({
                   }
                 />
                 <RecordField
-                  label="Formatted scientific name"
+                  label="Scientific name without authorship"
                   className="md:col-span-1 xl:col-span-3"
-                  render={(taxon: { formatted_scientific_name?: string | null }) => (
-                    <HtmlValue value={taxon.formatted_scientific_name} />
+                  render={(taxon: { canonical_name?: string | null; formatted_scientific_name?: string | null }) => (
+                    taxon.canonical_name || taxon.formatted_scientific_name ? (
+                      <HtmlValue value={taxon.canonical_name ?? taxon.formatted_scientific_name} />
+                    ) : null
                   )}
                 />
               </div>
