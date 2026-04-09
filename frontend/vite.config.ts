@@ -5,7 +5,7 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
   plugins: [react(), tailwindcss(), tsconfigPaths()],
-  envPrefix: ['VITE_', 'REACT_APP_'],
+  envPrefix: ['VITE_', 'REACT_APP_', 'AUTH_'],
   resolve: {
     alias: {
       '@mui/icons-material': '@mui/icons-material/esm',
