@@ -49,7 +49,7 @@ const columnOptions: Array<{ key: ColumnKey; label: string }> = [
   { key: 'preferred', label: 'Preferred' },
   { key: 'sortOrder', label: 'Sort order' },
   { key: 'updatedBy', label: 'Updated by' },
-  { key: 'updated', label: 'Updated' },
+  { key: 'updated', label: 'Updated on' },
   { key: 'deleted', label: 'Deleted' },
   { key: 'actions', label: 'Actions' },
 ];
@@ -255,19 +255,42 @@ const ClassificationSystemsPage = () => {
     setDraftFilters({ q: '', classType: '', deleted: '' });
     setSearchParams(new URLSearchParams());
   };
-  const buildExportCsv = (records: ClassificationSystemRecord[]) =>
+  const exportColumnOptions = columnOptions.filter((column) => column.key !== 'actions');
+
+  const getExportValue = (
+    column: ColumnKey,
+    record: ClassificationSystemRecord,
+    exportUserMap: Record<number, string>
+  ) => {
+    switch (column) {
+      case 'description':
+        return record.class_desc ?? '';
+      case 'type':
+        return record.class_type ? classificationTypeMap[record.class_type] ?? record.class_type : '';
+      case 'preferred':
+        return record.preferred === undefined ? '' : record.preferred ? 'Yes' : 'No';
+      case 'sortOrder':
+        return record.sort_order ?? '';
+      case 'updatedBy':
+        return record.updated_by ? exportUserMap[record.updated_by] ?? '' : '';
+      case 'updated':
+        return record.updated_on ?? '';
+      case 'deleted':
+        return record.deleted === undefined ? '' : record.deleted ? 'Yes' : 'No';
+      default:
+        return '';
+    }
+  };
+
+  const buildExportCsv = (
+    records: ClassificationSystemRecord[],
+    exportUserMap: Record<number, string>
+  ) =>
     [
-      ['Classification system ID', 'Description', 'Type', 'Preferred', 'Sort order', 'Updated by', 'Updated', 'Deleted'],
-      ...records.map((record) => [
-        record.classification_system_id ?? record.id ?? '',
-        record.class_desc ?? '',
-        record.class_type ? classificationTypeMap[record.class_type] ?? record.class_type : '',
-        record.preferred === undefined ? '' : record.preferred ? 'Yes' : 'No',
-        record.sort_order ?? '',
-        record.updated_by ? userMap[record.updated_by] ?? '' : '',
-        record.updated_on ?? '',
-        record.deleted === undefined ? '' : record.deleted ? 'Yes' : 'No',
-      ]),
+      exportColumnOptions.map((column) => column.label),
+      ...records.map((record) =>
+        exportColumnOptions.map((column) => getExportValue(column.key, record, exportUserMap))
+      ),
     ]
       .map((row) => row.map((value) => escapeCsvValue(value)).join(','))
       .join('\n');
@@ -283,10 +306,7 @@ const ClassificationSystemsPage = () => {
       }
       const userIds = Array.from(new Set(allRecords.map((record) => record.updated_by).filter((value): value is number => typeof value === 'number')));
       const nextUserMap = await fetchReferenceMap('users', userIds, 'user_id', 'full_name');
-      const previousUserMap = userMap;
-      setUserMap(nextUserMap);
-      const csv = buildExportCsv(allRecords);
-      setUserMap(previousUserMap);
+      const csv = buildExportCsv(allRecords, nextUserMap);
       downloadCsv(`classification_systems_${new Date().toISOString().slice(0, 10)}.csv`, csv);
     } finally {
       setIsExporting(false);

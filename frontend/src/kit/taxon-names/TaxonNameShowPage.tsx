@@ -36,7 +36,7 @@ const TaxonNameShowPage = () => (
         <TaxonNameHierarchySection />
         <TaxonNameNameFormatsSection />
       </div>
-      <div className="grid gap-6 xl:sticky xl:top-6 xl:self-start">
+      <div className="grid h-fit gap-6 self-start">
         <HistoryInfoBox />
         <TaxonNameSidebarCards />
       </div>

@@ -69,7 +69,7 @@ const columnOptions: Array<{ key: ColumnKey; label: string }> = [
   { key: 'initials', label: 'Initials' },
   { key: 'orcId', label: 'ORC ID' },
   { key: 'updatedBy', label: 'Updated by' },
-  { key: 'updated', label: 'Updated' },
+  { key: 'updated', label: 'Updated on' },
   { key: 'deleted', label: 'Deleted' },
   { key: 'actions', label: 'Actions' },
 ];
@@ -284,20 +284,41 @@ const AuthorsPage = () => {
     setSearchParams(new URLSearchParams());
   };
 
+  const exportColumnOptions = columnOptions.filter((column) => column.key !== 'actions');
+
+  const getExportValue = (
+    column: ColumnKey,
+    record: AuthorRecord,
+    exportUserMap: Record<number, string>
+  ) => {
+    switch (column) {
+      case 'abbreviation':
+        return record.abbreviation ?? '';
+      case 'surname':
+        return record.surname ?? '';
+      case 'firstNames':
+        return record.first_names ?? '';
+      case 'initials':
+        return record.initials ?? '';
+      case 'orcId':
+        return record.orc_id ?? '';
+      case 'updatedBy':
+        return record.updated_by ? exportUserMap[record.updated_by] ?? '' : '';
+      case 'updated':
+        return record.updated_on ?? '';
+      case 'deleted':
+        return renderBoolean(record.deleted);
+      default:
+        return '';
+    }
+  };
+
   const buildExportCsv = (records: AuthorRecord[], exportUserMap: Record<number, string>) =>
     [
-      ['Author ID', 'Abbreviation', 'Surname', 'First names', 'Initials', 'ORC ID', 'Updated by', 'Updated', 'Deleted'],
-      ...records.map((record) => [
-        record.author_id ?? record.id ?? '',
-        record.abbreviation ?? '',
-        record.surname ?? '',
-        record.first_names ?? '',
-        record.initials ?? '',
-        record.orc_id ?? '',
-        record.updated_by ? exportUserMap[record.updated_by] ?? '' : '',
-        record.updated_on ?? '',
-        renderBoolean(record.deleted),
-      ]),
+      exportColumnOptions.map((column) => column.label),
+      ...records.map((record) =>
+        exportColumnOptions.map((column) => getExportValue(column.key, record, exportUserMap))
+      ),
     ]
       .map((row) => row.map((value) => escapeCsvValue(value)).join(','))
       .join('\n');

@@ -75,7 +75,7 @@ const columnOptions: Array<{ key: ColumnKey; label: string }> = [
   { key: 'source', label: 'Source' },
   { key: 'sortOrder', label: 'Sort order' },
   { key: 'updatedBy', label: 'Updated by' },
-  { key: 'updated', label: 'Updated' },
+  { key: 'updated', label: 'Updated on' },
   { key: 'deleted', label: 'Deleted' },
   { key: 'actions', label: 'Actions' },
 ];
@@ -460,36 +460,52 @@ const VernacularsPage = () => {
     setSearchParams(new URLSearchParams());
   };
 
-  const buildExportCsv = (records: VernacularRecord[]) => {
-    const headers = [
-      'Vernacular ID',
-      'Taxon name',
-      'Vernacular name',
-      'Language',
-      'Lang pref',
-      'Preferred',
-      'Source',
-      'Sort order',
-      'Updated by',
-      'Updated',
-      'Deleted',
-    ];
+  const exportColumnOptions = columnOptions.filter((column) => column.key !== 'actions');
 
-    const rows = records.map((record) => [
-      record.vernacular_id ?? record.id ?? '',
-      record.taxon_name_id ? taxonNameMap[record.taxon_name_id] ?? '' : '',
-      record.vernacular_name ?? '',
-      record.language ? languageMap[record.language] ?? record.language : '',
-      record.lang_pref === undefined ? '' : record.lang_pref ? 'Yes' : 'No',
-      record.preferred === undefined ? '' : record.preferred ? 'Yes' : 'No',
-      record.source ?? '',
-      record.sort_order ?? '',
-      record.updated_by ? userMap[record.updated_by] ?? '' : '',
-      record.updated_on ?? '',
-      record.deleted === undefined ? '' : record.deleted ? 'Yes' : 'No',
-    ]);
+  const getExportValue = (
+    column: ColumnKey,
+    record: VernacularRecord,
+    exportTaxonNameMap: Record<number, string>,
+    exportUserMap: Record<number, string>
+  ) => {
+    switch (column) {
+      case 'taxonName':
+        return record.taxon_name_id ? exportTaxonNameMap[record.taxon_name_id] ?? '' : '';
+      case 'vernacularName':
+        return record.vernacular_name ?? '';
+      case 'language':
+        return record.language ? languageMap[record.language] ?? record.language : '';
+      case 'langPref':
+        return record.lang_pref === undefined ? '' : record.lang_pref ? 'Yes' : 'No';
+      case 'preferred':
+        return record.preferred === undefined ? '' : record.preferred ? 'Yes' : 'No';
+      case 'source':
+        return record.source ?? '';
+      case 'sortOrder':
+        return record.sort_order ?? '';
+      case 'updatedBy':
+        return record.updated_by ? exportUserMap[record.updated_by] ?? '' : '';
+      case 'updated':
+        return record.updated_on ?? '';
+      case 'deleted':
+        return record.deleted === undefined ? '' : record.deleted ? 'Yes' : 'No';
+      default:
+        return '';
+    }
+  };
 
-    return [headers, ...rows]
+  const buildExportCsv = (
+    records: VernacularRecord[],
+    exportTaxonNameMap: Record<number, string>,
+    exportUserMap: Record<number, string>
+  ) => {
+    const rows = records.map((record) =>
+      exportColumnOptions.map((column) =>
+        getExportValue(column.key, record, exportTaxonNameMap, exportUserMap)
+      )
+    );
+
+    return [exportColumnOptions.map((column) => column.label), ...rows]
       .map((row) => row.map((value) => escapeCsvValue(value)).join(','))
       .join('\n');
   };
@@ -535,13 +551,7 @@ const VernacularsPage = () => {
         fetchReferenceMap('users', userIds, 'user_id', 'full_name'),
       ]);
 
-      const previousTaxonNameMap = taxonNameMap;
-      const previousUserMap = userMap;
-      setTaxonNameMap(nextTaxonNameMap);
-      setUserMap(nextUserMap);
-      const csv = buildExportCsv(allRecords);
-      setTaxonNameMap(previousTaxonNameMap);
-      setUserMap(previousUserMap);
+      const csv = buildExportCsv(allRecords, nextTaxonNameMap, nextUserMap);
 
       const dateStamp = new Date().toISOString().slice(0, 10);
       downloadCsv(`vernaculars_${dateStamp}.csv`, csv);

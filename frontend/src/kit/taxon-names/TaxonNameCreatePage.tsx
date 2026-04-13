@@ -9,7 +9,7 @@ const TaxonNameCreatePage = () => (
     resource="taxon_names"
     title="Create taxon name"
     mutationMode="pessimistic"
-    transform={normalizeTaxonNameHybridFields}
+    redirect="edit"
   >
     <div className="grid gap-6">
       <div className="rounded-2xl border border-border bg-card p-6">
@@ -25,7 +25,14 @@ const TaxonNameCreatePage = () => (
             <TaxonNameRelatedSections
               editable
               embedded
-              sections={['authors', 'publication', 'vernaculars', 'hierarchy', 'relatedNames', 'conservationCodes']}
+              sections={[
+                'authors',
+                'publication',
+                'vernaculars',
+                'hierarchy',
+                'relatedNames',
+                'conservationCodes',
+              ]}
             />
           }
         />

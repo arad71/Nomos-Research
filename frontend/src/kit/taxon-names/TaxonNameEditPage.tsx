@@ -59,7 +59,14 @@ const TaxonNameEditPage = () => {
                 <TaxonNameRelatedSections
                   editable
                   embedded
-                  sections={['authors', 'publication', 'vernaculars', 'hierarchy', 'relatedNames', 'conservationCodes']}
+                  sections={[
+                    'authors',
+                    'publication',
+                    'vernaculars',
+                    'hierarchy',
+                    'relatedNames',
+                    'conservationCodes',
+                  ]}
                 />
               }
             />
@@ -70,8 +77,11 @@ const TaxonNameEditPage = () => {
           <TaxonNameSidebarCards />
         </div>
       </div>
+      <div className="grid h-fit gap-6 self-start">
+        <HistoryInfoBox />
+        <TaxonNameSidebarCards />
+      </div>
     </Edit>
   );
 };
-
 export default TaxonNameEditPage;

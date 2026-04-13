@@ -1,9 +1,20 @@
 import * as React from 'react';
-import { useCanAccess, useDataProvider, useGetOne, useListContext, useNotify, useRecordContext, useRefresh } from 'ra-core';
+import {
+  useCanAccess,
+  useDataProvider,
+  useGetOne,
+  useListContext,
+  useNotify,
+  useRecordContext,
+  useRefresh,
+} from 'ra-core';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { ArrowDown, ArrowUp } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { CreateInDialogButton, EditInDialogButton } from '@react-admin/ra-form-layout';
+import {
+  CreateInDialogButton,
+  EditInDialogButton,
+} from '@react-admin/ra-form-layout';
 import { ThemeProvider, createTheme } from '@mui/material';
 import { AutocompleteInput } from '@/components/admin/autocomplete-input';
 import { DeleteButton } from '@/components/admin/delete-button';
@@ -44,13 +55,19 @@ import HierarchyForm from '../hierarchies/HierarchyForm';
 import TaxonNameParentForm from '../taxon-name-parents/TaxonNameParentForm';
 import PublicationForm from '../publications/PublicationForm';
 import HybridCategory from '../shared/choices/HybridCategory';
-import { normalizeDoi, transformPublicationPayload } from '../shared/publicationDoi';
+import {
+  normalizeDoi,
+  transformPublicationPayload,
+} from '../shared/publicationDoi';
 import VernacularForm from '../vernaculars/VernacularForm';
 
-const crossRefTypeMap = CrossRefType.reduce<Record<string, string>>((acc, item) => {
-  acc[item.id] = item.name;
-  return acc;
-}, {});
+const crossRefTypeMap = CrossRefType.reduce<Record<string, string>>(
+  (acc, item) => {
+    acc[item.id] = item.name;
+    return acc;
+  },
+  {}
+);
 
 const HtmlValue = ({ value }: { value?: string | null }) => {
   if (!value) {
@@ -129,14 +146,19 @@ type ParallelNamePreviewRecord = {
 };
 
 const formatParentPreviewName = (taxon?: ParentTaxonRecord) =>
-  taxon?.uninomial?.trim()
-  || taxon?.scientific_name?.trim()
-  || taxon?.canonical_name?.trim()
-  || '';
+  taxon?.uninomial?.trim() ||
+  taxon?.scientific_name?.trim() ||
+  taxon?.canonical_name?.trim() ||
+  '';
 
-const getOrderedParentNames = (rows: ParentLinkRecord[], parentMap: Map<string, ParentTaxonRecord>) =>
+const getOrderedParentNames = (
+  rows: ParentLinkRecord[],
+  parentMap: Map<string, ParentTaxonRecord>
+) =>
   [...rows]
-    .sort((left, right) => Number(left.sequence ?? 0) - Number(right.sequence ?? 0))
+    .sort(
+      (left, right) => Number(left.sequence ?? 0) - Number(right.sequence ?? 0)
+    )
     .map((row) => parentMap.get(String(row.parent_taxon_name_id ?? '')))
     .map(formatParentPreviewName)
     .filter(Boolean);
@@ -144,7 +166,7 @@ const getOrderedParentNames = (rows: ParentLinkRecord[], parentMap: Map<string, 
 const deriveParentValue = (
   rows: ParentLinkRecord[],
   parentMap: Map<string, ParentTaxonRecord>,
-  hybridCategory?: string | null,
+  hybridCategory?: string | null
 ) => {
   const orderedParentNames = getOrderedParentNames(rows, parentMap);
 
@@ -159,7 +181,10 @@ const deriveParentValue = (
   return orderedParentNames.join(' × ');
 };
 
-const validateHybridCategory = (value?: string | null, allValues?: { is_hybrid?: boolean }) => {
+const validateHybridCategory = (
+  value?: string | null,
+  allValues?: { is_hybrid?: boolean }
+) => {
   if (allValues?.is_hybrid && !value) {
     return 'Hybrid category is required when this taxon name is marked as a hybrid';
   }
@@ -168,10 +193,17 @@ const validateHybridCategory = (value?: string | null, allValues?: { is_hybrid?:
 };
 
 const ParentHybridFields = ({ editable }: { editable?: boolean }) => {
-  const record = useRecordContext<{ id?: string | number; is_hybrid?: boolean | null; hybrid_category?: string | null }>();
+  const record = useRecordContext<{
+    id?: string | number;
+    is_hybrid?: boolean | null;
+    hybrid_category?: string | null;
+  }>();
 
   if (editable) {
-    const { setValue } = useFormContext<{ is_hybrid?: boolean; hybrid_category?: string | null }>();
+    const { setValue } = useFormContext<{
+      is_hybrid?: boolean;
+      hybrid_category?: string | null;
+    }>();
     const isHybrid = useWatch({ name: 'is_hybrid' });
     const hybridCategory = useWatch({ name: 'hybrid_category' });
     const recordId = record?.id;
@@ -182,19 +214,25 @@ const ParentHybridFields = ({ editable }: { editable?: boolean }) => {
         pagination: { page: 1, perPage: 100 },
         sort: { field: 'sequence', order: 'ASC' },
       },
-      { enabled: Boolean(recordId) },
+      { enabled: Boolean(recordId) }
     );
     const hasMultipleParents = parentRows.length > 1;
 
     React.useEffect(() => {
       if (!isHybrid) {
-        setValue('hybrid_category', null, { shouldDirty: true, shouldValidate: true });
+        setValue('hybrid_category', null, {
+          shouldDirty: true,
+          shouldValidate: true,
+        });
       }
     }, [isHybrid, setValue]);
 
     React.useEffect(() => {
       if (hasMultipleParents && !isHybrid) {
-        setValue('is_hybrid', true, { shouldDirty: true, shouldValidate: true });
+        setValue('is_hybrid', true, {
+          shouldDirty: true,
+          shouldValidate: true,
+        });
       }
     }, [hasMultipleParents, isHybrid, setValue]);
 
@@ -238,8 +276,18 @@ const ParentHybridFields = ({ editable }: { editable?: boolean }) => {
 
   return (
     <div className="grid items-start gap-4 md:grid-cols-2 xl:grid-cols-4">
-      <RecordField label="Hybrid" render={(taxon: { is_hybrid?: boolean | null }) => renderBoolean(taxon.is_hybrid)} record={record} />
-      <RecordField source="hybrid_category" label="Hybrid category" record={record}>
+      <RecordField
+        label="Hybrid"
+        render={(taxon: { is_hybrid?: boolean | null }) =>
+          renderBoolean(taxon.is_hybrid)
+        }
+        record={record}
+      />
+      <RecordField
+        source="hybrid_category"
+        label="Hybrid category"
+        record={record}
+      >
         <RecordField
           label=""
           record={record}
@@ -259,29 +307,34 @@ const useParentDerivedUninomial = ({
   recordId?: string | number;
   hybridCategory?: string | null;
 }) => {
-  const { data: parentRows = [], isPending: parentRowsPending } = useGetList<ParentLinkRecord>(
-    'taxon_name_parents',
-    {
-      filter: { taxon_name_id: recordId },
-      pagination: { page: 1, perPage: 100 },
-      sort: { field: 'sequence', order: 'ASC' },
-    },
-    { enabled: recordId != null },
-  );
+  const { data: parentRows = [], isPending: parentRowsPending } =
+    useGetList<ParentLinkRecord>(
+      'taxon_name_parents',
+      {
+        filter: { taxon_name_id: recordId },
+        pagination: { page: 1, perPage: 100 },
+        sort: { field: 'sequence', order: 'ASC' },
+      },
+      { enabled: recordId != null }
+    );
 
   const parentIds = React.useMemo(
     () =>
       (Array.isArray(parentRows) ? parentRows : [])
         .map((row) => row.parent_taxon_name_id)
-        .filter((value): value is string | number => value !== null && value !== undefined && value !== ''),
-    [parentRows],
+        .filter(
+          (value): value is string | number =>
+            value !== null && value !== undefined && value !== ''
+        ),
+    [parentRows]
   );
 
-  const { data: parentRecords = [], isPending: parentRecordsPending } = useGetMany<ParentTaxonRecord>(
-    'taxon_names',
-    { ids: parentIds },
-    { enabled: parentIds.length > 0 },
-  );
+  const { data: parentRecords = [], isPending: parentRecordsPending } =
+    useGetMany<ParentTaxonRecord>(
+      'taxon_names',
+      { ids: parentIds },
+      { enabled: parentIds.length > 0 }
+    );
 
   const parentMap = React.useMemo(
     () =>
@@ -289,17 +342,25 @@ const useParentDerivedUninomial = ({
         (Array.isArray(parentRecords) ? parentRecords : []).map((parent) => [
           String(parent.id ?? parent.taxon_name_id ?? ''),
           parent,
-        ]),
+        ])
       ),
-    [parentRecords],
+    [parentRecords]
   );
 
   const parentDerivedValue = React.useMemo(
-    () => deriveParentValue((Array.isArray(parentRows) ? parentRows : []) as ParentLinkRecord[], parentMap, hybridCategory),
-    [hybridCategory, parentMap, parentRows],
+    () =>
+      deriveParentValue(
+        (Array.isArray(parentRows) ? parentRows : []) as ParentLinkRecord[],
+        parentMap,
+        hybridCategory
+      ),
+    [hybridCategory, parentMap, parentRows]
   );
 
-  return { parentDerivedValue, isPending: parentRowsPending || parentRecordsPending };
+  return {
+    parentDerivedValue,
+    isPending: parentRowsPending || parentRecordsPending,
+  };
 };
 
 const ReadOnlyParallelUninomialField = () => {
@@ -318,8 +379,8 @@ const ReadOnlyParallelUninomialField = () => {
   const hasOverride = Boolean(parallelUninomial && parallelUninomial.trim());
   const matchesParentDerived = Boolean(
     hasOverride &&
-    parentDerivedValue &&
-    parallelUninomial.trim() === parentDerivedValue.trim()
+      parentDerivedValue &&
+      parallelUninomial.trim() === parentDerivedValue.trim()
   );
 
   return (
@@ -329,12 +390,16 @@ const ReadOnlyParallelUninomialField = () => {
         {hasOverride && !matchesParentDerived ? (
           <>
             <Badge variant="outline">{parallelUninomial}</Badge>
-            <span className="text-xs text-muted-foreground">Explicit parallel override</span>
+            <span className="text-xs text-muted-foreground">
+              Explicit parallel override
+            </span>
           </>
         ) : parentDerivedValue ? (
           <>
             <Badge variant="secondary">{parentDerivedValue}</Badge>
-            <span className="text-xs text-muted-foreground">Using the parent-derived value</span>
+            <span className="text-xs text-muted-foreground">
+              Using the parent-derived value
+            </span>
           </>
         ) : (
           <span className="text-sm text-muted-foreground">Not set</span>
@@ -358,19 +423,25 @@ const EditableParallelUninomialField = () => {
     hybridCategory,
   });
 
-  const hasOverride = Boolean(parallelUninomial && String(parallelUninomial).trim());
+  const hasOverride = Boolean(
+    parallelUninomial && String(parallelUninomial).trim()
+  );
   const matchesParentDerived = Boolean(
     hasOverride &&
-    parentDerivedValue &&
-    String(parallelUninomial).trim() === parentDerivedValue.trim()
+      parentDerivedValue &&
+      String(parallelUninomial).trim() === parentDerivedValue.trim()
   );
   const [showOverrideInput, setShowOverrideInput] = React.useState(
     !parentDerivedValue || (hasOverride && !matchesParentDerived)
   );
-  const [stashedOverrideValue, setStashedOverrideValue] = React.useState<string | null>(null);
+  const [stashedOverrideValue, setStashedOverrideValue] = React.useState<
+    string | null
+  >(null);
 
   React.useEffect(() => {
-    setShowOverrideInput(!parentDerivedValue || (hasOverride && !matchesParentDerived));
+    setShowOverrideInput(
+      !parentDerivedValue || (hasOverride && !matchesParentDerived)
+    );
   }, [hasOverride, matchesParentDerived, parentDerivedValue]);
 
   React.useEffect(() => {
@@ -382,11 +453,15 @@ const EditableParallelUninomialField = () => {
   if (!showOverrideInput && parentDerivedValue) {
     return (
       <div className="grid gap-2 xl:col-span-2">
-        <div className="flex items-center gap-2 text-sm leading-none font-medium">Parallel uninomial</div>
+        <div className="flex items-center gap-2 text-sm leading-none font-medium">
+          Parallel uninomial
+        </div>
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex min-h-10 flex-1 flex-wrap items-center gap-2 rounded-xl border border-border bg-background px-3 py-2">
             <Badge variant="secondary">{parentDerivedValue}</Badge>
-            <span className="text-sm text-muted-foreground">Using the parent-derived value.</span>
+            <span className="text-sm text-muted-foreground">
+              Using the parent-derived value.
+            </span>
           </div>
           <Button
             type="button"
@@ -394,18 +469,23 @@ const EditableParallelUninomialField = () => {
             size="sm"
             onClick={() => {
               setShowOverrideInput(true);
-              form.setValue('parallel_override_uninomial', stashedOverrideValue ?? null, {
-                shouldDirty: true,
-                shouldTouch: true,
-                shouldValidate: true,
-              });
+              form.setValue(
+                'parallel_override_uninomial',
+                stashedOverrideValue ?? null,
+                {
+                  shouldDirty: true,
+                  shouldTouch: true,
+                  shouldValidate: true,
+                }
+              );
             }}
           >
             Override
           </Button>
         </div>
         <div className="text-xs text-muted-foreground">
-          Set an override only when the parallel uninomial should differ from the parent-derived value.
+          Set an override only when the parallel uninomial should differ from
+          the parent-derived value.
         </div>
       </div>
     );
@@ -429,7 +509,9 @@ const EditableParallelUninomialField = () => {
             className="mt-7"
             onClick={() => {
               const currentValue =
-                typeof parallelUninomial === 'string' ? parallelUninomial.trim() : '';
+                typeof parallelUninomial === 'string'
+                  ? parallelUninomial.trim()
+                  : '';
               if (currentValue) {
                 setStashedOverrideValue(currentValue);
               }
@@ -447,15 +529,20 @@ const EditableParallelUninomialField = () => {
       </div>
       <div className="flex flex-wrap items-center gap-2">
         {isPending ? (
-          <span className="text-xs text-muted-foreground">Loading parent-derived value...</span>
+          <span className="text-xs text-muted-foreground">
+            Loading parent-derived value...
+          </span>
         ) : parentDerivedValue ? (
           <>
             <Badge variant="outline">{parentDerivedValue}</Badge>
-            <span className="text-xs text-muted-foreground">Parent-derived default</span>
+            <span className="text-xs text-muted-foreground">
+              Parent-derived default
+            </span>
           </>
         ) : (
           <span className="text-xs text-muted-foreground">
-            No parent-derived uninomial is available, so this field acts as the parallel fallback.
+            No parent-derived uninomial is available, so this field acts as the
+            parallel fallback.
           </span>
         )}
       </div>
@@ -470,7 +557,9 @@ const ParallelNameOverridesPanel = ({ editable }: { editable?: boolean }) => {
         <div className="space-y-1">
           <div className="text-sm font-medium">Parallel name fields</div>
           <p className="text-sm text-muted-foreground">
-            These fields drive the parallel name engine separately from the current saved taxon-name fields. They are seeded from the current values, but can then diverge safely.
+            These fields drive the parallel name engine separately from the
+            current saved taxon-name fields. They are seeded from the current
+            values, but can then diverge safely.
           </p>
         </div>
         <div className="grid items-start gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -497,13 +586,21 @@ const ParallelNameOverridesPanel = ({ editable }: { editable?: boolean }) => {
       <div className="space-y-1">
         <div className="text-sm font-medium">Parallel name fields</div>
         <p className="text-sm text-muted-foreground">
-          These fields drive the parallel name engine separately from the current saved taxon-name fields. They are seeded from the current values, but can then diverge safely.
+          These fields drive the parallel name engine separately from the
+          current saved taxon-name fields. They are seeded from the current
+          values, but can then diverge safely.
         </p>
       </div>
       <div className="grid items-start gap-4 md:grid-cols-2 xl:grid-cols-4">
         <ReadOnlyParallelUninomialField />
-        <RecordField source="parallel_override_specific_epithet" label="Parallel specific epithet" />
-        <RecordField source="parallel_override_infraspecific_epithet" label="Parallel infraspecific epithet" />
+        <RecordField
+          source="parallel_override_specific_epithet"
+          label="Parallel specific epithet"
+        />
+        <RecordField
+          source="parallel_override_infraspecific_epithet"
+          label="Parallel infraspecific epithet"
+        />
       </div>
     </div>
   );
@@ -517,7 +614,7 @@ const ParallelNamePreviewPanel = ({
   const { data, isPending, error } = useGetOne<ParallelNamePreviewRecord>(
     'taxon_names_parallel_name_preview',
     { id: recordId, meta: { strict: true } },
-    { enabled: recordId != null },
+    { enabled: recordId != null }
   );
 
   if (!recordId) {
@@ -550,20 +647,22 @@ const ParallelNamePreviewPanel = ({
     <div className="rounded-xl border border-sky-200 bg-sky-50/80 p-4 dark:border-sky-900/60 dark:bg-sky-950/20">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">
-        <div className="text-sm font-medium">Parallel name engine preview</div>
-        <Badge className="border-sky-300 bg-sky-100 text-sky-900 hover:bg-sky-100 dark:border-sky-800 dark:bg-sky-900/50 dark:text-sky-100">
-          {formatPreviewTitle(data.strategy)}
-        </Badge>
-        {data.matches_current_scientific_name ? (
-          <Badge className="border-emerald-300 bg-emerald-100 text-emerald-900 hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-100">
-            Scientific name matches current
+          <div className="text-sm font-medium">
+            Parallel name engine preview
+          </div>
+          <Badge className="border-sky-300 bg-sky-100 text-sky-900 hover:bg-sky-100 dark:border-sky-800 dark:bg-sky-900/50 dark:text-sky-100">
+            {formatPreviewTitle(data.strategy)}
           </Badge>
-        ) : null}
-        {data.matches_current_uninomial ? (
-          <Badge className="border-emerald-300 bg-emerald-100 text-emerald-900 hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-100">
-            Uninomial matches current
-          </Badge>
-        ) : null}
+          {data.matches_current_scientific_name ? (
+            <Badge className="border-emerald-300 bg-emerald-100 text-emerald-900 hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-100">
+              Scientific name matches current
+            </Badge>
+          ) : null}
+          {data.matches_current_uninomial ? (
+            <Badge className="border-emerald-300 bg-emerald-100 text-emerald-900 hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-100">
+              Uninomial matches current
+            </Badge>
+          ) : null}
         </div>
         <Badge className="border-sky-300 bg-sky-100 text-sky-900 hover:bg-sky-100 dark:border-sky-800 dark:bg-sky-900/50 dark:text-sky-100">
           Strict parallel mode
@@ -571,7 +670,9 @@ const ParallelNamePreviewPanel = ({
       </div>
       <div className="mt-3 grid gap-3 md:grid-cols-2">
         <div className="space-y-1">
-          <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Current scientific name</div>
+          <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            Current scientific name
+          </div>
           <div className="text-sm">
             {data.current_formatted_scientific_name ? (
               <HtmlValue value={data.current_formatted_scientific_name} />
@@ -581,7 +682,9 @@ const ParallelNamePreviewPanel = ({
           </div>
         </div>
         <div className="space-y-1">
-          <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Derived scientific name</div>
+          <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            Derived scientific name
+          </div>
           <div className="text-sm">
             {data.derived_formatted_scientific_name ? (
               <HtmlValue value={data.derived_formatted_scientific_name} />
@@ -591,17 +694,27 @@ const ParallelNamePreviewPanel = ({
           </div>
         </div>
         <div className="space-y-1">
-          <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Current canonical name</div>
-          <div className="text-sm">{data.current_canonical_name || 'Not set'}</div>
+          <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            Current canonical name
+          </div>
+          <div className="text-sm">
+            {data.current_canonical_name || 'Not set'}
+          </div>
         </div>
         <div className="space-y-1">
-          <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Derived canonical name</div>
-          <div className="text-sm">{data.derived_canonical_name || 'Unable to derive yet'}</div>
+          <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            Derived canonical name
+          </div>
+          <div className="text-sm">
+            {data.derived_canonical_name || 'Unable to derive yet'}
+          </div>
         </div>
       </div>
       {notes.length ? (
         <div className="mt-3 space-y-2">
-          <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Notes</div>
+          <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            Notes
+          </div>
           <div className="space-y-1 text-sm text-muted-foreground">
             {notes.map((note) => (
               <div key={note}>{note}</div>
@@ -610,7 +723,8 @@ const ParallelNamePreviewPanel = ({
         </div>
       ) : null}
       <div className="mt-3 text-xs text-muted-foreground">
-        This preview uses the parallel engine and does not replace the current saved name fields.
+        This preview uses the parallel engine and does not replace the current
+        saved name fields.
       </div>
     </div>
   );
@@ -624,7 +738,7 @@ const DerivedScientificNameSummaryField = ({
   const { data, isPending } = useGetOne<ParallelNamePreviewRecord>(
     'taxon_names_parallel_name_preview',
     { id: recordId as string | number, meta: { strict: true } },
-    { enabled: recordId != null },
+    { enabled: recordId != null }
   );
 
   if (recordId == null) {
@@ -650,7 +764,11 @@ const DerivedScientificNameSummaryField = ({
   );
 };
 
-const CreateParentNameRowButton = ({ recordId }: { recordId: string | number }) => {
+const CreateParentNameRowButton = ({
+  recordId,
+}: {
+  recordId: string | number;
+}) => {
   const { data = [], isPending } = useGetList<ParentLinkRecord>(
     'taxon_name_parents',
     {
@@ -658,7 +776,7 @@ const CreateParentNameRowButton = ({ recordId }: { recordId: string | number }) 
       pagination: { page: 1, perPage: 100 },
       sort: { field: 'sequence', order: 'DESC' },
     },
-    { enabled: Boolean(recordId) },
+    { enabled: Boolean(recordId) }
   );
 
   const nextSequence = React.useMemo(() => {
@@ -696,64 +814,80 @@ const ParentSequenceButtons = () => {
   const [isMoving, setIsMoving] = React.useState(false);
 
   const orderedRows = React.useMemo(
-    () => [...data].sort((left, right) => Number(left.sequence ?? 0) - Number(right.sequence ?? 0)),
-    [data],
+    () =>
+      [...data].sort(
+        (left, right) =>
+          Number(left.sequence ?? 0) - Number(right.sequence ?? 0)
+      ),
+    [data]
   );
 
   const currentIndex = React.useMemo(
-    () => orderedRows.findIndex((row) => String(row.id ?? '') === String(record?.id ?? '')),
-    [orderedRows, record?.id],
+    () =>
+      orderedRows.findIndex(
+        (row) => String(row.id ?? '') === String(record?.id ?? '')
+      ),
+    [orderedRows, record?.id]
   );
 
-  const moveRow = React.useCallback(async (direction: -1 | 1) => {
-    if (!record?.id || currentIndex < 0) {
-      return;
-    }
+  const moveRow = React.useCallback(
+    async (direction: -1 | 1) => {
+      if (!record?.id || currentIndex < 0) {
+        return;
+      }
 
-    const swapIndex = currentIndex + direction;
-    if (swapIndex < 0 || swapIndex >= orderedRows.length) {
-      return;
-    }
+      const swapIndex = currentIndex + direction;
+      if (swapIndex < 0 || swapIndex >= orderedRows.length) {
+        return;
+      }
 
-    const currentRow = orderedRows[currentIndex];
-    const targetRow = orderedRows[swapIndex];
+      const currentRow = orderedRows[currentIndex];
+      const targetRow = orderedRows[swapIndex];
 
-    if (!targetRow?.id) {
-      return;
-    }
+      if (!targetRow?.id) {
+        return;
+      }
 
-    const currentSequence = Number(currentRow.sequence ?? 0);
-    const targetSequence = Number(targetRow.sequence ?? 0);
-    const temporarySequence = orderedRows.reduce((maxValue, row) => {
-      const value = Number(row.sequence ?? 0);
-      return Number.isFinite(value) ? Math.max(maxValue, value) : maxValue;
-    }, 0) + 1;
+      const currentSequence = Number(currentRow.sequence ?? 0);
+      const targetSequence = Number(targetRow.sequence ?? 0);
+      const temporarySequence =
+        orderedRows.reduce((maxValue, row) => {
+          const value = Number(row.sequence ?? 0);
+          return Number.isFinite(value) ? Math.max(maxValue, value) : maxValue;
+        }, 0) + 1;
 
-    setIsMoving(true);
+      setIsMoving(true);
 
-    try {
-      await dataProvider.update('taxon_name_parents', {
-        id: currentRow.id,
-        data: { ...currentRow, sequence: temporarySequence },
-        previousData: currentRow,
-      });
-      await dataProvider.update('taxon_name_parents', {
-        id: targetRow.id,
-        data: { ...targetRow, sequence: currentSequence },
-        previousData: targetRow,
-      });
-      await dataProvider.update('taxon_name_parents', {
-        id: currentRow.id,
-        data: { ...currentRow, sequence: targetSequence },
-        previousData: currentRow,
-      });
-      refresh();
-    } catch (error) {
-      notify(error instanceof Error ? error.message : 'Failed to update parent order', { type: 'error' });
-    } finally {
-      setIsMoving(false);
-    }
-  }, [currentIndex, dataProvider, notify, orderedRows, record?.id, refresh]);
+      try {
+        await dataProvider.update('taxon_name_parents', {
+          id: currentRow.id,
+          data: { ...currentRow, sequence: temporarySequence },
+          previousData: currentRow,
+        });
+        await dataProvider.update('taxon_name_parents', {
+          id: targetRow.id,
+          data: { ...targetRow, sequence: currentSequence },
+          previousData: targetRow,
+        });
+        await dataProvider.update('taxon_name_parents', {
+          id: currentRow.id,
+          data: { ...currentRow, sequence: targetSequence },
+          previousData: currentRow,
+        });
+        refresh();
+      } catch (error) {
+        notify(
+          error instanceof Error
+            ? error.message
+            : 'Failed to update parent order',
+          { type: 'error' }
+        );
+      } finally {
+        setIsMoving(false);
+      }
+    },
+    [currentIndex, dataProvider, notify, orderedRows, record?.id, refresh]
+  );
 
   if (!record?.id || currentIndex < 0 || orderedRows.length < 2) {
     return null;
@@ -797,7 +931,10 @@ const renderBoolean = (value?: boolean | null) => {
   return value ? 'Yes' : 'No';
 };
 
-const renderChoice = (choices: Array<{ id: string; name: string }>, value?: string | null) => {
+const renderChoice = (
+  choices: Array<{ id: string; name: string }>,
+  value?: string | null
+) => {
   if (!value) return '';
   return choices.find((choice) => choice.id === value)?.name ?? value;
 };
@@ -814,7 +951,9 @@ const SectionHeader = ({
   <div className="flex flex-wrap items-center justify-between gap-3">
     <div className="space-y-1">
       <h3 className="text-base font-semibold tracking-tight">{title}</h3>
-      {description ? <p className="text-sm text-muted-foreground">{description}</p> : null}
+      {description ? (
+        <p className="text-sm text-muted-foreground">{description}</p>
+      ) : null}
     </div>
     {action}
   </div>
@@ -826,7 +965,9 @@ const TaxonNameCodeButton = () => {
 
   return (
     <Button asChild variant="outline">
-      <Link to={`/taxon_names_code/${record.id}`}>Open conservation code page</Link>
+      <Link to={`/taxon_names_code/${record.id}`}>
+        Open conservation code page
+      </Link>
     </Button>
   );
 };
@@ -850,11 +991,7 @@ const EmptyState = ({ children }: { children: React.ReactNode }) => (
   </div>
 );
 
-const RelatedFetchError = ({
-  resourceLabel,
-}: {
-  resourceLabel: string;
-}) => (
+const RelatedFetchError = ({ resourceLabel }: { resourceLabel: string }) => (
   <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-6 text-sm text-muted-foreground">
     Unable to load {resourceLabel} right now.
   </div>
@@ -886,7 +1023,11 @@ const PublicationDoiLink = ({ value }: { value?: string | null }) => {
   );
 };
 
-const EnterpriseDialogThemeProvider = ({ children }: { children: React.ReactNode }) => {
+const EnterpriseDialogThemeProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const [isDark, setIsDark] = React.useState(() =>
     document.documentElement.classList.contains('dark')
   );
@@ -901,44 +1042,39 @@ const EnterpriseDialogThemeProvider = ({ children }: { children: React.ReactNode
     return () => observer.disconnect();
   }, []);
 
-  const muiTheme = React.useMemo(
-    () => {
-      const styles = getComputedStyle(document.documentElement);
-      const background = styles.getPropertyValue('--background').trim();
-      const foreground = styles.getPropertyValue('--foreground').trim();
-      const card = styles.getPropertyValue('--card').trim();
-      const cardForeground = styles.getPropertyValue('--card-foreground').trim();
-      const border = styles.getPropertyValue('--border').trim();
-      const primary = styles.getPropertyValue('--primary').trim();
-      const primaryForeground = styles.getPropertyValue('--primary-foreground').trim();
+  const muiTheme = React.useMemo(() => {
+    const styles = getComputedStyle(document.documentElement);
+    const background = styles.getPropertyValue('--background').trim();
+    const foreground = styles.getPropertyValue('--foreground').trim();
+    const card = styles.getPropertyValue('--card').trim();
+    const cardForeground = styles.getPropertyValue('--card-foreground').trim();
+    const border = styles.getPropertyValue('--border').trim();
+    const primary = styles.getPropertyValue('--primary').trim();
+    const primaryForeground = styles
+      .getPropertyValue('--primary-foreground')
+      .trim();
 
-      return createTheme({
-        palette: {
-          mode: isDark ? 'dark' : 'light',
-          primary: {
-            main: primary,
-            contrastText: primaryForeground,
-          },
-          background: {
-            default: background,
-            paper: card,
-          },
-          text: {
-            primary: foreground,
-            secondary: cardForeground,
-          },
-          divider: border,
+    return createTheme({
+      palette: {
+        mode: isDark ? 'dark' : 'light',
+        primary: {
+          main: primary,
+          contrastText: primaryForeground,
         },
-      });
-    },
-    [isDark]
-  );
+        background: {
+          default: background,
+          paper: card,
+        },
+        text: {
+          primary: foreground,
+          secondary: cardForeground,
+        },
+        divider: border,
+      },
+    });
+  }, [isDark]);
 
-  return (
-    <ThemeProvider theme={muiTheme}>
-      {children}
-    </ThemeProvider>
-  );
+  return <ThemeProvider theme={muiTheme}>{children}</ThemeProvider>;
 };
 
 const relatedDialogButtonProps = {
@@ -1040,7 +1176,9 @@ const PublicationEditableSection = () => {
         </ReferenceInput>
         {publicationId ? (
           <Button asChild variant="outline">
-            <Link to={`/publications/${publicationId}/show`}>Open publication</Link>
+            <Link to={`/publications/${publicationId}/show`}>
+              Open publication
+            </Link>
           </Button>
         ) : null}
       </div>
@@ -1070,14 +1208,18 @@ const PublicationEditableSection = () => {
           </Table>
         </div>
       ) : (
-        <EmptyState>Select or create a publication to link it to this taxon name.</EmptyState>
+        <EmptyState>
+          Select or create a publication to link it to this taxon name.
+        </EmptyState>
       )}
     </div>
   );
 };
 
 const PublicationReadOnlySection = () => {
-  const record = useRecordContext<{ publication_id?: string | number | null }>();
+  const record = useRecordContext<{
+    publication_id?: string | number | null;
+  }>();
   const navigate = useNavigate();
   const publicationId = record?.publication_id;
   const { data: publication } = useGetOne(
@@ -1127,6 +1269,11 @@ const PublicationReadOnlySection = () => {
 
 const CreatePublicationButton = () => {
   const form = useFormContext();
+  const publicationId = form.watch('publication_id');
+
+  if (publicationId) {
+    return null;
+  }
 
   return (
     <CreateInDialogButton
@@ -1137,7 +1284,10 @@ const CreatePublicationButton = () => {
       title="Create publication"
       label="Create publication"
       mutationOptions={{
-        onSuccess: (data: { id?: string | number; publication_id?: string | number }) => {
+        onSuccess: (data: {
+          id?: string | number;
+          publication_id?: string | number;
+        }) => {
           const nextPublicationId = data?.publication_id ?? data?.id;
           if (nextPublicationId != null) {
             form.setValue('publication_id', nextPublicationId, {
@@ -1223,7 +1373,15 @@ const TaxonNameRelatedSections = ({
   const recordId = record?.id;
   const navigate = useNavigate();
   const visibleSections = new Set<RelatedSectionKey>(
-    sections ?? ['authors', 'publication', 'parents', 'vernaculars', 'hierarchy', 'relatedNames', 'conservationCodes']
+    sections ?? [
+      'authors',
+      'publication',
+      'parents',
+      'vernaculars',
+      'hierarchy',
+      'relatedNames',
+      'conservationCodes',
+    ]
   );
 
   return (
@@ -1239,9 +1397,7 @@ const TaxonNameRelatedSections = ({
           <>
             {visibleSections.has('parents') ? (
               <section className="space-y-4">
-                <ParallelNamePreviewPanel
-                  recordId={recordId}
-                />
+                <ParallelNamePreviewPanel recordId={recordId} />
               </section>
             ) : null}
 
@@ -1251,28 +1407,34 @@ const TaxonNameRelatedSections = ({
                 <RecordField
                   label="NomosID"
                   className="xl:min-w-0"
-                  render={(taxon: { id?: string | number | null; taxon_name_id?: string | number | null }) =>
-                    taxon.taxon_name_id ?? taxon.id ?? ''
-                  }
+                  render={(taxon: {
+                    id?: string | number | null;
+                    taxon_name_id?: string | number | null;
+                  }) => taxon.taxon_name_id ?? taxon.id ?? ''}
                 />
                 <RecordField
                   label="Formatted scientific name"
                   className="md:col-span-1 xl:min-w-0"
-                  render={(taxon: { formatted_scientific_name?: string | null }) => (
-                    <HtmlValue value={taxon.formatted_scientific_name} />
-                  )}
+                  render={(taxon: {
+                    formatted_scientific_name?: string | null;
+                  }) => <HtmlValue value={taxon.formatted_scientific_name} />}
                 />
-                <DerivedScientificNameSummaryField
-                  recordId={recordId}
-                />
+                <DerivedScientificNameSummaryField recordId={recordId} />
               </div>
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                 <RecordField label="Kingdom" source="kingdom_id">
-                  <ReferenceField source="kingdom_id" reference="kingdoms" link={false}>
+                  <ReferenceField
+                    source="kingdom_id"
+                    reference="kingdoms"
+                    link={false}
+                  >
                     <RecordField
                       source="kingdom_name"
                       label=""
-                      render={(kingdom: { kingdom_name?: string | null; id?: string | number | null }) => (
+                      render={(kingdom: {
+                        kingdom_name?: string | null;
+                        id?: string | number | null;
+                      }) => (
                         <span
                           className="cursor-pointer"
                           onDoubleClick={() => {
@@ -1288,11 +1450,18 @@ const TaxonNameRelatedSections = ({
                   </ReferenceField>
                 </RecordField>
                 <RecordField label="Rank" source="rank_id">
-                  <ReferenceField source="rank_id" reference="taxon_ranks" link={false}>
+                  <ReferenceField
+                    source="rank_id"
+                    reference="taxon_ranks"
+                    link={false}
+                  >
                     <RecordField
                       source="rank_name"
                       label=""
-                      render={(rank: { rank_name?: string | null; id?: string | number | null }) => (
+                      render={(rank: {
+                        rank_name?: string | null;
+                        id?: string | number | null;
+                      }) => (
                         <span
                           className="cursor-pointer"
                           onDoubleClick={() => {
@@ -1307,8 +1476,14 @@ const TaxonNameRelatedSections = ({
                     />
                   </ReferenceField>
                 </RecordField>
-                <div className="hidden md:block md:col-span-2 xl:col-span-4" aria-hidden="true" />
-                <RecordField source="publication_status" label="Publication status">
+                <div
+                  className="hidden md:block md:col-span-2 xl:col-span-4"
+                  aria-hidden="true"
+                />
+                <RecordField
+                  source="publication_status"
+                  label="Publication status"
+                >
                   <RecordField
                     label=""
                     render={(taxon: { publication_status?: string | null }) =>
@@ -1316,17 +1491,49 @@ const TaxonNameRelatedSections = ({
                     }
                   />
                 </RecordField>
-                <RecordField label="Current" render={(taxon: { is_current?: boolean | null }) => renderBoolean(taxon.is_current)} />
-                <RecordField label="Validated" render={(taxon: { validated?: boolean | null }) => renderBoolean(taxon.validated)} />
                 <RecordField
-                  label="WA recognised"
-                  render={(taxon: { is_wa_recognised?: boolean | null }) => renderBoolean(taxon.is_wa_recognised)}
+                  label="Current"
+                  render={(taxon: { is_current?: boolean | null }) =>
+                    renderBoolean(taxon.is_current)
+                  }
                 />
-                <RecordField label="Review" render={(taxon: { review?: boolean | null }) => renderBoolean(taxon.review)} />
-                <RecordField source="review_reason" label="Review reason" className="xl:col-span-2" />
-                <div className="hidden md:block md:col-span-2 xl:col-span-4" aria-hidden="true" />
-                <RecordField source="legacy_id" label="Legacy ID" className="xl:col-span-4" />
-                <RecordField source="comments" label="Comments" className="xl:col-span-4" />
+                <RecordField
+                  label="Validated"
+                  render={(taxon: { validated?: boolean | null }) =>
+                    renderBoolean(taxon.validated)
+                  }
+                />
+                <RecordField
+                  label="WA census"
+                  render={(taxon: { is_wa_recognised?: boolean | null }) =>
+                    renderBoolean(taxon.is_wa_recognised)
+                  }
+                />
+                <RecordField
+                  label="Review"
+                  render={(taxon: { review?: boolean | null }) =>
+                    renderBoolean(taxon.review)
+                  }
+                />
+                <RecordField
+                  source="review_reason"
+                  label="Review reason"
+                  className="xl:col-span-2"
+                />
+                <div
+                  className="hidden md:block md:col-span-2 xl:col-span-4"
+                  aria-hidden="true"
+                />
+                <RecordField
+                  source="legacy_id"
+                  label="LegacyID"
+                  className="xl:col-span-4"
+                />
+                <RecordField
+                  source="comments"
+                  label="Comments"
+                  className="xl:col-span-4"
+                />
               </div>
             </section>
 
@@ -1338,7 +1545,9 @@ const TaxonNameRelatedSections = ({
                   <RecordField
                     label=""
                     render={(taxon: { authorised_on?: string | null }) =>
-                      taxon.authorised_on ? formatDateOnly(taxon.authorised_on) : ''
+                      taxon.authorised_on
+                        ? formatDateOnly(taxon.authorised_on)
+                        : ''
                     }
                   />
                 </RecordField>
@@ -1347,7 +1556,9 @@ const TaxonNameRelatedSections = ({
                   <RecordField
                     label=""
                     render={(taxon: { contributed_on?: string | null }) =>
-                      taxon.contributed_on ? formatDateOnly(taxon.contributed_on) : ''
+                      taxon.contributed_on
+                        ? formatDateOnly(taxon.contributed_on)
+                        : ''
                     }
                   />
                 </RecordField>
@@ -1357,7 +1568,10 @@ const TaxonNameRelatedSections = ({
             <section className="mt-12 space-y-4 border-t border-border pt-12">
               <SectionHeader title="Details" />
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                <RecordField source="naturalised_status" label="Naturalised status">
+                <RecordField
+                  source="naturalised_status"
+                  label="Naturalised status"
+                >
                   <RecordField
                     label=""
                     render={(taxon: { naturalised_status?: string | null }) =>
@@ -1371,9 +1585,16 @@ const TaxonNameRelatedSections = ({
                     renderBoolean(taxon.naturalised_certainty)
                   }
                 />
-                <RecordField source="naturalised_comments" label="Naturalised comments" className="xl:col-span-4" />
+                <RecordField
+                  source="naturalised_comments"
+                  label="Naturalised comments"
+                  className="xl:col-span-4"
+                />
                 <RecordField label="Informal groups" className="xl:col-span-4">
-                  <ReferenceArrayField reference="classification_systems" source="classification_system_ids">
+                  <ReferenceArrayField
+                    reference="classification_systems"
+                    source="classification_system_ids"
+                  >
                     <SingleFieldList>
                       <Badge variant="outline">
                         <RecordField source="class_desc" label="" />
@@ -1390,9 +1611,7 @@ const TaxonNameRelatedSections = ({
           <>
             {editable ? (
               <section className="space-y-4">
-                <ParallelNamePreviewPanel
-                  recordId={recordId}
-                />
+                <ParallelNamePreviewPanel recordId={recordId} />
               </section>
             ) : null}
 
@@ -1412,16 +1631,21 @@ const TaxonNameRelatedSections = ({
                     reference="taxon_name_parents"
                     target="taxon_name_id"
                     sort={{ field: 'sequence', order: 'ASC' }}
-                    empty={<EmptyState>No parent-name rows linked to this taxon name yet.</EmptyState>}
+                    empty={
+                      <EmptyState>
+                        No parent-name rows linked to this taxon name yet.
+                      </EmptyState>
+                    }
                   >
                     <DataTable rowClick={false} bulkActionButtons={false}>
                       <DataTable.Col source="sequence" label="Sequence" />
                       <DataTable.Col label="Parent name">
-                        <ReferenceField source="parent_taxon_name_id" reference="taxon_names" link="show">
-                          <RecordField
-                            label=""
-                            render={renderScientificName}
-                          />
+                        <ReferenceField
+                          source="parent_taxon_name_id"
+                          reference="taxon_names"
+                          link="show"
+                        >
+                          <RecordField label="" render={renderScientificName} />
                         </ReferenceField>
                       </DataTable.Col>
                       <DataTable.Col label="Actions">
@@ -1438,23 +1662,31 @@ const TaxonNameRelatedSections = ({
                     </DataTable>
                   </ReferenceManyField>
                 ) : (
-                  <EmptyState>Save the taxon name first, then you can add parent-name rows inline here.</EmptyState>
+                  <EmptyState>
+                    Save the taxon name first, then you can add parent-name rows
+                    inline here.
+                  </EmptyState>
                 )
               ) : recordId ? (
                 <ReferenceManyField
                   reference="taxon_name_parents"
                   target="taxon_name_id"
                   sort={{ field: 'sequence', order: 'ASC' }}
-                  empty={<EmptyState>No parent-name rows linked to this taxon name yet.</EmptyState>}
+                  empty={
+                    <EmptyState>
+                      No parent-name rows linked to this taxon name yet.
+                    </EmptyState>
+                  }
                 >
                   <DataTable rowClick={false} bulkActionButtons={false}>
                     <DataTable.Col source="sequence" label="Sequence" />
                     <DataTable.Col label="Parent name">
-                      <ReferenceField source="parent_taxon_name_id" reference="taxon_names" link={false}>
-                        <RecordField
-                          label=""
-                          render={renderScientificName}
-                        />
+                      <ReferenceField
+                        source="parent_taxon_name_id"
+                        reference="taxon_names"
+                        link={false}
+                      >
+                        <RecordField label="" render={renderScientificName} />
                       </ReferenceField>
                     </DataTable.Col>
                   </DataTable>
@@ -1467,549 +1699,719 @@ const TaxonNameRelatedSections = ({
         ) : null}
 
         {visibleSections.has('authors') ? (
-        <section className="mt-12 space-y-4">
-        <SectionHeader
-          title="Authors"
-          description="Citation author rows linked to this taxon name."
-          action={
-            editable && recordId ? (
-              <CreateInDialogButton
-                resource="citations"
-                record={{ taxon_name_id: recordId, author_order: 0 }}
-                fullWidth
-                maxWidth="md"
-                title="Create citation"
-                label="Create citation"
-                ButtonProps={relatedDialogButtonProps}
+          <section className="mt-12 space-y-4">
+            <SectionHeader
+              title="Authors"
+              description="Citation author rows linked to this taxon name."
+              action={
+                editable && recordId ? (
+                  <CreateInDialogButton
+                    resource="citations"
+                    record={{ taxon_name_id: recordId, author_order: 0 }}
+                    fullWidth
+                    maxWidth="md"
+                    title="Create citation"
+                    label="Create citation"
+                    ButtonProps={relatedDialogButtonProps}
+                  >
+                    <DialogFormPadding>
+                      <CitationForm hideTaxonName />
+                    </DialogFormPadding>
+                  </CreateInDialogButton>
+                ) : undefined
+              }
+            />
+            {editable ? (
+              recordId ? (
+                <ReferenceManyField
+                  reference="citations"
+                  target="taxon_name_id"
+                  sort={{ field: 'author_order', order: 'ASC' }}
+                  empty={
+                    <EmptyState>
+                      No citations linked to this taxon name yet.
+                    </EmptyState>
+                  }
+                >
+                  <DataTable rowClick={false} bulkActionButtons={false}>
+                    <DataTable.Col label="Author">
+                      <ReferenceField
+                        source="author_id"
+                        reference="authors"
+                        link="show"
+                      >
+                        <RecordField source="abbreviation" label="" />
+                      </ReferenceField>
+                    </DataTable.Col>
+                    <DataTable.Col source="author_type" label="Author type" />
+                    <DataTable.Col source="author_order" label="Order" />
+                    <DataTable.Col label="Actions">
+                      <div className="flex items-center gap-2">
+                        <EditRelatedButton label="Edit citation">
+                          <DialogFormPadding>
+                            <CitationForm hideTaxonName />
+                          </DialogFormPadding>
+                        </EditRelatedButton>
+                        <DeleteRelatedButton resource="citations" />
+                      </div>
+                    </DataTable.Col>
+                  </DataTable>
+                </ReferenceManyField>
+              ) : (
+                <EmptyState>
+                  Save the taxon name first, then you can add citations inline
+                  here.
+                </EmptyState>
+              )
+            ) : recordId ? (
+              <ReferenceManyField
+                reference="citations"
+                target="taxon_name_id"
+                sort={{ field: 'author_order', order: 'ASC' }}
+                empty={
+                  <EmptyState>
+                    No citations linked to this taxon name yet.
+                  </EmptyState>
+                }
               >
-                <DialogFormPadding>
-                  <CitationForm hideTaxonName />
-                </DialogFormPadding>
-              </CreateInDialogButton>
-            ) : undefined
-          }
-        />
-        {editable ? (
-          recordId ? (
-            <ReferenceManyField
-              reference="citations"
-              target="taxon_name_id"
-              sort={{ field: 'author_order', order: 'ASC' }}
-              empty={<EmptyState>No citations linked to this taxon name yet.</EmptyState>}
-            >
-              <DataTable rowClick={false} bulkActionButtons={false}>
-                <DataTable.Col label="Author">
-                  <ReferenceField source="author_id" reference="authors" link="show">
-                    <RecordField source="abbreviation" label="" />
-                  </ReferenceField>
-                </DataTable.Col>
-                <DataTable.Col source="author_type" label="Author type" />
-                <DataTable.Col source="author_order" label="Order" />
-                <DataTable.Col label="Actions">
-                  <div className="flex items-center gap-2">
-                    <EditRelatedButton label="Edit citation">
-                      <DialogFormPadding>
-                        <CitationForm hideTaxonName />
-                      </DialogFormPadding>
-                    </EditRelatedButton>
-                    <DeleteRelatedButton resource="citations" />
-                  </div>
-                </DataTable.Col>
-              </DataTable>
-            </ReferenceManyField>
-          ) : (
-            <EmptyState>Save the taxon name first, then you can add citations inline here.</EmptyState>
-          )
-        ) : recordId ? (
-          <ReferenceManyField
-            reference="citations"
-            target="taxon_name_id"
-            sort={{ field: 'author_order', order: 'ASC' }}
-            empty={<EmptyState>No citations linked to this taxon name yet.</EmptyState>}
-          >
-            <DataTable rowClick={false} bulkActionButtons={false}>
-              <DataTable.Col label="Author">
-                <ReferenceField source="author_id" reference="authors" link={false}>
-                  <RecordField source="abbreviation" label="" />
-                </ReferenceField>
-              </DataTable.Col>
-              <DataTable.Col source="author_type" label="Author type" />
-              <DataTable.Col source="author_order" label="Order" />
-            </DataTable>
-          </ReferenceManyField>
-        ) : null}
-        </section>
+                <DataTable rowClick={false} bulkActionButtons={false}>
+                  <DataTable.Col label="Author">
+                    <ReferenceField
+                      source="author_id"
+                      reference="authors"
+                      link={false}
+                    >
+                      <RecordField source="abbreviation" label="" />
+                    </ReferenceField>
+                  </DataTable.Col>
+                  <DataTable.Col source="author_type" label="Author type" />
+                  <DataTable.Col source="author_order" label="Order" />
+                </DataTable>
+              </ReferenceManyField>
+            ) : null}
+          </section>
         ) : null}
 
         {visibleSections.has('publication') ? (
-        <section className="mt-12 space-y-4">
-        <SectionHeader
-          title="Publication"
-          description="Linked publication for this taxon name."
-          action={
-            editable ? (
-              <CreatePublicationButton />
-            ) : undefined
-          }
-        />
-        {editable ? (
-          <PublicationEditableSection />
-        ) : (
-          <PublicationReadOnlySection />
-        )}
-        </section>
+          <section className="mt-12 space-y-4">
+            <SectionHeader
+              title="Publication"
+              description="Linked publication for this taxon name."
+              action={editable ? <CreatePublicationButton /> : undefined}
+            />
+            {editable ? (
+              <PublicationEditableSection />
+            ) : (
+              <PublicationReadOnlySection />
+            )}
+          </section>
         ) : null}
 
         {visibleSections.has('vernaculars') ? (
-        <section className="mt-12 space-y-4 border-t border-border pt-12">
-        <SectionHeader
-          title="Vernacular names"
-          description="Linked vernacular records."
-          action={
-            editable && recordId ? (
-              <CreateInDialogButton
-                resource="vernaculars"
-                record={{ taxon_name_id: recordId, sort_order: 0 }}
-                fullWidth
-                maxWidth="md"
-                title="Create vernacular"
-                label="Create vernacular"
-                ButtonProps={relatedDialogButtonProps}
+          <section className="mt-12 space-y-4 border-t border-border pt-12">
+            <SectionHeader
+              title="Vernacular names"
+              description="Linked vernacular records."
+              action={
+                editable && recordId ? (
+                  <CreateInDialogButton
+                    resource="vernaculars"
+                    record={{ taxon_name_id: recordId, sort_order: 0 }}
+                    fullWidth
+                    maxWidth="md"
+                    title="Create vernacular"
+                    label="Create vernacular"
+                    ButtonProps={relatedDialogButtonProps}
+                  >
+                    <DialogFormPadding>
+                      <VernacularForm hideTaxonName />
+                    </DialogFormPadding>
+                  </CreateInDialogButton>
+                ) : undefined
+              }
+            />
+            {editable ? (
+              recordId ? (
+                <ReferenceManyField
+                  reference="vernaculars"
+                  target="taxon_name_id"
+                  sort={{ field: 'sort_order', order: 'ASC' }}
+                  empty={
+                    <EmptyState>
+                      No vernacular names linked to this taxon name yet.
+                    </EmptyState>
+                  }
+                >
+                  <DataTable bulkActionButtons={false}>
+                    <DataTable.Col source="vernacular_name" label="Name" />
+                    <DataTable.Col source="language" label="Language" />
+                    <DataTable.Col label="Preferred language">
+                      <RecordField
+                        label=""
+                        render={(vernacular: { lang_pref?: boolean | null }) =>
+                          renderBoolean(vernacular.lang_pref)
+                        }
+                      />
+                    </DataTable.Col>
+                    <DataTable.Col label="Preferred">
+                      <RecordField
+                        label=""
+                        render={(vernacular: { preferred?: boolean | null }) =>
+                          renderBoolean(vernacular.preferred)
+                        }
+                      />
+                    </DataTable.Col>
+                    <DataTable.Col source="sort_order" label="Sort order" />
+                    <DataTable.Col label="Actions">
+                      <div className="flex items-center gap-2">
+                        <EditRelatedButton label="Edit vernacular">
+                          <DialogFormPadding>
+                            <VernacularForm hideTaxonName />
+                          </DialogFormPadding>
+                        </EditRelatedButton>
+                        <DeleteRelatedButton resource="vernaculars" />
+                      </div>
+                    </DataTable.Col>
+                  </DataTable>
+                </ReferenceManyField>
+              ) : (
+                <EmptyState>
+                  Save the taxon name first, then you can add vernacular names
+                  inline here.
+                </EmptyState>
+              )
+            ) : recordId ? (
+              <ReferenceManyField
+                reference="vernaculars"
+                target="taxon_name_id"
+                sort={{ field: 'sort_order', order: 'ASC' }}
+                empty={
+                  <EmptyState>
+                    No vernacular names linked to this taxon name yet.
+                  </EmptyState>
+                }
               >
-                <DialogFormPadding>
-                  <VernacularForm hideTaxonName />
-                </DialogFormPadding>
-              </CreateInDialogButton>
-            ) : undefined
-          }
-        />
-        {editable ? (
-          recordId ? (
-            <ReferenceManyField
-              reference="vernaculars"
-              target="taxon_name_id"
-              sort={{ field: 'sort_order', order: 'ASC' }}
-              empty={<EmptyState>No vernacular names linked to this taxon name yet.</EmptyState>}
-            >
-              <DataTable bulkActionButtons={false}>
-                <DataTable.Col source="vernacular_name" label="Name" />
-                <DataTable.Col source="language" label="Language" />
-                <DataTable.Col label="Preferred language">
-                  <RecordField
-                    label=""
-                    render={(vernacular: { lang_pref?: boolean | null }) => renderBoolean(vernacular.lang_pref)}
-                  />
-                </DataTable.Col>
-                <DataTable.Col label="Preferred">
-                  <RecordField
-                    label=""
-                    render={(vernacular: { preferred?: boolean | null }) => renderBoolean(vernacular.preferred)}
-                  />
-                </DataTable.Col>
-                <DataTable.Col source="sort_order" label="Sort order" />
-                <DataTable.Col label="Actions">
-                  <div className="flex items-center gap-2">
-                    <EditRelatedButton label="Edit vernacular">
-                      <DialogFormPadding>
-                        <VernacularForm hideTaxonName />
-                      </DialogFormPadding>
-                    </EditRelatedButton>
-                    <DeleteRelatedButton resource="vernaculars" />
-                  </div>
-                </DataTable.Col>
-              </DataTable>
-            </ReferenceManyField>
-          ) : (
-            <EmptyState>Save the taxon name first, then you can add vernacular names inline here.</EmptyState>
-          )
-        ) : recordId ? (
-          <ReferenceManyField
-            reference="vernaculars"
-            target="taxon_name_id"
-            sort={{ field: 'sort_order', order: 'ASC' }}
-            empty={<EmptyState>No vernacular names linked to this taxon name yet.</EmptyState>}
-          >
-            <DataTable rowClick={false} bulkActionButtons={false}>
-              <DataTable.Col source="vernacular_name" label="Name" />
-              <DataTable.Col source="language" label="Language" />
-              <DataTable.Col label="Preferred language">
-                <RecordField
-                  label=""
-                  render={(vernacular: { lang_pref?: boolean | null }) => renderBoolean(vernacular.lang_pref)}
-                />
-              </DataTable.Col>
-              <DataTable.Col label="Preferred">
-                <RecordField
-                  label=""
-                  render={(vernacular: { preferred?: boolean | null }) => renderBoolean(vernacular.preferred)}
-                />
-              </DataTable.Col>
-              <DataTable.Col source="sort_order" label="Sort order" />
-            </DataTable>
-          </ReferenceManyField>
-        ) : null}
-        </section>
+                <DataTable rowClick={false} bulkActionButtons={false}>
+                  <DataTable.Col source="vernacular_name" label="Name" />
+                  <DataTable.Col source="language" label="Language" />
+                  <DataTable.Col label="Preferred language">
+                    <RecordField
+                      label=""
+                      render={(vernacular: { lang_pref?: boolean | null }) =>
+                        renderBoolean(vernacular.lang_pref)
+                      }
+                    />
+                  </DataTable.Col>
+                  <DataTable.Col label="Preferred">
+                    <RecordField
+                      label=""
+                      render={(vernacular: { preferred?: boolean | null }) =>
+                        renderBoolean(vernacular.preferred)
+                      }
+                    />
+                  </DataTable.Col>
+                  <DataTable.Col source="sort_order" label="Sort order" />
+                </DataTable>
+              </ReferenceManyField>
+            ) : null}
+          </section>
         ) : null}
 
         {visibleSections.has('hierarchy') ? (
-        <section className="mt-12 space-y-4 border-t border-border pt-12">
-        <SectionHeader
-          title="Hierarchy"
-          description="Hierarchical classifications linked to this taxon name."
-          action={
-            editable && recordId ? (
-              <CreateInDialogButton
-                resource="hierarchies"
-                record={{ taxon_name_id: recordId }}
-                fullWidth
-                maxWidth="md"
-                title="Create hierarchy row"
-                label="Create hierarchy row"
-                ButtonProps={relatedDialogButtonProps}
+          <section className="mt-12 space-y-4 border-t border-border pt-12">
+            <SectionHeader
+              title="Hierarchy"
+              description="Hierarchical classifications linked to this taxon name."
+              action={
+                editable && recordId ? (
+                  <CreateInDialogButton
+                    resource="hierarchies"
+                    record={{ taxon_name_id: recordId }}
+                    fullWidth
+                    maxWidth="md"
+                    title="Create hierarchy row"
+                    label="Create hierarchy row"
+                    ButtonProps={relatedDialogButtonProps}
+                  >
+                    <DialogFormPadding>
+                      <HierarchyForm hideTaxonName />
+                    </DialogFormPadding>
+                  </CreateInDialogButton>
+                ) : undefined
+              }
+            />
+            {editable ? (
+              recordId ? (
+                <ReferenceManyField
+                  reference="hierarchies"
+                  target="taxon_name_id"
+                  sort={{ field: 'path', order: 'ASC' }}
+                  empty={
+                    <EmptyState>
+                      No hierarchy rows linked to this taxon name yet.
+                    </EmptyState>
+                  }
+                >
+                  <DataTable bulkActionButtons={false}>
+                    <DataTable.Col label="Classification system">
+                      <ReferenceField
+                        source="classification_system_id"
+                        reference="classification_systems"
+                        link="show"
+                      >
+                        <RecordField source="class_desc" label="" />
+                      </ReferenceField>
+                    </DataTable.Col>
+                    <DataTable.Col label="Parent name">
+                      <ReferenceField
+                        source="parent_nid"
+                        reference="taxon_names"
+                        link="show"
+                      >
+                        <RecordField
+                          label=""
+                          render={(taxon: {
+                            formatted_scientific_name?: string | null;
+                          }) => (
+                            <HtmlValue
+                              value={taxon.formatted_scientific_name}
+                            />
+                          )}
+                        />
+                      </ReferenceField>
+                    </DataTable.Col>
+                    <DataTable.Col label="Actions">
+                      <div className="flex items-center gap-2">
+                        <EditRelatedButton label="Edit hierarchy row">
+                          <DialogFormPadding>
+                            <HierarchyForm hideTaxonName />
+                          </DialogFormPadding>
+                        </EditRelatedButton>
+                        <DeleteRelatedButton resource="hierarchies" />
+                      </div>
+                    </DataTable.Col>
+                  </DataTable>
+                </ReferenceManyField>
+              ) : (
+                <EmptyState>
+                  Save the taxon name first, then you can add hierarchy rows
+                  inline here.
+                </EmptyState>
+              )
+            ) : recordId ? (
+              <ReferenceManyField
+                reference="hierarchies"
+                target="taxon_name_id"
+                sort={{ field: 'path', order: 'ASC' }}
+                empty={
+                  <EmptyState>
+                    No hierarchy rows linked to this taxon name yet.
+                  </EmptyState>
+                }
               >
-                <DialogFormPadding>
-                  <HierarchyForm hideTaxonName />
-                </DialogFormPadding>
-              </CreateInDialogButton>
-            ) : undefined
-          }
-        />
-        {editable ? (
-          recordId ? (
-            <ReferenceManyField
-              reference="hierarchies"
-              target="taxon_name_id"
-              sort={{ field: 'path', order: 'ASC' }}
-              empty={<EmptyState>No hierarchy rows linked to this taxon name yet.</EmptyState>}
-            >
-              <DataTable bulkActionButtons={false}>
-                <DataTable.Col label="Classification system">
-                  <ReferenceField source="classification_system_id" reference="classification_systems" link="show">
-                    <RecordField source="class_desc" label="" />
-                  </ReferenceField>
-                </DataTable.Col>
-                <DataTable.Col label="Parent name">
-                  <ReferenceField source="parent_nid" reference="taxon_names" link="show">
-                    <RecordField
-                      label=""
-                      render={(taxon: { formatted_scientific_name?: string | null }) => (
-                        <HtmlValue value={taxon.formatted_scientific_name} />
-                      )}
-                    />
-                  </ReferenceField>
-                </DataTable.Col>
-                <DataTable.Col label="Actions">
-                  <div className="flex items-center gap-2">
-                    <EditRelatedButton label="Edit hierarchy row">
-                      <DialogFormPadding>
-                        <HierarchyForm hideTaxonName />
-                      </DialogFormPadding>
-                    </EditRelatedButton>
-                    <DeleteRelatedButton resource="hierarchies" />
-                  </div>
-                </DataTable.Col>
-              </DataTable>
-            </ReferenceManyField>
-          ) : (
-            <EmptyState>Save the taxon name first, then you can add hierarchy rows inline here.</EmptyState>
-          )
-        ) : recordId ? (
-          <ReferenceManyField
-            reference="hierarchies"
-            target="taxon_name_id"
-            sort={{ field: 'path', order: 'ASC' }}
-            empty={<EmptyState>No hierarchy rows linked to this taxon name yet.</EmptyState>}
-          >
-            <DataTable rowClick={false} bulkActionButtons={false}>
-              <DataTable.Col label="Classification system">
-                <ReferenceField source="classification_system_id" reference="classification_systems" link={false}>
-                  <RecordField source="class_desc" label="" />
-                </ReferenceField>
-              </DataTable.Col>
-              <DataTable.Col label="Parent name">
-                <ReferenceField source="parent_nid" reference="taxon_names" link={false}>
-                  <RecordField
-                    label=""
-                    render={(taxon: { formatted_scientific_name?: string | null }) => (
-                      <HtmlValue value={taxon.formatted_scientific_name} />
-                    )}
-                  />
-                </ReferenceField>
-              </DataTable.Col>
-            </DataTable>
-          </ReferenceManyField>
-        ) : null}
-        </section>
+                <DataTable rowClick={false} bulkActionButtons={false}>
+                  <DataTable.Col label="Classification system">
+                    <ReferenceField
+                      source="classification_system_id"
+                      reference="classification_systems"
+                      link={false}
+                    >
+                      <RecordField source="class_desc" label="" />
+                    </ReferenceField>
+                  </DataTable.Col>
+                  <DataTable.Col label="Parent name">
+                    <ReferenceField
+                      source="parent_nid"
+                      reference="taxon_names"
+                      link={false}
+                    >
+                      <RecordField
+                        label=""
+                        render={(taxon: {
+                          formatted_scientific_name?: string | null;
+                        }) => (
+                          <HtmlValue value={taxon.formatted_scientific_name} />
+                        )}
+                      />
+                    </ReferenceField>
+                  </DataTable.Col>
+                </DataTable>
+              </ReferenceManyField>
+            ) : null}
+          </section>
         ) : null}
 
         {visibleSections.has('relatedNames') ? (
-        <section className="mt-12 space-y-4 border-t border-border pt-12">
-        <SectionHeader
-          title="Related names"
-          description="Cross references where this taxon is the old or new name."
-          action={undefined}
-        />
-        {editable ? (
-          recordId ? (
-            <div className="grid gap-6 xl:grid-cols-2">
-              <div className="space-y-3">
-                <SectionHeader
-                  title="Previous names"
-                  action={
-                    <CreateInDialogButton
-                      resource="cross_references"
-                      record={{ new_name_id: recordId }}
-                      fullWidth
-                      maxWidth="md"
-                      title="Create previous name"
-                      label="Create previous name"
-                      ButtonProps={relatedDialogButtonProps}
-                    >
-                      <DialogFormPadding>
-                        <CrossReferenceForm hideNewName />
-                      </DialogFormPadding>
-                    </CreateInDialogButton>
-                  }
-                />
-                <ReferenceManyField
-                  reference="cross_references"
-                  target="new_name_id"
-                  empty={<EmptyState>No previous names linked yet.</EmptyState>}
-                  error={<RelatedFetchError resourceLabel="previous names" />}
-                >
-                  <DataTable bulkActionButtons={false}>
-                    <DataTable.Col source="cross_reference_type" label="Type">
-                      <RecordField
-                        label=""
-                        render={(crossRef: { cross_reference_type?: string | null }) =>
-                          crossRef.cross_reference_type
-                            ? crossRefTypeMap[crossRef.cross_reference_type] ?? crossRef.cross_reference_type
-                            : ''
-                        }
-                      />
-                    </DataTable.Col>
-                    <DataTable.Col label="Old name">
-                      <ReferenceField source="old_name_id" reference="taxon_names" link="show">
-                        <RecordField
-                          label=""
-                          render={(taxon: { formatted_scientific_name?: string | null }) => (
-                            <HtmlValue value={taxon.formatted_scientific_name} />
-                          )}
-                        />
-                      </ReferenceField>
-                    </DataTable.Col>
-                    <DataTable.Col source="reference_comments" label="Comments" />
-                    <DataTable.Col label="Actions">
-                      <div className="flex items-center gap-2">
-                        <EditRelatedButton label="Edit previous name">
+          <section className="mt-12 space-y-4 border-t border-border pt-12">
+            <SectionHeader
+              title="Related names"
+              description="Cross references where this taxon is the old or new name."
+              action={undefined}
+            />
+            {editable ? (
+              recordId ? (
+                <div className="grid gap-6 xl:grid-cols-2">
+                  <div className="space-y-3">
+                    <SectionHeader
+                      title="Previous names"
+                      action={
+                        <CreateInDialogButton
+                          resource="cross_references"
+                          record={{ new_name_id: recordId }}
+                          fullWidth
+                          maxWidth="md"
+                          title="Create previous name"
+                          label="Create previous name"
+                          ButtonProps={relatedDialogButtonProps}
+                        >
                           <DialogFormPadding>
                             <CrossReferenceForm hideNewName />
                           </DialogFormPadding>
-                        </EditRelatedButton>
-                        <DeleteRelatedButton resource="cross_references" />
-                      </div>
-                    </DataTable.Col>
-                  </DataTable>
-                </ReferenceManyField>
-              </div>
-              <div className="space-y-3">
-                <SectionHeader
-                  title="Subsequent names"
-                  action={
-                    <CreateInDialogButton
-                      resource="cross_references"
-                      record={{ old_name_id: recordId }}
-                      fullWidth
-                      maxWidth="md"
-                      title="Create subsequent name"
-                      label="Create subsequent name"
-                      ButtonProps={relatedDialogButtonProps}
+                        </CreateInDialogButton>
+                      }
+                    />
+                    <ReferenceManyField
+                      reference="cross_references"
+                      target="new_name_id"
+                      empty={
+                        <EmptyState>No previous names linked yet.</EmptyState>
+                      }
+                      error={
+                        <RelatedFetchError resourceLabel="previous names" />
+                      }
                     >
-                      <DialogFormPadding>
-                        <CrossReferenceForm hideOldName />
-                      </DialogFormPadding>
-                    </CreateInDialogButton>
-                  }
-                />
-                <ReferenceManyField
-                  reference="cross_references"
-                  target="old_name_id"
-                  empty={<EmptyState>No subsequent names linked yet.</EmptyState>}
-                  error={<RelatedFetchError resourceLabel="subsequent names" />}
-                >
-                  <DataTable bulkActionButtons={false}>
-                    <DataTable.Col source="cross_reference_type" label="Type">
-                      <RecordField
-                        label=""
-                        render={(crossRef: { cross_reference_type?: string | null }) =>
-                          crossRef.cross_reference_type
-                            ? crossRefTypeMap[crossRef.cross_reference_type] ?? crossRef.cross_reference_type
-                            : ''
-                        }
-                      />
-                    </DataTable.Col>
-                    <DataTable.Col label="New name">
-                      <ReferenceField source="new_name_id" reference="taxon_names" link="show">
-                        <RecordField
-                          label=""
-                          render={(taxon: { formatted_scientific_name?: string | null }) => (
-                            <HtmlValue value={taxon.formatted_scientific_name} />
-                          )}
+                      <DataTable bulkActionButtons={false}>
+                        <DataTable.Col
+                          source="cross_reference_type"
+                          label="Type"
+                        >
+                          <RecordField
+                            label=""
+                            render={(crossRef: {
+                              cross_reference_type?: string | null;
+                            }) =>
+                              crossRef.cross_reference_type
+                                ? crossRefTypeMap[
+                                    crossRef.cross_reference_type
+                                  ] ?? crossRef.cross_reference_type
+                                : ''
+                            }
+                          />
+                        </DataTable.Col>
+                        <DataTable.Col label="Old name">
+                          <ReferenceField
+                            source="old_name_id"
+                            reference="taxon_names"
+                            link="show"
+                          >
+                            <RecordField
+                              label=""
+                              render={(taxon: {
+                                formatted_scientific_name?: string | null;
+                              }) => (
+                                <HtmlValue
+                                  value={taxon.formatted_scientific_name}
+                                />
+                              )}
+                            />
+                          </ReferenceField>
+                        </DataTable.Col>
+                        <DataTable.Col
+                          source="reference_comments"
+                          label="Comments"
                         />
-                      </ReferenceField>
-                    </DataTable.Col>
-                    <DataTable.Col source="reference_comments" label="Comments" />
-                    <DataTable.Col label="Actions">
-                      <div className="flex items-center gap-2">
-                        <EditRelatedButton label="Edit subsequent name">
+                        <DataTable.Col label="Actions">
+                          <div className="flex items-center gap-2">
+                            <EditRelatedButton label="Edit previous name">
+                              <DialogFormPadding>
+                                <CrossReferenceForm hideNewName />
+                              </DialogFormPadding>
+                            </EditRelatedButton>
+                            <DeleteRelatedButton resource="cross_references" />
+                          </div>
+                        </DataTable.Col>
+                      </DataTable>
+                    </ReferenceManyField>
+                  </div>
+                  <div className="space-y-3">
+                    <SectionHeader
+                      title="Subsequent names"
+                      action={
+                        <CreateInDialogButton
+                          resource="cross_references"
+                          record={{ old_name_id: recordId }}
+                          fullWidth
+                          maxWidth="md"
+                          title="Create subsequent name"
+                          label="Create subsequent name"
+                          ButtonProps={relatedDialogButtonProps}
+                        >
                           <DialogFormPadding>
                             <CrossReferenceForm hideOldName />
                           </DialogFormPadding>
-                        </EditRelatedButton>
-                        <DeleteRelatedButton resource="cross_references" />
-                      </div>
-                    </DataTable.Col>
-                  </DataTable>
-                </ReferenceManyField>
+                        </CreateInDialogButton>
+                      }
+                    />
+                    <ReferenceManyField
+                      reference="cross_references"
+                      target="old_name_id"
+                      empty={
+                        <EmptyState>No subsequent names linked yet.</EmptyState>
+                      }
+                      error={
+                        <RelatedFetchError resourceLabel="subsequent names" />
+                      }
+                    >
+                      <DataTable bulkActionButtons={false}>
+                        <DataTable.Col
+                          source="cross_reference_type"
+                          label="Type"
+                        >
+                          <RecordField
+                            label=""
+                            render={(crossRef: {
+                              cross_reference_type?: string | null;
+                            }) =>
+                              crossRef.cross_reference_type
+                                ? crossRefTypeMap[
+                                    crossRef.cross_reference_type
+                                  ] ?? crossRef.cross_reference_type
+                                : ''
+                            }
+                          />
+                        </DataTable.Col>
+                        <DataTable.Col label="New name">
+                          <ReferenceField
+                            source="new_name_id"
+                            reference="taxon_names"
+                            link="show"
+                          >
+                            <RecordField
+                              label=""
+                              render={(taxon: {
+                                formatted_scientific_name?: string | null;
+                              }) => (
+                                <HtmlValue
+                                  value={taxon.formatted_scientific_name}
+                                />
+                              )}
+                            />
+                          </ReferenceField>
+                        </DataTable.Col>
+                        <DataTable.Col
+                          source="reference_comments"
+                          label="Comments"
+                        />
+                        <DataTable.Col label="Actions">
+                          <div className="flex items-center gap-2">
+                            <EditRelatedButton label="Edit subsequent name">
+                              <DialogFormPadding>
+                                <CrossReferenceForm hideOldName />
+                              </DialogFormPadding>
+                            </EditRelatedButton>
+                            <DeleteRelatedButton resource="cross_references" />
+                          </div>
+                        </DataTable.Col>
+                      </DataTable>
+                    </ReferenceManyField>
+                  </div>
+                </div>
+              ) : (
+                <EmptyState>
+                  Save the taxon name first, then you can add related names
+                  inline here.
+                </EmptyState>
+              )
+            ) : recordId ? (
+              <div className="grid gap-6 xl:grid-cols-2">
+                <div className="space-y-3">
+                  <h4 className="text-sm font-medium">Previous names</h4>
+                  <ReferenceManyField
+                    reference="cross_references"
+                    target="new_name_id"
+                    empty={
+                      <EmptyState>No previous names linked yet.</EmptyState>
+                    }
+                    error={<RelatedFetchError resourceLabel="previous names" />}
+                  >
+                    <DataTable rowClick="show" bulkActionButtons={false}>
+                      <DataTable.Col source="cross_reference_type" label="Type">
+                        <RecordField
+                          label=""
+                          render={(crossRef: {
+                            cross_reference_type?: string | null;
+                          }) =>
+                            crossRef.cross_reference_type
+                              ? crossRefTypeMap[
+                                  crossRef.cross_reference_type
+                                ] ?? crossRef.cross_reference_type
+                              : ''
+                          }
+                        />
+                      </DataTable.Col>
+                      <DataTable.Col label="Old name">
+                        <ReferenceField
+                          source="old_name_id"
+                          reference="taxon_names"
+                          link="show"
+                        >
+                          <RecordField
+                            label=""
+                            render={(taxon: {
+                              formatted_scientific_name?: string | null;
+                            }) => (
+                              <HtmlValue
+                                value={taxon.formatted_scientific_name}
+                              />
+                            )}
+                          />
+                        </ReferenceField>
+                      </DataTable.Col>
+                      <DataTable.Col
+                        source="reference_comments"
+                        label="Comments"
+                      />
+                    </DataTable>
+                  </ReferenceManyField>
+                </div>
+                <div className="space-y-3">
+                  <h4 className="text-sm font-medium">Subsequent names</h4>
+                  <ReferenceManyField
+                    reference="cross_references"
+                    target="old_name_id"
+                    empty={
+                      <EmptyState>No subsequent names linked yet.</EmptyState>
+                    }
+                    error={
+                      <RelatedFetchError resourceLabel="subsequent names" />
+                    }
+                  >
+                    <DataTable rowClick="show" bulkActionButtons={false}>
+                      <DataTable.Col source="cross_reference_type" label="Type">
+                        <RecordField
+                          label=""
+                          render={(crossRef: {
+                            cross_reference_type?: string | null;
+                          }) =>
+                            crossRef.cross_reference_type
+                              ? crossRefTypeMap[
+                                  crossRef.cross_reference_type
+                                ] ?? crossRef.cross_reference_type
+                              : ''
+                          }
+                        />
+                      </DataTable.Col>
+                      <DataTable.Col label="New name">
+                        <ReferenceField
+                          source="new_name_id"
+                          reference="taxon_names"
+                          link="show"
+                        >
+                          <RecordField
+                            label=""
+                            render={(taxon: {
+                              formatted_scientific_name?: string | null;
+                            }) => (
+                              <HtmlValue
+                                value={taxon.formatted_scientific_name}
+                              />
+                            )}
+                          />
+                        </ReferenceField>
+                      </DataTable.Col>
+                      <DataTable.Col
+                        source="reference_comments"
+                        label="Comments"
+                      />
+                    </DataTable>
+                  </ReferenceManyField>
+                </div>
               </div>
-            </div>
-          ) : (
-            <EmptyState>Save the taxon name first, then you can add related names inline here.</EmptyState>
-          )
-        ) : recordId ? (
-          <div className="grid gap-6 xl:grid-cols-2">
-            <div className="space-y-3">
-              <h4 className="text-sm font-medium">Previous names</h4>
-              <ReferenceManyField
-                reference="cross_references"
-                target="new_name_id"
-                empty={<EmptyState>No previous names linked yet.</EmptyState>}
-                error={<RelatedFetchError resourceLabel="previous names" />}
-              >
-                <DataTable rowClick="show" bulkActionButtons={false}>
-                  <DataTable.Col source="cross_reference_type" label="Type">
-                    <RecordField
-                      label=""
-                      render={(crossRef: { cross_reference_type?: string | null }) =>
-                        crossRef.cross_reference_type
-                          ? crossRefTypeMap[crossRef.cross_reference_type] ?? crossRef.cross_reference_type
-                          : ''
-                      }
-                    />
-                  </DataTable.Col>
-                  <DataTable.Col label="Old name">
-                    <ReferenceField source="old_name_id" reference="taxon_names" link="show">
-                      <RecordField
-                        label=""
-                        render={(taxon: { formatted_scientific_name?: string | null }) => (
-                          <HtmlValue value={taxon.formatted_scientific_name} />
-                        )}
-                      />
-                    </ReferenceField>
-                  </DataTable.Col>
-                  <DataTable.Col source="reference_comments" label="Comments" />
-                </DataTable>
-              </ReferenceManyField>
-            </div>
-            <div className="space-y-3">
-              <h4 className="text-sm font-medium">Subsequent names</h4>
-              <ReferenceManyField
-                reference="cross_references"
-                target="old_name_id"
-                empty={<EmptyState>No subsequent names linked yet.</EmptyState>}
-                error={<RelatedFetchError resourceLabel="subsequent names" />}
-              >
-                <DataTable rowClick="show" bulkActionButtons={false}>
-                  <DataTable.Col source="cross_reference_type" label="Type">
-                    <RecordField
-                      label=""
-                      render={(crossRef: { cross_reference_type?: string | null }) =>
-                        crossRef.cross_reference_type
-                          ? crossRefTypeMap[crossRef.cross_reference_type] ?? crossRef.cross_reference_type
-                          : ''
-                      }
-                    />
-                  </DataTable.Col>
-                  <DataTable.Col label="New name">
-                    <ReferenceField source="new_name_id" reference="taxon_names" link="show">
-                      <RecordField
-                        label=""
-                        render={(taxon: { formatted_scientific_name?: string | null }) => (
-                          <HtmlValue value={taxon.formatted_scientific_name} />
-                        )}
-                      />
-                    </ReferenceField>
-                  </DataTable.Col>
-                  <DataTable.Col source="reference_comments" label="Comments" />
-                </DataTable>
-              </ReferenceManyField>
-            </div>
-          </div>
-        ) : null}
-        </section>
+            ) : null}
+          </section>
         ) : null}
 
         {visibleSections.has('conservationCodes') ? (
-        <section className="mt-12 space-y-4 border-t border-border pt-12">
-        <SectionHeader
-          title="Conservation codes"
-          description="Linked conservation-code records for this taxon name."
-          action={
-            editable && recordId ? (
-              <CreateInDialogButton
-                resource="conscode_taxons"
-                record={{ taxon_name_id: recordId }}
-                fullWidth
-                maxWidth="md"
-                title="Create conservation code"
-                label="+ Create conservation code"
-                ButtonProps={relatedDialogButtonProps}
+          <section className="mt-12 space-y-4 border-t border-border pt-12">
+            <SectionHeader
+              title="Conservation codes"
+              description="Linked conservation-code records for this taxon name."
+              action={
+                editable && recordId ? (
+                  <CreateInDialogButton
+                    resource="conscode_taxons"
+                    record={{ taxon_name_id: recordId }}
+                    fullWidth
+                    maxWidth="md"
+                    title="Create conservation code"
+                    label="+ Create conservation code"
+                    ButtonProps={relatedDialogButtonProps}
+                  >
+                    <DialogFormPadding>
+                      <ConscodeTaxonForm />
+                    </DialogFormPadding>
+                  </CreateInDialogButton>
+                ) : undefined
+              }
+            />
+            {recordId ? (
+              <ReferenceManyField
+                reference="conscode_taxons"
+                target="taxon_name_id"
+                sort={{ field: 'effective_from', order: 'DESC' }}
+                empty={
+                  <EmptyState>
+                    No conservation codes linked to this taxon name yet.
+                  </EmptyState>
+                }
               >
-                <DialogFormPadding>
-                  <ConscodeTaxonForm />
-                </DialogFormPadding>
-              </CreateInDialogButton>
-            ) : undefined
-          }
-        />
-        {recordId ? (
-          <ReferenceManyField
-            reference="conscode_taxons"
-            target="taxon_name_id"
-            sort={{ field: 'effective_from', order: 'DESC' }}
-            empty={<EmptyState>No conservation codes linked to this taxon name yet.</EmptyState>}
-          >
-            <DataTable rowClick={false} bulkActionButtons={false}>
-              <DataTable.Col label="Authority">
-                <ReferenceField source="conservation_code_id" reference="conservation_codes" link={false}>
-                  <RecordField source="authorising_org" label="" />
-                </ReferenceField>
-              </DataTable.Col>
-              <DataTable.Col label="Conservation code">
-                <ReferenceField source="conservation_code_id" reference="conservation_codes" link={false}>
-                  <RecordField source="conservation_code_value" label="" />
-                </ReferenceField>
-              </DataTable.Col>
-              <DataTable.Col source="effective_from" label="Effective from" field={DateField} />
-              <DataTable.Col source="effective_to" label="Effective to" field={DateField} />
-              {editable ? (
-                <DataTable.Col label="">
-                  <div className="flex justify-end">
-                    <div className="flex items-center gap-2">
-                      <EditRelatedButton label="Edit conservation code">
-                        <DialogFormPadding>
-                          <ConscodeTaxonForm />
-                        </DialogFormPadding>
-                      </EditRelatedButton>
-                      <OpenConservationCodeRelatedButton />
-                    </div>
-                  </div>
-                </DataTable.Col>
-              ) : null}
-            </DataTable>
-          </ReferenceManyField>
-        ) : null}
-        </section>
+                <DataTable rowClick={false} bulkActionButtons={false}>
+                  <DataTable.Col label="Authority">
+                    <ReferenceField
+                      source="conservation_code_id"
+                      reference="conservation_codes"
+                      link={false}
+                    >
+                      <RecordField source="authorising_org" label="" />
+                    </ReferenceField>
+                  </DataTable.Col>
+                  <DataTable.Col label="Conservation code">
+                    <ReferenceField
+                      source="conservation_code_id"
+                      reference="conservation_codes"
+                      link={false}
+                    >
+                      <RecordField source="conservation_code_value" label="" />
+                    </ReferenceField>
+                  </DataTable.Col>
+                  <DataTable.Col
+                    source="effective_from"
+                    label="Effective from"
+                    field={DateField}
+                  />
+                  <DataTable.Col
+                    source="effective_to"
+                    label="Effective to"
+                    field={DateField}
+                  />
+                  {editable ? (
+                    <DataTable.Col label="">
+                      <div className="flex justify-end">
+                        <div className="flex items-center gap-2">
+                          <EditRelatedButton label="Edit conservation code">
+                            <DialogFormPadding>
+                              <ConscodeTaxonForm />
+                            </DialogFormPadding>
+                          </EditRelatedButton>
+                          <OpenConservationCodeRelatedButton />
+                        </div>
+                      </div>
+                    </DataTable.Col>
+                  ) : null}
+                </DataTable>
+              </ReferenceManyField>
+            ) : null}
+          </section>
         ) : null}
       </div>
     </EnterpriseDialogThemeProvider>
