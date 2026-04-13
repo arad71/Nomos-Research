@@ -56,6 +56,8 @@ import TaxonNameShowPage from './kit/taxon-names/TaxonNameShowPage';
 import TaxonNamesPage from './kit/taxon-names/TaxonNamesPage';
 import TaxonNameParentReviewsPage from './kit/taxon-name-parent-reviews/TaxonNameParentReviewsPage';
 import ParallelNameReviewPage from './kit/taxon-name-parent-reviews/ParallelNameReviewPage';
+import ExpectedHybridReviewPage from './kit/taxon-name-parent-reviews/ExpectedHybridReviewPage';
+import NoParentLinksPage from './kit/taxon-name-parent-reviews/NoParentLinksPage';
 import TaxonNameCodeCreatePage from './kit/taxon-name-codes/TaxonNameCodeCreatePage';
 import TaxonNameCodeEditPage from './kit/taxon-name-codes/TaxonNameCodeEditPage';
 import TaxonNameCodeShowPage from './kit/taxon-name-codes/TaxonNameCodeShowPage';
@@ -137,6 +139,14 @@ export const Routes: FC = () => {
         <Route
           path="/parallel_name_review"
           element={withAccess('taxon_names', 'list', <ParallelNameReviewPage />)}
+        />
+        <Route
+          path="/expected_hybrid_review"
+          element={withAccess('taxon_names', 'list', <ExpectedHybridReviewPage />)}
+        />
+        <Route
+          path="/taxon_names_without_parents"
+          element={withAccess('taxon_name_parent_reviews', 'list', <NoParentLinksPage />)}
         />
         <Route
           path="/taxon_name_parent_reviews/:id"

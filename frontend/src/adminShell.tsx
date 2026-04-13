@@ -190,6 +190,20 @@ export const adminNavSections: AdminNavSection[] = [
         resource: 'taxon_names',
         action: 'list',
       },
+      {
+        to: '/expected_hybrid_review',
+        label: 'Expected Hybrids',
+        icon: <RuleIcon fontSize="small" />,
+        resource: 'taxon_names',
+        action: 'list',
+      },
+      {
+        to: '/taxon_names_without_parents',
+        label: 'No Parent Links',
+        icon: <RuleIcon fontSize="small" />,
+        resource: 'taxon_name_parent_reviews',
+        action: 'list',
+      },
     ],
   },
 ];

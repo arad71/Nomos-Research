@@ -194,6 +194,7 @@ class NameStringComponents(BaseModel):
     author: Optional[str] = None
     is_hybrid_formula: bool = False
     hybrid_marker_on_specific_epithet: bool = False
+    hybrid_marker_on_infraspecific_epithet: bool = False
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -216,5 +217,54 @@ class TaxonNameParallelPreview(BaseModel):
 
     matches_current_uninomial: bool = False
     matches_current_scientific_name: bool = False
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class TaxonNameParallelAuditMismatch(BaseModel):
+    taxon_name_id: int
+    mismatch_kind: str
+    strategy: str
+    current_scientific_name: Optional[str] = None
+    derived_scientific_name: Optional[str] = None
+    current_canonical_name: Optional[str] = None
+    derived_canonical_name: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class TaxonNameParallelAuditResult(BaseModel):
+    strict: bool
+    current_only: bool
+    processed: int
+    matches_all: int
+    scientific_mismatch: int
+    author_only_scientific_mismatch: int
+    canonical_mismatch: int
+    both_mismatch: int
+    errors: int
+    mismatch_rows: list[TaxonNameParallelAuditMismatch] = Field(default_factory=list)
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class TaxonNameParallelAuditJobStatus(BaseModel):
+    status: str
+    strict: bool = True
+    current_only: bool = True
+    batch_size: int = 500
+    mismatch_limit: int = 2000
+    expected_total: int = 0
+    processed: int = 0
+    matches_all: int = 0
+    scientific_mismatch: int = 0
+    author_only_scientific_mismatch: int = 0
+    canonical_mismatch: int = 0
+    both_mismatch: int = 0
+    errors: int = 0
+    started_at: Optional[str] = None
+    finished_at: Optional[str] = None
+    error_message: Optional[str] = None
+    result: Optional[TaxonNameParallelAuditResult] = None
 
     model_config = ConfigDict(from_attributes=True)

@@ -173,13 +173,20 @@ def run_backfill(
     since_commit = 0
     current_offset = offset
     remaining = limit
+    last_seen_taxon_name_id: int | None = None
 
     while True:
         batch_limit = read_batch_size if remaining is None else min(read_batch_size, remaining)
         if batch_limit <= 0:
             break
 
-        batch = base_query.offset(current_offset).limit(batch_limit).all()
+        batch_query = base_query
+        if last_seen_taxon_name_id is not None:
+            batch_query = batch_query.filter(TaxonName.taxon_name_id > last_seen_taxon_name_id)
+        elif current_offset:
+            batch_query = batch_query.offset(current_offset)
+
+        batch = batch_query.limit(batch_limit).all()
         if not batch:
             break
 
@@ -739,6 +746,7 @@ def run_backfill(
                     status, reason = classify_candidate_match_state(
                         context=context,
                         taxon_name=taxon_name,
+                        candidate_parent_taxon_names=[parent],
                         derived_uninomial=parent.uninomial,
                         fallback_reason="auto_matched_unique_uninomial",
                         hierarchy_confirmed=hierarchy_confirmed,
@@ -805,7 +813,9 @@ def run_backfill(
                 )
                 log_progress(stats, log_every)
 
-        current_offset += len(batch)
+        last_seen_taxon_name_id = batch[-1].taxon_name_id
+        if last_seen_taxon_name_id is None:
+            current_offset += len(batch)
         if remaining is not None:
             remaining -= len(batch)
             if remaining <= 0:
@@ -1063,7 +1073,9 @@ def refresh_review_row_from_existing_parents(
         taxon_name=taxon_name,
     )
     status, reason = classify_existing_parent_state(
+        context=context,
         taxon_name=taxon_name,
+        parent_taxon_names=candidate_parents,
         parent_count=len(candidate_parents),
         derived_uninomial=derived_uninomial,
         fallback_reason=fallback_reason,
@@ -1123,7 +1135,9 @@ def derive_uninomial_from_parents(
 
 def classify_existing_parent_state(
     *,
+    context: BatchContext,
     taxon_name: TaxonName,
+    parent_taxon_names: list[TaxonName],
     parent_count: int,
     derived_uninomial: str | None,
     fallback_reason: str | None,
@@ -1139,6 +1153,15 @@ def classify_existing_parent_state(
         return "matched_needs_review", "missing_hybrid_category"
 
     if legacy_uninomial and derived_value and legacy_uninomial != derived_value:
+        if auto_resolved_confirmed_subgenus_parent_match(
+            context=context,
+            taxon_name=taxon_name,
+            parent_taxon_names=parent_taxon_names,
+            fallback_reason=fallback_reason,
+            hierarchy_confirmed=hierarchy_confirmed,
+            infrageneric_confirmed=infrageneric_confirmed,
+        ):
+            return "resolved", "auto_resolved_confirmed_subgenus_parent"
         if infrageneric_confirmed:
             return (
                 "matched_needs_review",
@@ -1151,6 +1174,33 @@ def classify_existing_parent_state(
             return "resolved", "auto_resolved_hierarchy_confirmed"
         if infrageneric_confirmed:
             return "resolved", "auto_resolved_infrageneric_confirmed"
+        if single_species_to_genus_unique_uninomial_match(
+            context=context,
+            taxon_name=taxon_name,
+            parent_taxon_names=parent_taxon_names,
+            fallback_reason=fallback_reason,
+            legacy_uninomial=legacy_uninomial,
+            derived_uninomial=derived_value,
+        ):
+            return "resolved", "auto_resolved_single_genus_unique_uninomial"
+        if single_species_to_subgenus_unique_uninomial_match(
+            context=context,
+            taxon_name=taxon_name,
+            parent_taxon_names=parent_taxon_names,
+            fallback_reason=fallback_reason,
+            legacy_uninomial=legacy_uninomial,
+            derived_uninomial=derived_value,
+        ):
+            return "resolved", "auto_resolved_single_subgenus_unique_uninomial"
+        if single_species_to_subgenus_unique_uninomial_match(
+            context=context,
+            taxon_name=taxon_name,
+            parent_taxon_names=parent_taxon_names,
+            fallback_reason=fallback_reason,
+            legacy_uninomial=legacy_uninomial,
+            derived_uninomial=derived_value,
+        ):
+            return "resolved", "auto_resolved_single_subgenus_unique_uninomial"
 
     if fallback_reason:
         return "matched_needs_review", fallback_reason
@@ -1162,6 +1212,7 @@ def classify_candidate_match_state(
     *,
     context: BatchContext,
     taxon_name: TaxonName,
+    candidate_parent_taxon_names: list[TaxonName] | None = None,
     derived_uninomial: str | None,
     fallback_reason: str,
     hierarchy_confirmed: bool | None,
@@ -1174,6 +1225,15 @@ def classify_candidate_match_state(
         return "matched_needs_review", fallback_reason
 
     if legacy_uninomial and derived_value and legacy_uninomial != derived_value:
+        if auto_resolved_confirmed_subgenus_parent_match(
+            context=context,
+            taxon_name=taxon_name,
+            parent_taxon_names=candidate_parent_taxon_names or [],
+            fallback_reason=fallback_reason,
+            hierarchy_confirmed=hierarchy_confirmed,
+            infrageneric_confirmed=infrageneric_confirmed,
+        ):
+            return "resolved", "auto_resolved_confirmed_subgenus_parent"
         if infrageneric_confirmed:
             return "matched_needs_review", fallback_reason
         return "mismatch", "derived_name_mismatch"
@@ -1183,8 +1243,98 @@ def classify_candidate_match_state(
             return "resolved", "auto_resolved_hierarchy_confirmed"
         if infrageneric_confirmed:
             return "resolved", "auto_resolved_infrageneric_confirmed"
+        if single_species_to_genus_unique_uninomial_match(
+            context=context,
+            taxon_name=taxon_name,
+            parent_taxon_names=candidate_parent_taxon_names or [],
+            fallback_reason=fallback_reason,
+            legacy_uninomial=legacy_uninomial,
+            derived_uninomial=derived_value,
+        ):
+            return "resolved", "auto_resolved_single_genus_unique_uninomial"
+        if single_species_to_subgenus_unique_uninomial_match(
+            context=context,
+            taxon_name=taxon_name,
+            parent_taxon_names=candidate_parent_taxon_names or [],
+            fallback_reason=fallback_reason,
+            legacy_uninomial=legacy_uninomial,
+            derived_uninomial=derived_value,
+        ):
+            return "resolved", "auto_resolved_single_subgenus_unique_uninomial"
 
     return "matched_needs_review", fallback_reason
+
+
+def single_species_to_genus_unique_uninomial_match(
+    *,
+    context: BatchContext,
+    taxon_name: TaxonName,
+    parent_taxon_names: list[TaxonName],
+    fallback_reason: str | None,
+    legacy_uninomial: str,
+    derived_uninomial: str,
+) -> bool:
+    if fallback_reason not in {"auto_matched_unique_uninomial", "existing_parent_links", None}:
+        return False
+    if get_rank_name(context, taxon_name) != "species":
+        return False
+    if len(parent_taxon_names) != 1:
+        return False
+
+    parent = parent_taxon_names[0]
+    if get_rank_name(context, parent) != "genus":
+        return False
+
+    parent_uninomial = (parent.uninomial or "").strip()
+    if not parent_uninomial:
+        return False
+
+    return parent_uninomial == legacy_uninomial == derived_uninomial
+
+
+def single_species_to_subgenus_unique_uninomial_match(
+    *,
+    context: BatchContext,
+    taxon_name: TaxonName,
+    parent_taxon_names: list[TaxonName],
+    fallback_reason: str | None,
+    legacy_uninomial: str,
+    derived_uninomial: str,
+) -> bool:
+    if fallback_reason not in {"auto_matched_unique_uninomial", "existing_parent_links", None}:
+        return False
+    if get_rank_name(context, taxon_name) != "species":
+        return False
+    if len(parent_taxon_names) != 1:
+        return False
+
+    parent = parent_taxon_names[0]
+    if get_rank_name(context, parent) != "subgenus":
+        return False
+
+    parent_uninomial = (parent.uninomial or "").strip()
+    if not parent_uninomial:
+        return False
+
+    return parent_uninomial == legacy_uninomial == derived_uninomial
+
+
+def auto_resolved_confirmed_subgenus_parent_match(
+    *,
+    context: BatchContext,
+    taxon_name: TaxonName,
+    parent_taxon_names: list[TaxonName],
+    fallback_reason: str | None,
+    hierarchy_confirmed: bool | None,
+    infrageneric_confirmed: bool | None,
+) -> bool:
+    if fallback_reason != "infrageneric_parent_match":
+        return False
+    if not hierarchy_confirmed or not infrageneric_confirmed:
+        return False
+    if len(parent_taxon_names) != 1:
+        return False
+    return get_rank_name(context, parent_taxon_names[0]) == "subgenus"
 
 
 def is_rank_out_of_scope_for_parent_review(

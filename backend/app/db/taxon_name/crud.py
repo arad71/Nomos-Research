@@ -58,11 +58,11 @@ class TaxonNameCrud(crud.Crud):
 
     @staticmethod
     def _seed_parallel_name_fields_from_current(values) -> None:
-        if not getattr(values, "parallel_override_uninomial", None):
+        if getattr(values, "parallel_override_uninomial", None) is None:
             values.parallel_override_uninomial = values.uninomial
-        if not getattr(values, "parallel_override_specific_epithet", None):
+        if getattr(values, "parallel_override_specific_epithet", None) is None:
             values.parallel_override_specific_epithet = values.specific_epithet
-        if not getattr(values, "parallel_override_infraspecific_epithet", None):
+        if getattr(values, "parallel_override_infraspecific_epithet", None) is None:
             values.parallel_override_infraspecific_epithet = values.infraspecific_epithet
 
     @staticmethod
@@ -84,6 +84,13 @@ class TaxonNameCrud(crud.Crud):
 
     @classmethod
     def _normalize_hybrid_formula_fields(cls, values) -> None:
+        rank_name = (
+            (
+                getattr(values, "rank_name", None)
+                or getattr(getattr(values, "taxon_rank", None), "rank_name", None)
+            )
+            or ""
+        ).strip().lower()
         original_uninomial = getattr(values, "uninomial", None)
         normalized_uninomial = cls._normalize_hybrid_formula_prefix(original_uninomial)
         if normalized_uninomial is not None:
@@ -107,7 +114,7 @@ class TaxonNameCrud(crud.Crud):
                 cls._has_hybrid_formula_prefix(original_parallel_uninomial),
             ]
         )
-        has_specific_hybrid_prefix = any(
+        has_specific_hybrid_prefix = rank_name == "species" and any(
             [
                 cls._has_hybrid_formula_prefix(original_specific_epithet),
                 cls._has_hybrid_formula_prefix(original_parallel_specific_epithet),
@@ -133,9 +140,13 @@ class TaxonNameCrud(crud.Crud):
             ):
                 values.parallel_override_uninomial = normalized_uninomial
         elif (
+            rank_name == "species"
+            and
+            (
             getattr(values, "is_hybrid", False)
             and getattr(getattr(values, "hybrid_category", None), "value", None)
             == schema.enums.HybridCategory.named_hybrid.value
+            )
         ):
             normalized_parallel_specific_epithet = cls._normalize_hybrid_formula_prefix(
                 original_parallel_specific_epithet
@@ -232,8 +243,6 @@ class TaxonNameCrud(crud.Crud):
         db_session.close()
         ```
         """
-        cls._normalize_hybrid_formula_fields(taxon_name)
-        cls._seed_parallel_name_fields_from_current(taxon_name)
         create_data = taxon_name.dict(exclude_unset=True)
         delattr(taxon_name, "classification_system_ids")
         db_taxon_name = super().create_item(db, taxon_name, current_user=current_user)
@@ -251,7 +260,6 @@ class TaxonNameCrud(crud.Crud):
                 db.add(informal_group)
             db.commit()
         cls.calculate_name_formats(db, db_taxon_name.taxon_name_id)
-        cls._clear_redundant_parallel_uninomial(db, db_taxon_name.taxon_name_id)
         return db_taxon_name
 
     @classmethod
@@ -307,7 +315,6 @@ class TaxonNameCrud(crud.Crud):
         taxon_name_edit)
         """
         update_data = taxon_name.dict(exclude_unset=True)
-        cls._normalize_hybrid_formula_fields(taxon_name)
         if "classification_system_ids" in update_data:
             classification_system_ids = update_data["classification_system_ids"]
             db.query(InformalGroup).filter(
@@ -342,7 +349,6 @@ class TaxonNameCrud(crud.Crud):
             delattr(taxon_name, "classification_system_ids")
         db_taxon_name = super().edit_item(db, current_user, taxon_name_id, taxon_name)
         cls.calculate_name_formats(db, db_taxon_name.taxon_name_id)
-        cls._clear_redundant_parallel_uninomial(db, db_taxon_name.taxon_name_id)
         return db_taxon_name
 
     @classmethod
@@ -576,7 +582,6 @@ class TaxonNameCrud(crud.Crud):
             ):
                 taxon_name.infragenus_name = name_entry.formatted_name
                 taxon_name.calculate_name = False
-        print(taxon_name.infragenus_name)
         if db.is_modified(taxon_name):
             if current_user:
                 taxon_name.updated_by = current_user

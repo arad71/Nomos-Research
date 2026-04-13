@@ -231,15 +231,28 @@ const AdminKitLayout = () => {
 
   React.useEffect(() => {
     let active = true;
+    const AUTH_CHECK_TIMEOUT_MS = 10000;
+    let timeoutId: number | null = null;
 
-    authProvider
-      .checkAuth()
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      timeoutId = window.setTimeout(() => {
+        reject(new Error('Auth check timed out'));
+      }, AUTH_CHECK_TIMEOUT_MS);
+    });
+
+    Promise.race([authProvider.checkAuth(), timeoutPromise])
       .then(() => {
+        if (timeoutId !== null) {
+          window.clearTimeout(timeoutId);
+        }
         if (active) {
           setAuthState('ready');
         }
       })
       .catch(() => {
+        if (timeoutId !== null) {
+          window.clearTimeout(timeoutId);
+        }
         if (!active) {
           return;
         }
@@ -249,6 +262,9 @@ const AdminKitLayout = () => {
 
     return () => {
       active = false;
+      if (timeoutId !== null) {
+        window.clearTimeout(timeoutId);
+      }
     };
   }, [navigate]);
 

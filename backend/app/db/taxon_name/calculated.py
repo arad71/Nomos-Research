@@ -122,10 +122,10 @@ def calculate_scientific_name_string(
     )
     if specific_epithet:
         parts.append(specific_epithet)
-    infraspecific_epithet = (
-        italicize_name(components.infraspecific_epithet)
-        if italicize
-        else components.infraspecific_epithet
+    infraspecific_epithet = format_infraspecific_epithet_for_display(
+        components.infraspecific_epithet,
+        hybrid_marker_on_infraspecific_epithet=components.hybrid_marker_on_infraspecific_epithet,
+        italicize=italicize,
     )
     if is_autonym:
         parts.append(components.author)
@@ -152,7 +152,9 @@ def italicize_name(name: str) -> str | None:
 
 
 def get_name_components(
-    target: model.TaxonName, include_rank: bool = True
+    target: model.TaxonName,
+    include_rank: bool = True,
+    apply_hybrid_semantics: bool = False,
 ) -> schema.NameStringComponents:
     """Generates the components of a string representation of a TaxonName object.
 
@@ -170,7 +172,9 @@ def get_name_components(
     the canonical name for TaxonName objects in the Plantae or Fungi kingdoms.
     """
     vals = schema.NameStringComponents()
-    vals.uninomial = strip_hybrid_formula_prefix(target.uninomial)
+    # Preserve legacy uninomial as stored; do not normalize away leading hybrid markers
+    # unless explicit hybrid semantics are being applied at render time.
+    vals.uninomial = target.uninomial
     vals.specific_epithet = target.specific_epithet
     if include_rank and target.kingdom_name in (
         constants.PLANTAE_KINGDOM_NAME,
@@ -180,11 +184,14 @@ def get_name_components(
             vals.rank_abbreviation = RankAbbreviationVals[target.taxon_rank.rank_abbrev]
     vals.infraspecific_epithet = target.infraspecific_epithet
     vals.author = target.author
-    hybrid_category_value = getattr(getattr(target, "hybrid_category", None), "value", None)
-    vals.is_hybrid_formula = (
-        bool(getattr(target, "is_hybrid", False))
-        and hybrid_category_value == HybridCategory.hybrid_formula.value
-    )
+    if apply_hybrid_semantics:
+        hybrid_category_value = getattr(
+            getattr(target, "hybrid_category", None), "value", None
+        )
+        vals.is_hybrid_formula = (
+            bool(getattr(target, "is_hybrid", False))
+            and hybrid_category_value == HybridCategory.hybrid_formula.value
+        )
     return vals
 
 
@@ -204,12 +211,20 @@ def format_uninomial_for_display(
     is_hybrid_formula: bool = False,
     italicize: bool = False,
 ) -> str | None:
-    normalized_uninomial = strip_hybrid_formula_prefix(uninomial)
+    normalized_uninomial = uninomial.strip() if uninomial else None
     if not normalized_uninomial:
         return None
-    display_value = italicize_name(normalized_uninomial) if italicize else normalized_uninomial
     if is_hybrid_formula:
-        return f"× {display_value}"
+        normalized_uninomial = strip_hybrid_formula_prefix(normalized_uninomial)
+        if not normalized_uninomial:
+            return None
+        display_value = (
+            italicize_name(normalized_uninomial)
+            if italicize
+            else normalized_uninomial
+        )
+        return f"×{display_value}"
+    display_value = italicize_name(normalized_uninomial) if italicize else normalized_uninomial
     return display_value
 
 
@@ -236,6 +251,29 @@ def format_specific_epithet_for_display(
     return display_value
 
 
+def format_infraspecific_epithet_for_display(
+    infraspecific_epithet: str | None,
+    *,
+    hybrid_marker_on_infraspecific_epithet: bool = False,
+    italicize: bool = False,
+) -> str | None:
+    normalized_infraspecific_epithet = (
+        strip_hybrid_formula_prefix(infraspecific_epithet)
+        if hybrid_marker_on_infraspecific_epithet
+        else infraspecific_epithet
+    )
+    if not normalized_infraspecific_epithet:
+        return None
+    display_value = (
+        italicize_name(normalized_infraspecific_epithet)
+        if italicize
+        else normalized_infraspecific_epithet
+    )
+    if hybrid_marker_on_infraspecific_epithet:
+        return f"×{display_value}"
+    return display_value
+
+
 def calculate_canonical_name_string(
     components: schema.NameStringComponents,
     *,
@@ -257,7 +295,11 @@ def calculate_canonical_name_string(
                 italicize=False,
             ),
             components.rank_abbreviation if include_rank else None,
-            components.infraspecific_epithet,
+            format_infraspecific_epithet_for_display(
+                components.infraspecific_epithet,
+                hybrid_marker_on_infraspecific_epithet=components.hybrid_marker_on_infraspecific_epithet,
+                italicize=False,
+            ),
         ]
     )
 

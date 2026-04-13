@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 from dataclasses import dataclass, field
+from typing import Callable
 
 import app.model  # noqa: F401
 from app.db.session import get_db
@@ -24,6 +25,7 @@ class MismatchSample:
 
 @dataclass
 class AuditStats:
+    expected_total: int = 0
     processed: int = 0
     matches_all: int = 0
     scientific_mismatch: int = 0
@@ -32,6 +34,7 @@ class AuditStats:
     both_mismatch: int = 0
     errors: int = 0
     mismatch_samples: list[MismatchSample] = field(default_factory=list)
+    mismatch_rows: list[MismatchSample] = field(default_factory=list)
 
 
 def audit_parallel_name_engine(
@@ -43,6 +46,9 @@ def audit_parallel_name_engine(
     batch_size: int,
     log_every: int,
     sample_size: int,
+    collect_mismatches: bool = False,
+    mismatch_limit: int = 0,
+    progress_callback: Callable[[AuditStats], None] | None = None,
 ) -> AuditStats:
     db = get_db().__next__()
     stats = AuditStats()
@@ -54,6 +60,10 @@ def audit_parallel_name_engine(
         )
         if current_only:
             query = query.filter(TaxonName.is_current == True)  # noqa: E712
+
+        stats.expected_total = query.count()
+        if progress_callback is not None:
+            progress_callback(stats)
 
         current_offset = offset
         remaining = limit
@@ -125,6 +135,35 @@ def audit_parallel_name_engine(
                                 strategy=preview.strategy,
                             )
                         )
+                    if (
+                        collect_mismatches
+                        and not (scientific_match and canonical_match)
+                        and (
+                            mismatch_limit <= 0
+                            or len(stats.mismatch_rows) < mismatch_limit
+                        )
+                    ):
+                        # Reuse the same shape so API consumers can request full mismatch rows.
+                        mismatch_kind = "both"
+                        if scientific_match:
+                            mismatch_kind = "canonical_only"
+                        elif canonical_match:
+                            mismatch_kind = (
+                                "author_only_scientific"
+                                if derived_matches_current_author
+                                else "scientific_only"
+                            )
+                        stats.mismatch_rows.append(
+                            MismatchSample(
+                                taxon_name_id=taxon_name_id,
+                                mismatch_kind=mismatch_kind,
+                                current_scientific_name=preview.current_scientific_name,
+                                derived_scientific_name=preview.derived_scientific_name,
+                                current_canonical_name=preview.current_canonical_name,
+                                derived_canonical_name=preview.derived_canonical_name,
+                                strategy=preview.strategy,
+                            )
+                        )
                 except Exception:
                     stats.errors += 1
 
@@ -139,11 +178,17 @@ def audit_parallel_name_engine(
                         f"both_mismatch={stats.both_mismatch} "
                         f"errors={stats.errors}"
                     )
+                if progress_callback is not None and (
+                    log_every <= 0 or stats.processed % max(log_every, 1) == 0
+                ):
+                    progress_callback(stats)
 
             current_offset += len(taxon_rows)
             if remaining is not None:
                 remaining -= len(taxon_rows)
 
+        if progress_callback is not None:
+            progress_callback(stats)
         return stats
     finally:
         db.close()

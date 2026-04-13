@@ -30,14 +30,23 @@ The goal is to make the naming rules explicit, testable, and discussable.
 
 The strict parallel engine currently works from a combination of:
 
-- current stored taxon fields
-- parallel fields:
+- linked `taxon_name_parents` (ordered)
+- parallel fields only:
   - `parallel_override_uninomial`
   - `parallel_override_specific_epithet`
   - `parallel_override_infraspecific_epithet`
-- linked `taxon_name_parents`
-- hierarchy parent context
-- existing author mapping
+- rank metadata (`rank_name`, `rank_abbrev`)
+- author field
+- hybrid semantics (`is_hybrid`, `hybrid_category`)
+
+Strict derived output does not use legacy component fields as source-of-truth
+inputs:
+
+- `uninomial`
+- `specific_epithet`
+- `infraspecific_epithet`
+
+Those remain legacy fields for current-name comparison and migration QA.
 
 ## How To Read This Matrix
 
@@ -89,6 +98,105 @@ This document describes the strict engine only.
 It does not describe transitional non-strict fallback behavior.
 
 ## Rule Matrix
+
+## Rank Assembly Reference (Strict Derived Output)
+
+This section is the quick reference for how strict **derived** names are
+assembled for each rank family.
+
+### Genus and above (non-infrageneric higher ranks)
+
+- Strategy family: `stored_fields` unless an explicit higher-rank infrageneric
+  parent rule applies.
+- Canonical assembly:
+  - `parallel_override_uninomial` when set
+  - otherwise empty/unchanged strict component behavior
+- Scientific assembly:
+  - canonical head + author
+- Author placement:
+  - scientific includes author at the end
+  - canonical never includes author
+
+### Species
+
+- Strategy families:
+  - `single_parent_species_inheritance`
+  - `infrageneric_overlay`
+  - `strict_infrageneric_parent_overlay`
+  - `hybrid_parent_formula` (when 2+ parents)
+- Canonical assembly:
+  - uninomial from linked genus parent unless explicit parallel uninomial
+    override is present
+  - specific epithet from `parallel_override_specific_epithet` when present;
+    otherwise from allowed parent inheritance path
+- Scientific assembly:
+  - canonical + author
+  - for infrageneric overlay: `Genus (Infragenus) species + author`
+- Author placement:
+  - appended at end of scientific
+  - excluded from canonical
+
+### Infraspecific ranks
+
+Ranks:
+- subspecies
+- variety
+- subvariety
+- form
+- subform
+
+- Strategy families:
+  - `single_parent_infraspecific_inheritance`
+  - `infrageneric_overlay`
+  - `strict_infrageneric_parent_overlay`
+  - `hybrid_parent_formula` (when 2+ parents)
+- Canonical assembly:
+  - uninomial from linked parent unless explicit parallel uninomial override
+  - specific epithet from `parallel_override_specific_epithet` when present;
+    otherwise inherited from linked species parent when available
+  - rank abbreviation from taxon rank metadata
+  - infraspecific epithet from:
+    - `parallel_override_infraspecific_epithet` when present, else
+    - `parallel_override_specific_epithet` fallback when set, else
+    - inherited parent species epithet where the inheritance rule applies
+- Scientific assembly:
+  - canonical + author
+- Author placement:
+  - appended at end of scientific
+  - excluded from canonical
+
+### Higher-rank infrageneric names
+
+Ranks:
+- subgenus
+- section
+- subsection
+- series
+- subseries
+
+- Strategy family: `higher_rank_infrageneric_parent_inheritance`
+- Canonical assembly:
+  - parent genus-level canonical value
+- Scientific assembly:
+  - `ParentGenus (rank-abbrev. parallel_uninomial) + author`
+  - rank abbreviation is shown once
+- Author placement:
+  - appended at end of scientific
+  - excluded from canonical
+
+### Hybrid and intergrade formulas (multi-parent)
+
+- Strategy family: `hybrid_parent_formula`
+- Canonical assembly:
+  - ordered parent values joined by separator
+  - separators:
+    - ` × ` by default
+    - ` - ` for `intergrade`
+- Scientific assembly:
+  - canonical formula + author
+- Author placement:
+  - appended at end of scientific
+  - excluded from canonical
 
 ### Genus And Above
 

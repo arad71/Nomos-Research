@@ -3,6 +3,7 @@ import { ExternalLink, Search } from 'lucide-react';
 import { useDataProvider } from 'ra-core';
 import { useNotify } from 'react-admin';
 import { Link, useSearchParams } from 'react-router-dom';
+import { BACKEND_URL } from '../../config';
 import { DataTable } from '@/components/admin/data-table';
 import { Spinner } from '@/components/admin/spinner';
 import { Badge } from '@/components/ui/badge';
@@ -26,6 +27,12 @@ type ReviewRecord = {
   kingdom?: {
     kingdom_name?: string | null;
   } | string | null;
+  audit_strategy?: string | null;
+  audit_mismatch_kind?: string | null;
+  audit_current_scientific_name?: string | null;
+  audit_derived_scientific_name?: string | null;
+  audit_current_canonical_name?: string | null;
+  audit_derived_canonical_name?: string | null;
 };
 
 type ParallelPreview = {
@@ -41,6 +48,54 @@ type ParallelPreview = {
   derived_formatted_scientific_name?: string | null;
   matches_current_uninomial?: boolean;
   matches_current_scientific_name?: boolean;
+};
+
+type ParallelAuditMismatch = {
+  taxon_name_id: number;
+  mismatch_kind: string;
+  strategy: string;
+  current_scientific_name?: string | null;
+  derived_scientific_name?: string | null;
+  current_canonical_name?: string | null;
+  derived_canonical_name?: string | null;
+};
+
+type ParallelAuditResult = {
+  strict: boolean;
+  current_only: boolean;
+  processed: number;
+  matches_all: number;
+  scientific_mismatch: number;
+  author_only_scientific_mismatch: number;
+  canonical_mismatch: number;
+  both_mismatch: number;
+  errors: number;
+  mismatch_rows: ParallelAuditMismatch[];
+};
+
+type ParallelAuditJobStatus = {
+  status: 'idle' | 'running' | 'completed' | 'failed';
+  strict: boolean;
+  current_only: boolean;
+  batch_size: number;
+  mismatch_limit: number;
+  expected_total: number;
+  processed: number;
+  matches_all: number;
+  scientific_mismatch: number;
+  author_only_scientific_mismatch: number;
+  canonical_mismatch: number;
+  both_mismatch: number;
+  errors: number;
+  started_at?: string | null;
+  finished_at?: string | null;
+  error_message?: string | null;
+  result?: ParallelAuditResult | null;
+};
+
+type StoredParallelAuditRun = {
+  runAt: string;
+  result: ParallelAuditResult;
 };
 
 type Filters = {
@@ -76,6 +131,42 @@ const PER_PAGE_OPTIONS = [25, 50, 100] as const;
 const DEFAULT_SORT_FIELD = 'updated_on';
 const DEFAULT_SORT_ORDER: SortOrder = 'DESC';
 const TABLE_STORE_KEY = 'parallel_name_review.kit.datatable';
+const AUDIT_RESULT_STORAGE_KEY = 'parallel_name_review.last_full_audit';
+
+const readStoredAuditRun = (): StoredParallelAuditRun | null => {
+  try {
+    const raw = localStorage.getItem(AUDIT_RESULT_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as StoredParallelAuditRun;
+    if (!parsed?.result || !Array.isArray(parsed.result.mismatch_rows)) {
+      return null;
+    }
+    return parsed;
+  } catch {
+    return null;
+  }
+};
+
+const runAuditRequestWithFallback = async (
+  token: string | null,
+  method: 'GET' | 'POST',
+  pathSuffixes: string[],
+): Promise<Response> => {
+  let lastStatus: number | null = null;
+  for (const suffix of pathSuffixes) {
+    const response = await fetch(`${BACKEND_URL}${suffix}`, {
+      method,
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (response.ok) return response;
+    lastStatus = response.status;
+    if (![404, 405].includes(response.status)) return response;
+  }
+  throw new Error(`Audit request failed (${lastStatus ?? 'unknown'})`);
+};
 
 const defaultColumns: ColumnKey[] = [
   'kingdom',
@@ -172,6 +263,11 @@ const ParallelNameReviewPage = () => {
   const [loading, setLoading] = React.useState(true);
   const [previewLoading, setPreviewLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const [auditRunning, setAuditRunning] = React.useState(false);
+  const [lastAuditRun, setLastAuditRun] = React.useState<StoredParallelAuditRun | null>(() => readStoredAuditRun());
+  const [auditError, setAuditError] = React.useState<string | null>(null);
+  const [auditJobStatus, setAuditJobStatus] = React.useState<ParallelAuditJobStatus | null>(null);
+  const [auditPanelCollapsed, setAuditPanelCollapsed] = React.useState(true);
 
   const updateParams = React.useCallback(
     (updates: Record<string, string | number | null | undefined>) => {
@@ -282,11 +378,43 @@ const ParallelNameReviewPage = () => {
       }
       if (taxonId == null) return false;
       if (!preview) return false;
-      return !(preview.matches_current_scientific_name && preview.matches_current_uninomial);
+      const scientificMatch = Boolean(preview.matches_current_scientific_name);
+      const canonicalMatch = (preview.current_canonical_name || '') === (preview.derived_canonical_name || '');
+      return !(scientificMatch && canonicalMatch);
     });
   }, [filters.hasParentLink, filters.onlyMismatches, filters.parallelUninomialOverride, previewByTaxonId, state.data]);
 
-  const totalPages = Math.max(1, Math.ceil(state.total / perPage));
+  const completedAuditRows = React.useMemo<ReviewRecord[]>(() => {
+    if (!lastAuditRun?.result?.mismatch_rows?.length) return [];
+    return lastAuditRun.result.mismatch_rows.map((row) => ({
+      id: row.taxon_name_id,
+      taxon_name_id: row.taxon_name_id,
+      scientific_name: row.current_scientific_name || null,
+      canonical_name: row.current_canonical_name || null,
+      audit_strategy: row.strategy,
+      audit_mismatch_kind: row.mismatch_kind,
+      audit_current_scientific_name: row.current_scientific_name || null,
+      audit_derived_scientific_name: row.derived_scientific_name || null,
+      audit_current_canonical_name: row.current_canonical_name || null,
+      audit_derived_canonical_name: row.derived_canonical_name || null,
+    }));
+  }, [lastAuditRun]);
+
+  const usingFullAuditRows = !auditRunning && completedAuditRows.length > 0;
+  const pagedFullAuditRows = React.useMemo(() => {
+    if (!usingFullAuditRows) return [];
+    const start = (page - 1) * perPage;
+    return completedAuditRows.slice(start, start + perPage);
+  }, [completedAuditRows, page, perPage, usingFullAuditRows]);
+
+  const tableRows = usingFullAuditRows ? pagedFullAuditRows : displayedRecords;
+  const tableTotal = usingFullAuditRows ? completedAuditRows.length : state.total;
+  const totalPages = Math.max(1, Math.ceil(tableTotal / perPage));
+  const fullAuditMismatchCount =
+    (auditJobStatus?.scientific_mismatch ?? 0) +
+    (auditJobStatus?.author_only_scientific_mismatch ?? 0) +
+    (auditJobStatus?.canonical_mismatch ?? 0) +
+    (auditJobStatus?.both_mismatch ?? 0);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -314,6 +442,94 @@ const ParallelNameReviewPage = () => {
     });
     setSearchParams(new URLSearchParams(), { replace: true });
   };
+
+  const runFullAudit = React.useCallback(async () => {
+    setAuditRunning(true);
+    setAuditError(null);
+    try {
+      const token = localStorage.getItem('token');
+      const query = '?strict=true&current_only=true&batch_size=500&mismatch_limit=2000';
+      const response = await runAuditRequestWithFallback(token, 'POST', [
+        `/taxon_names/_parallel_name_audit_start${query}`,
+        `/taxon_names_parallel_name_audit_start${query}`,
+      ]);
+      const status = (await response.json()) as ParallelAuditJobStatus;
+      setAuditJobStatus(status);
+      setAuditRunning(status.status === 'running');
+      if (status.status === 'running') {
+        notify('Full audit started.', { type: 'info' });
+      }
+    } catch (runError) {
+      const message = runError instanceof Error ? runError.message : 'Failed to run full audit';
+      setAuditError(message);
+      notify(message, { type: 'error' });
+      setAuditRunning(false);
+    }
+  }, [notify]);
+
+  const pollAuditStatus = React.useCallback(async () => {
+    const token = localStorage.getItem('token');
+    const response = await runAuditRequestWithFallback(token, 'GET', [
+      '/taxon_names/_parallel_name_audit_status',
+      '/taxon_names_parallel_name_audit_status',
+    ]);
+    return (await response.json()) as ParallelAuditJobStatus;
+  }, []);
+
+  React.useEffect(() => {
+    let active = true;
+    void pollAuditStatus()
+      .then((status) => {
+        if (!active) return;
+        setAuditJobStatus(status);
+        if (status.status === 'running') {
+          setAuditRunning(true);
+        }
+      })
+      .catch(() => {
+        // Keep page usable if status endpoint is unavailable at load time.
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [pollAuditStatus]);
+
+  React.useEffect(() => {
+    if (!auditRunning) return;
+    let active = true;
+    const timer = window.setInterval(() => {
+      void pollAuditStatus()
+        .then((status) => {
+          if (!active) return;
+          setAuditJobStatus(status);
+          if (status.status !== 'running') {
+            setAuditRunning(false);
+          }
+          if (status.status === 'completed' && status.result) {
+            const run = {
+              runAt: status.finished_at || new Date().toISOString(),
+              result: status.result,
+            };
+            setLastAuditRun(run);
+            localStorage.setItem(AUDIT_RESULT_STORAGE_KEY, JSON.stringify(run));
+          }
+          if (status.status === 'failed' && status.error_message) {
+            setAuditError(status.error_message);
+          }
+        })
+        .catch((error) => {
+          if (!active) return;
+          setAuditRunning(false);
+          setAuditError(error instanceof Error ? error.message : 'Failed to load audit status');
+        });
+    }, 2000);
+
+    return () => {
+      active = false;
+      window.clearInterval(timer);
+    };
+  }, [auditRunning, pollAuditStatus]);
 
   const renderCellContent = (column: ColumnKey, record: ReviewRecord) => {
     const taxonId = record.taxon_name_id ?? record.id;
@@ -346,9 +562,21 @@ const ParallelNameReviewPage = () => {
           </Badge>
         );
       case 'strategy':
+        if (record.audit_strategy) {
+          return <Badge variant="outline">{formatTitle(record.audit_strategy)}</Badge>;
+        }
         if (previewLoading && !preview) return <span className="text-sm text-muted-foreground">Loading...</span>;
         return preview ? <Badge variant="outline">{formatTitle(preview.strategy)}</Badge> : <span className="text-sm text-muted-foreground">Unavailable</span>;
       case 'comparison':
+        if (record.audit_mismatch_kind) {
+          if (record.audit_mismatch_kind === 'both') {
+            return <Badge variant="destructive">Scientific + canonical mismatch</Badge>;
+          }
+          if (record.audit_mismatch_kind === 'canonical_only') {
+            return <Badge variant="outline">Canonical mismatch</Badge>;
+          }
+          return <Badge variant="destructive">Scientific mismatch</Badge>;
+        }
         if (previewLoading && !preview) return <span className="text-sm text-muted-foreground">Loading...</span>;
         if (!preview) return <Badge variant="outline">Unavailable</Badge>;
         const scientificMatch = Boolean(preview.matches_current_scientific_name);
@@ -364,6 +592,9 @@ const ParallelNameReviewPage = () => {
         }
         return <Badge variant="outline">Canonical mismatch</Badge>;
       case 'currentScientific':
+        if (record.audit_current_scientific_name) {
+          return <span className="text-sm">{record.audit_current_scientific_name}</span>;
+        }
         if (!preview) {
           return <span className="text-sm text-muted-foreground">{record.scientific_name || 'Not set'}</span>;
         }
@@ -373,6 +604,9 @@ const ParallelNameReviewPage = () => {
           <span className="text-sm">{preview.current_scientific_name || 'Not set'}</span>
         );
       case 'derivedScientific':
+        if (record.audit_derived_scientific_name) {
+          return <span className="text-sm">{record.audit_derived_scientific_name}</span>;
+        }
         if (previewLoading && !preview) return <span className="text-sm text-muted-foreground">Loading...</span>;
         return preview?.derived_formatted_scientific_name ? (
           <HtmlValue value={preview.derived_formatted_scientific_name} />
@@ -380,8 +614,14 @@ const ParallelNameReviewPage = () => {
           <span className="text-sm">{preview?.derived_scientific_name || 'Unavailable'}</span>
         );
       case 'currentCanonical':
+        if (record.audit_current_canonical_name) {
+          return <span className="text-sm">{record.audit_current_canonical_name}</span>;
+        }
         return <span className="text-sm">{preview?.current_canonical_name || record.canonical_name || 'Not set'}</span>;
       case 'derivedCanonical':
+        if (record.audit_derived_canonical_name) {
+          return <span className="text-sm">{record.audit_derived_canonical_name}</span>;
+        }
         if (previewLoading && !preview) return <span className="text-sm text-muted-foreground">Loading...</span>;
         return <span className="text-sm">{preview?.derived_canonical_name || 'Unavailable'}</span>;
       case 'actions':
@@ -503,12 +743,114 @@ const ParallelNameReviewPage = () => {
             <Button type="button" variant="outline" onClick={clearAllFilters}>
               Reset
             </Button>
+            <Button type="button" variant="outline" onClick={() => void runFullAudit()} disabled={auditRunning}>
+              {auditRunning ? 'Running full audit...' : 'Run Full Audit'}
+            </Button>
+            {auditJobStatus?.status === 'running' ? (
+              <Badge variant="outline">
+                Progress: {auditJobStatus.processed.toLocaleString()}
+                {auditJobStatus.expected_total > 0
+                  ? ` / ${auditJobStatus.expected_total.toLocaleString()}`
+                  : ''}
+              </Badge>
+            ) : null}
+            {auditJobStatus ? (
+              <Badge variant="outline">
+                Full audit mismatches so far: {fullAuditMismatchCount.toLocaleString()}
+              </Badge>
+            ) : null}
+            {usingFullAuditRows ? (
+              <Badge variant="secondary">Table source: full audit mismatches</Badge>
+            ) : (
+              <Badge variant="outline">Table source: page preview</Badge>
+            )}
             <Badge variant="outline" className="self-center">
-              {loading ? 'Loading...' : `${displayedRecords.length} shown on this page of ${state.total.toLocaleString()} fetched rows`}
+              {loading
+                ? 'Loading...'
+                : usingFullAuditRows
+                  ? `${tableRows.length} shown from full audit mismatches of ${tableTotal.toLocaleString()}`
+                  : `${displayedRecords.length} shown in page preview of ${state.total.toLocaleString()} fetched rows`}
             </Badge>
           </div>
         </form>
       </Card>
+
+      {lastAuditRun || auditError ? (
+        <Card className="rounded-3xl border border-border/80 p-5 shadow-sm">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="text-xl font-semibold tracking-tight">Last Full Audit Run</h2>
+              <div className="flex items-center gap-2">
+                {auditRunning ? <Badge variant="outline">Running...</Badge> : null}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setAuditPanelCollapsed((current) => !current)}
+                >
+                  {auditPanelCollapsed ? 'Expand' : 'Collapse'}
+                </Button>
+              </div>
+            </div>
+            {!auditPanelCollapsed ? (
+              <>
+                {auditError ? (
+                  <div className="rounded-2xl border border-border bg-secondary px-4 py-3 text-sm text-foreground">
+                    {auditError}
+                  </div>
+                ) : null}
+                {lastAuditRun ? (
+                  <>
+                    <p className="text-xs text-muted-foreground">
+                      Run at {new Date(lastAuditRun.runAt).toLocaleString()}
+                    </p>
+                    <div className="grid gap-3 md:grid-cols-4">
+                      <Badge variant="outline">Processed: {lastAuditRun.result.processed.toLocaleString()}</Badge>
+                      <Badge variant="outline">All matched: {lastAuditRun.result.matches_all.toLocaleString()}</Badge>
+                      <Badge variant="outline">Scientific only: {lastAuditRun.result.scientific_mismatch.toLocaleString()}</Badge>
+                      <Badge variant="outline">Author-only scientific: {lastAuditRun.result.author_only_scientific_mismatch.toLocaleString()}</Badge>
+                      <Badge variant="outline">Canonical only: {lastAuditRun.result.canonical_mismatch.toLocaleString()}</Badge>
+                      <Badge variant="outline">Both mismatch: {lastAuditRun.result.both_mismatch.toLocaleString()}</Badge>
+                      <Badge variant="outline">Errors: {lastAuditRun.result.errors.toLocaleString()}</Badge>
+                      <Badge variant="outline">Rows returned: {lastAuditRun.result.mismatch_rows.length.toLocaleString()}</Badge>
+                    </div>
+                    <div className="space-y-2">
+                      {lastAuditRun.result.mismatch_rows.length ? (
+                        lastAuditRun.result.mismatch_rows.map((row) => (
+                          <div key={`${row.taxon_name_id}-${row.mismatch_kind}-${row.strategy}`} className="rounded-2xl border border-border/80 p-3">
+                            <div className="flex flex-wrap items-center justify-between gap-2">
+                              <div className="text-sm font-medium">
+                                Taxon {row.taxon_name_id} · {formatTitle(row.mismatch_kind)} · {formatTitle(row.strategy)}
+                              </div>
+                              <Link to={`/taxon_names/${row.taxon_name_id}/show`} className="text-sm text-primary hover:underline">
+                                Open taxon
+                              </Link>
+                            </div>
+                            <div className="mt-1 text-xs text-muted-foreground">
+                              Current scientific: {row.current_scientific_name || 'Not set'}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              Derived scientific: {row.derived_scientific_name || 'Not set'}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              Current canonical: {row.current_canonical_name || 'Not set'}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              Derived canonical: {row.derived_canonical_name || 'Not set'}
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-sm text-muted-foreground">No mismatch rows were returned.</p>
+                      )}
+                    </div>
+                  </>
+                ) : null}
+              </>
+            ) : null}
+          </div>
+        </Card>
+      ) : null}
 
       <Card className="rounded-3xl border border-border/80 p-5 shadow-sm">
         {error ? (
@@ -535,8 +877,8 @@ const ParallelNameReviewPage = () => {
           resource="taxon_names"
           storeKey={TABLE_STORE_KEY}
           hiddenColumns={defaultHiddenColumns}
-          data={displayedRecords}
-          total={state.total}
+          data={tableRows}
+          total={tableTotal}
           isPending={loading || previewLoading}
           isLoading={loading || previewLoading}
           rowClick={false}
