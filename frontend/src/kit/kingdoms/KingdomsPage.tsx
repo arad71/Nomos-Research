@@ -48,7 +48,7 @@ const columnOptions: Array<{ key: ColumnKey; label: string }> = [
   { key: 'kingdomName', label: 'Kingdom' },
   { key: 'description', label: 'Description' },
   { key: 'updatedBy', label: 'Updated by' },
-  { key: 'updated', label: 'Updated' },
+  { key: 'updated', label: 'Updated on' },
   { key: 'actions', label: 'Actions' },
 ];
 const columnLabelMap = columnOptions.reduce<Record<ColumnKey, string>>(
@@ -250,16 +250,36 @@ const KingdomsPage = () => {
     setSearchParams(new URLSearchParams());
   };
 
-  const buildExportCsv = (records: KingdomRecord[]) =>
+  const exportColumnOptions = columnOptions.filter((column) => column.key !== 'actions');
+
+  const getExportValue = (
+    column: ColumnKey,
+    record: KingdomRecord,
+    exportUserMap: Record<number, string>
+  ) => {
+    switch (column) {
+      case 'kingdomName':
+        return record.kingdom_name ?? '';
+      case 'description':
+        return record.kingdom_desc ?? '';
+      case 'updatedBy':
+        return record.updated_by ? exportUserMap[record.updated_by] ?? '' : '';
+      case 'updated':
+        return record.updated_on ?? '';
+      default:
+        return '';
+    }
+  };
+
+  const buildExportCsv = (
+    records: KingdomRecord[],
+    exportUserMap: Record<number, string>
+  ) =>
     [
-      ['Kingdom ID', 'Kingdom', 'Description', 'Updated by', 'Updated'],
-      ...records.map((record) => [
-        record.kingdom_id ?? record.id ?? '',
-        record.kingdom_name ?? '',
-        record.kingdom_desc ?? '',
-        record.updated_by ? userMap[record.updated_by] ?? '' : '',
-        record.updated_on ?? '',
-      ]),
+      exportColumnOptions.map((column) => column.label),
+      ...records.map((record) =>
+        exportColumnOptions.map((column) => getExportValue(column.key, record, exportUserMap))
+      ),
     ]
       .map((row) => row.map((value) => escapeCsvValue(value)).join(','))
       .join('\n');
@@ -278,10 +298,7 @@ const KingdomsPage = () => {
         new Set(allRecords.map((record) => record.updated_by).filter((value): value is number => typeof value === 'number'))
       );
       const nextUserMap = await fetchReferenceMap('users', userIds, 'user_id', 'full_name');
-      const previousUserMap = userMap;
-      setUserMap(nextUserMap);
-      const csv = buildExportCsv(allRecords);
-      setUserMap(previousUserMap);
+      const csv = buildExportCsv(allRecords, nextUserMap);
       downloadCsv(`kingdoms_${new Date().toISOString().slice(0, 10)}.csv`, csv);
     } finally {
       setIsExporting(false);

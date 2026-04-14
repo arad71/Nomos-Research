@@ -85,7 +85,7 @@ const columnOptions: Array<{ key: ColumnKey; label: string }> = [
   { key: 'effectiveFrom', label: 'Effective from' },
   { key: 'effectiveTo', label: 'Effective to' },
   { key: 'notes', label: 'Notes' },
-  { key: 'updated', label: 'Updated' },
+  { key: 'updated', label: 'Updated on' },
   { key: 'deleted', label: 'Deleted' },
   { key: 'actions', label: 'Actions' },
 ];
@@ -534,38 +534,56 @@ const ConscodeTaxonsPage = () => {
     setSearchParams(new URLSearchParams());
   };
 
-  const buildExportCsv = (records: ConscodeTaxonRecord[]) => {
-    const headers = [
-      'Conservation code link ID',
-      'Taxon name',
-      'Authority',
-      'Conservation code',
-      'Display order',
-      'Effective from',
-      'Effective to',
-      'Notes',
-      'Deleted',
-    ];
+  const exportColumnOptions = columnOptions.filter((column) => column.key !== 'actions');
 
-    const rows = records.map((record) => {
-      const taxonNameId = record.taxon_name_id ?? 0;
-      const conservationCodeId = record.conservation_code_id ?? 0;
-      const conservationSummary = conservationCodeMap[conservationCodeId];
+  const getExportValue = (
+    column: ColumnKey,
+    record: ConscodeTaxonRecord,
+    exportTaxonNameMap: Record<number, string>,
+    exportConservationCodeMap: Record<number, ConservationCodeSummary>
+  ) => {
+    const taxonNameId = record.taxon_name_id ?? 0;
+    const conservationCodeId = record.conservation_code_id ?? 0;
+    const conservationSummary = exportConservationCodeMap[conservationCodeId];
 
-      return [
-        record.conscode_taxon_id ?? record.id ?? '',
-        taxonNameMap[taxonNameId] ?? '',
-        conservationSummary?.authority ?? '',
-        conservationSummary?.value ?? '',
-        conservationSummary?.displayOrder ?? '',
-        record.effective_from ?? '',
-        record.effective_to ?? '',
-        record.notes ?? '',
-        record.deleted === undefined ? '' : record.deleted ? 'Yes' : 'No',
-      ];
-    });
+    switch (column) {
+      case 'taxonName':
+        return exportTaxonNameMap[taxonNameId] ?? '';
+      case 'conservationStatus':
+        return [conservationSummary?.authority, conservationSummary?.value].filter(Boolean).join(': ');
+      case 'authority':
+        return conservationSummary?.authority ?? '';
+      case 'conservationCode':
+        return conservationSummary?.value ?? '';
+      case 'displayOrder':
+        return conservationSummary?.displayOrder ?? '';
+      case 'effectiveFrom':
+        return record.effective_from ?? '';
+      case 'effectiveTo':
+        return record.effective_to ?? '';
+      case 'notes':
+        return record.notes ?? '';
+      case 'updated':
+        return record.updated_on ?? '';
+      case 'deleted':
+        return record.deleted === undefined ? '' : record.deleted ? 'Yes' : 'No';
+      default:
+        return '';
+    }
+  };
 
-    return [headers, ...rows]
+  const buildExportCsv = (
+    records: ConscodeTaxonRecord[],
+    exportTaxonNameMap: Record<number, string>,
+    exportConservationCodeMap: Record<number, ConservationCodeSummary>
+  ) => {
+    const rows = records.map((record) =>
+      exportColumnOptions.map((column) =>
+        getExportValue(column.key, record, exportTaxonNameMap, exportConservationCodeMap)
+      )
+    );
+
+    return [exportColumnOptions.map((column) => column.label), ...rows]
       .map((row) => row.map((value) => escapeCsvValue(value)).join(','))
       .join('\n');
   };
@@ -638,13 +656,7 @@ const ConscodeTaxonsPage = () => {
         return acc;
       }, {});
 
-      const previousTaxonNameMap = taxonNameMap;
-      const previousConservationCodeMap = conservationCodeMap;
-      setTaxonNameMap(nextTaxonNameMap);
-      setConservationCodeMap(nextConservationCodeMap);
-      const csv = buildExportCsv(allRecords);
-      setTaxonNameMap(previousTaxonNameMap);
-      setConservationCodeMap(previousConservationCodeMap);
+      const csv = buildExportCsv(allRecords, nextTaxonNameMap, nextConservationCodeMap);
 
       const dateStamp = new Date().toISOString().slice(0, 10);
       downloadCsv(`conscode_taxons_${dateStamp}.csv`, csv);

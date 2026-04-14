@@ -4,7 +4,7 @@ import TaxonNameForm from './TaxonNameForm';
 import TaxonNameRelatedSections from './TaxonNameRelatedSections';
 
 const TaxonNameCreatePage = () => (
-  <Create resource="taxon_names" title="Create taxon name" mutationMode="pessimistic">
+  <Create resource="taxon_names" title="Create taxon name" mutationMode="pessimistic" redirect="edit">
     <div className="grid gap-6">
       <div className="rounded-2xl border border-border bg-card p-6">
         <TaxonNameForm
