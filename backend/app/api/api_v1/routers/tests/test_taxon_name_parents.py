@@ -6,9 +6,7 @@ from app.db.taxon_name_parent.model import TaxonNameParent
 def test_get_taxon_name_parents(
     client, test_taxon_name_parent, superuser_token_headers
 ):
-    response = client.get(
-        "/api/v1/taxon_name_parents", headers=superuser_token_headers
-    )
+    response = client.get("/api/v1/taxon_name_parents", headers=superuser_token_headers)
     assert response.status_code == status.HTTP_200_OK
     response_json = response.json()[0]
     assert response.json() == [
@@ -28,9 +26,7 @@ def test_get_taxon_name_parents(
     ]
 
 
-def test_get_taxon_name_parent(
-    client, test_taxon_name_parent, superuser_token_headers
-):
+def test_get_taxon_name_parent(client, test_taxon_name_parent, superuser_token_headers):
     response = client.get(
         f"/api/v1/taxon_name_parents/{test_taxon_name_parent.taxon_name_parent_id}",
         headers=superuser_token_headers,
@@ -100,7 +96,10 @@ def test_edit_taxon_name_parent(
     )
     assert response.status_code == status.HTTP_200_OK
     response_json = response.json()
-    assert response_json["taxon_name_parent_id"] == test_taxon_name_parent.taxon_name_parent_id
+    assert (
+        response_json["taxon_name_parent_id"]
+        == test_taxon_name_parent.taxon_name_parent_id
+    )
     assert response_json["parent_taxon_name_id"] == test_taxon_name_3.taxon_name_id
     assert response_json["sequence"] == 3
 

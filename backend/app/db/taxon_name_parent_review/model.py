@@ -17,7 +17,9 @@ class TaxonNameParentReview(BaseModel, TableMixin):
         "reason",
     ]
 
-    taxon_name_parent_review_id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    taxon_name_parent_review_id = sqlalchemy.Column(
+        sqlalchemy.Integer, primary_key=True
+    )
     taxon_name_id = sqlalchemy.Column(
         sqlalchemy.Integer,
         sqlalchemy.ForeignKey("taxon_name.taxon_name_id"),

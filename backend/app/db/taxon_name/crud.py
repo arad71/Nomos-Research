@@ -63,7 +63,9 @@ class TaxonNameCrud(crud.Crud):
         if getattr(values, "parallel_override_specific_epithet", None) is None:
             values.parallel_override_specific_epithet = values.specific_epithet
         if getattr(values, "parallel_override_infraspecific_epithet", None) is None:
-            values.parallel_override_infraspecific_epithet = values.infraspecific_epithet
+            values.parallel_override_infraspecific_epithet = (
+                values.infraspecific_epithet
+            )
 
     @staticmethod
     def _normalize_hybrid_formula_prefix(value: str | None) -> str | None:
@@ -86,17 +88,23 @@ class TaxonNameCrud(crud.Crud):
     def _normalize_hybrid_formula_fields(cls, values) -> None:
         rank_name = (
             (
-                getattr(values, "rank_name", None)
-                or getattr(getattr(values, "taxon_rank", None), "rank_name", None)
+                (
+                    getattr(values, "rank_name", None)
+                    or getattr(getattr(values, "taxon_rank", None), "rank_name", None)
+                )
+                or ""
             )
-            or ""
-        ).strip().lower()
+            .strip()
+            .lower()
+        )
         original_uninomial = getattr(values, "uninomial", None)
         normalized_uninomial = cls._normalize_hybrid_formula_prefix(original_uninomial)
         if normalized_uninomial is not None:
             values.uninomial = normalized_uninomial
 
-        original_parallel_uninomial = getattr(values, "parallel_override_uninomial", None)
+        original_parallel_uninomial = getattr(
+            values, "parallel_override_uninomial", None
+        )
         normalized_parallel_uninomial = cls._normalize_hybrid_formula_prefix(
             original_parallel_uninomial
         )
@@ -134,19 +142,14 @@ class TaxonNameCrud(crud.Crud):
             == schema.enums.HybridCategory.hybrid_formula.value
             and normalized_uninomial
         ):
-            if (
-                original_parallel_uninomial is None
-                or cls._has_hybrid_formula_prefix(original_parallel_uninomial)
+            if original_parallel_uninomial is None or cls._has_hybrid_formula_prefix(
+                original_parallel_uninomial
             ):
                 values.parallel_override_uninomial = normalized_uninomial
-        elif (
-            rank_name == "species"
-            and
-            (
+        elif rank_name == "species" and (
             getattr(values, "is_hybrid", False)
             and getattr(getattr(values, "hybrid_category", None), "value", None)
             == schema.enums.HybridCategory.named_hybrid.value
-            )
         ):
             normalized_parallel_specific_epithet = cls._normalize_hybrid_formula_prefix(
                 original_parallel_specific_epithet
@@ -160,33 +163,52 @@ class TaxonNameCrud(crud.Crud):
             ) and normalized_specific_epithet:
                 values.parallel_override_specific_epithet = normalized_specific_epithet
             elif normalized_parallel_specific_epithet:
-                values.parallel_override_specific_epithet = normalized_parallel_specific_epithet
+                values.parallel_override_specific_epithet = (
+                    normalized_parallel_specific_epithet
+                )
 
     @staticmethod
-    def _derive_parent_uninomial_value(db: orm.Session, taxon_name_id: int) -> str | None:
+    def _derive_parent_uninomial_value(
+        db: orm.Session, taxon_name_id: int
+    ) -> str | None:
         parent_rows = (
             db.query(TaxonNameParent)
-            .join(TaxonName, TaxonNameParent.parent_taxon_name_id == TaxonName.taxon_name_id)
+            .join(
+                TaxonName,
+                TaxonNameParent.parent_taxon_name_id == TaxonName.taxon_name_id,
+            )
             .filter(
                 TaxonNameParent.deleted == False,  # noqa: E712
                 TaxonName.deleted == False,  # noqa: E712
                 TaxonNameParent.taxon_name_id == taxon_name_id,
             )
-            .order_by(TaxonNameParent.sequence.asc(), TaxonNameParent.parent_taxon_name_id.asc())
+            .order_by(
+                TaxonNameParent.sequence.asc(),
+                TaxonNameParent.parent_taxon_name_id.asc(),
+            )
             .all()
         )
         if not parent_rows:
             return None
         ordered_parent_names = [
-            (row.parent_taxon_name.uninomial or row.parent_taxon_name.scientific_name or row.parent_taxon_name.canonical_name or "").strip()
+            (
+                row.parent_taxon_name.uninomial
+                or row.parent_taxon_name.scientific_name
+                or row.parent_taxon_name.canonical_name
+                or ""
+            ).strip()
             for row in parent_rows
             if row.parent_taxon_name
         ]
         ordered_parent_names = [name for name in ordered_parent_names if name]
         if not ordered_parent_names:
             return None
-        taxon_name = db.query(TaxonName).filter(TaxonName.taxon_name_id == taxon_name_id).first()
-        hybrid_category = getattr(getattr(taxon_name, "hybrid_category", None), "value", None)
+        taxon_name = (
+            db.query(TaxonName).filter(TaxonName.taxon_name_id == taxon_name_id).first()
+        )
+        hybrid_category = getattr(
+            getattr(taxon_name, "hybrid_category", None), "value", None
+        )
         if hybrid_category == "intergrade":
             return " - ".join(ordered_parent_names)
         return " × ".join(ordered_parent_names)
@@ -197,7 +219,9 @@ class TaxonNameCrud(crud.Crud):
         db: orm.Session,
         taxon_name_id: int,
     ) -> None:
-        db_taxon_name = db.query(TaxonName).filter(TaxonName.taxon_name_id == taxon_name_id).first()
+        db_taxon_name = (
+            db.query(TaxonName).filter(TaxonName.taxon_name_id == taxon_name_id).first()
+        )
         if not db_taxon_name:
             return
         if not db_taxon_name.parallel_override_uninomial:
@@ -207,7 +231,10 @@ class TaxonNameCrud(crud.Crud):
             return
         if (db_taxon_name.uninomial or "").strip() != parent_derived_value.strip():
             return
-        if db_taxon_name.parallel_override_uninomial.strip() != parent_derived_value.strip():
+        if (
+            db_taxon_name.parallel_override_uninomial.strip()
+            != parent_derived_value.strip()
+        ):
             return
         db_taxon_name.parallel_override_uninomial = None
         db.add(db_taxon_name)

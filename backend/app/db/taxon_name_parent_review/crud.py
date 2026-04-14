@@ -15,4 +15,3 @@ class TaxonNameParentReviewCrud(crud.Crud):
         "status",
         "reason",
     ]
-

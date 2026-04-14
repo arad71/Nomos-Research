@@ -95,15 +95,12 @@ def audit_parallel_name_engine(
                     elif scientific_match:
                         stats.canonical_mismatch += 1
                     elif canonical_match:
-                        derived_matches_current_author = (
-                            calculated.filter_join(
-                                [
-                                    preview.current_canonical_name,
-                                    current_author,
-                                ]
-                            )
-                            == (preview.derived_scientific_name or "")
-                        )
+                        derived_matches_current_author = calculated.filter_join(
+                            [
+                                preview.current_canonical_name,
+                                current_author,
+                            ]
+                        ) == (preview.derived_scientific_name or "")
                         if derived_matches_current_author:
                             stats.author_only_scientific_mismatch += 1
                         else:
@@ -111,9 +108,8 @@ def audit_parallel_name_engine(
                     else:
                         stats.both_mismatch += 1
 
-                    if (
-                        len(stats.mismatch_samples) < sample_size
-                        and not (scientific_match and canonical_match)
+                    if len(stats.mismatch_samples) < sample_size and not (
+                        scientific_match and canonical_match
                     ):
                         mismatch_kind = "both"
                         if scientific_match:
@@ -215,8 +211,12 @@ def print_summary(stats: AuditStats, *, strict: bool, current_only: bool) -> Non
                 f"- Taxon {sample.taxon_name_id} | "
                 f"strategy={sample.strategy} | kind={sample.mismatch_kind}"
             )
-            print(f"  Current scientific: {sample.current_scientific_name or 'Not set'}")
-            print(f"  Derived scientific: {sample.derived_scientific_name or 'Not set'}")
+            print(
+                f"  Current scientific: {sample.current_scientific_name or 'Not set'}"
+            )
+            print(
+                f"  Derived scientific: {sample.derived_scientific_name or 'Not set'}"
+            )
             print(f"  Current canonical: {sample.current_canonical_name or 'Not set'}")
             print(f"  Derived canonical: {sample.derived_canonical_name or 'Not set'}")
 
@@ -225,8 +225,14 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Audit the parallel name engine across taxon names."
     )
-    parser.add_argument("--strict", action="store_true", help="Disable legacy infrageneric fallback while auditing.")
-    parser.add_argument("--current-only", action="store_true", help="Audit only current taxon names.")
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Disable legacy infrageneric fallback while auditing.",
+    )
+    parser.add_argument(
+        "--current-only", action="store_true", help="Audit only current taxon names."
+    )
     parser.add_argument("--offset", type=int, default=0)
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--batch-size", type=int, default=500)

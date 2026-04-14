@@ -10,7 +10,6 @@ from app.db.taxon_name.model import TaxonName
 from app.db.taxon_name_parent.model import TaxonNameParent
 from sqlalchemy.orm import joinedload
 
-
 SPECIES_RANK_NAME = "species"
 INFRASPECIFIC_RANK_NAMES = {
     "subspecies",
@@ -45,12 +44,21 @@ def get_rank_name(taxon_name: TaxonName | None) -> str:
     if not taxon_name:
         return ""
     return (
-        (getattr(taxon_name, "rank_name", None) or getattr(getattr(taxon_name, "taxon_rank", None), "rank_name", None))
-        or ""
-    ).strip().lower()
+        (
+            (
+                getattr(taxon_name, "rank_name", None)
+                or getattr(getattr(taxon_name, "taxon_rank", None), "rank_name", None)
+            )
+            or ""
+        )
+        .strip()
+        .lower()
+    )
 
 
-def parent_rank_allowed_for_cleanup(*, child_rank_name: str, parent_rank_name: str) -> bool:
+def parent_rank_allowed_for_cleanup(
+    *, child_rank_name: str, parent_rank_name: str
+) -> bool:
     allowed_parent_ranks = ALLOWED_PARENT_RANKS_BY_CHILD_RANK.get(child_rank_name)
     if allowed_parent_ranks is None:
         return False
@@ -72,7 +80,9 @@ def cleanup_invalid_taxon_name_parents(
             .order_by(TaxonNameParent.taxon_name_parent_id.asc())
         )
         if taxon_name_ids:
-            base_query = base_query.filter(TaxonNameParent.taxon_name_id.in_(taxon_name_ids))
+            base_query = base_query.filter(
+                TaxonNameParent.taxon_name_id.in_(taxon_name_ids)
+            )
 
         processed = 0
         invalid_count = 0
@@ -93,10 +103,13 @@ def cleanup_invalid_taxon_name_parents(
         while True:
             batch_ids = [
                 row[0]
-                for row in base_query
-                .filter(TaxonNameParent.taxon_name_parent_id > last_seen_id)
-                .limit(batch_size)
-                .all()
+                for row in (
+                    base_query.filter(
+                        TaxonNameParent.taxon_name_parent_id > last_seen_id
+                    )
+                    .limit(batch_size)
+                    .all()
+                )
             ]
             if not batch_ids:
                 break
@@ -104,8 +117,12 @@ def cleanup_invalid_taxon_name_parents(
             rows = (
                 db.query(TaxonNameParent)
                 .options(
-                    joinedload(TaxonNameParent.taxon_name).joinedload(TaxonName.taxon_rank),
-                    joinedload(TaxonNameParent.parent_taxon_name).joinedload(TaxonName.taxon_rank),
+                    joinedload(TaxonNameParent.taxon_name).joinedload(
+                        TaxonName.taxon_rank
+                    ),
+                    joinedload(TaxonNameParent.parent_taxon_name).joinedload(
+                        TaxonName.taxon_rank
+                    ),
                 )
                 .filter(TaxonNameParent.taxon_name_parent_id.in_(batch_ids))
                 .order_by(TaxonNameParent.taxon_name_parent_id.asc())
@@ -163,7 +180,9 @@ def cleanup_invalid_taxon_name_parents(
         print(f"Rows deleted: {deleted_count}")
         print("")
         print("Top invalid patterns")
-        for (child_rank_name, parent_rank_name), count in pattern_counts.most_common(20):
+        for (child_rank_name, parent_rank_name), count in pattern_counts.most_common(
+            20
+        ):
             print(f"- {child_rank_name} -> {parent_rank_name}: {count}")
 
         if samples:
@@ -195,9 +214,7 @@ def parse_args() -> argparse.Namespace:
 if __name__ == "__main__":
     args = parse_args()
     taxon_name_ids = {
-        int(value.strip())
-        for value in args.taxon_name_ids.split(",")
-        if value.strip()
+        int(value.strip()) for value in args.taxon_name_ids.split(",") if value.strip()
     } or None
     cleanup_invalid_taxon_name_parents(
         dry_run=not args.write or args.dry_run,

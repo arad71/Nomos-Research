@@ -9,7 +9,6 @@ Create Date: 2026-04-02 23:05:00.000000+08:00
 from alembic import op
 import sqlalchemy as sa
 
-
 revision = "6a8d9b0c1e2f"
 down_revision = "4f3c2d1b8a77"
 branch_labels = None
@@ -32,7 +31,9 @@ def upgrade():
         sa.Column("review_notes", sa.String(length=1000), nullable=True),
         sa.Column("reviewed_by", sa.Integer(), nullable=True),
         sa.Column("reviewed_on", sa.TIMESTAMP(timezone=True), nullable=True),
-        sa.Column("deleted", sa.Boolean(), nullable=False, server_default=sa.text("false")),
+        sa.Column(
+            "deleted", sa.Boolean(), nullable=False, server_default=sa.text("false")
+        ),
         sa.Column("updated_by", sa.Integer(), nullable=True),
         sa.Column("updated_on", sa.TIMESTAMP(timezone=True), nullable=True),
         sa.Column("created_by", sa.Integer(), nullable=True),

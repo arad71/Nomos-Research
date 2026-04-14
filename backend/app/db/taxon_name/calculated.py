@@ -18,7 +18,6 @@ from app.db.taxon_rank.enums import RankAbbreviationVals
 
 from ..citation import enums
 
-
 HYBRID_FORMULA_PREFIX_RE = re.compile(r"^(?:×|x|X)\s+")
 
 
@@ -219,12 +218,12 @@ def format_uninomial_for_display(
         if not normalized_uninomial:
             return None
         display_value = (
-            italicize_name(normalized_uninomial)
-            if italicize
-            else normalized_uninomial
+            italicize_name(normalized_uninomial) if italicize else normalized_uninomial
         )
         return f"×{display_value}"
-    display_value = italicize_name(normalized_uninomial) if italicize else normalized_uninomial
+    display_value = (
+        italicize_name(normalized_uninomial) if italicize else normalized_uninomial
+    )
     return display_value
 
 

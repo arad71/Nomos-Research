@@ -42,10 +42,11 @@ def normalize_named_hybrid_specific_epithets(
         while True:
             batch_ids = [
                 row[0]
-                for row in base_query
-                .filter(TaxonName.taxon_name_id > last_seen_id)
-                .limit(batch_size)
-                .all()
+                for row in (
+                    base_query.filter(TaxonName.taxon_name_id > last_seen_id)
+                    .limit(batch_size)
+                    .all()
+                )
             ]
             if not batch_ids:
                 break
@@ -60,16 +61,24 @@ def normalize_named_hybrid_specific_epithets(
             for taxon_name in rows:
                 processed += 1
 
-                rank_name = ((taxon_name.rank_name or taxon_name.taxon_rank.rank_name) or "").strip().lower()
+                rank_name = (
+                    ((taxon_name.rank_name or taxon_name.taxon_rank.rank_name) or "")
+                    .strip()
+                    .lower()
+                )
                 old_specific_epithet = taxon_name.specific_epithet
-                old_parallel_specific_epithet = taxon_name.parallel_override_specific_epithet
+                old_parallel_specific_epithet = (
+                    taxon_name.parallel_override_specific_epithet
+                )
                 old_is_hybrid = taxon_name.is_hybrid
                 old_hybrid_category = getattr(taxon_name.hybrid_category, "value", None)
-                normalized_parallel_specific_epithet = TaxonNameCrud._normalize_hybrid_formula_prefix(
-                    old_parallel_specific_epithet
+                normalized_parallel_specific_epithet = (
+                    TaxonNameCrud._normalize_hybrid_formula_prefix(
+                        old_parallel_specific_epithet
+                    )
                 )
-                normalized_specific_epithet = TaxonNameCrud._normalize_hybrid_formula_prefix(
-                    old_specific_epithet
+                normalized_specific_epithet = (
+                    TaxonNameCrud._normalize_hybrid_formula_prefix(old_specific_epithet)
                 )
 
                 has_named_hybrid_specific_prefix = (
@@ -80,7 +89,9 @@ def normalize_named_hybrid_specific_epithets(
                 has_named_hybrid_parallel_prefix = (
                     rank_name == "species"
                     and bool(taxon_name.uninomial)
-                    and TaxonNameCrud._has_hybrid_formula_prefix(old_parallel_specific_epithet)
+                    and TaxonNameCrud._has_hybrid_formula_prefix(
+                        old_parallel_specific_epithet
+                    )
                 )
                 needs_named_hybrid_sync = (
                     rank_name == "species"
@@ -106,10 +117,17 @@ def normalize_named_hybrid_specific_epithets(
 
                 taxon_name.is_hybrid = True
                 taxon_name.hybrid_category = HybridCategory.named_hybrid
-                if old_parallel_specific_epithet is None and normalized_specific_epithet:
-                    taxon_name.parallel_override_specific_epithet = normalized_specific_epithet
+                if (
+                    old_parallel_specific_epithet is None
+                    and normalized_specific_epithet
+                ):
+                    taxon_name.parallel_override_specific_epithet = (
+                        normalized_specific_epithet
+                    )
                 elif normalized_parallel_specific_epithet:
-                    taxon_name.parallel_override_specific_epithet = normalized_parallel_specific_epithet
+                    taxon_name.parallel_override_specific_epithet = (
+                        normalized_parallel_specific_epithet
+                    )
 
                 changed = any(
                     [

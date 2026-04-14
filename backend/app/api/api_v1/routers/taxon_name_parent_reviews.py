@@ -14,7 +14,6 @@ from app.db.taxon_name_parent_review.schema import (
 )
 from app.db.user.schema import User
 
-
 taxon_name_parent_reviews_router = r = APIRouter(prefix="/taxon_name_parent_reviews")
 
 
@@ -68,28 +67,48 @@ async def taxon_name_parent_review_details(
     db=Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
-    return TaxonNameParentReviewCrud.get_item(db, current_user, taxon_name_parent_review_id)
+    return TaxonNameParentReviewCrud.get_item(
+        db, current_user, taxon_name_parent_review_id
+    )
 
 
 @r.post(
     "",
     response_model=TaxonNameParentReview,
     response_model_exclude_none=True,
-    dependencies=[authorize(scopes=[Role.MANAGER["name"], Role.OFFICER["name"], Role.SUPER_ADMIN["name"]])],
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.MANAGER["name"],
+                Role.OFFICER["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
 )
 async def taxon_name_parent_review_create(
     taxon_name_parent_review: TaxonNameParentReviewCreate,
     db=Depends(get_db),
     current_user=Depends(get_current_active_user),
 ):
-    return TaxonNameParentReviewCrud.create_item(db, taxon_name_parent_review, current_user.user_id)
+    return TaxonNameParentReviewCrud.create_item(
+        db, taxon_name_parent_review, current_user.user_id
+    )
 
 
 @r.put(
     "/{taxon_name_parent_review_id}",
     response_model=TaxonNameParentReview,
     response_model_exclude_none=True,
-    dependencies=[authorize(scopes=[Role.MANAGER["name"], Role.OFFICER["name"], Role.SUPER_ADMIN["name"]])],
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.MANAGER["name"],
+                Role.OFFICER["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
 )
 async def taxon_name_parent_review_edit(
     taxon_name_parent_review_id: int,
@@ -112,7 +131,9 @@ async def taxon_name_parent_review_delete(
     db=Depends(get_db),
     current_user=Depends(get_current_active_user),
 ):
-    return TaxonNameParentReviewCrud.delete_item(db, current_user, taxon_name_parent_review_id)
+    return TaxonNameParentReviewCrud.delete_item(
+        db, current_user, taxon_name_parent_review_id
+    )
 
 
 @r.delete(
@@ -124,7 +145,9 @@ async def taxon_name_parent_review_delete(
     db=Depends(get_db),
     current_user=Depends(get_current_active_user),
 ):
-    return TaxonNameParentReviewCrud.delete_item(db, current_user, taxon_name_parent_review_id, True)
+    return TaxonNameParentReviewCrud.delete_item(
+        db, current_user, taxon_name_parent_review_id, True
+    )
 
 
 @r.post(
@@ -138,4 +161,6 @@ async def taxon_name_parent_review_restore(
     db=Depends(get_db),
     current_user=Depends(get_current_active_user),
 ):
-    return TaxonNameParentReviewCrud.undelete_item(db, current_user, taxon_name_parent_review_id)
+    return TaxonNameParentReviewCrud.undelete_item(
+        db, current_user, taxon_name_parent_review_id
+    )

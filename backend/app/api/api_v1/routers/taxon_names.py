@@ -145,7 +145,9 @@ async def taxon_parallel_name_preview(
     strict: bool = False,
     db: Session = Depends(get_db),
 ):
-    return TaxonNameCrud.generate_parallel_name_preview(db, taxon_name_id, strict=strict)
+    return TaxonNameCrud.generate_parallel_name_preview(
+        db, taxon_name_id, strict=strict
+    )
 
 
 @r.post(

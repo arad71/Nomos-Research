@@ -130,9 +130,7 @@ class TaxonNameBase(BaseModel):
                 "If is_hybrid is true then you need to specify a hybrid_category"
             )
         if not self.is_hybrid and self.hybrid_category is not None:
-            raise ValueError(
-                "hybrid_category must be null unless is_hybrid is true"
-            )
+            raise ValueError("hybrid_category must be null unless is_hybrid is true")
         return self
 
     # Optional: enable population from ORM objects if you instantiate this base directly

@@ -10,7 +10,6 @@ from app.db.taxon_name.model import TaxonName
 from app.db.taxon_name_parent.model import TaxonNameParent
 from app.db.taxon_rank.enums import RankAbbreviationVals
 
-
 SPECIES_RANK_NAME = "species"
 INFRASPECIFIC_RANK_NAMES = {
     "subspecies",
@@ -123,7 +122,11 @@ def derive_parallel_name(
         ),
     )
     parent_taxa = ordered_parent_taxa(taxon_name)
-    rank_name = ((taxon_name.rank_name or taxon_name.taxon_rank.rank_name) or "").strip().lower()
+    rank_name = (
+        ((taxon_name.rank_name or taxon_name.taxon_rank.rank_name) or "")
+        .strip()
+        .lower()
+    )
     has_uninomial_override = taxon_name.parallel_override_uninomial is not None
     has_specific_epithet_override = (
         taxon_name.parallel_override_specific_epithet is not None
@@ -206,7 +209,9 @@ def derive_parallel_name(
     if parent_taxa:
         if len(parent_taxa) >= 2:
             strategy = "hybrid_parent_formula"
-            notes.append("Derived from ordered parent links using the current hybrid separator rules.")
+            notes.append(
+                "Derived from ordered parent links using the current hybrid separator rules."
+            )
             parent_formula_canonical = join_parent_names(taxon_name, parent_taxa)
             parent_formula_scientific = calculated.filter_join(
                 [parent_formula_canonical, taxon_name.author]
@@ -220,7 +225,9 @@ def derive_parallel_name(
             return {
                 "strategy": strategy,
                 "notes": notes,
-                "parent_taxon_name_ids": [parent.taxon_name_id for parent in parent_taxa],
+                "parent_taxon_name_ids": [
+                    parent.taxon_name_id for parent in parent_taxa
+                ],
                 "uninomial": parent_formula_canonical,
                 "canonical_name": parent_formula_canonical,
                 "scientific_name": parent_formula_scientific,
@@ -228,7 +235,9 @@ def derive_parallel_name(
             }
 
         parent = parent_taxa[0]
-        parent_rank_name = ((parent.rank_name or parent.taxon_rank.rank_name) or "").strip().lower()
+        parent_rank_name = (
+            ((parent.rank_name or parent.taxon_rank.rank_name) or "").strip().lower()
+        )
         if not parent_rank_allowed_for_parallel_inheritance(
             child_rank_name=rank_name,
             parent_rank_name=parent_rank_name,
@@ -243,8 +252,10 @@ def derive_parallel_name(
             pass
         else:
             parent_rank_name = (
-                (parent.rank_name or parent.taxon_rank.rank_name) or ""
-            ).strip().lower()
+                ((parent.rank_name or parent.taxon_rank.rank_name) or "")
+                .strip()
+                .lower()
+            )
             parent_is_infrageneric = parent_rank_name == "subgenus"
             inherited_uninomial_from_parent = False
             if not parent_is_infrageneric and not has_uninomial_override:
@@ -308,10 +319,7 @@ def derive_parallel_name(
                         notes.append(
                             f"Inherited infraspecific epithet from linked parent taxon {parent.taxon_name_id}."
                         )
-                elif (
-                    not parent_is_infrageneric
-                    and has_specific_epithet_override
-                ):
+                elif not parent_is_infrageneric and has_specific_epithet_override:
                     notes.append(
                         f"Retained the parallel specific epithet field instead of inheriting from linked parent taxon {parent.taxon_name_id}."
                     )
@@ -320,21 +328,28 @@ def derive_parallel_name(
                         "Linked parent did not provide a specific epithet and no parallel specific epithet override is set."
                     )
 
-            if strict and parent_is_infrageneric and rank_name in {
-                SPECIES_RANK_NAME,
-                *INFRASPECIFIC_RANK_NAMES,
-            }:
+            if (
+                strict
+                and parent_is_infrageneric
+                and rank_name
+                in {
+                    SPECIES_RANK_NAME,
+                    *INFRASPECIFIC_RANK_NAMES,
+                }
+            ):
                 strict_overlay_scientific_name = build_strict_infrageneric_overlay_name(
                     parent=parent,
                     components=components,
                     author=taxon_name.author,
                     italicize=False,
                 )
-                strict_overlay_formatted_scientific_name = build_strict_infrageneric_overlay_name(
-                    parent=parent,
-                    components=components,
-                    author=taxon_name.author,
-                    italicize=True,
+                strict_overlay_formatted_scientific_name = (
+                    build_strict_infrageneric_overlay_name(
+                        parent=parent,
+                        components=components,
+                        author=taxon_name.author,
+                        italicize=True,
+                    )
                 )
                 if strict_overlay_scientific_name:
                     strategy = "strict_infrageneric_parent_overlay"
@@ -344,25 +359,28 @@ def derive_parallel_name(
                     return {
                         "strategy": strategy,
                         "notes": notes,
-                "parent_taxon_name_ids": [parent.taxon_name_id for parent in parent_taxa],
-                "uninomial": components.uninomial,
-                "canonical_name": calculated.calculate_canonical_name_string(
-                    components
-                ),
-                "scientific_name": strict_overlay_scientific_name,
-                "formatted_scientific_name": strict_overlay_formatted_scientific_name,
-            }
+                        "parent_taxon_name_ids": [
+                            parent.taxon_name_id for parent in parent_taxa
+                        ],
+                        "uninomial": components.uninomial,
+                        "canonical_name": calculated.calculate_canonical_name_string(
+                            components
+                        ),
+                        "scientific_name": strict_overlay_scientific_name,
+                        "formatted_scientific_name": (
+                            strict_overlay_formatted_scientific_name
+                        ),
+                    }
 
-    if (
-        rank_name in HIGHER_RANK_INFRAGENERIC_NAMES
-        and len(parent_taxa) == 1
-    ):
+    if rank_name in HIGHER_RANK_INFRAGENERIC_NAMES and len(parent_taxa) == 1:
         stored_bracketed_component = extract_stored_bracketed_scientific_component(
             taxon_name
         )
-        normalized_stored_bracketed_component = normalize_higher_rank_infrageneric_component(
-            stored_bracketed_component,
-            rank_abbreviation=components.rank_abbreviation,
+        normalized_stored_bracketed_component = (
+            normalize_higher_rank_infrageneric_component(
+                stored_bracketed_component,
+                rank_abbreviation=components.rank_abbreviation,
+            )
         )
         if (
             normalized_stored_bracketed_component
@@ -387,9 +405,13 @@ def derive_parallel_name(
             return {
                 "strategy": strategy,
                 "notes": notes,
-                "parent_taxon_name_ids": [parent.taxon_name_id for parent in parent_taxa],
+                "parent_taxon_name_ids": [
+                    parent.taxon_name_id for parent in parent_taxa
+                ],
                 "uninomial": components.uninomial,
-                "canonical_name": best_parent_name_value(parent_taxa[0], italicize=False),
+                "canonical_name": best_parent_name_value(
+                    parent_taxa[0], italicize=False
+                ),
                 "scientific_name": higher_rank_infrageneric,
                 "formatted_scientific_name": higher_rank_infrageneric_formatted,
             }
@@ -435,7 +457,9 @@ def ordered_parent_taxa(taxon_name: TaxonName) -> list[TaxonName]:
         [
             row
             for row in getattr(taxon_name, "taxon_name_parents", [])
-            if not row.deleted and row.parent_taxon_name and not row.parent_taxon_name.deleted
+            if not row.deleted
+            and row.parent_taxon_name
+            and not row.parent_taxon_name.deleted
         ],
         key=lambda row: (row.sequence, row.parent_taxon_name_id),
     )
@@ -465,7 +489,9 @@ def stale_infraspecific_named_hybrid_override(
     override_specific = normalize_parallel_name_part(
         taxon_name.parallel_override_specific_epithet
     )
-    infraspecific_epithet = normalize_parallel_name_part(taxon_name.infraspecific_epithet)
+    infraspecific_epithet = normalize_parallel_name_part(
+        taxon_name.infraspecific_epithet
+    )
     if not original_specific or not override_specific or not infraspecific_epithet:
         return False
 
@@ -494,10 +520,15 @@ def infraspecific_hybrid_like_current_fields_should_be_ignored(
         return False
     if bool(getattr(taxon_name, "is_hybrid", False)):
         return False
-    if has_meaningful_specific_epithet_override or has_meaningful_infraspecific_epithet_override:
+    if (
+        has_meaningful_specific_epithet_override
+        or has_meaningful_infraspecific_epithet_override
+    ):
         return False
 
-    infraspecific_epithet = normalize_parallel_name_part(components.infraspecific_epithet)
+    infraspecific_epithet = normalize_parallel_name_part(
+        components.infraspecific_epithet
+    )
     if not infraspecific_epithet:
         return False
     if not re.match(r"^(x|X|×)\s+", infraspecific_epithet):
@@ -516,7 +547,9 @@ def infer_parallel_infraspecific_epithet_from_specific_override(
     if not override_specific:
         return None
 
-    current_infraspecific = normalize_parallel_name_part(taxon_name.infraspecific_epithet)
+    current_infraspecific = normalize_parallel_name_part(
+        taxon_name.infraspecific_epithet
+    )
     if not current_infraspecific:
         return None
 
@@ -554,8 +587,7 @@ def join_parent_names(
         " × ",
     )
     parent_values = [
-        best_parent_name_value(parent, italicize=False)
-        for parent in parent_taxa
+        best_parent_name_value(parent, italicize=False) for parent in parent_taxa
     ]
     parent_values = [value for value in parent_values if value]
     if not parent_values:
@@ -620,7 +652,7 @@ def remove_shared_leading_genus(
     prefix = f"{shared_genus} "
     if not normalized_value.startswith(prefix):
         return normalized_value
-    stripped_value = normalized_value[len(prefix):].strip()
+    stripped_value = normalized_value[len(prefix) :].strip()
     return stripped_value or normalized_value
 
 
@@ -642,7 +674,11 @@ def build_higher_rank_infrageneric_name(
     bracketed_component = calculated.filter_join(
         [components.rank_abbreviation, infrageneric_value]
     )
-    main_name = f"{parent_value} ({bracketed_component})" if bracketed_component else parent_value
+    main_name = (
+        f"{parent_value} ({bracketed_component})"
+        if bracketed_component
+        else parent_value
+    )
     return calculated.filter_join([main_name, components.author])
 
 
@@ -659,9 +695,7 @@ def build_strict_infrageneric_overlay_name(
         else components.uninomial
     )
     infrageneric_value = (
-        calculated.italicize_name(parent.uninomial)
-        if italicize
-        else parent.uninomial
+        calculated.italicize_name(parent.uninomial) if italicize else parent.uninomial
     )
     if not genus_value or not infrageneric_value:
         return None
@@ -669,7 +703,9 @@ def build_strict_infrageneric_overlay_name(
     # Keep strict overlay aligned with legacy display style for species/infraspecific
     # names by using a plain bracketed infrageneric component (no rank abbreviation).
     bracketed_component = infrageneric_value
-    head = f"{genus_value} ({bracketed_component})" if bracketed_component else genus_value
+    head = (
+        f"{genus_value} ({bracketed_component})" if bracketed_component else genus_value
+    )
 
     specific_epithet = (
         calculated.italicize_name(components.specific_epithet)
@@ -737,7 +773,7 @@ def normalize_higher_rank_infrageneric_component(
     if rank_abbreviation:
         prefix = f"{rank_abbreviation} "
         if normalized_component.startswith(prefix):
-            stripped_component = normalized_component[len(prefix):].strip()
+            stripped_component = normalized_component[len(prefix) :].strip()
             if stripped_component:
                 return stripped_component
     return normalized_component
@@ -775,7 +811,9 @@ def current_name_contains_component(
         return False
 
     candidate_components = [normalized_component]
-    stripped_hybrid_component = calculated.strip_hybrid_formula_prefix(normalized_component)
+    stripped_hybrid_component = calculated.strip_hybrid_formula_prefix(
+        normalized_component
+    )
     if stripped_hybrid_component and stripped_hybrid_component != normalized_component:
         candidate_components.append(f"×{stripped_hybrid_component}")
         candidate_components.append(f"× {stripped_hybrid_component}")
@@ -810,7 +848,9 @@ def current_name_matches_genus_only_infraspecific_form(
 ) -> bool:
     uninomial = normalize_parallel_name_part(components.uninomial)
     rank_abbreviation = normalize_parallel_name_part(components.rank_abbreviation)
-    infraspecific_epithet = normalize_parallel_name_part(components.infraspecific_epithet)
+    infraspecific_epithet = normalize_parallel_name_part(
+        components.infraspecific_epithet
+    )
     if not uninomial or not rank_abbreviation or not infraspecific_epithet:
         return False
 
@@ -853,9 +893,7 @@ def build_strict_stored_bracketed_scientific_name(
         specific_epithet = None
 
     specific_epithet = (
-        calculated.italicize_name(specific_epithet)
-        if italicize
-        else specific_epithet
+        calculated.italicize_name(specific_epithet) if italicize else specific_epithet
     )
     infraspecific_epithet = (
         calculated.italicize_name(components.infraspecific_epithet)
@@ -930,22 +968,34 @@ def apply_components_to_overlay_name(
             and current_display != derived_uninomial_display
         ):
             updated_name = (
-                derived_uninomial_display + updated_name[len(current_display):]
+                derived_uninomial_display + updated_name[len(current_display) :]
             )
             break
 
     replacements = [
         (
             taxon_name.uninomial,
-            calculated.italicize_name(components.uninomial) if italicize else components.uninomial,
+            (
+                calculated.italicize_name(components.uninomial)
+                if italicize
+                else components.uninomial
+            ),
         ),
         (
             taxon_name.specific_epithet,
-            calculated.italicize_name(components.specific_epithet) if italicize else components.specific_epithet,
+            (
+                calculated.italicize_name(components.specific_epithet)
+                if italicize
+                else components.specific_epithet
+            ),
         ),
         (
             taxon_name.infraspecific_epithet,
-            calculated.italicize_name(components.infraspecific_epithet) if italicize else components.infraspecific_epithet,
+            (
+                calculated.italicize_name(components.infraspecific_epithet)
+                if italicize
+                else components.infraspecific_epithet
+            ),
         ),
     ]
 
@@ -963,14 +1013,18 @@ def get_infrageneric_overlay(
     from app.db.taxon_name.crud import INFRAGENUS_WITH_RANK, TaxonNameCrud
 
     try:
-        infrageneric_names = TaxonNameCrud.generate_infrageneric_names(db, taxon_name_id)
+        infrageneric_names = TaxonNameCrud.generate_infrageneric_names(
+            db, taxon_name_id
+        )
     except HTTPException:
         return None
 
     for entry in infrageneric_names:
         if entry.name_version == INFRAGENUS_WITH_RANK:
             return {
-                "scientific_name": entry.formatted_name_with_author or entry.formatted_name,
+                "scientific_name": (
+                    entry.formatted_name_with_author or entry.formatted_name
+                ),
                 "formatted_scientific_name": entry.italicized_name,
             }
     return None

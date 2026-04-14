@@ -54,14 +54,14 @@ def normalize_hybrid_formula_prefixes(
                     TaxonNameCrud._has_hybrid_formula_prefix(old_parallel_uninomial),
                 ]
             )
-            needs_hybrid_formula_sync = (
-                is_semantic_hybrid_formula
-                and (
-                    has_hybrid_prefix
-                    or old_parallel_uninomial is None
-                )
+            needs_hybrid_formula_sync = is_semantic_hybrid_formula and (
+                has_hybrid_prefix or old_parallel_uninomial is None
             )
-            if not is_semantic_hybrid_formula and not has_hybrid_prefix and not needs_hybrid_formula_sync:
+            if (
+                not is_semantic_hybrid_formula
+                and not has_hybrid_prefix
+                and not needs_hybrid_formula_sync
+            ):
                 if log_every > 0 and processed % log_every == 0:
                     print(
                         f"Progress: processed={processed} matched={matched} updated={updated}"
@@ -75,7 +75,8 @@ def normalize_hybrid_formula_prefixes(
                     taxon_name.uninomial != old_uninomial,
                     taxon_name.parallel_override_uninomial != old_parallel_uninomial,
                     taxon_name.is_hybrid != old_is_hybrid,
-                    getattr(taxon_name.hybrid_category, "value", None) != old_hybrid_category,
+                    getattr(taxon_name.hybrid_category, "value", None)
+                    != old_hybrid_category,
                 ]
             )
             if not changed:

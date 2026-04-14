@@ -7,7 +7,6 @@ Create Date: 2026-04-03 15:35:00.000000
 
 from alembic import op
 
-
 # revision identifiers, used by Alembic.
 revision = "c3d4e5f6a7b8"
 down_revision = "b2c3d4e5f6a7"
@@ -16,8 +15,7 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.execute(
-        """
+    op.execute("""
         WITH parent_values AS (
             SELECT
                 child.taxon_name_id,
@@ -47,8 +45,7 @@ def upgrade() -> None:
           AND target.parallel_override_uninomial IS NOT NULL
           AND BTRIM(target.parallel_override_uninomial) = BTRIM(parent_values.parent_derived_uninomial)
           AND BTRIM(COALESCE(target.uninomial, '')) = BTRIM(parent_values.parent_derived_uninomial)
-        """
-    )
+        """)
 
 
 def downgrade() -> None:

@@ -15,15 +15,17 @@ def test_backfill_taxon_name_parents_creates_unique_exact_match(
 
     stats = BackfillStats()
     run_backfill(
-      db=test_db,
-      stats=stats,
-      limit=None,
-      offset=0,
-      skip_populated=True,
-      dry_run=False,
+        db=test_db,
+        stats=stats,
+        limit=None,
+        offset=0,
+        skip_populated=True,
+        dry_run=False,
     )
 
-    parent_rows = test_db.query(TaxonNameParent).filter(TaxonNameParent.deleted.is_(False)).all()
+    parent_rows = (
+        test_db.query(TaxonNameParent).filter(TaxonNameParent.deleted.is_(False)).all()
+    )
     assert len(parent_rows) == 2
     assert stats.created == 2
 
@@ -34,14 +36,16 @@ def test_backfill_taxon_name_parents_skip_populated(
 ):
     stats = BackfillStats()
     run_backfill(
-      db=test_db,
-      stats=stats,
-      limit=None,
-      offset=0,
-      skip_populated=True,
-      dry_run=False,
+        db=test_db,
+        stats=stats,
+        limit=None,
+        offset=0,
+        skip_populated=True,
+        dry_run=False,
     )
 
-    parent_rows = test_db.query(TaxonNameParent).filter(TaxonNameParent.deleted.is_(False)).all()
+    parent_rows = (
+        test_db.query(TaxonNameParent).filter(TaxonNameParent.deleted.is_(False)).all()
+    )
     assert len(parent_rows) == 1
     assert stats.skipped_populated >= 1

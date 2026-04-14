@@ -14,7 +14,6 @@ from app.db.taxon_name_parent.schema import (
 )
 from app.db.user.schema import User
 
-
 taxon_name_parents_router = r = APIRouter(prefix="/taxon_name_parents")
 
 
@@ -135,9 +134,7 @@ async def taxon_name_parent_delete(
     db=Depends(get_db),
     current_user=Depends(get_current_active_user),
 ):
-    return TaxonNameParentCrud.delete_item(
-        db, current_user, taxon_name_parent_id, True
-    )
+    return TaxonNameParentCrud.delete_item(db, current_user, taxon_name_parent_id, True)
 
 
 @r.post(
