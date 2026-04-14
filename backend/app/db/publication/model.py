@@ -1,13 +1,16 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, event, Enum
+from sqlalchemy import Boolean, Column, Enum, ForeignKey, Integer, String, event
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.schema import Index
 
 from app.db.models import BaseModel, TableMixin
 from app.db.publication.calculated import calculate_fields
-from app.db.publication.constants import PUBLICATION_ID, TABLE_DESCRIPTION
+from app.db.publication.constants import (
+    PUBLICATION_ID,
+    REFERENCE_TYPE,
+    TABLE_DESCRIPTION,
+)
 from app.db.publication.enums import ReferenceType
-from app.db.publication.constants import REFERENCE_TYPE    
 
 
 class Publication(BaseModel, TableMixin):

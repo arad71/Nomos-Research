@@ -6,16 +6,16 @@ from app.api.dependencies.range_query import RangeQueryParameter
 from app.core.auth import authorize, get_current_active_user
 from app.db.role.constants import Role
 from app.db.session import get_db
-from app.db.user.schema import User
-
 from app.db.taxon_publication.crud import TaxonPublicationCrud
 from app.db.taxon_publication.schema import (
     TaxonPublication,
     TaxonPublicationCreate,
     TaxonPublicationEdit,
 )
+from app.db.user.schema import User
 
 taxon_publications_router = r = APIRouter(prefix="/taxon-publications")
+
 
 @r.get(
     "",
@@ -46,6 +46,7 @@ async def taxon_publication_list(
     response.headers["Content-Range"] = content_range
     return items
 
+
 @r.get(
     "/{link_id}",
     response_model=TaxonPublication,
@@ -61,6 +62,7 @@ async def taxon_publication_details(
     Get taxon-publication link details
     """
     return TaxonPublicationCrud.get_item(db, current_user, link_id)
+
 
 @r.post(
     "",
@@ -89,6 +91,7 @@ async def taxon_publication_create(
         payload,
         current_user.user_id,
     )
+
 
 @r.put(
     "/{link_id}",
@@ -120,6 +123,7 @@ async def taxon_publication_edit(
         payload,
     )
 
+
 @overload
 @r.delete(
     "/{link_id}",
@@ -140,9 +144,8 @@ async def taxon_publication_delete(
     """
     Soft delete taxon-publication link
     """
-    return TaxonPublicationCrud.delete_item(
-        db, current_user, link_id
-    )
+    return TaxonPublicationCrud.delete_item(db, current_user, link_id)
+
 
 @r.delete(
     "/{link_id}/hard",
@@ -162,9 +165,8 @@ async def taxon_publication_delete(
     """
     Hard delete taxon-publication link
     """
-    return TaxonPublicationCrud.delete_item(
-        db, current_user, link_id, True
-    )
+    return TaxonPublicationCrud.delete_item(db, current_user, link_id, True)
+
 
 @r.post(
     "/{link_id}/restore",
@@ -186,6 +188,4 @@ async def taxon_publication_restore(
     """
     Restore a soft-deleted taxon-publication link
     """
-    return TaxonPublicationCrud.undelete_item(
-        db, current_user, link_id
-    )
+    return TaxonPublicationCrud.undelete_item(db, current_user, link_id)

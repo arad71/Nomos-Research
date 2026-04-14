@@ -4,12 +4,12 @@ from sqlalchemy.schema import Index
 
 from app.db.models import BaseModel, TableMixin
 from app.db.taxon_publication.constants import (
-    TABLE_DESCRIPTION,
-    TAXON_NAME_ID,
-    PUBLICATION_ID,
-    PAGE_REFERENCE,
     FIGURE_REFERENCE,
     NOTES,
+    PAGE_REFERENCE,
+    PUBLICATION_ID,
+    TABLE_DESCRIPTION,
+    TAXON_NAME_ID,
 )
 
 
