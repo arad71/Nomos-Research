@@ -15,6 +15,7 @@ from app.db.taxon_name import model
 from app.db.taxon_rank.enums import RankAbbreviationVals
 
 from ..citation import enums
+from . import enums as taxon_name_enums
 
 
 def calculate_fields(
@@ -40,6 +41,29 @@ def calculate_fields(
         # target.cons_codes = map_cons_codes(target)
     if target.calculate_name:
         calculate_name_fields(target)
+
+    is_manuscript = (
+        target.publication_status == taxon_name_enums.PublicationStatus.manuscript_name
+    )
+
+    if is_manuscript:
+        target.canonical_name = append_ms_suffix(target.canonical_name)
+        target.canonical_name_without_rank = append_ms_suffix(
+            target.canonical_name_without_rank
+        )
+        target.scientific_name = append_ms_suffix(target.scientific_name)
+        target.formatted_scientific_name = append_ms_suffix(
+            target.formatted_scientific_name
+        )
+    else:
+        target.canonical_name = remove_ms_suffix(target.canonical_name)
+        target.canonical_name_without_rank = remove_ms_suffix(
+            target.canonical_name_without_rank
+        )
+        target.scientific_name = remove_ms_suffix(target.scientific_name)
+        target.formatted_scientific_name = remove_ms_suffix(
+            target.formatted_scientific_name
+        )
 
 
 def calculate_name_fields(target: model.TaxonName):
@@ -340,6 +364,42 @@ def is_not_none_or_empty(s: Optional[str]) -> bool:
         Boolean indicating whether the string is not None or empty.
     """
     return s is not None and s != ""
+
+
+MS_SUFFIX = " ms"
+
+
+def append_ms_suffix(name: Optional[str]) -> Optional[str]:
+    """Appends ' ms' suffix to the given name if it is not None or empty.
+
+    Args:
+        name: The name to which the suffix should be appended.
+
+    Returns:
+        The name with the ' ms' suffix appended if it is not None or empty, None otherwise.
+    """
+    if not is_not_none_or_empty(name):
+        return name
+    if name.endswith(MS_SUFFIX):
+        return name
+    return name + MS_SUFFIX
+
+
+def remove_ms_suffix(name: Optional[str]) -> Optional[str]:
+    """Removes ' ms' suffix from the given name if it ends with it.
+
+    Args:
+        name: The name from which the suffix should be removed.
+
+    Returns:
+        The name with the ' ms' suffix removed if it ends with it, otherwise returns the
+        original name.
+    """
+    if not is_not_none_or_empty(name):
+        return name
+    if name.endswith(MS_SUFFIX):
+        return name[: -len(MS_SUFFIX)]
+    return name
 
 
 # def map_cons_code(target):
