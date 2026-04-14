@@ -67,6 +67,7 @@ export const DateInput = (props: DateInputProps) => {
     inputClassName,
     defaultValue,
     format = defaultFormat,
+    parse,
     label,
     source,
     helperText,
@@ -92,6 +93,7 @@ export const DateInput = (props: DateInputProps) => {
     disabled,
     readOnly,
     format,
+    parse,
     ...rest,
   });
   const localInputRef = React.useRef<HTMLInputElement>(null);

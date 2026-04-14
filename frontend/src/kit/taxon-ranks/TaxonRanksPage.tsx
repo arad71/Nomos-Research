@@ -78,7 +78,7 @@ const columnOptions: Array<{ key: ColumnKey; label: string }> = [
   { key: 'requiredParentRank', label: 'Required parent rank' },
   { key: 'uninomial', label: 'Uninomial' },
   { key: 'updatedBy', label: 'Updated by' },
-  { key: 'updated', label: 'Updated' },
+  { key: 'updated', label: 'Updated on' },
   { key: 'actions', label: 'Actions' },
 ];
 const columnLabelMap = columnOptions.reduce<Record<ColumnKey, string>>(
@@ -319,6 +319,37 @@ const TaxonRanksPage = () => {
     setSearchParams(new URLSearchParams());
   };
 
+  const exportColumnOptions = columnOptions.filter((column) => column.key !== 'actions');
+
+  const getExportValue = (
+    column: ColumnKey,
+    record: TaxonRankRecord,
+    exportKingdomMap: Record<number, string>,
+    exportTaxonRankMap: Record<number, string>,
+    exportUserMap: Record<number, string>
+  ) => {
+    switch (column) {
+      case 'kingdom':
+        return record.kingdom_id ? exportKingdomMap[record.kingdom_id] ?? '' : '';
+      case 'rankName':
+        return record.rank_name ?? '';
+      case 'rankAbbrev':
+        return record.rank_abbrev ? rankAbbrevMap[record.rank_abbrev] ?? record.rank_abbrev : '';
+      case 'directParentRank':
+        return record.direct_parent_rank_id ? exportTaxonRankMap[record.direct_parent_rank_id] ?? '' : '';
+      case 'requiredParentRank':
+        return record.required_parent_rank_id ? exportTaxonRankMap[record.required_parent_rank_id] ?? '' : '';
+      case 'uninomial':
+        return renderBoolean(record.uninomial);
+      case 'updatedBy':
+        return record.updated_by ? exportUserMap[record.updated_by] ?? '' : '';
+      case 'updated':
+        return record.updated_on ?? '';
+      default:
+        return '';
+    }
+  };
+
   const buildExportCsv = (
     records: TaxonRankRecord[],
     exportKingdomMap: Record<number, string>,
@@ -326,28 +357,12 @@ const TaxonRanksPage = () => {
     exportUserMap: Record<number, string>
   ) =>
     [
-      [
-        'Taxon rank ID',
-        'Kingdom',
-        'Rank',
-        'Rank abbreviation',
-        'Direct parent rank',
-        'Required parent rank',
-        'Uninomial',
-        'Updated by',
-        'Updated',
-      ],
-      ...records.map((record) => [
-        record.taxon_rank_id ?? record.id ?? '',
-        record.kingdom_id ? exportKingdomMap[record.kingdom_id] ?? '' : '',
-        record.rank_name ?? '',
-        record.rank_abbrev ? rankAbbrevMap[record.rank_abbrev] ?? record.rank_abbrev : '',
-        record.direct_parent_rank_id ? exportTaxonRankMap[record.direct_parent_rank_id] ?? '' : '',
-        record.required_parent_rank_id ? exportTaxonRankMap[record.required_parent_rank_id] ?? '' : '',
-        renderBoolean(record.uninomial),
-        record.updated_by ? exportUserMap[record.updated_by] ?? '' : '',
-        record.updated_on ?? '',
-      ]),
+      exportColumnOptions.map((column) => column.label),
+      ...records.map((record) =>
+        exportColumnOptions.map((column) =>
+          getExportValue(column.key, record, exportKingdomMap, exportTaxonRankMap, exportUserMap)
+        )
+      ),
     ]
       .map((row) => row.map((value) => escapeCsvValue(value)).join(','))
       .join('\n');

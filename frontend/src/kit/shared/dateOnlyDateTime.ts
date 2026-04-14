@@ -1,6 +1,6 @@
 export const parseDateOnlyToDateTime = (value?: string | null) => {
   if (!value) {
-    return value ?? "";
+    return null;
   }
 
   return `${value}T00:00:00`;

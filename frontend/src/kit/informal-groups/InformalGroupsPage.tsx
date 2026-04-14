@@ -42,7 +42,7 @@ const columnOptions: Array<{ key: ColumnKey; label: string }> = [
   { key: 'classificationSystem', label: 'Classification system' },
   { key: 'taxonName', label: 'Taxon name' },
   { key: 'updatedBy', label: 'Updated by' },
-  { key: 'updated', label: 'Updated' },
+  { key: 'updated', label: 'Updated on' },
   { key: 'deleted', label: 'Deleted' },
   { key: 'actions', label: 'Actions' },
 ];
@@ -280,17 +280,50 @@ const InformalGroupsPage = () => {
     setDraftFilters({ q: '', taxonName: '', classificationSystemId: '', deleted: '' });
     setSearchParams(new URLSearchParams());
   };
-  const buildExportCsv = (records: InformalGroupRecord[]) =>
+  const exportColumnOptions = columnOptions.filter((column) => column.key !== 'actions');
+
+  const getExportValue = (
+    column: ColumnKey,
+    record: InformalGroupRecord,
+    exportClassificationSystemMap: Record<number, string>,
+    exportTaxonNameMap: Record<number, string>,
+    exportUserMap: Record<number, string>
+  ) => {
+    switch (column) {
+      case 'classificationSystem':
+        return record.classification_system_id ? exportClassificationSystemMap[record.classification_system_id] ?? '' : '';
+      case 'taxonName':
+        return record.taxon_name_id ? exportTaxonNameMap[record.taxon_name_id] ?? '' : '';
+      case 'updatedBy':
+        return record.updated_by ? exportUserMap[record.updated_by] ?? '' : '';
+      case 'updated':
+        return record.updated_on ?? '';
+      case 'deleted':
+        return record.deleted === undefined ? '' : record.deleted ? 'Yes' : 'No';
+      default:
+        return '';
+    }
+  };
+
+  const buildExportCsv = (
+    records: InformalGroupRecord[],
+    exportClassificationSystemMap: Record<number, string>,
+    exportTaxonNameMap: Record<number, string>,
+    exportUserMap: Record<number, string>
+  ) =>
     [
-      ['Informal group ID', 'Classification system', 'Taxon name', 'Updated by', 'Updated', 'Deleted'],
-      ...records.map((record) => [
-        record.informal_group_id ?? record.id ?? '',
-        record.classification_system_id ? classificationSystemMap[record.classification_system_id] ?? '' : '',
-        record.taxon_name_id ? taxonNameMap[record.taxon_name_id] ?? '' : '',
-        record.updated_by ? userMap[record.updated_by] ?? '' : '',
-        record.updated_on ?? '',
-        record.deleted === undefined ? '' : record.deleted ? 'Yes' : 'No',
-      ]),
+      exportColumnOptions.map((column) => column.label),
+      ...records.map((record) =>
+        exportColumnOptions.map((column) =>
+          getExportValue(
+            column.key,
+            record,
+            exportClassificationSystemMap,
+            exportTaxonNameMap,
+            exportUserMap
+          )
+        )
+      ),
     ]
       .map((row) => row.map((value) => escapeCsvValue(value)).join(','))
       .join('\n');
@@ -310,13 +343,12 @@ const InformalGroupsPage = () => {
         fetchReferenceMap('taxon_names', taxonNameIds, 'taxon_name_id', 'formatted_scientific_name'),
         fetchReferenceMap('users', userIds, 'user_id', 'full_name'),
       ]);
-      const previousTaxonNameMap = taxonNameMap;
-      const previousUserMap = userMap;
-      setTaxonNameMap(nextTaxonNameMap);
-      setUserMap(nextUserMap);
-      const csv = buildExportCsv(allRecords);
-      setTaxonNameMap(previousTaxonNameMap);
-      setUserMap(previousUserMap);
+      const csv = buildExportCsv(
+        allRecords,
+        classificationSystemMap,
+        nextTaxonNameMap,
+        nextUserMap
+      );
       downloadCsv(`informal_groups_${new Date().toISOString().slice(0, 10)}.csv`, csv);
     } finally {
       setIsExporting(false);

@@ -63,7 +63,7 @@ const columnOptions: Array<{ key: ColumnKey; label: string }> = [
   { key: 'authority', label: 'Authority' },
   { key: 'conservationCode', label: 'Conservation code' },
   { key: 'displayOrder', label: 'Display order' },
-  { key: 'updated', label: 'Updated' },
+  { key: 'updated', label: 'Updated on' },
   { key: 'deleted', label: 'Deleted' },
   { key: 'actions', label: 'Actions' },
 ];
@@ -212,26 +212,31 @@ const escapeCsvValue = (value: string | number | boolean | null | undefined) => 
   return stringValue;
 };
 
+const exportColumnOptions = columnOptions.filter((column) => column.key !== 'actions');
+
+const getExportValue = (column: ColumnKey, record: ConservationCodeRecord) => {
+  switch (column) {
+    case 'authority':
+      return record.authorising_org ?? '';
+    case 'conservationCode':
+      return record.conservation_code_value ?? '';
+    case 'displayOrder':
+      return record.code_priority ?? '';
+    case 'updated':
+      return record.updated_on ?? '';
+    case 'deleted':
+      return record.deleted === undefined ? '' : record.deleted ? 'Yes' : 'No';
+    default:
+      return '';
+  }
+};
+
 const buildExportCsv = (records: ConservationCodeRecord[]) => {
-  const headers = [
-    'Conservation code ID',
-    'Authority',
-    'Conservation code',
-    'Display order',
-    'Updated',
-    'Deleted',
-  ];
+  const rows = records.map((record) =>
+    exportColumnOptions.map((column) => getExportValue(column.key, record))
+  );
 
-  const rows = records.map((record) => [
-    record.conservation_code_id ?? record.id ?? '',
-    record.authorising_org ?? '',
-    record.conservation_code_value ?? '',
-    record.code_priority ?? '',
-    record.updated_on ?? '',
-    record.deleted === undefined ? '' : record.deleted ? 'Yes' : 'No',
-  ]);
-
-  return [headers, ...rows]
+  return [exportColumnOptions.map((column) => column.label), ...rows]
     .map((row) => row.map((value) => escapeCsvValue(value)).join(','))
     .join('\n');
 };
