@@ -1,0 +1,99 @@
+version: '3.7'
+services:
+  nginx:
+    image: nginx:stable
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - '${PUBLISH_PORT:-8000}:80'
+    depends_on:
+      - backend
+      - frontend
+
+  postgres:
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER:-taxman}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+      POSTGRES_DB:  ${DB_NAME:-taxman}
+    volumes:
+      - db-data:/var/lib/postgresql/data:cached
+
+  backend:
+    image: "backend:${VERSION:-latest}"
+    build:
+      context: backend
+      dockerfile: Dockerfile
+      args:
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
+    command:
+      - /bin/bash
+      - -c
+      - |
+        set -e
+        wait-for-it -t 0 ${DB_HOST:-postgres}:${DB_PORT:-5432}
+        mkdir -p /app/log
+        touch /app/log/calculate.log
+        alembic upgrade head
+        python app/main.py
+    tty: true
+    volumes:
+      - ./backend:/app/:cached
+      - ./.docker/.ipython:/root/.ipython:cached
+      - ./backup:/backup:cached
+#    env_file:
+#      - .env
+    environment:
+      # See overridable settings in backend/app/core/config.py
+      # If you want to override more variables than these consider uncommenting
+      # the env_file section above and just setting them in the .env file
+      PYTHONPATH: .
+      FIRST_SUPER_ADMIN_EMAIL: ${FIRST_SUPER_ADMIN_EMAIL:-admin@taxman.com}
+      FIRST_SUPER_ADMIN_PASSWORD: ${FIRST_SUPER_ADMIN_PASSWORD:-password}
+      FIRST_SUPER_ADMIN_FIRST_NAME: ${FIRST_SUPER_ADMIN_FIRST_NAME:-Admin}
+      FIRST_SUPER_ADMIN_LAST_NAME: ${FIRST_SUPER_ADMIN_LAST_NAME:-User}
+      FIRST_SUPER_ADMIN_STARTUP_OVERRIDE: ${FIRST_SUPER_ADMIN_STARTUP_OVERRIDE:-false}
+      FIRST_SUPER_ADMIN_USER_ID: ${FIRST_SUPER_ADMIN_USER_ID:-1}
+      CREATE_DEMO_USERS: ${CREATE_DEMO_USERS:-false}
+      DB_HOST: ${DB_HOST:-postgres}
+      DB_USER: ${DB_USER:-taxman}
+      DB_PASSWORD: ${DB_PASSWORD:-password}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME:-taxman}
+      ENVIRONMENT: ${ENVIRONMENT:-local}
+      API_KEY_CHECKLIST: ${API_KEY_CHECKLIST:-password}
+      IMPORT_API_KEY_WACENSUS:  ${IMPORT_API_KEY_WACENSUS:-password}
+      WACENSUS_DATA_FILE_URL: ${WACENSUS_DATA_FILE_URL:-https://example.org/datafile.zip}
+      WACENSUS_SUFFIX: ${WACENSUS_SUFFIX:-.csv}
+      WACENSUS_ENCODING: ${WACENSUS_ENCODING:-utf-8}
+      AUTH_PROVIDER: ${AUTH_PROVIDER:-auth2}
+      WEB_CONCURRENCY: ${WEB_CONCURRENCY:-5}
+      # UVICORN_RELOAD is handy for local dev of python code as the backend restarts
+      # with this set to a truthy value. However, this disables concurrent web requests (WEB_CONCURRENCY).
+      UVICORN_RELOAD: ${UVICORN_RELOAD:-1}
+      SQLALCHEMY_SESSION_POOL_SIZE: ${SQLALCHEMY_SESSION_POOL_SIZE:-50}
+      SQLALCHEMY_SESSION_MAX_OVERFLOW: ${SQLALCHEMY_SESSION_MAX_OVERFLOW:-0}
+
+    depends_on:
+      - "postgres"
+
+  frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+      args:
+        NPM_TOKEN: ${NPM_TOKEN}
+    stdin_open: true
+    volumes:
+      - './frontend:/app:cached'
+      - './frontend/node_modules:/app/node_modules:cached'
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - REACT_APP_AUTH_PROVIDER=${AUTH_PROVIDER:-auth2}
+      - REACT_APP_BASE_URL=${REACT_APP_BASE_URL:-http://localhost:8000}
+      - REACT_APP_BACKEND_URL=${REACT_APP_BACKEND_URL:-http://localhost:8000/api/v1}
+
+volumes:
+  db-data:
