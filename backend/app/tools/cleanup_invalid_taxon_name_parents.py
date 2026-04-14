@@ -4,11 +4,12 @@ from __future__ import annotations
 import argparse
 from collections import Counter
 
+from sqlalchemy.orm import joinedload
+
 import app.model  # noqa: F401
 from app.db.session import get_db
 from app.db.taxon_name.model import TaxonName
 from app.db.taxon_name_parent.model import TaxonNameParent
-from sqlalchemy.orm import joinedload
 
 SPECIES_RANK_NAME = "species"
 INFRASPECIFIC_RANK_NAMES = {

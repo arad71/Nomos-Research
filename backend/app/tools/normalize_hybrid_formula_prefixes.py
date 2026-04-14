@@ -6,9 +6,9 @@ import argparse
 import app.model  # noqa: F401
 from app.db.session import get_db
 from app.db.taxon_name import calculated
+from app.db.taxon_name.crud import TaxonNameCrud
 from app.db.taxon_name.enums import HybridCategory
 from app.db.taxon_name.model import TaxonName
-from app.db.taxon_name.crud import TaxonNameCrud
 
 
 def normalize_hybrid_formula_prefixes(

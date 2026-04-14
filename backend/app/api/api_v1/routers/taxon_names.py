@@ -19,11 +19,11 @@ from app.db.taxon_name.infrageneric_names import InfraGenericNameModel
 from app.db.taxon_name.model import TaxonName as TaxonNameModel
 from app.db.taxon_name.schema import (
     TaxonName,
-    TaxonNameParallelAuditMismatch,
-    TaxonNameParallelAuditJobStatus,
-    TaxonNameParallelAuditResult,
     TaxonNameCreate,
     TaxonNameEdit,
+    TaxonNameParallelAuditJobStatus,
+    TaxonNameParallelAuditMismatch,
+    TaxonNameParallelAuditResult,
     TaxonNameParallelPreview,
 )
 from app.db.taxon_rank.model import TaxonRank
