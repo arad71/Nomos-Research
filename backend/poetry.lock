@@ -1282,7 +1282,6 @@ files = [
 librt = {version = ">=0.8.0", markers = "platform_python_implementation != \"PyPy\""}
 mypy_extensions = ">=1.0.0"
 pathspec = ">=1.0.0"
-tomli = {version = ">=1.1.0", markers = "python_version < \"3.11\""}
 typing_extensions = ">=4.6.0"
 
 [package.extras]
@@ -2494,4 +2493,4 @@ dev = ["black (>=19.3b0) ; python_version >= \"3.6\"", "pytest (>=4.6.2)"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "333f32e8131931fa9793795f9d941356b7f07f39b40e965c008c5dfc81c204ef"
+content-hash = "6d803c7d8eb4c800a7e68862305bc45184854c66789788e3cfb6512635d5fff6"
