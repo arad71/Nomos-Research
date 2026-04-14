@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, event
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, event, Enum
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.schema import Index
@@ -6,6 +6,8 @@ from sqlalchemy.schema import Index
 from app.db.models import BaseModel, TableMixin
 from app.db.publication.calculated import calculate_fields
 from app.db.publication.constants import PUBLICATION_ID, TABLE_DESCRIPTION
+from app.db.publication.enums import ReferenceType
+from app.db.publication.constants import REFERENCE_TYPE    
 
 
 class Publication(BaseModel, TableMixin):
@@ -37,6 +39,16 @@ class Publication(BaseModel, TableMixin):
     publication_date = Column(String)
     publication_month = Column(Integer)
     publication_day = Column(Integer)
+    reference_type = Column(
+        Enum(
+            ReferenceType,
+            name="publication__reference_type",
+        ),
+        nullable=False,
+        comment=REFERENCE_TYPE,
+        doc=REFERENCE_TYPE,
+    )
+
     isbn = Column(String)
     issn = Column(String)
     bhl_url = Column(String)
