@@ -6,7 +6,7 @@ WORKDIR /install
 COPY package.json package-lock.json .npmrc.docker ./
 
 RUN --mount=type=secret,id=npm_token \
-    NPM_TOKEN=$(cat /run/secrets/npm_token) \
+    export NPM_TOKEN=$(cat /run/secrets/npm_token) && \
     sed "s|NPM_TOKEN|${NPM_TOKEN}|g" .npmrc.docker > .npmrc && \
     npm config set fetch-retry-mintimeout 20000 && \
     npm config set fetch-retry-maxtimeout 180000 && \
