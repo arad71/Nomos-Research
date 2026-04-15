@@ -45,6 +45,11 @@ class TaxonName(BaseModel, TableMixin):
     canonical_name_without_rank = sqlalchemy.Column(sqlalchemy.String, index=True)
     scientific_name = sqlalchemy.Column(sqlalchemy.String, index=True)
     formatted_scientific_name = sqlalchemy.Column(sqlalchemy.String)
+    species_code = sqlalchemy.Column(
+        sqlalchemy.String(50),
+        index=True,
+        comment="WACensus-parity species code. Auto-generated for species and below, but can be manually overridden.",
+    )
     specific_epithet = sqlalchemy.Column(sqlalchemy.String(70), index=True)
     infraspecific_epithet = sqlalchemy.Column(sqlalchemy.String(70), index=True)
     infragenus_name = sqlalchemy.Column(sqlalchemy.String, index=True)
@@ -105,6 +110,9 @@ class TaxonName(BaseModel, TableMixin):
     form_desc_mn = sqlalchemy.Column(sqlalchemy.Integer, comment=constants.FORM_DESC_MN)
     form_desc_dy = sqlalchemy.Column(sqlalchemy.Integer, comment=constants.FORM_DESC_DY)
     comments = sqlalchemy.Column(sqlalchemy.String(1000), comment=constants.COMMENTS)
+    external_comments = sqlalchemy.Column(
+        sqlalchemy.String(1000), comment=constants.EXTERNAL_COMMENTS
+    )
     contributed_by = sqlalchemy.Column(
         sqlalchemy.String(16),
         comment=constants.CONTRIBUTED_BY,

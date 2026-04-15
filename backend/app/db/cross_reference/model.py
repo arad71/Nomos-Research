@@ -12,6 +12,8 @@ from app.db.cross_reference.constants import (
     CONTRIBUTED_ON,
     CROSS_REFERENCE_ID,
     CROSS_REFERENCE_TYPE,
+    EXTERNAL_COMMENTS,
+    INTERNAL_COMMENTS,
     NEW_NAME_ID,
     OLD_NAME_ID,
     TABLE_DESCRIPTION,
@@ -72,6 +74,12 @@ class CrossReference(BaseModel, TableMixin):
         DateTime(timezone=True), comment=CONTRIBUTED_ON, doc=CONTRIBUTED_ON
     )
     reference_comments = Column(String(1000), comment=COMMENTS, doc=COMMENTS)
+    internal_comments = Column(
+        String(3000), comment=INTERNAL_COMMENTS, doc=INTERNAL_COMMENTS
+    )
+    external_comments = Column(
+        String(3000), comment=EXTERNAL_COMMENTS, doc=EXTERNAL_COMMENTS
+    )
     notes = Column(String(3000))
     legacy_id = Column(Integer)
     legacy_id_columns = ["legacy_id"]

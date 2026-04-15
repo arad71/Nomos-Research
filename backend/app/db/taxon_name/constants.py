@@ -30,7 +30,8 @@ CONTRIBUTED_BY = (
 AUTHORISED_BY = "Person authorising entry of this name. This will be the name of a taxonomist who can vouch for the correctness of the record."
 AUTTHORISED_ON = "Date this entry was authorised on"
 
-COMMENTS = "Comments about name"
+COMMENTS = "Internal comments about name (internal use only)"
+EXTERNAL_COMMENTS = "External comments about name (publicly visible)"
 FORM_DESC_DY = "Day of date formally described"
 FORM_DESC_MN = "Month of date formally described"
 FORM_DESC_YR = "Year of date the taxon formally described"
