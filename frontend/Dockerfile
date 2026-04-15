@@ -1,22 +1,28 @@
-FROM node:lts
+# Stage 1: dependency installation
+FROM node:lts AS deps
 
-# TODO is this a security issues? Use multi-stage build?
-ARG NPM_TOKEN
-RUN test -n "$NPM_TOKEN" || (echo "\033[1;31mNPM_TOKEN not set\033[0m"; exit 1;)
-COPY .npmrc.docker .npmrc
-ADD package.json /package.json
-ADD package-lock.json /package-lock.json
+WORKDIR /install
 
-ENV NODE_ENV=$NODE_ENV
+COPY package.json package-lock.json .npmrc.docker ./
+
+RUN --mount=type=secret,id=npm_token \
+    NPM_TOKEN=$(cat /run/secrets/npm_token) && \
+    echo "//registry.marmelab.com/:_authToken=${NPM_TOKEN}" > .npmrc && \
+    npm config set fetch-retry-mintimeout 20000 && \
+    npm config set fetch-retry-maxtimeout 180000 && \
+    npm ci --prefer-offline --no-audit && \
+    rm -f .npmrc
+
+# Stage 2: runtime image
+FROM node:lts AS runtime
+
 ENV NODE_PATH=/node_modules
 ENV PATH=$PATH:/node_modules/.bin
-RUN npm config set fetch-retry-mintimeout 20000
-RUN npm config set fetch-retry-maxtimeout 180000
-RUN npm ci --prefer-offline --no-audit
-RUN rm -f .npmrc.docker
+
+COPY --from=deps /install/node_modules /node_modules
 
 WORKDIR /app
-ADD . /app
+COPY . /app
 
 EXPOSE 8000
 EXPOSE 35729

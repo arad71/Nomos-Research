@@ -13,6 +13,10 @@ import app.db.crud as crud
 import app.db.taxon_name.schema as schema
 from app.db.hierarchy.model import Hierarchy
 from app.db.informal_group.model import InformalGroup
+from app.db.taxon_name.calculated import append_ms_suffix, remove_ms_suffix
+
+# from app.db.taxon_name.calculated import append_ms_suffix
+from app.db.taxon_name.enums import PublicationStatus
 from app.db.taxon_name.infrageneric_names import (
     InfraGenericNameModel,
     InfraGenericNames,
@@ -406,6 +410,24 @@ class TaxonNameCrud(crud.Crud):
         # print(rows[-1].rank_name)
         infrageneric_names = InfraGenericNames.generate_names(taxon_name_id, rows)
 
+        taxon_name = db.query(TaxonName).get(taxon_name_id)
+        if (
+            taxon_name
+            and taxon_name.publication_status == PublicationStatus.manuscript_name
+        ):
+            for name_entry in infrageneric_names:
+                if name_entry.formatted_name_with_author:
+                    name_entry.formatted_name_with_author = append_ms_suffix(
+                        name_entry.formatted_name_with_author
+                    )
+                if name_entry.formatted_name:
+                    name_entry.formatted_name = append_ms_suffix(
+                        name_entry.formatted_name
+                    )
+                if name_entry.italicized_name:
+                    name_entry.italicized_name = append_ms_suffix(
+                        name_entry.italicized_name
+                    )
         return infrageneric_names
 
     @classmethod
@@ -507,7 +529,7 @@ class TaxonNameCrud(crud.Crud):
         TaxonNameCrud.calculate_name_formats(db, limit=100, offset=50)
         ```
         """
-        log = loguru.logger.add(CALCULATE_LOG, retention="1 day")
+        # log = loguru.logger.add(CALCULATE_LOG, retention="1 day")
         loguru.logger.info("Calculation started")
         cls.reset_counts()
         query: orm.Query = db.query(TaxonName.taxon_name_id).distinct()
@@ -528,7 +550,7 @@ class TaxonNameCrud(crud.Crud):
         db.commit()
         loguru.logger.debug(cls.format_message())
         loguru.logger.info("Calculation completed")
-        loguru.logger.remove(log)
+        # loguru.logger.remove(log)
 
     @classmethod
     def calculate_names_for_row(
@@ -609,6 +631,28 @@ class TaxonNameCrud(crud.Crud):
             ):
                 taxon_name.infragenus_name = name_entry.formatted_name
                 taxon_name.calculate_name = False
+        print(taxon_name.infragenus_name)
+
+        # Aplly or remove ms suffix on publication status
+        if taxon_name.publication_status == PublicationStatus.manuscript_name:
+            taxon_name.scientific_name = append_ms_suffix(taxon_name.scientific_name)
+            taxon_name.formatted_scientific_name = append_ms_suffix(
+                taxon_name.formatted_scientific_name
+            )
+            taxon_name.canonical_name = append_ms_suffix(taxon_name.canonical_name)
+            taxon_name.canonical_name_without_rank = append_ms_suffix(
+                taxon_name.canonical_name_without_rank
+            )
+        else:
+            taxon_name.scientific_name = remove_ms_suffix(taxon_name.scientific_name)
+            taxon_name.formatted_scientific_name = remove_ms_suffix(
+                taxon_name.formatted_scientific_name
+            )
+            taxon_name.canonical_name = remove_ms_suffix(taxon_name.canonical_name)
+            taxon_name.canonical_name_without_rank = remove_ms_suffix(
+                taxon_name.canonical_name_without_rank
+            )
+
         if db.is_modified(taxon_name):
             if current_user:
                 taxon_name.updated_by = current_user
