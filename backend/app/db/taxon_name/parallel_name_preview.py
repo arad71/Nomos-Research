@@ -273,6 +273,15 @@ def derive_parallel_name(
                 notes.append(
                     f"Linked parent taxon {parent.taxon_name_id} is treated as an infrageneric component, so the current genus/uninomial was retained."
                 )
+                if not components.uninomial:
+                    inferred_overlay_uninomial = (
+                        derive_overlay_uninomial_from_infrageneric_parent(parent)
+                    )
+                    if inferred_overlay_uninomial:
+                        components.uninomial = inferred_overlay_uninomial
+                        notes.append(
+                            f"Derived the overlay genus/uninomial from linked parent taxon {parent.taxon_name_id}."
+                        )
             else:
                 notes.append(
                     f"Retained the parallel uninomial field instead of inheriting uninomial from linked parent taxon {parent.taxon_name_id}."
@@ -472,6 +481,21 @@ def normalize_parallel_name_part(value: str | None) -> str | None:
 
     normalized = re.sub(r"\s+", " ", value).strip()
     return normalized or None
+
+
+def derive_overlay_uninomial_from_infrageneric_parent(parent: TaxonName) -> str | None:
+    candidate_values = [
+        normalize_parallel_name_part(parent.canonical_name),
+        normalize_parallel_name_part(parent.scientific_name),
+    ]
+    for value in candidate_values:
+        if not value:
+            continue
+        stripped_value = calculated.strip_hybrid_formula_prefix(value) or value
+        first_token = stripped_value.split(" ", 1)[0].strip("()")
+        if first_token:
+            return first_token
+    return None
 
 
 def stale_infraspecific_named_hybrid_override(
