@@ -99,6 +99,26 @@ autogenerate:
 calculate_names:
 	docker compose run --rm backend app/tools/taxon_name_calculation.py
 
+# backfill_taxon_name_parents: Backfill taxon_name_parents from exact uninomial matches
+backfill_taxon_name_parents:
+	docker compose run --rm backend python app/tools/backfill_taxon_name_parents.py $(if $(ARGS),$(ARGS),--skip-populated --dry-run)
+
+# audit_parallel_name_engine: Audit current vs parallel names across the taxon register
+audit_parallel_name_engine:
+	docker compose run --rm backend python app/tools/audit_parallel_name_engine.py $(if $(ARGS),$(ARGS),--strict --current-only)
+
+# cleanup_invalid_taxon_name_parents: Soft-delete invalid parent links by rank rules
+cleanup_invalid_taxon_name_parents:
+	docker compose run --rm backend python app/tools/cleanup_invalid_taxon_name_parents.py $(if $(ARGS),$(ARGS),--dry-run)
+
+# normalize_hybrid_formula_prefixes: Convert leading X/x hybrid placeholders to × and mark as hybrid formula
+normalize_hybrid_formula_prefixes:
+	docker compose run --rm backend python app/tools/normalize_hybrid_formula_prefixes.py $(if $(ARGS),$(ARGS),--dry-run)
+
+# normalize_named_hybrid_specific_epithets: Convert species specific epithets starting with X/x to named hybrids
+normalize_named_hybrid_specific_epithets:
+	docker compose run --rm backend python app/tools/normalize_named_hybrid_specific_epithets.py $(if $(ARGS),$(ARGS),--dry-run)
+
 # shell:		Run bash in the backend
 shell:
 	@docker compose exec backend bash

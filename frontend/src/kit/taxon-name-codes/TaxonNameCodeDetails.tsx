@@ -122,7 +122,6 @@ const EditRelatedButton = ({
   <EditInDialogButton
     fullWidth
     maxWidth="md"
-    mutationMode="pessimistic"
     title={label}
     label={label}
     ButtonProps={{

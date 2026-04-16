@@ -1,4 +1,7 @@
 import json
+from copy import deepcopy
+from datetime import datetime, timezone
+from threading import Lock, Thread
 from typing import List, Optional, overload
 
 import fastapi.responses as responses
@@ -14,11 +17,83 @@ from app.db.session import get_db
 from app.db.taxon_name.crud import CALCULATE_LOG, TaxonNameCrud
 from app.db.taxon_name.infrageneric_names import InfraGenericNameModel
 from app.db.taxon_name.model import TaxonName as TaxonNameModel
-from app.db.taxon_name.schema import TaxonName, TaxonNameCreate, TaxonNameEdit
+from app.db.taxon_name.schema import (
+    TaxonName,
+    TaxonNameCreate,
+    TaxonNameEdit,
+    TaxonNameParallelAuditJobStatus,
+    TaxonNameParallelAuditMismatch,
+    TaxonNameParallelAuditResult,
+    TaxonNameParallelPreview,
+)
 from app.db.taxon_rank.model import TaxonRank
 from app.db.user.model import User
+from app.tools.audit_parallel_name_engine import audit_parallel_name_engine
 
 taxon_names_router = r = APIRouter(prefix="/taxon_names")
+
+
+_PARALLEL_AUDIT_LOCK = Lock()
+_PARALLEL_AUDIT_STATE: dict = {
+    "status": "idle",
+    "strict": True,
+    "current_only": True,
+    "batch_size": 500,
+    "mismatch_limit": 2000,
+    "expected_total": 0,
+    "processed": 0,
+    "matches_all": 0,
+    "scientific_mismatch": 0,
+    "author_only_scientific_mismatch": 0,
+    "canonical_mismatch": 0,
+    "both_mismatch": 0,
+    "errors": 0,
+    "started_at": None,
+    "finished_at": None,
+    "error_message": None,
+    "result": None,
+}
+
+
+def _snapshot_parallel_audit_state() -> dict:
+    with _PARALLEL_AUDIT_LOCK:
+        return deepcopy(_PARALLEL_AUDIT_STATE)
+
+
+def _set_parallel_audit_state(**updates) -> None:
+    with _PARALLEL_AUDIT_LOCK:
+        _PARALLEL_AUDIT_STATE.update(updates)
+
+
+def _stats_to_result(
+    *,
+    strict: bool,
+    current_only: bool,
+    stats,
+) -> TaxonNameParallelAuditResult:
+    return TaxonNameParallelAuditResult(
+        strict=strict,
+        current_only=current_only,
+        processed=stats.processed,
+        matches_all=stats.matches_all,
+        scientific_mismatch=stats.scientific_mismatch,
+        author_only_scientific_mismatch=stats.author_only_scientific_mismatch,
+        canonical_mismatch=stats.canonical_mismatch,
+        both_mismatch=stats.both_mismatch,
+        errors=stats.errors,
+        mismatch_rows=[
+            TaxonNameParallelAuditMismatch(
+                taxon_name_id=row.taxon_name_id,
+                mismatch_kind=row.mismatch_kind,
+                strategy=row.strategy,
+                current_scientific_name=row.current_scientific_name,
+                derived_scientific_name=row.derived_scientific_name,
+                current_canonical_name=row.current_canonical_name,
+                derived_canonical_name=row.derived_canonical_name,
+            )
+            for row in stats.mismatch_rows
+        ],
+    )
 
 
 @r.get(
@@ -55,6 +130,222 @@ async def taxon_infrageneric_name_list(
 ):
     result = TaxonNameCrud.generate_infrageneric_names(db, taxon_name_id)
     return result
+
+
+@r.get(
+    "_parallel_name_preview/{taxon_name_id}",
+    response_model=TaxonNameParallelPreview,
+)
+@r.get(
+    "/_parallel_name_preview/{taxon_name_id}",
+    response_model=TaxonNameParallelPreview,
+)
+async def taxon_parallel_name_preview(
+    taxon_name_id: int,
+    strict: bool = False,
+    db: Session = Depends(get_db),
+):
+    return TaxonNameCrud.generate_parallel_name_preview(
+        db, taxon_name_id, strict=strict
+    )
+
+
+@r.post(
+    "_parallel_name_audit",
+    response_model=TaxonNameParallelAuditResult,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.MANAGER["name"],
+                Role.OFFICER["name"],
+                Role.APPLICATION_SUPPORT["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
+@r.post(
+    "/_parallel_name_audit",
+    response_model=TaxonNameParallelAuditResult,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.MANAGER["name"],
+                Role.OFFICER["name"],
+                Role.APPLICATION_SUPPORT["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
+async def taxon_parallel_name_audit(
+    strict: bool = True,
+    current_only: bool = True,
+    batch_size: int = 500,
+    mismatch_limit: int = 2000,
+):
+    stats = audit_parallel_name_engine(
+        strict=strict,
+        current_only=current_only,
+        offset=0,
+        limit=None,
+        batch_size=batch_size,
+        log_every=0,
+        sample_size=0,
+        collect_mismatches=True,
+        mismatch_limit=mismatch_limit,
+    )
+    return _stats_to_result(strict=strict, current_only=current_only, stats=stats)
+
+
+@r.post(
+    "_parallel_name_audit_start",
+    response_model=TaxonNameParallelAuditJobStatus,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.MANAGER["name"],
+                Role.OFFICER["name"],
+                Role.APPLICATION_SUPPORT["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
+@r.post(
+    "/_parallel_name_audit_start",
+    response_model=TaxonNameParallelAuditJobStatus,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.MANAGER["name"],
+                Role.OFFICER["name"],
+                Role.APPLICATION_SUPPORT["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
+async def taxon_parallel_name_audit_start(
+    strict: bool = True,
+    current_only: bool = True,
+    batch_size: int = 500,
+    mismatch_limit: int = 2000,
+):
+    state = _snapshot_parallel_audit_state()
+    if state.get("status") == "running":
+        return TaxonNameParallelAuditJobStatus(**state)
+
+    _set_parallel_audit_state(
+        status="running",
+        strict=strict,
+        current_only=current_only,
+        batch_size=batch_size,
+        mismatch_limit=mismatch_limit,
+        expected_total=0,
+        processed=0,
+        matches_all=0,
+        scientific_mismatch=0,
+        author_only_scientific_mismatch=0,
+        canonical_mismatch=0,
+        both_mismatch=0,
+        errors=0,
+        started_at=datetime.now(timezone.utc).isoformat(),
+        finished_at=None,
+        error_message=None,
+        result=None,
+    )
+
+    def _run_job() -> None:
+        def _progress_callback(stats) -> None:
+            _set_parallel_audit_state(
+                expected_total=stats.expected_total,
+                processed=stats.processed,
+                matches_all=stats.matches_all,
+                scientific_mismatch=stats.scientific_mismatch,
+                author_only_scientific_mismatch=stats.author_only_scientific_mismatch,
+                canonical_mismatch=stats.canonical_mismatch,
+                both_mismatch=stats.both_mismatch,
+                errors=stats.errors,
+            )
+
+        try:
+            stats = audit_parallel_name_engine(
+                strict=strict,
+                current_only=current_only,
+                offset=0,
+                limit=None,
+                batch_size=batch_size,
+                log_every=1000,
+                sample_size=0,
+                collect_mismatches=True,
+                mismatch_limit=mismatch_limit,
+                progress_callback=_progress_callback,
+            )
+            result = _stats_to_result(
+                strict=strict,
+                current_only=current_only,
+                stats=stats,
+            )
+            _set_parallel_audit_state(
+                status="completed",
+                expected_total=stats.expected_total,
+                processed=stats.processed,
+                matches_all=stats.matches_all,
+                scientific_mismatch=stats.scientific_mismatch,
+                author_only_scientific_mismatch=stats.author_only_scientific_mismatch,
+                canonical_mismatch=stats.canonical_mismatch,
+                both_mismatch=stats.both_mismatch,
+                errors=stats.errors,
+                finished_at=datetime.now(timezone.utc).isoformat(),
+                error_message=None,
+                result=result.model_dump(),
+            )
+        except Exception as error:
+            _set_parallel_audit_state(
+                status="failed",
+                finished_at=datetime.now(timezone.utc).isoformat(),
+                error_message=str(error),
+            )
+
+    Thread(target=_run_job, daemon=True).start()
+    return TaxonNameParallelAuditJobStatus(**_snapshot_parallel_audit_state())
+
+
+@r.get(
+    "_parallel_name_audit_status",
+    response_model=TaxonNameParallelAuditJobStatus,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.MANAGER["name"],
+                Role.OFFICER["name"],
+                Role.APPLICATION_SUPPORT["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
+@r.get(
+    "/_parallel_name_audit_status",
+    response_model=TaxonNameParallelAuditJobStatus,
+    dependencies=[
+        authorize(
+            scopes=[
+                Role.MANAGER["name"],
+                Role.OFFICER["name"],
+                Role.APPLICATION_SUPPORT["name"],
+                Role.SUPER_ADMIN["name"],
+            ]
+        )
+    ],
+)
+async def taxon_parallel_name_audit_status():
+    state = _snapshot_parallel_audit_state()
+    result = state.get("result")
+    if isinstance(result, dict):
+        state["result"] = TaxonNameParallelAuditResult(**result)
+    return TaxonNameParallelAuditJobStatus(**state)
 
 
 @r.get(

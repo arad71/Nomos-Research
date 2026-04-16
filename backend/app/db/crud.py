@@ -441,6 +441,14 @@ class Crud:
                 status.HTTP_404_NOT_FOUND, detail=cls.name + " not found"
             )
         update_data = values.dict(exclude_unset=True)
+        explicitly_set_fields = getattr(
+            values,
+            "model_fields_set",
+            getattr(values, "__fields_set__", set()),
+        )
+        for field_name in explicitly_set_fields:
+            if hasattr(values, field_name):
+                update_data[field_name] = getattr(values, field_name)
 
         for key, value in update_data.items():
             setattr(db_item, key, value)

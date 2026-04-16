@@ -15,6 +15,7 @@ import GroupWorkIcon from '@mui/icons-material/GroupWork';
 import LinkIcon from '@mui/icons-material/Link';
 import ReportIcon from '@mui/icons-material/Report';
 import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined';
+import RuleIcon from '@mui/icons-material/Rule';
 
 export interface AdminNavItem {
   to: string;
@@ -173,6 +174,34 @@ export const adminNavSections: AdminNavSection[] = [
         label: 'Users',
         icon: <ShieldOutlinedIcon fontSize="small" />,
         resource: 'users',
+        action: 'list',
+      },
+      {
+        to: '/taxon_name_parent_reviews',
+        label: 'Parent Review Queue',
+        icon: <RuleIcon fontSize="small" />,
+        resource: 'taxon_name_parent_reviews',
+        action: 'list',
+      },
+      {
+        to: '/parallel_name_review',
+        label: 'Parallel Name Review',
+        icon: <RuleIcon fontSize="small" />,
+        resource: 'taxon_names',
+        action: 'list',
+      },
+      {
+        to: '/expected_hybrid_review',
+        label: 'Expected Hybrids',
+        icon: <RuleIcon fontSize="small" />,
+        resource: 'taxon_names',
+        action: 'list',
+      },
+      {
+        to: '/taxon_names_without_parents',
+        label: 'No Parent Links',
+        icon: <RuleIcon fontSize="small" />,
+        resource: 'taxon_name_parent_reviews',
         action: 'list',
       },
     ],

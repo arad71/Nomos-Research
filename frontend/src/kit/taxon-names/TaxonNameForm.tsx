@@ -94,7 +94,13 @@ const formatRankOption = (choice?: {
   return choice.rank_name;
 };
 
-const TaxonNameFormInner = ({ relatedSections }: { relatedSections?: React.ReactNode }) => {
+const TaxonNameFormInner = ({
+  topContent,
+  relatedSections,
+}: {
+  topContent?: React.ReactNode;
+  relatedSections?: React.ReactNode;
+}) => {
   const { setValue } = useFormContext();
   const kingdomId = useWatch({ name: 'kingdom_id' });
   const review = useWatch({ name: 'review' });
@@ -123,6 +129,8 @@ const TaxonNameFormInner = ({ relatedSections }: { relatedSections?: React.React
 
   return (
     <div className="grid gap-8">
+      {topContent}
+
       <section className="space-y-4">
         <div className="space-y-1">
           <h3 className="text-base font-semibold tracking-tight">Name</h3>
@@ -251,9 +259,15 @@ const TaxonNameFormInner = ({ relatedSections }: { relatedSections?: React.React
   );
 };
 
-const TaxonNameForm = ({ relatedSections }: { relatedSections?: React.ReactNode }) => (
+const TaxonNameForm = ({
+  topContent,
+  relatedSections,
+}: {
+  topContent?: React.ReactNode;
+  relatedSections?: React.ReactNode;
+}) => (
   <SimpleForm className="max-w-none">
-    <TaxonNameFormInner relatedSections={relatedSections} />
+    <TaxonNameFormInner topContent={topContent} relatedSections={relatedSections} />
   </SimpleForm>
 );
 

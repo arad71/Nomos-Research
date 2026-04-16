@@ -41,12 +41,15 @@ class TaxonName(BaseModel, TableMixin):
     )
     taxon_rank = relationship("TaxonRank", backref=name_plural)
     uninomial = sqlalchemy.Column(sqlalchemy.String, index=True)
+    parallel_override_uninomial = sqlalchemy.Column(sqlalchemy.String)
     canonical_name = sqlalchemy.Column(sqlalchemy.String, index=True)
     canonical_name_without_rank = sqlalchemy.Column(sqlalchemy.String, index=True)
     scientific_name = sqlalchemy.Column(sqlalchemy.String, index=True)
     formatted_scientific_name = sqlalchemy.Column(sqlalchemy.String)
     specific_epithet = sqlalchemy.Column(sqlalchemy.String(70), index=True)
+    parallel_override_specific_epithet = sqlalchemy.Column(sqlalchemy.String(70))
     infraspecific_epithet = sqlalchemy.Column(sqlalchemy.String(70), index=True)
+    parallel_override_infraspecific_epithet = sqlalchemy.Column(sqlalchemy.String(70))
     infragenus_name = sqlalchemy.Column(sqlalchemy.String, index=True)
     infragenus_name_with_rank = sqlalchemy.Column(sqlalchemy.String, index=True)
     is_autonym = sqlalchemy.Column(
@@ -71,6 +74,20 @@ class TaxonName(BaseModel, TableMixin):
         nullable=True,
         comment=constants.REVIEW_REASON,
         doc=constants.REVIEW_REASON,
+    )
+    is_hybrid = sqlalchemy.Column(
+        sqlalchemy.Boolean,
+        nullable=False,
+        default=False,
+        server_default=sqlalchemy.text("false"),
+        comment=constants.IS_HYBRID,
+        doc=constants.IS_HYBRID,
+    )
+    hybrid_category = sqlalchemy.Column(
+        Enum(enums.HybridCategory, name=__tablename__ + "__hybrid_category"),
+        nullable=True,
+        comment=constants.HYBRID_CATEGORY,
+        doc=constants.HYBRID_CATEGORY,
     )
     publication_id = sqlalchemy.Column(
         sqlalchemy.Integer,
