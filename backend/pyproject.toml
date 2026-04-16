@@ -50,7 +50,7 @@ colorama = "^0.4.6"
 isort = "^8.0.1"
 typer = {extras = ["all"], version = "^0.24.1"}
 rich = "^14.3.3"
-deepdiff = "^8.6.2"
+deepdiff = "^9.0.0"
 pydantic-settings = "^2.13.0"
 
 
