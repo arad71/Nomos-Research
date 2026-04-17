@@ -78,3 +78,4 @@ FORMATTED_SCIENTIFIC_NAME_OVERRIDE = (
 )
 LEGACY_ID = "Legacy ID"
 IS_WA_RECOGNISED = "Flag indicating whether this name is recognised by the WA Herbarium"
+SPECIES_CODE = "WACensus Max MDB species code"

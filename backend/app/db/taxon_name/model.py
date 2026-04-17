@@ -221,6 +221,12 @@ class TaxonName(BaseModel, TableMixin):
         comment=constants.IS_WA_RECOGNISED,
         doc=constants.IS_WA_RECOGNISED,
     )
+    species_code = sqlalchemy.Column(
+        sqlalchemy.String(20),
+        comment=constants.SPECIES_CODE,
+        doc=constants.SPECIES_CODE,
+        index=True,
+    )
     admin_comment = sqlalchemy.Column(sqlalchemy.String)
     kingdom_name = association_proxy("kingdom", "kingdom_name")
     rank_name = association_proxy("taxon_rank", "rank_name")
