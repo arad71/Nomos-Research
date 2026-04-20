@@ -1389,8 +1389,8 @@ const TaxonNameRelatedSections = ({
       <div
         className={
           embedded
-            ? 'space-y-0'
-            : 'space-y-0 rounded-2xl border border-border bg-card p-6'
+            ? 'min-w-0 space-y-0'
+            : 'min-w-0 space-y-0 rounded-2xl border border-border bg-card p-6'
         }
       >
         {!editable ? (

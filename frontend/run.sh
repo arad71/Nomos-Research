@@ -9,7 +9,7 @@ case $1 in
       npm run build
       npm run preview -- --host 0.0.0.0 --port "${PORT:-3000}"
     else
-      npm start | cat
+      npm start -- --host 0.0.0.0 --port "${PORT:-3000}" | cat
     fi
     ;;
   build)
