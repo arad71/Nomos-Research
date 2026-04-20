@@ -112,9 +112,16 @@ const CrossReferenceShowPage = () => (
             <h3 className="text-base font-semibold tracking-tight">Notes</h3>
           </div>
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <RecordField source="internal_comments" label="Internal comments" className="xl:col-span-3" />
+            <RecordField source="external_comments" label="External comments" className="xl:col-span-3" />
+          </div>
+        </section>
+
+        <section className="mt-12 space-y-4 rounded-xl border border-destructive/30 bg-destructive/5 p-4">
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             <RecordField
               source="reference_comments"
-              label="Comments"
+              label="Reference comments"
               className="md:col-span-2 xl:col-span-3"
             />
             <RecordField source="notes" label="Notes" className="xl:col-span-3" />

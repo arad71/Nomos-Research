@@ -585,7 +585,8 @@ const TaxonNameRelatedSections = ({
                 <RecordField source="review_reason" label="Review reason" className="xl:col-span-2" />
                 <div className="hidden md:block md:col-span-2 xl:col-span-4" aria-hidden="true" />
                 <RecordField source="legacy_id" label="LegacyID" className="xl:col-span-4" />
-                <RecordField source="comments" label="Comments" className="xl:col-span-4" />
+                <RecordField source="comments" label="Internal comments" className="xl:col-span-4" />
+                <RecordField source="external_comments" label="External comments" className="xl:col-span-4" />
               </div>
             </section>
 
@@ -990,7 +991,7 @@ const TaxonNameRelatedSections = ({
                         />
                       </ReferenceField>
                     </DataTable.Col>
-                    <DataTable.Col source="reference_comments" label="Comments" />
+                    <DataTable.Col source="reference_comments" label="Reference comments" />
                     <DataTable.Col label="Actions">
                       <div className="flex items-center gap-2">
                         <EditRelatedButton label="Edit previous name">
@@ -1050,7 +1051,7 @@ const TaxonNameRelatedSections = ({
                         />
                       </ReferenceField>
                     </DataTable.Col>
-                    <DataTable.Col source="reference_comments" label="Comments" />
+                    <DataTable.Col source="reference_comments" label="Reference comments" />
                     <DataTable.Col label="Actions">
                       <div className="flex items-center gap-2">
                         <EditRelatedButton label="Edit subsequent name">
@@ -1099,7 +1100,7 @@ const TaxonNameRelatedSections = ({
                       />
                     </ReferenceField>
                   </DataTable.Col>
-                  <DataTable.Col source="reference_comments" label="Comments" />
+                  <DataTable.Col source="reference_comments" label="Reference comments" />
                 </DataTable>
               </ReferenceManyField>
             </div>
@@ -1132,7 +1133,7 @@ const TaxonNameRelatedSections = ({
                       />
                     </ReferenceField>
                   </DataTable.Col>
-                  <DataTable.Col source="reference_comments" label="Comments" />
+                  <DataTable.Col source="reference_comments" label="Reference comments" />
                 </DataTable>
               </ReferenceManyField>
             </div>
