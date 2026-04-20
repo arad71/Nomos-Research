@@ -52,6 +52,9 @@ class TaxonNameBase(BaseModel):
         default=None, description=constants.FORM_DESC_DY
     )
     comments: Optional[str] = Field(default=None, description=constants.COMMENTS)
+    external_comments: Optional[str] = Field(
+        default=None, description=constants.EXTERNAL_COMMENTS
+    )
     contributed_by: Optional[str] = Field(
         default=None, description=constants.CONTRIBUTED_BY
     )
@@ -156,6 +159,7 @@ class TaxonName(TaxonNameBase, TableBase):
     cons_code: Optional[str] = None
     scientific_name: Optional[str] = None
     formatted_scientific_name: Optional[str] = None
+    species_code: Optional[str] = None
     canonical_name_without_rank: Optional[str] = None
     path: Optional[list[str]] = None
     deleted: bool

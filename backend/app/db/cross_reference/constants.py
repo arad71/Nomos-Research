@@ -1,4 +1,6 @@
 COMMENTS = "Other informative comments about the cross-reference"
+INTERNAL_COMMENTS = "Internal comments about the cross-reference (internal use only)"
+EXTERNAL_COMMENTS = "External comments about the cross-reference (publicly visible)"
 AUTHORISED_BY = "The person who authorised this cross-reference"
 AUTHORISED_ON = "The date this cross-reference was authorised"
 CONTRIBUTED_BY = "The person who contributed this cross-reference"
