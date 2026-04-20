@@ -27,6 +27,7 @@ from app.api.api_v1.routers.taxon_name_parent_reviews import (
 )
 from app.api.api_v1.routers.taxon_name_parents import taxon_name_parents_router
 from app.api.api_v1.routers.taxon_names import taxon_names_router
+from app.api.api_v1.routers.taxon_publications import taxon_publications_router
 from app.api.api_v1.routers.taxon_ranks import taxon_ranks_router
 from app.api.api_v1.routers.user_roles import user_roles_router
 from app.api.api_v1.routers.users import users_router
@@ -223,6 +224,18 @@ app.include_router(
     dependencies=[],
 )
 
+app.include_router(
+    extract_router,
+    prefix=API_V1_URL,
+    tags=["extract"],
+    dependencies=[],
+)
+app.include_router(
+    taxon_publications_router,
+    prefix=API_V1_URL,
+    tags=["taxon_publications"],
+    dependencies=[Depends(get_current_active_user)],
+)
 app.include_router(auth_router, prefix="/api", tags=["auth"])
 
 
