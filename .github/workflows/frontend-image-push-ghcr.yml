@@ -22,7 +22,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image  
-      run: docker build frontend --tag ${{ env.REGISTRY }}/${{ env.ORG }}/${{env.IMAGE_NAME}} --build-arg NPM_TOKEN=${{secrets.NPM_TOKEN}}
+      run: docker build frontend --tag ${{ env.REGISTRY }}/${{ env.ORG }}/${{env.IMAGE_NAME}}:${{ github.ref_name }} --build-arg NPM_TOKEN=${{secrets.NPM_TOKEN}}
       #run: docker build frontend --tag ${{ env.REGISTRY }}/${{ env.ORG }}/${{env.IMAGE_NAME}}
       
       
@@ -34,4 +34,4 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
         
     - name: Push the backend image 
-      run: docker push ${{ env.REGISTRY }}/${{ env.ORG }}/${{ env.IMAGE_NAME }}
+      run: docker push ${{ env.REGISTRY }}/${{ env.ORG }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}

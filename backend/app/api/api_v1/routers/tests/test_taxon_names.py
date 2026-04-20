@@ -21,6 +21,8 @@ def test_get_taxon_names(
             "is_current": True,
             "validated": True,
             "is_autonym": False,
+            "is_hybrid": False,
+            "hybrid_category": None,
             "review": False,
             "canonical_name": test_taxon_name.canonical_name,
             "canonical_name_without_rank": test_taxon_name.canonical_name_without_rank,
@@ -87,6 +89,8 @@ def test_edit_taxon_name(
         "is_current": test_taxon_name.is_current,
         "validated": test_taxon_name.validated,
         "is_autonym": True,
+        "is_hybrid": True,
+        "hybrid_category": "hybrid_formula",
         "canonical_name": test_taxon_name.canonical_name,
         "canonical_name_without_rank": test_taxon_name.canonical_name_without_rank,
         "updated_by": test_superuser.user_id,
@@ -115,6 +119,28 @@ def test_edit_taxon_name(
     new_taxon_name["all_vernaculars"] = response.json()["all_vernaculars"]
     new_taxon_name["deleted"] = False
     assert response.json() == new_taxon_name
+
+
+def test_create_hybrid_taxon_name_requires_category(
+    client,
+    test_kingdom,
+    test_taxon_rank,
+    superuser_token_headers,
+):
+    taxon_json = {
+        "kingdom_id": test_kingdom.kingdom_id,
+        "rank_id": test_taxon_rank.taxon_rank_id,
+        "is_current": True,
+        "validated": True,
+        "is_hybrid": True,
+        "classification_system_ids": [],
+    }
+
+    response = client.post(
+        "/api/v1/taxon_names", headers=superuser_token_headers, json=taxon_json
+    )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
 
 def test_edit_taxon_name_not_found(
@@ -166,6 +192,8 @@ def test_get_taxon_name(
         "taxon_rank": response_json["taxon_rank"],
         "is_current": test_taxon_name.is_current,
         "is_autonym": False,
+        "is_hybrid": False,
+        "hybrid_category": None,
         "validated": test_taxon_name.validated,
         "canonical_name": test_taxon_name.canonical_name,
         "canonical_name_without_rank": test_taxon_name.canonical_name_without_rank,
@@ -215,6 +243,8 @@ def test_canonical_name_1(
             test_taxon_name_canonical_name_1.formatted_scientific_name
         ),
         "is_autonym": False,
+        "is_hybrid": False,
+        "hybrid_category": None,
         "updated_by": test_taxon_name_canonical_name_1.updated_by,
         "updated_on": test_taxon_name_canonical_name_1.updated_on.isoformat(),
         "created_by": test_taxon_name_canonical_name_1.created_by,
@@ -258,6 +288,8 @@ def test_canonical_name_2(
             test_taxon_name_canonical_name_2.formatted_scientific_name
         ),
         "is_autonym": False,
+        "is_hybrid": False,
+        "hybrid_category": None,
         "updated_by": test_taxon_name_canonical_name_2.updated_by,
         "updated_on": test_taxon_name_canonical_name_2.updated_on.isoformat(),
         "created_by": test_taxon_name_canonical_name_2.created_by,
@@ -311,6 +343,8 @@ def test_canonical_name_3(
         "path": [],
         "deleted": False,
         "is_autonym": False,
+        "is_hybrid": False,
+        "hybrid_category": None,
         "review": False,
     }
 
@@ -356,6 +390,8 @@ def test_super_admin_permissions(
         "rank_id": test_taxon_rank.taxon_rank_id,
         "is_current": True,
         "validated": True,
+        "is_hybrid": False,
+        "hybrid_category": None,
         "canonical_name": test_taxon_name.canonical_name,
         "created_by": test_manager.user_id,
         "created_on": test_taxon_name.created_on.isoformat(),
@@ -410,6 +446,8 @@ def test_manager_permissions(
         "rank_id": test_taxon_rank.taxon_rank_id,
         "is_current": True,
         "validated": True,
+        "is_hybrid": False,
+        "hybrid_category": None,
         "canonical_name": test_taxon_name.canonical_name,
         "created_by": test_manager.user_id,
         "created_on": test_taxon_name.created_on.isoformat(),
@@ -464,6 +502,8 @@ def test_officer_permissions(
         "rank_id": test_taxon_rank.taxon_rank_id,
         "is_current": True,
         "validated": True,
+        "is_hybrid": False,
+        "hybrid_category": None,
         "canonical_name": test_taxon_name.canonical_name,
         "created_by": test_manager.user_id,
         "created_on": test_taxon_name.created_on.isoformat(),

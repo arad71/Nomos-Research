@@ -63,7 +63,10 @@ const resourceIdMap: Record<string, string> = {
   publications: 'publication_id',
   citations: 'citation_id',
   taxon_names: 'taxon_name_id',
+  taxon_name_parents: 'taxon_name_parent_id',
+  taxon_name_parent_reviews: 'taxon_name_parent_review_id',
   taxon_names_code: 'taxon_name_id',
+  taxon_names_parallel_name_preview: 'taxon_name_id',
   informal_groups: 'informal_group_id',
   hierarchies: 'hierarchy_id',
   'hierarchies/parents': 'taxon_name_id',
@@ -81,10 +84,19 @@ const toRaRecord = (resource: string, record: any) => {
     return record;
   }
   const idKey = resourceIdMap[resource];
-  if (!idKey || record.id !== undefined || record[idKey] === undefined) {
-    return record;
+  let nextRecord = record;
+  if (resource === 'taxon_names') {
+    nextRecord = {
+      parallel_override_uninomial: null,
+      parallel_override_specific_epithet: null,
+      parallel_override_infraspecific_epithet: null,
+      ...nextRecord,
+    };
   }
-  return { ...record, id: record[idKey] };
+  if (!idKey || nextRecord.id !== undefined || nextRecord[idKey] === undefined) {
+    return nextRecord;
+  }
+  return { ...nextRecord, id: nextRecord[idKey] };
 };
 
 const remapParamsForResource = (resource: string, params: any) => {
@@ -168,6 +180,15 @@ export const myDataProvider: DataProvider = {
       const url = `${BACKEND_URL}/${resource}/${params.id}`;
       return httpClient(url).then(({ json }: { json: [InfragenericData] }) => ({
         data: { id: params.id, infrageneric_names: json },
+      }));
+    }
+    if (resource === 'taxon_names_parallel_name_preview') {
+      const strict = params?.meta && typeof params.meta === 'object' && 'strict' in params.meta
+        ? Boolean((params.meta as { strict?: boolean }).strict)
+        : false;
+      const url = `${BACKEND_URL}/taxon_names_parallel_name_preview/${params.id}${strict ? '?strict=true' : ''}`;
+      return httpClient(url).then(({ json }: { json: Record<string, unknown> }) => ({
+        data: { id: params.id, ...(json ?? {}) },
       }));
     }
     if (resource === 'taxon_names_code') {

@@ -24,11 +24,13 @@ from app.db.role.model import Role as RoleModel
 from app.db.session import Base, get_db
 from app.db.taxon_name.enums import NaturalisedStatus
 from app.db.taxon_name.model import TaxonName
+from app.db.taxon_name_parent.model import TaxonNameParent
 from app.db.taxon_rank.model import TaxonRank
 from app.db.user.model import User
 from app.db.user_role.model import UserRole as UserRoleModel
 from app.db.vernacular.model import Vernacular
 from app.main import app
+
 
 
 def get_test_db_url() -> str:
@@ -382,6 +384,29 @@ def create_hierarchy(
     test_db.commit()
     hierarchy.calculate_path(db=test_db)
     return hierarchy
+
+
+@pytest.fixture
+def test_taxon_name_parent(
+    test_db,
+    test_taxon_name,
+    test_taxon_name_2,
+    test_superuser,
+) -> TaxonNameParent:
+    now = datetime.datetime.utcnow()
+    taxon_name_parent = TaxonNameParent(
+        taxon_name_id=test_taxon_name.taxon_name_id,
+        parent_taxon_name_id=test_taxon_name_2.taxon_name_id,
+        sequence=1,
+        updated_by=test_superuser.user_id,
+        updated_on=now,
+        created_by=test_superuser.user_id,
+        created_on=now,
+    )
+    test_db.add(taxon_name_parent)
+    test_db.commit()
+    test_db.refresh(taxon_name_parent)
+    return taxon_name_parent
 
 
 @pytest.fixture

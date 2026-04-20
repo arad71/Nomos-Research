@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from itertools import groupby
 from operator import attrgetter
 from typing import Optional
@@ -12,9 +13,13 @@ import app.db.taxon_name.schema as schema
 from app.db.author import model as author_model
 from app.db.citation.enums import AuthorType
 from app.db.taxon_name import model
+from app.db.taxon_name.enums import HybridCategory
 from app.db.taxon_rank.enums import RankAbbreviationVals
 
 from ..citation import enums
+from . import enums as taxon_name_enums
+
+HYBRID_FORMULA_PREFIX_RE = re.compile(r"^(?:×|x|X)\s+")
 
 
 def calculate_fields(
@@ -41,6 +46,29 @@ def calculate_fields(
     if target.calculate_name:
         calculate_name_fields(target)
 
+    is_manuscript = (
+        target.publication_status == taxon_name_enums.PublicationStatus.manuscript_name
+    )
+
+    if is_manuscript:
+        target.canonical_name = append_ms_suffix(target.canonical_name)
+        target.canonical_name_without_rank = append_ms_suffix(
+            target.canonical_name_without_rank
+        )
+        target.scientific_name = append_ms_suffix(target.scientific_name)
+        target.formatted_scientific_name = append_ms_suffix(
+            target.formatted_scientific_name
+        )
+    else:
+        target.canonical_name = remove_ms_suffix(target.canonical_name)
+        target.canonical_name_without_rank = remove_ms_suffix(
+            target.canonical_name_without_rank
+        )
+        target.scientific_name = remove_ms_suffix(target.scientific_name)
+        target.formatted_scientific_name = remove_ms_suffix(
+            target.formatted_scientific_name
+        )
+
 
 def calculate_name_fields(target: model.TaxonName):
     """Calculate the name fields for a given TaxonName object.
@@ -63,20 +91,10 @@ def calculate_name_fields(target: model.TaxonName):
     and the author as parameters.
     """
     canonical_parts = get_name_components(target)
-    target.canonical_name = filter_join(
-        [
-            canonical_parts.uninomial,
-            canonical_parts.specific_epithet,
-            canonical_parts.rank_abbreviation,
-            canonical_parts.infraspecific_epithet,
-        ]
-    )
-    target.canonical_name_without_rank = filter_join(
-        [
-            canonical_parts.uninomial,
-            canonical_parts.specific_epithet,
-            canonical_parts.infraspecific_epithet,
-        ]
+    target.canonical_name = calculate_canonical_name_string(canonical_parts)
+    target.canonical_name_without_rank = calculate_canonical_name_string(
+        canonical_parts,
+        include_rank=False,
     )
     if any([target.canonical_name, target.author]):
         target.scientific_name = calculate_scientific_name_string(
@@ -110,14 +128,27 @@ def calculate_scientific_name_string(
     if not isinstance(components, schema.NameStringComponents):
         raise TypeError("components must be an instance of NameStringComponents")
     parts = []
-    for field in ["uninomial", "specific_epithet"]:
-        value = components.__getattribute__(field)
-        if value:
-            parts.append(italicize_name(value) if italicize else value)
-    infraspecific_epithet = (
-        italicize_name(components.infraspecific_epithet)
-        if italicize
-        else components.infraspecific_epithet
+    uninomial = format_uninomial_for_display(
+        components.uninomial,
+        is_hybrid_formula=(
+            components.is_hybrid_formula
+            and not components.hybrid_marker_on_specific_epithet
+        ),
+        italicize=italicize,
+    )
+    if uninomial:
+        parts.append(uninomial)
+    specific_epithet = format_specific_epithet_for_display(
+        components.specific_epithet,
+        hybrid_marker_on_specific_epithet=components.hybrid_marker_on_specific_epithet,
+        italicize=italicize,
+    )
+    if specific_epithet:
+        parts.append(specific_epithet)
+    infraspecific_epithet = format_infraspecific_epithet_for_display(
+        components.infraspecific_epithet,
+        hybrid_marker_on_infraspecific_epithet=components.hybrid_marker_on_infraspecific_epithet,
+        italicize=italicize,
     )
     if is_autonym:
         parts.append(components.author)
@@ -144,7 +175,9 @@ def italicize_name(name: str) -> str | None:
 
 
 def get_name_components(
-    target: model.TaxonName, include_rank: bool = True
+    target: model.TaxonName,
+    include_rank: bool = True,
+    apply_hybrid_semantics: bool = False,
 ) -> schema.NameStringComponents:
     """Generates the components of a string representation of a TaxonName object.
 
@@ -162,6 +195,8 @@ def get_name_components(
     the canonical name for TaxonName objects in the Plantae or Fungi kingdoms.
     """
     vals = schema.NameStringComponents()
+    # Preserve legacy uninomial as stored; do not normalize away leading hybrid markers
+    # unless explicit hybrid semantics are being applied at render time.
     vals.uninomial = target.uninomial
     vals.specific_epithet = target.specific_epithet
     if include_rank and target.kingdom_name in (
@@ -172,7 +207,124 @@ def get_name_components(
             vals.rank_abbreviation = RankAbbreviationVals[target.taxon_rank.rank_abbrev]
     vals.infraspecific_epithet = target.infraspecific_epithet
     vals.author = target.author
+    if apply_hybrid_semantics:
+        hybrid_category_value = getattr(
+            getattr(target, "hybrid_category", None), "value", None
+        )
+        vals.is_hybrid_formula = (
+            bool(getattr(target, "is_hybrid", False))
+            and hybrid_category_value == HybridCategory.hybrid_formula.value
+        )
     return vals
+
+
+def strip_hybrid_formula_prefix(value: str | None) -> str | None:
+    if value is None:
+        return None
+    normalized = value.strip()
+    if not normalized:
+        return None
+    normalized = HYBRID_FORMULA_PREFIX_RE.sub("", normalized, count=1).strip()
+    return normalized or None
+
+
+def format_uninomial_for_display(
+    uninomial: str | None,
+    *,
+    is_hybrid_formula: bool = False,
+    italicize: bool = False,
+) -> str | None:
+    normalized_uninomial = uninomial.strip() if uninomial else None
+    if not normalized_uninomial:
+        return None
+    if is_hybrid_formula:
+        normalized_uninomial = strip_hybrid_formula_prefix(normalized_uninomial)
+        if not normalized_uninomial:
+            return None
+        display_value = (
+            italicize_name(normalized_uninomial) if italicize else normalized_uninomial
+        )
+        return f"×{display_value}"
+    display_value = (
+        italicize_name(normalized_uninomial) if italicize else normalized_uninomial
+    )
+    return display_value
+
+
+def format_specific_epithet_for_display(
+    specific_epithet: str | None,
+    *,
+    hybrid_marker_on_specific_epithet: bool = False,
+    italicize: bool = False,
+) -> str | None:
+    normalized_specific_epithet = (
+        strip_hybrid_formula_prefix(specific_epithet)
+        if hybrid_marker_on_specific_epithet
+        else specific_epithet
+    )
+    if not normalized_specific_epithet:
+        return None
+    display_value = (
+        italicize_name(normalized_specific_epithet)
+        if italicize
+        else normalized_specific_epithet
+    )
+    if hybrid_marker_on_specific_epithet:
+        return f"×{display_value}"
+    return display_value
+
+
+def format_infraspecific_epithet_for_display(
+    infraspecific_epithet: str | None,
+    *,
+    hybrid_marker_on_infraspecific_epithet: bool = False,
+    italicize: bool = False,
+) -> str | None:
+    normalized_infraspecific_epithet = (
+        strip_hybrid_formula_prefix(infraspecific_epithet)
+        if hybrid_marker_on_infraspecific_epithet
+        else infraspecific_epithet
+    )
+    if not normalized_infraspecific_epithet:
+        return None
+    display_value = (
+        italicize_name(normalized_infraspecific_epithet)
+        if italicize
+        else normalized_infraspecific_epithet
+    )
+    if hybrid_marker_on_infraspecific_epithet:
+        return f"×{display_value}"
+    return display_value
+
+
+def calculate_canonical_name_string(
+    components: schema.NameStringComponents,
+    *,
+    include_rank: bool = True,
+) -> str | None:
+    return filter_join(
+        [
+            format_uninomial_for_display(
+                components.uninomial,
+                is_hybrid_formula=(
+                    components.is_hybrid_formula
+                    and not components.hybrid_marker_on_specific_epithet
+                ),
+                italicize=False,
+            ),
+            format_specific_epithet_for_display(
+                components.specific_epithet,
+                hybrid_marker_on_specific_epithet=components.hybrid_marker_on_specific_epithet,
+                italicize=False,
+            ),
+            components.rank_abbreviation if include_rank else None,
+            format_infraspecific_epithet_for_display(
+                components.infraspecific_epithet,
+                hybrid_marker_on_infraspecific_epithet=components.hybrid_marker_on_infraspecific_epithet,
+                italicize=False,
+            ),
+        ]
+    )
 
 
 def map_authors(
@@ -340,6 +492,42 @@ def is_not_none_or_empty(s: Optional[str]) -> bool:
         Boolean indicating whether the string is not None or empty.
     """
     return s is not None and s != ""
+
+
+MS_SUFFIX = " ms"
+
+
+def append_ms_suffix(name: Optional[str]) -> Optional[str]:
+    """Appends ' ms' suffix to the given name if it is not None or empty.
+
+    Args:
+        name: The name to which the suffix should be appended.
+
+    Returns:
+        The name with the ' ms' suffix appended if it is not None or empty, None otherwise.
+    """
+    if not is_not_none_or_empty(name):
+        return name
+    if name.endswith(MS_SUFFIX):
+        return name
+    return name + MS_SUFFIX
+
+
+def remove_ms_suffix(name: Optional[str]) -> Optional[str]:
+    """Removes ' ms' suffix from the given name if it ends with it.
+
+    Args:
+        name: The name from which the suffix should be removed.
+
+    Returns:
+        The name with the ' ms' suffix removed if it ends with it, otherwise returns the
+        original name.
+    """
+    if not is_not_none_or_empty(name):
+        return name
+    if name.endswith(MS_SUFFIX):
+        return name[: -len(MS_SUFFIX)]
+    return name
 
 
 # def map_cons_code(target):

@@ -17,9 +17,16 @@ class TaxonNameBase(BaseModel):
     kingdom_id: int = Field(description=constants.KINGDOM_ID)
     rank_id: int = Field(description=constants.RANK_ID)
     uninomial: Optional[str] = None
+    parallel_override_uninomial: Optional[str] = None
     specific_epithet: Optional[str] = None
+    parallel_override_specific_epithet: Optional[str] = None
     infraspecific_epithet: Optional[str] = None
+    parallel_override_infraspecific_epithet: Optional[str] = None
     is_autonym: Optional[bool] = Field(default=None, description=constants.AUTONYM)
+    is_hybrid: Optional[bool] = Field(default=False, description=constants.IS_HYBRID)
+    hybrid_category: Optional[enums.HybridCategory] = Field(
+        default=None, description=constants.HYBRID_CATEGORY
+    )
 
     review: Optional[bool] = Field(default=None, description=constants.REVIEW)
     review_reason: Optional[str] = Field(
@@ -119,6 +126,16 @@ class TaxonNameBase(BaseModel):
             )
         return self
 
+    @model_validator(mode="after")
+    def _validate_hybrid_fields(self) -> "TaxonNameBase":
+        if self.is_hybrid and not self.hybrid_category:
+            raise ValueError(
+                "If is_hybrid is true then you need to specify a hybrid_category"
+            )
+        if not self.is_hybrid and self.hybrid_category is not None:
+            raise ValueError("hybrid_category must be null unless is_hybrid is true")
+        return self
+
     # Optional: enable population from ORM objects if you instantiate this base directly
     model_config = ConfigDict(from_attributes=True)
 
@@ -177,5 +194,79 @@ class NameStringComponents(BaseModel):
     rank_abbreviation: Optional[str] = None
     infraspecific_epithet: Optional[str] = None
     author: Optional[str] = None
+    is_hybrid_formula: bool = False
+    hybrid_marker_on_specific_epithet: bool = False
+    hybrid_marker_on_infraspecific_epithet: bool = False
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class TaxonNameParallelPreview(BaseModel):
+    taxon_name_id: int
+    strategy: str
+    notes: list[str] = Field(default_factory=list)
+    parent_taxon_name_ids: list[int] = Field(default_factory=list)
+
+    current_uninomial: Optional[str] = None
+    current_canonical_name: Optional[str] = None
+    current_scientific_name: Optional[str] = None
+    current_formatted_scientific_name: Optional[str] = None
+
+    derived_uninomial: Optional[str] = None
+    derived_canonical_name: Optional[str] = None
+    derived_scientific_name: Optional[str] = None
+    derived_formatted_scientific_name: Optional[str] = None
+
+    matches_current_uninomial: bool = False
+    matches_current_scientific_name: bool = False
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class TaxonNameParallelAuditMismatch(BaseModel):
+    taxon_name_id: int
+    mismatch_kind: str
+    strategy: str
+    current_scientific_name: Optional[str] = None
+    derived_scientific_name: Optional[str] = None
+    current_canonical_name: Optional[str] = None
+    derived_canonical_name: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class TaxonNameParallelAuditResult(BaseModel):
+    strict: bool
+    current_only: bool
+    processed: int
+    matches_all: int
+    scientific_mismatch: int
+    author_only_scientific_mismatch: int
+    canonical_mismatch: int
+    both_mismatch: int
+    errors: int
+    mismatch_rows: list[TaxonNameParallelAuditMismatch] = Field(default_factory=list)
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class TaxonNameParallelAuditJobStatus(BaseModel):
+    status: str
+    strict: bool = True
+    current_only: bool = True
+    batch_size: int = 500
+    mismatch_limit: int = 2000
+    expected_total: int = 0
+    processed: int = 0
+    matches_all: int = 0
+    scientific_mismatch: int = 0
+    author_only_scientific_mismatch: int = 0
+    canonical_mismatch: int = 0
+    both_mismatch: int = 0
+    errors: int = 0
+    started_at: Optional[str] = None
+    finished_at: Optional[str] = None
+    error_message: Optional[str] = None
+    result: Optional[TaxonNameParallelAuditResult] = None
 
     model_config = ConfigDict(from_attributes=True)

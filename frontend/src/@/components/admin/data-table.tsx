@@ -144,9 +144,9 @@ const DataTableHead = ({ children }: { children: ReactNode }) => {
   const data = useDataTableDataContext();
   const { hasBulkActions = false } = useDataTableConfigContext();
   const { onSelect } = useDataTableCallbacksContext();
-  const selectedIds = useDataTableSelectedIdsContext();
+  const selectedIds = useDataTableSelectedIdsContext() ?? [];
   const handleToggleSelectAll = (checked: boolean) => {
-    if (!onSelect || !data || !selectedIds) return;
+    if (!onSelect || !data) return;
     onSelect(
       checked
         ? selectedIds.concat(
@@ -161,18 +161,25 @@ const DataTableHead = ({ children }: { children: ReactNode }) => {
   const selectableIds = Array.isArray(data)
     ? data.map((record) => record.id)
     : [];
+  const allSelectableIdsSelected =
+    selectedIds.length > 0 &&
+    selectableIds.length > 0 &&
+    selectableIds.every((id) => selectedIds.includes(id));
   return (
     <TableHeader>
       <TableRow>
         {hasBulkActions ? (
           <TableHead className="w-8">
             <Checkbox
-              onCheckedChange={handleToggleSelectAll}
-              checked={
-                selectedIds &&
-                selectedIds.length > 0 &&
-                selectableIds.length > 0 &&
-                selectableIds.every((id) => selectedIds.includes(id))
+              checked={allSelectableIdsSelected}
+              onCheckedChange={(checked) => {
+                handleToggleSelectAll(checked === true);
+              }}
+              onClick={(event) => event.stopPropagation()}
+              aria-label={
+                allSelectableIdsSelected
+                  ? "Unselect all rows on this page"
+                  : "Select all rows on this page"
               }
               className="mb-2"
             />

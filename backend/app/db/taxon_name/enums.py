@@ -14,6 +14,12 @@ class PublicationStatus(str, Enum):
     phrase_name = "phrase_name"
 
 
+class HybridCategory(str, Enum):
+    named_hybrid = "named_hybrid"
+    hybrid_formula = "hybrid_formula"
+    intergrade = "intergrade"
+
+
 class MappingType(Enum):
     vanilla = "Vanilla"
     curation_data_extract = "Curation Data Extract"

@@ -9,17 +9,15 @@ services:
     depends_on:
       - backend
       - frontend
-
   postgres:
     image: postgres:13
     restart: always
     environment:
       POSTGRES_USER: ${DB_USER:-taxman}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
-      POSTGRES_DB:  ${DB_NAME:-taxman}
+      POSTGRES_DB: ${DB_NAME:-taxman}
     volumes:
       - db-data:/var/lib/postgresql/data:cached
-
   backend:
     image: "backend:${VERSION:-latest}"
     build:
@@ -43,12 +41,7 @@ services:
       - ./backend:/app/:cached
       - ./.docker/.ipython:/root/.ipython:cached
       - ./backup:/backup:cached
-#    env_file:
-#      - .env
     environment:
-      # See overridable settings in backend/app/core/config.py
-      # If you want to override more variables than these consider uncommenting
-      # the env_file section above and just setting them in the .env file
       PYTHONPATH: .
       FIRST_SUPER_ADMIN_EMAIL: ${FIRST_SUPER_ADMIN_EMAIL:-admin@taxman.com}
       FIRST_SUPER_ADMIN_PASSWORD: ${FIRST_SUPER_ADMIN_PASSWORD:-password}
@@ -64,27 +57,23 @@ services:
       DB_NAME: ${DB_NAME:-taxman}
       ENVIRONMENT: ${ENVIRONMENT:-local}
       API_KEY_CHECKLIST: ${API_KEY_CHECKLIST:-password}
-      IMPORT_API_KEY_WACENSUS:  ${IMPORT_API_KEY_WACENSUS:-password}
+      IMPORT_API_KEY_WACENSUS: ${IMPORT_API_KEY_WACENSUS:-password}
       WACENSUS_DATA_FILE_URL: ${WACENSUS_DATA_FILE_URL:-https://example.org/datafile.zip}
       WACENSUS_SUFFIX: ${WACENSUS_SUFFIX:-.csv}
       WACENSUS_ENCODING: ${WACENSUS_ENCODING:-utf-8}
       AUTH_PROVIDER: ${AUTH_PROVIDER:-auth2}
       WEB_CONCURRENCY: ${WEB_CONCURRENCY:-5}
-      # UVICORN_RELOAD is handy for local dev of python code as the backend restarts
-      # with this set to a truthy value. However, this disables concurrent web requests (WEB_CONCURRENCY).
       UVICORN_RELOAD: ${UVICORN_RELOAD:-1}
       SQLALCHEMY_SESSION_POOL_SIZE: ${SQLALCHEMY_SESSION_POOL_SIZE:-50}
       SQLALCHEMY_SESSION_MAX_OVERFLOW: ${SQLALCHEMY_SESSION_MAX_OVERFLOW:-0}
-
     depends_on:
       - "postgres"
-
   frontend:
     build:
       context: frontend
       dockerfile: Dockerfile
-      args:
-        NPM_TOKEN: ${NPM_TOKEN}
+      secrets:
+        - npm_token
     stdin_open: true
     volumes:
       - './frontend:/app:cached'
@@ -95,5 +84,10 @@ services:
       - REACT_APP_BASE_URL=${REACT_APP_BASE_URL:-http://localhost:8000}
       - REACT_APP_BACKEND_URL=${REACT_APP_BACKEND_URL:-http://localhost:8000/api/v1}
 
+secrets:
+  npm_token:
+    environment: NPM_TOKEN
+
 volumes:
   db-data:
+  
