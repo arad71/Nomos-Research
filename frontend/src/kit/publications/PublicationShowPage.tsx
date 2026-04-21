@@ -7,6 +7,7 @@ import { ReferenceField } from '@/components/admin/reference-field';
 import { Show } from '@/components/admin/show';
 import { SingleFieldList } from '@/components/admin/single-field-list';
 import HistoryInfoBox from '../shared/HistoryInfoBox';
+import PublicationTaxonPublicationsSection from './PublicationTaxonPublicationsSection';
 import RecordPageActions from '../shared/RecordPageActions';
 import { normalizeDoi, sanitizeExternalUrl } from '../shared/publicationDoi';
 
@@ -200,6 +201,8 @@ const PublicationShowPage = () => (
               <RecordField source="notes" label="Notes" className="xl:col-span-4" />
             </div>
           </section>
+
+          <PublicationTaxonPublicationsSection />
         </div>
       </div>
       <div className="xl:sticky xl:top-6 xl:self-start">
