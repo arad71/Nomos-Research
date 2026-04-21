@@ -112,7 +112,7 @@ export function DataTable<RecordType extends RaRecord = RaRecord>(
       empty={<DataTableEmpty />}
       {...rest}
     >
-      <div className={cn("rounded-md border border-border", className)}>
+      <div className={cn("min-w-0 max-w-full rounded-md border border-border", className)}>
         <Table>
           <DataTableRenderContext.Provider value="header">
             <DataTableHead>{columns}</DataTableHead>
