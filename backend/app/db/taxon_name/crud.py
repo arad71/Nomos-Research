@@ -23,11 +23,11 @@ from app.db.taxon_name.infrageneric_names import (
 )
 from app.db.taxon_name.model import TaxonName
 from app.db.taxon_name.parallel_name_preview import generate_parallel_name_preview
-from app.db.taxon_name_parent.model import TaxonNameParent
 from app.db.taxon_name.species_code import (
     generate_species_code,
     should_generate_species_code,
 )
+from app.db.taxon_name_parent.model import TaxonNameParent
 from app.db.taxon_rank.model import TaxonRank
 from app.db.user.model import User
 
