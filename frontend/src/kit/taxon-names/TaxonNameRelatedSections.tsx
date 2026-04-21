@@ -1531,7 +1531,12 @@ const TaxonNameRelatedSections = ({
                 />
                 <RecordField
                   source="comments"
-                  label="Comments"
+                  label="Internal comments"
+                  className="xl:col-span-4"
+                />
+                <RecordField
+                  source="external_comments"
+                  label="External comments"
                   className="xl:col-span-4"
                 />
               </div>
@@ -2118,7 +2123,7 @@ const TaxonNameRelatedSections = ({
                         </DataTable.Col>
                         <DataTable.Col
                           source="reference_comments"
-                          label="Comments"
+                          label="Reference comments"
                         />
                         <DataTable.Col label="Actions">
                           <div className="flex items-center gap-2">
@@ -2200,7 +2205,7 @@ const TaxonNameRelatedSections = ({
                         </DataTable.Col>
                         <DataTable.Col
                           source="reference_comments"
-                          label="Comments"
+                          label="Reference comments"
                         />
                         <DataTable.Col label="Actions">
                           <div className="flex items-center gap-2">
@@ -2269,7 +2274,7 @@ const TaxonNameRelatedSections = ({
                       </DataTable.Col>
                       <DataTable.Col
                         source="reference_comments"
-                        label="Comments"
+                        label="Reference comments"
                       />
                     </DataTable>
                   </ReferenceManyField>
@@ -2321,7 +2326,7 @@ const TaxonNameRelatedSections = ({
                       </DataTable.Col>
                       <DataTable.Col
                         source="reference_comments"
-                        label="Comments"
+                        label="Reference comments"
                       />
                     </DataTable>
                   </ReferenceManyField>

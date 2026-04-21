@@ -56,6 +56,8 @@ type TaxonNameRecord = {
   infraspecific_epithet?: string;
   origin?: string;
   comments?: string;
+  internal_comments?: string;
+  external_comments?: string;
   contributed_by?: string;
   contributed_on?: string;
   validated?: boolean;
@@ -123,6 +125,8 @@ type ColumnKey =
   | 'infraspecificEpithet'
   | 'origin'
   | 'comments'
+  | 'internalComments'
+  | 'externalComments'
   | 'contributedBy'
   | 'contributedOn'
   | 'validated'
@@ -234,6 +238,8 @@ const columnOptions: Array<{ key: ColumnKey; label: string }> = [
   { key: 'infraspecificEpithet', label: 'Infraspecific epithet' },
   { key: 'origin', label: 'Origin' },
   { key: 'comments', label: 'Comments' },
+  { key: 'internalComments', label: 'Internal comments' },
+  { key: 'externalComments', label: 'External comments' },
   { key: 'validated', label: 'Validated' },
   { key: 'source', label: 'Source' },
   { key: 'externalId', label: 'External ID' },
@@ -289,6 +295,8 @@ const sortableColumns: Partial<Record<ColumnKey, string>> = {
   infraspecificEpithet: 'infraspecific_epithet',
   origin: 'origin',
   comments: 'comments',
+  internalComments: 'internal_comments',
+  externalComments: 'external_comments',
   contributedBy: 'contributed_by',
   contributedOn: 'contributed_on',
   validated: 'validated',
@@ -880,6 +888,10 @@ const getExportValue = (
       return record.origin ?? '';
     case 'comments':
       return record.comments ?? '';
+    case 'internalComments':
+      return record.internal_comments ?? '';
+    case 'externalComments':
+      return record.external_comments ?? '';
     case 'contributedBy':
       return record.contributed_by ?? '';
     case 'contributedOn':
@@ -1526,6 +1538,10 @@ const TaxonNamesPage = () => {
         return textOrEmpty(record.origin);
       case 'comments':
         return textOrEmpty(record.comments);
+      case 'internalComments':
+        return textOrEmpty(record.internal_comments);
+      case 'externalComments':
+        return textOrEmpty(record.external_comments);
       case 'contributedBy':
         return textOrEmpty(record.contributed_by);
       case 'contributedOn':

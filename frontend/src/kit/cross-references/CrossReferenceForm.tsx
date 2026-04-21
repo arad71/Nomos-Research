@@ -84,9 +84,16 @@ const CrossReferenceForm = ({
           <h3 className="text-base font-semibold tracking-tight">Notes</h3>
         </div>
         <div className="grid max-w-5xl gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <TextInput source="internal_comments" label="Internal comments" multiline className="xl:col-span-3" />
+          <TextInput source="external_comments" label="External comments" multiline className="xl:col-span-3" />
+        </div>
+      </section>
+
+      <section className="mt-12 space-y-4 rounded-xl border border-destructive/30 bg-destructive/5 p-4">
+        <div className="grid max-w-5xl gap-4 md:grid-cols-2 xl:grid-cols-3">
           <TextInput
             source="reference_comments"
-            label="Comments"
+            label="Reference comments"
             multiline
             className="md:col-span-2 xl:col-span-3"
           />

@@ -252,7 +252,8 @@ const TaxonNameFormInner = ({
           <h3 className="text-base font-semibold tracking-tight">Notes</h3>
         </div>
         <div className="grid gap-4">
-          <TextInput source="comments" label="Comments" multiline />
+          <TextInput source="comments" label="Internal comments" multiline />
+          <TextInput source="external_comments" label="External comments" multiline />
         </div>
       </section>
     </div>

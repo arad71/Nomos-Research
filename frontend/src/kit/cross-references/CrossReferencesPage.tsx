@@ -26,6 +26,8 @@ type CrossReferenceRecord = {
   contributed_on?: string;
   reference_comments?: string;
   notes?: string;
+  internal_comments?: string;
+  external_comments?: string;
   updated_by?: number;
   updated_on?: string;
   deleted?: boolean;
@@ -52,6 +54,8 @@ type ColumnKey =
   | 'contributedOn'
   | 'referenceComments'
   | 'notes'
+  | 'internalComments'
+  | 'externalComments'
   | 'updatedBy'
   | 'updated'
   | 'deleted'
@@ -81,6 +85,8 @@ const columnOptions: Array<{ key: ColumnKey; label: string }> = [
   { key: 'contributedOn', label: 'Contributed on' },
   { key: 'referenceComments', label: 'Reference comments' },
   { key: 'notes', label: 'Notes' },
+  { key: 'internalComments', label: 'Internal comments' },
+  { key: 'externalComments', label: 'External comments' },
   { key: 'updatedBy', label: 'Updated by' },
   { key: 'updated', label: 'Updated on' },
   { key: 'deleted', label: 'Deleted' },
@@ -105,6 +111,8 @@ const sortableColumns: Partial<Record<ColumnKey, string>> = {
   contributedOn: 'contributed_on',
   referenceComments: 'reference_comments',
   notes: 'notes',
+  internalComments: 'internal_comments',
+  externalComments: 'external_comments',
   updatedBy: 'updated_by',
   updated: 'updated_on',
   deleted: 'deleted',
@@ -506,6 +514,10 @@ const CrossReferencesPage = () => {
         return record.reference_comments ?? '';
       case 'notes':
         return record.notes ?? '';
+      case 'internalComments':
+        return record.internal_comments ?? '';
+      case 'externalComments':
+        return record.external_comments ?? '';
       case 'updatedBy':
         return record.updated_by ? exportUserMap[record.updated_by] ?? '' : '';
       case 'updated':
@@ -622,6 +634,10 @@ const CrossReferencesPage = () => {
         return textOrEmpty(record.reference_comments);
       case 'notes':
         return textOrEmpty(record.notes);
+      case 'internalComments':
+        return textOrEmpty(record.internal_comments);
+      case 'externalComments':
+        return textOrEmpty(record.external_comments);
       case 'updatedBy':
         return (record.updated_by && userMap[record.updated_by]) ||
           (record.updated_by ? `User ${record.updated_by}` : '');
