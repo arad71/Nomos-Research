@@ -51,7 +51,7 @@ isort = "^8.0.1"
 typer = {extras = ["all"], version = "^0.24.1"}
 rich = "^15.0.0"
 deepdiff = "^9.0.0"
-pydantic-settings = "^2.13.0"
+pydantic-settings = "^2.14.0"
 
 
 [tool.black]
