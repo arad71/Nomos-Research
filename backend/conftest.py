@@ -32,7 +32,6 @@ from app.db.vernacular.model import Vernacular
 from app.main import app
 
 
-
 def get_test_db_url() -> str:
     return f"{config.settings.SQLALCHEMY_DATABASE_URI}_test"
 
