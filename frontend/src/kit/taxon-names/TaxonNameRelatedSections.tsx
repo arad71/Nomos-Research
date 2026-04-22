@@ -1667,7 +1667,12 @@ const TaxonNameRelatedSections = ({
                 <RecordField
                   source="legacy_id"
                   label="LegacyID"
-                  className="xl:col-span-4"
+                  className="xl:col-span-2"
+                />
+                <RecordField
+                  source="species_code"
+                  label="Species code"
+                  className="xl:col-span-2"
                 />
                 <RecordField
                   source="comments"
