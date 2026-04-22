@@ -27,6 +27,7 @@ const TaxonNameCreatePage = () => (
               embedded
               sections={[
                 'authors',
+                'publicationReferences',
                 'publication',
                 'vernaculars',
                 'hierarchy',

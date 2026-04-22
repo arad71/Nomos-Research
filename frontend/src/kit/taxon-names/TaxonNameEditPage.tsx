@@ -61,6 +61,7 @@ const TaxonNameEditPage = () => {
                   embedded
                   sections={[
                     'authors',
+                    'publicationReferences',
                     'publication',
                     'vernaculars',
                     'hierarchy',

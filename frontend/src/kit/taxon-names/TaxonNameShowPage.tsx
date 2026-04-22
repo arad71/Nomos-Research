@@ -32,7 +32,7 @@ const TaxonNameShowPage = () => (
   <Show resource="taxon_names" title={<TaxonNameShowTitle />} actions={<TaxonNameShowActions />}>
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
       <div className="grid min-w-0 gap-6">
-        <TaxonNameRelatedSections sections={['authors', 'publication', 'parents', 'vernaculars', 'relatedNames', 'conservationCodes']} />
+        <TaxonNameRelatedSections sections={['authors', 'publicationReferences', 'publication', 'parents', 'vernaculars', 'relatedNames', 'conservationCodes']} />
         <TaxonNameHierarchySection />
         <TaxonNameNameFormatsSection />
       </div>

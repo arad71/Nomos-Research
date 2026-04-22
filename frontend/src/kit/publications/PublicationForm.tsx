@@ -1,4 +1,4 @@
-import { maxValue, minValue, required } from 'ra-core';
+import { maxValue, minValue, required, useRecordContext } from 'ra-core';
 import { AutocompleteArrayInput } from '@/components/admin/autocomplete-array-input';
 import { AutocompleteInput } from '@/components/admin/autocomplete-input';
 import { BooleanInput } from '@/components/admin/boolean-input';
@@ -7,6 +7,7 @@ import { ReferenceArrayInput } from '@/components/admin/reference-array-input';
 import { ReferenceInput } from '@/components/admin/reference-input';
 import { SimpleForm } from '@/components/admin/simple-form';
 import { TextInput } from '@/components/admin/text-input';
+import PublicationTaxonPublicationsSection from './PublicationTaxonPublicationsSection';
 import { validateOptionalDoi, validateOptionalHttpUrl } from '../shared/publicationDoi';
 
 const requiredValue = required();
@@ -17,55 +18,58 @@ const maxMonth = maxValue(12);
 const minYear = minValue(1735);
 const minZero = minValue(0);
 
-const PublicationForm = () => (
-  <SimpleForm className="max-w-none">
-    <div className="grid gap-8">
-      <section className="space-y-4">
-        <div className="space-y-1">
-          <h3 className="text-base font-semibold tracking-tight">Publication</h3>
-        </div>
-        <div className="grid max-w-6xl gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <TextInput source="title" className="xl:col-span-2" />
-          <TextInput
-            source="abbreviated_title"
-            label="Abbreviated title"
-            validate={requiredValue}
-            className="xl:col-span-2"
-          />
-          <TextInput
-            source="author_name"
-            label="Publication authors"
-            className="xl:col-span-4"
-          />
-          <NumberInput
-            source="publication_day"
-            label="Day"
-            min={1}
-            max={31}
-            validate={[minDay, maxDay]}
-          />
-          <NumberInput
-            source="publication_month"
-            label="Month"
-            min={1}
-            max={12}
-            validate={[minMonth, maxMonth]}
-          />
-          <NumberInput
-            source="publication_year"
-            label="Year"
-            min={1735}
-            validate={minYear}
-          />
-          <BooleanInput source="published" label="Published" defaultValue={false} />
-          <TextInput
-            source="doi"
-            label="DOI"
-            className="xl:col-span-4"
-            validate={validateOptionalDoi}
-          />
-        </div>
-      </section>
+const PublicationForm = () => {
+  const record = useRecordContext<{ id?: string | number }>();
+
+  return (
+    <SimpleForm className="max-w-none">
+      <div className="grid gap-8">
+        <section className="space-y-4">
+          <div className="space-y-1">
+            <h3 className="text-base font-semibold tracking-tight">Publication</h3>
+          </div>
+          <div className="grid max-w-6xl gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <TextInput source="title" className="xl:col-span-2" />
+            <TextInput
+              source="abbreviated_title"
+              label="Abbreviated title"
+              validate={requiredValue}
+              className="xl:col-span-2"
+            />
+            <TextInput
+              source="author_name"
+              label="Publication authors"
+              className="xl:col-span-4"
+            />
+            <NumberInput
+              source="publication_day"
+              label="Day"
+              min={1}
+              max={31}
+              validate={[minDay, maxDay]}
+            />
+            <NumberInput
+              source="publication_month"
+              label="Month"
+              min={1}
+              max={12}
+              validate={[minMonth, maxMonth]}
+            />
+            <NumberInput
+              source="publication_year"
+              label="Year"
+              min={1735}
+              validate={minYear}
+            />
+            <BooleanInput source="published" label="Published" defaultValue={false} />
+            <TextInput
+              source="doi"
+              label="DOI"
+              className="xl:col-span-4"
+              validate={validateOptionalDoi}
+            />
+          </div>
+        </section>
 
       <section className="mt-12 space-y-4 border-t border-border pt-12">
         <div className="space-y-1">
@@ -129,16 +133,22 @@ const PublicationForm = () => (
         </div>
       </section>
 
-      <section className="mt-12 space-y-4 border-t border-border pt-12">
-        <div className="space-y-1">
-          <h3 className="text-base font-semibold tracking-tight">Notes</h3>
-        </div>
-        <div className="grid max-w-6xl gap-4">
-          <TextInput source="notes" multiline className="xl:col-span-4" />
-        </div>
-      </section>
-    </div>
-  </SimpleForm>
-);
+        <section className="mt-12 space-y-4 border-t border-border pt-12">
+          <div className="space-y-1">
+            <h3 className="text-base font-semibold tracking-tight">Notes</h3>
+          </div>
+          <div className="grid max-w-6xl gap-4">
+            <TextInput source="notes" multiline className="xl:col-span-4" />
+          </div>
+        </section>
+
+        <PublicationTaxonPublicationsSection
+          editable
+          key={String(record?.id ?? 'publication-create')}
+        />
+      </div>
+    </SimpleForm>
+  );
+};
 
 export default PublicationForm;

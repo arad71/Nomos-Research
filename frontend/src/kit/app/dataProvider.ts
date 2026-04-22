@@ -77,6 +77,8 @@ const resourceIdMap: Record<string, string> = {
   taxon_names_infrageneric_names: 'taxon_name_id',
   conservation_codes: 'conservation_code_id',
   conscode_taxons: 'conscode_taxon_id',
+  'taxon-publications': 'taxon_publication_id',
+  taxon_publications: 'taxon_publication_id',
 };
 
 const toRaRecord = (resource: string, record: any) => {
