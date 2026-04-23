@@ -208,6 +208,64 @@ def derive_parallel_name(
 
     if parent_taxa:
         if len(parent_taxa) >= 2:
+            is_named_hybrid = (
+                bool(getattr(taxon_name, "is_hybrid", False))
+                and getattr(getattr(taxon_name, "hybrid_category", None), "value", None)
+                == "named_hybrid"
+            )
+            if is_named_hybrid and rank_name in {
+                SPECIES_RANK_NAME,
+                *INFRASPECIFIC_RANK_NAMES,
+            }:
+                strategy = "named_hybrid_parent_genus_inheritance"
+                first_parent = parent_taxa[0]
+                first_parent_value = (
+                    normalize_parallel_name_part(first_parent.uninomial)
+                    or normalize_parallel_name_part(
+                        best_parent_name_value(first_parent, italicize=False)
+                    )
+                    or normalize_parallel_name_part(first_parent.scientific_name)
+                    or normalize_parallel_name_part(first_parent.canonical_name)
+                )
+                parent_genus = extract_leading_name_token(first_parent_value)
+                if parent_genus:
+                    components.uninomial = parent_genus
+                    notes.append(
+                        f"Derived named-hybrid genus from the first linked parent taxon {first_parent.taxon_name_id}."
+                    )
+                else:
+                    notes.append(
+                        f"Could not derive a genus token from the first linked parent taxon {first_parent.taxon_name_id}; kept the current parallel uninomial value."
+                    )
+                notes.append(
+                    "Retained the child epithet and author while using parent links only to determine named-hybrid lineage."
+                )
+                derived_canonical_name = calculated.calculate_canonical_name_string(
+                    components
+                )
+                derived_scientific_name = calculated.calculate_scientific_name_string(
+                    components=components,
+                    is_autonym=taxon_name.is_autonym,
+                    italicize=False,
+                )
+                derived_formatted_scientific_name = (
+                    calculated.calculate_scientific_name_string(
+                        components=components,
+                        is_autonym=taxon_name.is_autonym,
+                        italicize=True,
+                    )
+                )
+                return {
+                    "strategy": strategy,
+                    "notes": notes,
+                    "parent_taxon_name_ids": [
+                        parent.taxon_name_id for parent in parent_taxa
+                    ],
+                    "uninomial": components.uninomial,
+                    "canonical_name": derived_canonical_name,
+                    "scientific_name": derived_scientific_name,
+                    "formatted_scientific_name": derived_formatted_scientific_name,
+                }
             strategy = "hybrid_parent_formula"
             notes.append(
                 "Derived from ordered parent links using the current hybrid separator rules."
