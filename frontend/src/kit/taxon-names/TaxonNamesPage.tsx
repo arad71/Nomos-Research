@@ -64,6 +64,7 @@ type TaxonNameRecord = {
   source?: string;
   external_id?: string;
   family_code?: string;
+  species_code?: string;
   editor?: string;
   naturalised_status?: string;
   naturalised_certainty?: boolean;
@@ -133,6 +134,7 @@ type ColumnKey =
   | 'source'
   | 'externalId'
   | 'familyCode'
+  | 'speciesCode'
   | 'editor'
   | 'naturalisedStatus'
   | 'naturalisedCertainty'
@@ -198,6 +200,7 @@ const defaultColumns: ColumnKey[] = [
   'rank',
   'kingdom',
   'yearPublished',
+  'speciesCode',
   'status',
   'updated',
   'actions',
@@ -208,6 +211,7 @@ const columnOptions: Array<{ key: ColumnKey; label: string }> = [
   { key: 'rank', label: 'Rank' },
   { key: 'kingdom', label: 'Kingdom' },
   { key: 'yearPublished', label: 'Year published' },
+  { key: 'speciesCode', label: 'Species code' },
   { key: 'status', label: 'Status' },
   { key: 'updated', label: 'Updated on' },
   { key: 'legacyId', label: 'LegacyID' },
@@ -303,6 +307,7 @@ const sortableColumns: Partial<Record<ColumnKey, string>> = {
   source: 'source',
   externalId: 'external_id',
   familyCode: 'family_code',
+  speciesCode: 'species_code',
   editor: 'editor',
   naturalisedStatus: 'naturalised_status',
   naturalisedCertainty: 'naturalised_certainty',
@@ -904,6 +909,8 @@ const getExportValue = (
       return record.external_id ?? '';
     case 'familyCode':
       return record.family_code ?? '';
+    case 'speciesCode':
+      return record.species_code ?? '';
     case 'editor':
       return record.editor ?? '';
     case 'naturalisedStatus':
@@ -1554,6 +1561,8 @@ const TaxonNamesPage = () => {
         return textOrEmpty(record.external_id);
       case 'familyCode':
         return textOrEmpty(record.family_code);
+      case 'speciesCode':
+        return textOrEmpty(record.species_code);
       case 'editor':
         return textOrEmpty(record.editor);
       case 'naturalisedStatus':

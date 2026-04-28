@@ -270,7 +270,7 @@ def format_specific_epithet_for_display(
         else normalized_specific_epithet
     )
     if hybrid_marker_on_specific_epithet:
-        return f"×{display_value}"
+        return f"× {display_value}"
     return display_value
 
 
@@ -293,7 +293,7 @@ def format_infraspecific_epithet_for_display(
         else normalized_infraspecific_epithet
     )
     if hybrid_marker_on_infraspecific_epithet:
-        return f"×{display_value}"
+        return f"× {display_value}"
     return display_value
 
 
