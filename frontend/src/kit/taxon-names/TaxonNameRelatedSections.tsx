@@ -45,7 +45,7 @@ import {
   useGetMany,
   useGetList,
 } from 'react-admin';
-import CrossRefType from '../shared/choices/CrossRefType';
+import { getCrossRefTypeLabel } from '../shared/choices/CrossRefType';
 import { formatDateOnly } from '../shared/dateOnlyDateTime';
 import NaturalisedStatus from '../shared/choices/NaturalisedStatus';
 import PublicationStatus from '../shared/choices/PublicationStatus';
@@ -62,14 +62,6 @@ import {
   transformPublicationPayload,
 } from '../shared/publicationDoi';
 import VernacularForm from '../vernaculars/VernacularForm';
-
-const crossRefTypeMap = CrossRefType.reduce<Record<string, string>>(
-  (acc, item) => {
-    acc[item.id] = item.name;
-    return acc;
-  },
-  {}
-);
 
 const HtmlValue = ({ value }: { value?: string | null }) => {
   if (!value) {
@@ -2300,11 +2292,9 @@ const TaxonNameRelatedSections = ({
                             render={(crossRef: {
                               cross_reference_type?: string | null;
                             }) =>
-                              crossRef.cross_reference_type
-                                ? crossRefTypeMap[
-                                    crossRef.cross_reference_type
-                                  ] ?? crossRef.cross_reference_type
-                                : ''
+                              getCrossRefTypeLabel(
+                                crossRef.cross_reference_type
+                              )
                             }
                           />
                         </DataTable.Col>
@@ -2382,11 +2372,9 @@ const TaxonNameRelatedSections = ({
                             render={(crossRef: {
                               cross_reference_type?: string | null;
                             }) =>
-                              crossRef.cross_reference_type
-                                ? crossRefTypeMap[
-                                    crossRef.cross_reference_type
-                                  ] ?? crossRef.cross_reference_type
-                                : ''
+                              getCrossRefTypeLabel(
+                                crossRef.cross_reference_type
+                              )
                             }
                           />
                         </DataTable.Col>
@@ -2451,11 +2439,7 @@ const TaxonNameRelatedSections = ({
                           render={(crossRef: {
                             cross_reference_type?: string | null;
                           }) =>
-                            crossRef.cross_reference_type
-                              ? crossRefTypeMap[
-                                  crossRef.cross_reference_type
-                                ] ?? crossRef.cross_reference_type
-                              : ''
+                            getCrossRefTypeLabel(crossRef.cross_reference_type)
                           }
                         />
                       </DataTable.Col>
@@ -2503,11 +2487,7 @@ const TaxonNameRelatedSections = ({
                           render={(crossRef: {
                             cross_reference_type?: string | null;
                           }) =>
-                            crossRef.cross_reference_type
-                              ? crossRefTypeMap[
-                                  crossRef.cross_reference_type
-                                ] ?? crossRef.cross_reference_type
-                              : ''
+                            getCrossRefTypeLabel(crossRef.cross_reference_type)
                           }
                         />
                       </DataTable.Col>
