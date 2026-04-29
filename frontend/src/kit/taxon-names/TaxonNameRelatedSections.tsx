@@ -1167,10 +1167,12 @@ type RelatedNameCardRecord = {
 const RelatedNameCards = ({
   nameSource,
   directionLabel,
+  editable = false,
   showOpenAction = true,
 }: {
   nameSource: 'old_name_id' | 'new_name_id';
   directionLabel: string;
+  editable?: boolean;
   showOpenAction?: boolean;
 }) => {
   const { data } = useListContext<RelatedNameCardRecord>();
@@ -1183,11 +1185,13 @@ const RelatedNameCards = ({
     <div className="grid gap-3">
       {data.map((crossRef) => {
         const crossReferenceId = crossRef.cross_reference_id ?? crossRef.id;
+        const relatedTaxonId = crossRef[nameSource];
+        const cardRecord = { ...crossRef, id: crossReferenceId };
 
         return (
-          <RecordContextProvider key={String(crossReferenceId)} value={crossRef}>
-            <Card className="rounded-lg border-border bg-card py-0 shadow-none">
-              <CardHeader className="gap-3 border-b border-border px-4 py-3">
+          <RecordContextProvider key={String(crossReferenceId)} value={cardRecord}>
+            <Card className="gap-0 rounded-lg border-border bg-card py-0 shadow-none">
+              <CardHeader className="border-b border-border px-4 pb-2 pt-3 [.border-b]:pb-2">
                 <div className="flex min-w-0 flex-wrap items-center gap-2">
                   <Badge variant="secondary" className="w-fit">
                     {directionLabel}
@@ -1196,7 +1200,9 @@ const RelatedNameCards = ({
                     {getCrossRefTypeLabel(crossRef.cross_reference_type)}
                   </Badge>
                 </div>
-                <div className="min-w-0 space-y-2">
+              </CardHeader>
+              <CardContent className="space-y-3 px-4 py-3">
+                <div className="min-w-0">
                   <ReferenceField
                     source={nameSource}
                     reference="taxon_names"
@@ -1214,21 +1220,43 @@ const RelatedNameCards = ({
                     />
                   </ReferenceField>
                 </div>
-              </CardHeader>
-              {crossRef.reference_comments ? (
-                <CardContent className="px-4 py-3">
+                {crossRef.reference_comments ? (
                   <p className="text-sm leading-6 text-muted-foreground">
                     {crossRef.reference_comments}
                   </p>
-                </CardContent>
+                ) : null}
+              </CardContent>
+              {editable ? (
+                <CardFooter className="flex flex-wrap items-center justify-end gap-2 border-t border-border px-4 pb-3 pt-3 [.border-t]:pt-3">
+                  <EditRelatedButton label="Edit reference">
+                    <DialogFormPadding>
+                      <CrossReferenceForm
+                        hideNewName={nameSource === 'old_name_id'}
+                        hideOldName={nameSource === 'new_name_id'}
+                      />
+                    </DialogFormPadding>
+                  </EditRelatedButton>
+                  <DeleteRelatedButton resource="cross_references" />
+                </CardFooter>
               ) : null}
-              {showOpenAction && crossReferenceId != null ? (
-                <CardFooter className="flex flex-wrap items-center justify-end gap-2 border-t border-border px-4 py-3">
-                  <Button asChild variant="outline" size="sm">
-                    <Link to={`/cross_references/${crossReferenceId}/show`}>
-                      Open
-                    </Link>
-                  </Button>
+              {showOpenAction &&
+              !editable &&
+              (crossReferenceId != null || relatedTaxonId != null) ? (
+                <CardFooter className="flex flex-wrap items-center justify-end gap-2 border-t border-border px-4 pb-3 pt-3 [.border-t]:pt-3">
+                  {crossReferenceId != null ? (
+                    <Button asChild variant="outline" size="sm">
+                      <Link to={`/cross_references/${crossReferenceId}/show`}>
+                        Open reference
+                      </Link>
+                    </Button>
+                  ) : null}
+                  {relatedTaxonId != null ? (
+                    <Button asChild variant="outline" size="sm">
+                      <Link to={`/taxon_names/${relatedTaxonId}/show`}>
+                        Open taxon
+                      </Link>
+                    </Button>
+                  ) : null}
                 </CardFooter>
               ) : null}
             </Card>
@@ -2376,6 +2404,7 @@ const TaxonNameRelatedSections = ({
                     <RelatedNameCards
                       nameSource="old_name_id"
                       directionLabel="Previous name"
+                      editable={editable}
                       showOpenAction={!editable}
                     />
                   </ReferenceManyField>
@@ -2414,6 +2443,7 @@ const TaxonNameRelatedSections = ({
                     <RelatedNameCards
                       nameSource="new_name_id"
                       directionLabel="Subsequent name"
+                      editable={editable}
                       showOpenAction={!editable}
                     />
                   </ReferenceManyField>
