@@ -20,6 +20,7 @@ import authProvider from '../app/authProvider';
 import AuthorizedButtonLink from '../shared/AuthorizedButtonLink';
 import RecordActionButtons from '../shared/RecordActionButtons';
 import ConservationType from '../shared/choices/ConservationType';
+import NaturalisedStatus from '../shared/choices/NaturalisedStatus';
 import PublicationStatus from '../shared/choices/PublicationStatus';
 import TaxonRank from '../shared/choices/TaxonRank';
 import { useCanBulkDelete } from '../shared/useCanBulkDelete';
@@ -181,6 +182,7 @@ type TaxonNameFilters = {
   authority: string;
   conservationCodeActive: string;
   publicationStatus: string;
+  naturalisedStatus: string;
   review: string;
   isCurrent: string;
   waCensus: string;
@@ -194,6 +196,7 @@ const PER_PAGE_OPTIONS = [15, 25, 50, 100] as const;
 const TABLE_STORE_KEY = 'taxon_names.kit.datatable.v4';
 const DEFAULT_SORT_FIELD = 'updated_on';
 const DEFAULT_SORT_ORDER: SortOrder = 'DESC';
+const NATURALISED_STATUS_NOT_SET = '__not_set__';
 const defaultColumns: ColumnKey[] = [
   'id',
   'name',
@@ -352,7 +355,7 @@ const parseTotal = (response: Response, rows: unknown[]) => {
 };
 
 const buildFilterObject = (filters: TaxonNameFilters) => {
-  const nextFilter: Record<string, string | boolean> = {};
+  const nextFilter: Record<string, string | boolean | null> = {};
   const trimmedQuery = filters.q.trim();
   const trimmedId = filters.id.trim();
   const isExactNomosIdSearch = /^\d+$/.test(trimmedQuery);
@@ -446,6 +449,12 @@ const buildFilterObject = (filters: TaxonNameFilters) => {
   }
   if (filters.publicationStatus) {
     nextFilter.publication_status = filters.publicationStatus;
+  }
+  if (filters.naturalisedStatus) {
+    nextFilter.naturalised_status =
+      filters.naturalisedStatus === NATURALISED_STATUS_NOT_SET
+        ? null
+        : filters.naturalisedStatus;
   }
   if (filters.review) {
     nextFilter.review = filters.review === 'true';
@@ -763,6 +772,28 @@ const publicationStatusLabelMap = PublicationStatus.reduce<Record<string, string
 
 const getPublicationStatusLabel = (value?: string | null) =>
   value ? publicationStatusLabelMap[value] ?? value : '';
+
+const naturalisedStatusOptions = [
+  { label: 'Any status', value: '' },
+  { label: 'Not set', value: NATURALISED_STATUS_NOT_SET },
+  ...NaturalisedStatus.map((option) => ({
+    label: option.name,
+    value: option.id,
+  })),
+];
+
+const naturalisedStatusLabelMap = NaturalisedStatus.reduce<Record<string, string>>(
+  (acc, option) => {
+    acc[option.id] = option.name;
+    return acc;
+  },
+  {}
+);
+
+const getNaturalisedStatusLabel = (value: string) =>
+  value === NATURALISED_STATUS_NOT_SET
+    ? 'Not set'
+    : naturalisedStatusLabelMap[value] ?? value;
 
 const booleanOptions = [
   { label: 'Any', value: '' },
@@ -1090,6 +1121,7 @@ const TaxonNamesPage = () => {
       authority: searchParams.get('authority') || '',
       conservationCodeActive: searchParams.get('conservation_code_active') || '',
       publicationStatus: searchParams.get('publication_status') || '',
+      naturalisedStatus: searchParams.get('naturalised_status') || '',
       review: searchParams.get('review') || '',
       isCurrent: searchParams.get('is_current') || '',
       waCensus: searchParams.get('is_wa_recognised') || '',
@@ -1241,6 +1273,12 @@ const TaxonNamesPage = () => {
         filters.publicationStatus
           ? { label: 'Status', value: filters.publicationStatus }
           : null,
+        filters.naturalisedStatus
+          ? {
+              label: 'Naturalised status',
+              value: getNaturalisedStatusLabel(filters.naturalisedStatus),
+            }
+          : null,
         filters.review ? { label: 'Review', value: getBooleanLabel(filters.review) } : null,
         filters.isCurrent
           ? { label: 'Current', value: getBooleanLabel(filters.isCurrent) }
@@ -1358,6 +1396,7 @@ const TaxonNamesPage = () => {
       ['authority', next.authority],
       ['conservation_code_active', next.conservationCodeActive],
       ['publication_status', next.publicationStatus],
+      ['naturalised_status', next.naturalisedStatus],
       ['review', next.review],
       ['is_current', next.isCurrent],
       ['is_wa_recognised', next.waCensus],
@@ -1412,6 +1451,7 @@ const TaxonNamesPage = () => {
       authority: draftFilters.authority,
       conservationCodeActive: draftFilters.conservationCodeActive,
       publicationStatus: draftFilters.publicationStatus,
+      naturalisedStatus: draftFilters.naturalisedStatus,
       review: draftFilters.review,
       isCurrent: draftFilters.isCurrent,
       waCensus: draftFilters.waCensus,
@@ -1702,6 +1742,7 @@ const TaxonNamesPage = () => {
       authority: '',
       conservationCodeActive: '',
       publicationStatus: '',
+      naturalisedStatus: '',
       review: '',
       isCurrent: '',
       waCensus: '',
@@ -1891,6 +1932,11 @@ const TaxonNamesPage = () => {
               'Publication status',
               'publicationStatus',
               publicationStatusOptions
+            )}
+            {renderSelectFilter(
+              'Naturalised status',
+              'naturalisedStatus',
+              naturalisedStatusOptions
             )}
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
               {renderSelectFilter('Review', 'review', booleanOptions)}
