@@ -21,6 +21,12 @@ import { AutocompleteInput } from '@/components/admin/autocomplete-input';
 import { DeleteButton } from '@/components/admin/delete-button';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from '@/components/ui/card';
 import { DataTable } from '@/components/admin/data-table';
 import { RecordField } from '@/components/admin/record-field';
 import { ReferenceInput } from '@/components/admin/reference-input';
@@ -1094,14 +1100,16 @@ const relatedDialogButtonProps = {
 const EditRelatedButton = ({
   children,
   label = 'Edit',
+  title,
 }: {
   children: React.ReactNode;
   label?: string;
+  title?: string;
 }) => (
   <EditInDialogButton
     fullWidth
     maxWidth="md"
-    title={label}
+    title={title ?? label}
     label={label}
     ButtonProps={{
       ...relatedDialogButtonProps,
@@ -1146,6 +1154,90 @@ const DeleteRelatedButton = ({ resource }: { resource: string }) => {
 const DialogFormPadding = ({ children }: { children: React.ReactNode }) => (
   <div className="px-4 py-2 sm:px-6">{children}</div>
 );
+
+type RelatedNameCardRecord = {
+  id?: string | number;
+  cross_reference_id?: string | number;
+  old_name_id?: string | number | null;
+  new_name_id?: string | number | null;
+  cross_reference_type?: string | null;
+  reference_comments?: string | null;
+};
+
+const RelatedNameCards = ({
+  nameSource,
+  directionLabel,
+  showOpenAction = true,
+}: {
+  nameSource: 'old_name_id' | 'new_name_id';
+  directionLabel: string;
+  showOpenAction?: boolean;
+}) => {
+  const { data } = useListContext<RelatedNameCardRecord>();
+
+  if (!data?.length) {
+    return null;
+  }
+
+  return (
+    <div className="grid gap-3">
+      {data.map((crossRef) => {
+        const crossReferenceId = crossRef.cross_reference_id ?? crossRef.id;
+
+        return (
+          <RecordContextProvider key={String(crossReferenceId)} value={crossRef}>
+            <Card className="rounded-lg border-border bg-card py-0 shadow-none">
+              <CardHeader className="gap-3 border-b border-border px-4 py-3">
+                <div className="flex min-w-0 flex-wrap items-center gap-2">
+                  <Badge variant="secondary" className="w-fit">
+                    {directionLabel}
+                  </Badge>
+                  <Badge variant="outline" className="w-fit">
+                    {getCrossRefTypeLabel(crossRef.cross_reference_type)}
+                  </Badge>
+                </div>
+                <div className="min-w-0 space-y-2">
+                  <ReferenceField
+                    source={nameSource}
+                    reference="taxon_names"
+                    link="show"
+                  >
+                    <RecordField
+                      label=""
+                      render={(taxon: {
+                        formatted_scientific_name?: string | null;
+                      }) => (
+                        <span className="block text-base font-medium leading-6 text-foreground">
+                          <HtmlValue value={taxon.formatted_scientific_name} />
+                        </span>
+                      )}
+                    />
+                  </ReferenceField>
+                </div>
+              </CardHeader>
+              {crossRef.reference_comments ? (
+                <CardContent className="px-4 py-3">
+                  <p className="text-sm leading-6 text-muted-foreground">
+                    {crossRef.reference_comments}
+                  </p>
+                </CardContent>
+              ) : null}
+              {showOpenAction && crossReferenceId != null ? (
+                <CardFooter className="flex flex-wrap items-center justify-end gap-2 border-t border-border px-4 py-3">
+                  <Button asChild variant="outline" size="sm">
+                    <Link to={`/cross_references/${crossReferenceId}/show`}>
+                      Open
+                    </Link>
+                  </Button>
+                </CardFooter>
+              ) : null}
+            </Card>
+          </RecordContextProvider>
+        );
+      })}
+    </div>
+  );
+};
 
 const PublicationEditableSection = () => {
   const form = useFormContext();
@@ -2250,180 +2342,29 @@ const TaxonNameRelatedSections = ({
               description="Cross references where this taxon is the old or new name."
               action={undefined}
             />
-            {editable ? (
-              recordId ? (
-                <div className="grid gap-6 xl:grid-cols-2">
-                  <div className="space-y-3">
-                    <SectionHeader
-                      title="Previous names"
-                      action={
+            {recordId ? (
+              <div className="grid gap-6 xl:grid-cols-2">
+                <div className="space-y-3">
+                  <SectionHeader
+                    title="Previous names"
+                    action={
+                      editable ? (
                         <CreateInDialogButton
                           resource="cross_references"
                           record={{ new_name_id: recordId }}
                           fullWidth
                           maxWidth="md"
                           title="Create previous name"
-                          label="Create previous name"
+                          label="Create cross reference"
                           ButtonProps={relatedDialogButtonProps}
                         >
                           <DialogFormPadding>
                             <CrossReferenceForm hideNewName />
                           </DialogFormPadding>
                         </CreateInDialogButton>
-                      }
-                    />
-                    <ReferenceManyField
-                      reference="cross_references"
-                      target="new_name_id"
-                      empty={
-                        <EmptyState>No previous names linked yet.</EmptyState>
-                      }
-                      error={
-                        <RelatedFetchError resourceLabel="previous names" />
-                      }
-                    >
-                      <DataTable bulkActionButtons={false}>
-                        <DataTable.Col
-                          source="cross_reference_type"
-                          label="Type"
-                        >
-                          <RecordField
-                            label=""
-                            render={(crossRef: {
-                              cross_reference_type?: string | null;
-                            }) =>
-                              getCrossRefTypeLabel(
-                                crossRef.cross_reference_type
-                              )
-                            }
-                          />
-                        </DataTable.Col>
-                        <DataTable.Col label="Old name">
-                          <ReferenceField
-                            source="old_name_id"
-                            reference="taxon_names"
-                            link="show"
-                          >
-                            <RecordField
-                              label=""
-                              render={(taxon: {
-                                formatted_scientific_name?: string | null;
-                              }) => (
-                                <HtmlValue
-                                  value={taxon.formatted_scientific_name}
-                                />
-                              )}
-                            />
-                          </ReferenceField>
-                        </DataTable.Col>
-                        <DataTable.Col
-                          source="reference_comments"
-                          label="Reference comments"
-                        />
-                        <DataTable.Col label="Actions">
-                          <div className="flex items-center gap-2">
-                            <EditRelatedButton label="Edit previous name">
-                              <DialogFormPadding>
-                                <CrossReferenceForm hideNewName />
-                              </DialogFormPadding>
-                            </EditRelatedButton>
-                            <DeleteRelatedButton resource="cross_references" />
-                          </div>
-                        </DataTable.Col>
-                      </DataTable>
-                    </ReferenceManyField>
-                  </div>
-                  <div className="space-y-3">
-                    <SectionHeader
-                      title="Subsequent names"
-                      action={
-                        <CreateInDialogButton
-                          resource="cross_references"
-                          record={{ old_name_id: recordId }}
-                          fullWidth
-                          maxWidth="md"
-                          title="Create subsequent name"
-                          label="Create subsequent name"
-                          ButtonProps={relatedDialogButtonProps}
-                        >
-                          <DialogFormPadding>
-                            <CrossReferenceForm hideOldName />
-                          </DialogFormPadding>
-                        </CreateInDialogButton>
-                      }
-                    />
-                    <ReferenceManyField
-                      reference="cross_references"
-                      target="old_name_id"
-                      empty={
-                        <EmptyState>No subsequent names linked yet.</EmptyState>
-                      }
-                      error={
-                        <RelatedFetchError resourceLabel="subsequent names" />
-                      }
-                    >
-                      <DataTable bulkActionButtons={false}>
-                        <DataTable.Col
-                          source="cross_reference_type"
-                          label="Type"
-                        >
-                          <RecordField
-                            label=""
-                            render={(crossRef: {
-                              cross_reference_type?: string | null;
-                            }) =>
-                              getCrossRefTypeLabel(
-                                crossRef.cross_reference_type
-                              )
-                            }
-                          />
-                        </DataTable.Col>
-                        <DataTable.Col label="New name">
-                          <ReferenceField
-                            source="new_name_id"
-                            reference="taxon_names"
-                            link="show"
-                          >
-                            <RecordField
-                              label=""
-                              render={(taxon: {
-                                formatted_scientific_name?: string | null;
-                              }) => (
-                                <HtmlValue
-                                  value={taxon.formatted_scientific_name}
-                                />
-                              )}
-                            />
-                          </ReferenceField>
-                        </DataTable.Col>
-                        <DataTable.Col
-                          source="reference_comments"
-                          label="Reference comments"
-                        />
-                        <DataTable.Col label="Actions">
-                          <div className="flex items-center gap-2">
-                            <EditRelatedButton label="Edit subsequent name">
-                              <DialogFormPadding>
-                                <CrossReferenceForm hideOldName />
-                              </DialogFormPadding>
-                            </EditRelatedButton>
-                            <DeleteRelatedButton resource="cross_references" />
-                          </div>
-                        </DataTable.Col>
-                      </DataTable>
-                    </ReferenceManyField>
-                  </div>
-                </div>
-              ) : (
-                <EmptyState>
-                  Save the taxon name first, then you can add related names
-                  inline here.
-                </EmptyState>
-              )
-            ) : recordId ? (
-              <div className="grid gap-6 xl:grid-cols-2">
-                <div className="space-y-3">
-                  <h4 className="text-sm font-medium">Previous names</h4>
+                      ) : undefined
+                    }
+                  />
                   <ReferenceManyField
                     reference="cross_references"
                     target="new_name_id"
@@ -2432,44 +2373,34 @@ const TaxonNameRelatedSections = ({
                     }
                     error={<RelatedFetchError resourceLabel="previous names" />}
                   >
-                    <DataTable rowClick="show" bulkActionButtons={false}>
-                      <DataTable.Col source="cross_reference_type" label="Type">
-                        <RecordField
-                          label=""
-                          render={(crossRef: {
-                            cross_reference_type?: string | null;
-                          }) =>
-                            getCrossRefTypeLabel(crossRef.cross_reference_type)
-                          }
-                        />
-                      </DataTable.Col>
-                      <DataTable.Col label="Old name">
-                        <ReferenceField
-                          source="old_name_id"
-                          reference="taxon_names"
-                          link="show"
-                        >
-                          <RecordField
-                            label=""
-                            render={(taxon: {
-                              formatted_scientific_name?: string | null;
-                            }) => (
-                              <HtmlValue
-                                value={taxon.formatted_scientific_name}
-                              />
-                            )}
-                          />
-                        </ReferenceField>
-                      </DataTable.Col>
-                      <DataTable.Col
-                        source="reference_comments"
-                        label="Reference comments"
-                      />
-                    </DataTable>
+                    <RelatedNameCards
+                      nameSource="old_name_id"
+                      directionLabel="Previous name"
+                      showOpenAction={!editable}
+                    />
                   </ReferenceManyField>
                 </div>
                 <div className="space-y-3">
-                  <h4 className="text-sm font-medium">Subsequent names</h4>
+                  <SectionHeader
+                    title="Subsequent names"
+                    action={
+                      editable ? (
+                        <CreateInDialogButton
+                          resource="cross_references"
+                          record={{ old_name_id: recordId }}
+                          fullWidth
+                          maxWidth="md"
+                          title="Create subsequent name"
+                          label="Create cross reference"
+                          ButtonProps={relatedDialogButtonProps}
+                        >
+                          <DialogFormPadding>
+                            <CrossReferenceForm hideOldName />
+                          </DialogFormPadding>
+                        </CreateInDialogButton>
+                      ) : undefined
+                    }
+                  />
                   <ReferenceManyField
                     reference="cross_references"
                     target="old_name_id"
@@ -2480,44 +2411,20 @@ const TaxonNameRelatedSections = ({
                       <RelatedFetchError resourceLabel="subsequent names" />
                     }
                   >
-                    <DataTable rowClick="show" bulkActionButtons={false}>
-                      <DataTable.Col source="cross_reference_type" label="Type">
-                        <RecordField
-                          label=""
-                          render={(crossRef: {
-                            cross_reference_type?: string | null;
-                          }) =>
-                            getCrossRefTypeLabel(crossRef.cross_reference_type)
-                          }
-                        />
-                      </DataTable.Col>
-                      <DataTable.Col label="New name">
-                        <ReferenceField
-                          source="new_name_id"
-                          reference="taxon_names"
-                          link="show"
-                        >
-                          <RecordField
-                            label=""
-                            render={(taxon: {
-                              formatted_scientific_name?: string | null;
-                            }) => (
-                              <HtmlValue
-                                value={taxon.formatted_scientific_name}
-                              />
-                            )}
-                          />
-                        </ReferenceField>
-                      </DataTable.Col>
-                      <DataTable.Col
-                        source="reference_comments"
-                        label="Reference comments"
-                      />
-                    </DataTable>
+                    <RelatedNameCards
+                      nameSource="new_name_id"
+                      directionLabel="Subsequent name"
+                      showOpenAction={!editable}
+                    />
                   </ReferenceManyField>
                 </div>
               </div>
-            ) : null}
+            ) : (
+              <EmptyState>
+                Save the taxon name first, then you can add related names
+                inline here.
+              </EmptyState>
+            )}
           </section>
         ) : null}
 

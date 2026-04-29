@@ -52,7 +52,12 @@ const CrossReferenceShowPage = () => (
           </div>
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             <RecordField label="Old name" source="old_name_id">
-              <ReferenceField source="old_name_id" reference="taxon_names">
+              <ReferenceField
+                source="old_name_id"
+                reference="taxon_names"
+                link="show"
+                className="font-medium text-primary hover:underline"
+              >
                 <RecordField
                   label=""
                   render={(record: { formatted_scientific_name?: string | null }) => (
@@ -62,7 +67,12 @@ const CrossReferenceShowPage = () => (
               </ReferenceField>
             </RecordField>
             <RecordField label="New name" source="new_name_id">
-              <ReferenceField source="new_name_id" reference="taxon_names">
+              <ReferenceField
+                source="new_name_id"
+                reference="taxon_names"
+                link="show"
+                className="font-medium text-primary hover:underline"
+              >
                 <RecordField
                   label=""
                   render={(record: { formatted_scientific_name?: string | null }) => (
