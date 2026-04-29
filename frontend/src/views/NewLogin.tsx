@@ -14,8 +14,10 @@ import Typography from '@mui/material/Typography';
 import makeStyles from 'lib/makeStyles';
 import PropTypes from 'prop-types';
 import { Field, Form } from 'react-final-form';
+import { useNavigate } from 'react-router-dom';
 import dbcaLogo from '../assets/img/logo-dbca-bio-dark.svg';
 import logo from '../assets/img/tom-ohlin-owYSd_TXoEc-unsplash-1500.jpg';
+import authProvider from '../kit/app/authProvider';
 
 interface Props {
   redirectTo?: string;
@@ -99,8 +101,26 @@ const NewLogin = (props: Props) => {
   const classes = useStyles();
   const [loading, setLoading] = useSafeSetState(false);
   const login = useLogin();
+  const navigate = useNavigate();
   const translate = useTranslate();
   const notify = useNotify();
+
+  React.useEffect(() => {
+    let active = true;
+
+    authProvider
+      .checkAuth()
+      .then(() => {
+        if (active) {
+          navigate(redirectTo || '/kit', { replace: true });
+        }
+      })
+      .catch(() => undefined);
+
+    return () => {
+      active = false;
+    };
+  }, [navigate, redirectTo]);
 
   const validate = (values: FormData) => {
     const errors = { username: undefined, password: undefined };
