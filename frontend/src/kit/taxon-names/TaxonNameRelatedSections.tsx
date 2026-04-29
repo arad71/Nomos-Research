@@ -71,12 +71,58 @@ const crossRefTypeMap = CrossRefType.reduce<Record<string, string>>(
   {}
 );
 
+const INFRASPECIFIC_RANK_ABBREVIATIONS = [
+  'nothovar.',
+  'subsect.',
+  'subvar.',
+  'subser.',
+  'subsp.',
+  'subf.',
+  'sect.',
+  'ser.',
+  'var.',
+  'cv.',
+];
+
+const rankAbbreviationPattern = INFRASPECIFIC_RANK_ABBREVIATIONS.map((rank) =>
+  rank.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+).join('|');
+
+const italicizedRankPattern = new RegExp(
+  `<i>([^<]*?)\\s+(${rankAbbreviationPattern})\\s+([^<]*?)<\\/i>`,
+  'g'
+);
+
+const normalizeFormattedScientificName = (value?: string | null) => {
+  if (!value) {
+    return value;
+  }
+
+  return value.replace(
+    italicizedRankPattern,
+    (_, nameBeforeRank: string, rankAbbreviation: string, nameAfterRank: string) =>
+      [
+        nameBeforeRank?.trim() ? `<i>${nameBeforeRank.trim()}</i>` : null,
+        rankAbbreviation,
+        nameAfterRank?.trim() ? `<i>${nameAfterRank.trim()}</i>` : null,
+      ]
+        .filter(Boolean)
+        .join(' ')
+  );
+};
+
 const HtmlValue = ({ value }: { value?: string | null }) => {
   if (!value) {
     return null;
   }
 
-  return <span dangerouslySetInnerHTML={{ __html: value }} />;
+  return (
+    <span
+      dangerouslySetInnerHTML={{
+        __html: normalizeFormattedScientificName(value) ?? '',
+      }}
+    />
+  );
 };
 
 const formatPreviewTitle = (value?: string | null) => {
