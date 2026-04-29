@@ -15,6 +15,7 @@ Phase 1: No reinterpretation or optimisation of logic.
 
 from __future__ import annotations
 
+import unicodedata
 from typing import Optional
 
 from loguru import logger
@@ -47,6 +48,25 @@ NOTHOTAXA_RANKS = {
 }
 
 
+# ---------------------------------------------------------------------------
+# Normalisation helpers (MDB parity)
+# ---------------------------------------------------------------------------
+
+
+def _normalise_ascii(value: Optional[str]) -> str:
+    """
+    Normalise a string to ASCII by removing diacritics.
+
+    This matches legacy MDB behaviour, which effectively operated on
+    ASCII uppercase strings.
+    """
+    if not value:
+        return ""
+    return (
+        unicodedata.normalize("NFKD", value).encode("ascii", "ignore").decode("ascii")
+    )
+
+
 def _upper_prefix(value: Optional[str], length: int) -> str:
     """Extract the first `length` characters from a string, uppercased.
 
@@ -59,7 +79,8 @@ def _upper_prefix(value: Optional[str], length: int) -> str:
     """
     if not value:
         return ""
-    cleaned = value.strip()
+    # cleaned = value.strip()
+    cleaned = _normalise_ascii(value.strip())
     return cleaned[:length].upper()
 
 
@@ -140,7 +161,7 @@ def generate_species_code(target) -> Optional[str]:
     if _is_nothotaxon(target):
         spc_clean = _clean_epithet(target.specific_epithet)
         spc_initial = _upper_prefix(spc_clean, 1)
-        return f"{gen} X {spc_initial}"
+        return f"{gen}X {spc_initial}"
 
     # Must have a specific epithet for species and below
     if not target.specific_epithet:
