@@ -68,6 +68,4 @@ class TrustedSource(BaseModel, TableMixin):
     # Phase 1 spec explicitly allows zero, one, or multiple per taxon name —
     # so no uniqueness constraint here. TableMixin already supplies
     # `deleted`, `updated_by`, `updated_on`.
-    __table_args__ = (
-        {"comment": TABLE_DESCRIPTION},
-    )
+    __table_args__ = ({"comment": TABLE_DESCRIPTION},)

@@ -5,7 +5,9 @@ Revises: 9b7269b5da2b
 Create Date: 2026-04-28 14:00:00.000000
 
 """
+
 import sqlalchemy as sa
+
 from alembic import op
 
 # revision identifiers, used by Alembic.
@@ -79,9 +81,7 @@ def upgrade() -> None:
             nullable=True,
             comment="The date this record was updated on",
         ),
-        sa.ForeignKeyConstraint(
-            ["taxon_name_id"], ["taxon_name.taxon_name_id"]
-        ),
+        sa.ForeignKeyConstraint(["taxon_name_id"], ["taxon_name.taxon_name_id"]),
         sa.ForeignKeyConstraint(["updated_by"], ["user.user_id"]),
         sa.PrimaryKeyConstraint("trusted_source_id"),
         comment=(
@@ -128,8 +128,6 @@ def downgrade() -> None:
     op.drop_index("ix_trusted_source_updated_on", table_name="trusted_source")
     op.drop_index("ix_trusted_source_updated_by", table_name="trusted_source")
     op.drop_index("ix_trusted_source_deleted", table_name="trusted_source")
-    op.drop_index(
-        "ix_trusted_source_trusted_source_name", table_name="trusted_source"
-    )
+    op.drop_index("ix_trusted_source_trusted_source_name", table_name="trusted_source")
     op.drop_index("ix_trusted_source_taxon_name_id", table_name="trusted_source")
     op.drop_table("trusted_source")
