@@ -271,14 +271,15 @@ def derive_parallel_name(
                 "Derived from ordered parent links using the current hybrid separator rules."
             )
             parent_formula_canonical = join_parent_names(taxon_name, parent_taxa)
-            parent_formula_scientific = calculated.filter_join(
-                [parent_formula_canonical, taxon_name.author]
+            parent_formula_scientific = join_parent_names(
+                taxon_name,
+                parent_taxa,
+                name_value="scientific",
             )
-            parent_formula_scientific_formatted = calculated.filter_join(
-                [
-                    join_parent_names(taxon_name, parent_taxa, italicize=True),
-                    taxon_name.author,
-                ]
+            parent_formula_scientific_formatted = join_parent_names(
+                taxon_name,
+                parent_taxa,
+                name_value="formatted_scientific",
             )
             return {
                 "strategy": strategy,
@@ -663,13 +664,15 @@ def join_parent_names(
     taxon_name: TaxonName,
     parent_taxa: list[TaxonName],
     italicize: bool = False,
+    name_value: str = "canonical",
 ) -> str | None:
     separator = HYBRID_SEPARATOR_BY_CATEGORY.get(
         taxon_name.hybrid_category.value if taxon_name.hybrid_category else None,
         " × ",
     )
     parent_values = [
-        best_parent_name_value(parent, italicize=False) for parent in parent_taxa
+        best_parent_name_value(parent, italicize=False, name_value=name_value)
+        for parent in parent_taxa
     ]
     parent_values = [value for value in parent_values if value]
     if not parent_values:
@@ -679,16 +682,68 @@ def join_parent_names(
     return separator.join(parent_values)
 
 
-def best_parent_name_value(parent: TaxonName, italicize: bool = False) -> str | None:
-    value = (
-        parent.infragenus_name
-        or parent.canonical_name_without_rank
-        or parent.canonical_name
-        or parent.uninomial
-    )
+def best_parent_name_value(
+    parent: TaxonName,
+    italicize: bool = False,
+    name_value: str = "canonical",
+) -> str | None:
+    if name_value == "formatted_scientific":
+        value = build_parent_formatted_scientific_name(parent)
+    elif name_value == "scientific":
+        value = parent.scientific_name
+    else:
+        value = (
+            parent.infragenus_name
+            or parent.canonical_name_without_rank
+            or parent.canonical_name
+            or parent.uninomial
+        )
     if not value:
         return None
     return calculated.italicize_name(value) if italicize else value
+
+
+def build_parent_formatted_scientific_name(parent: TaxonName) -> str | None:
+    uninomial = getattr(parent, "uninomial", None)
+    specific_epithet = getattr(parent, "specific_epithet", None)
+    infraspecific_epithet = getattr(parent, "infraspecific_epithet", None)
+    author = getattr(parent, "author", None)
+
+    if uninomial and specific_epithet:
+        rank_abbreviation = (
+            getattr(parent, "rank_abbreviation", None)
+            or getattr(parent, "rank_abbrev", None)
+            or getattr(getattr(parent, "taxon_rank", None), "rank_abbrev", None)
+        )
+        rank_abbreviation = normalize_rank_abbreviation(rank_abbreviation)
+        return calculated.calculate_scientific_name_string(
+            components=schema.NameStringComponents(
+                uninomial=uninomial,
+                specific_epithet=specific_epithet,
+                rank_abbreviation=rank_abbreviation,
+                infraspecific_epithet=infraspecific_epithet,
+                author=author,
+            ),
+            is_autonym=bool(getattr(parent, "is_autonym", False)),
+            italicize=True,
+        )
+
+    return getattr(parent, "formatted_scientific_name", None) or getattr(
+        parent, "scientific_name", None
+    )
+
+
+def normalize_rank_abbreviation(rank_abbreviation: object | None) -> str | None:
+    if not rank_abbreviation:
+        return None
+
+    raw_value = getattr(rank_abbreviation, "value", rank_abbreviation)
+    if not isinstance(raw_value, str):
+        return None
+    if raw_value.endswith("."):
+        return raw_value
+
+    return RankAbbreviationVals.get(raw_value, f"{raw_value}.")
 
 
 def extract_leading_name_token(value: str | None) -> str | None:
@@ -787,10 +842,7 @@ def ensure_rank_abbreviation_from_taxon(
     if not rank_abbrev:
         return
 
-    components.rank_abbreviation = RankAbbreviationVals.get(
-        rank_abbrev,
-        f"{rank_abbrev}.",
-    )
+    components.rank_abbreviation = normalize_rank_abbreviation(rank_abbrev)
 
 
 def extract_stored_bracketed_scientific_component(
