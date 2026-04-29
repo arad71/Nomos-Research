@@ -48,7 +48,7 @@ const TaxonNameParentFormFields = ({ hideTaxonName = false }: TaxonNameParentFor
           source="taxon_name_id"
           reference="taxon_names"
           sort={{ field: 'canonical_name', order: 'ASC' }}
-          perPage={100}
+          perPage={1000}
         >
           <AutocompleteInput
             label="Taxon name"
@@ -66,7 +66,7 @@ const TaxonNameParentFormFields = ({ hideTaxonName = false }: TaxonNameParentFor
         source="parent_taxon_name_id"
         reference="taxon_names"
         sort={{ field: 'canonical_name', order: 'ASC' }}
-        perPage={100}
+        perPage={1000}
         filter={parentFilter}
       >
         <AutocompleteInput
