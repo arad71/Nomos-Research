@@ -4,15 +4,10 @@ import { Badge } from '@/components/ui/badge';
 import { RecordField } from '@/components/admin/record-field';
 import { ReferenceField } from '@/components/admin/reference-field';
 import { Show } from '@/components/admin/show';
-import CrossRefType from '../shared/choices/CrossRefType';
+import { getCrossRefTypeLabel } from '../shared/choices/CrossRefType';
 import { formatDateOnly } from '../shared/dateOnlyDateTime';
 import HistoryInfoBox from '../shared/HistoryInfoBox';
 import RecordPageActions from '../shared/RecordPageActions';
-
-const crossRefTypeMap = CrossRefType.reduce<Record<string, string>>((acc, item) => {
-  acc[item.id] = item.name;
-  return acc;
-}, {});
 
 const HtmlValue = ({ value }: { value?: string | null }) => {
   if (!value) {
@@ -57,7 +52,12 @@ const CrossReferenceShowPage = () => (
           </div>
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             <RecordField label="Old name" source="old_name_id">
-              <ReferenceField source="old_name_id" reference="taxon_names">
+              <ReferenceField
+                source="old_name_id"
+                reference="taxon_names"
+                link="show"
+                className="font-medium text-primary hover:underline"
+              >
                 <RecordField
                   label=""
                   render={(record: { formatted_scientific_name?: string | null }) => (
@@ -67,7 +67,12 @@ const CrossReferenceShowPage = () => (
               </ReferenceField>
             </RecordField>
             <RecordField label="New name" source="new_name_id">
-              <ReferenceField source="new_name_id" reference="taxon_names">
+              <ReferenceField
+                source="new_name_id"
+                reference="taxon_names"
+                link="show"
+                className="font-medium text-primary hover:underline"
+              >
                 <RecordField
                   label=""
                   render={(record: { formatted_scientific_name?: string | null }) => (
@@ -81,9 +86,7 @@ const CrossReferenceShowPage = () => (
               label="Cross reference type"
               className="md:col-span-2 xl:col-span-3"
               render={(record: { cross_reference_type?: string | null }) =>
-                record.cross_reference_type
-                  ? crossRefTypeMap[record.cross_reference_type] ?? record.cross_reference_type
-                  : ''
+                getCrossRefTypeLabel(record.cross_reference_type)
               }
             />
           </div>

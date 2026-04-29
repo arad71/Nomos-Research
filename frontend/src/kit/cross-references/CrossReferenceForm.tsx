@@ -53,6 +53,7 @@ const CrossReferenceForm = ({
               sort={{ field: 'canonical_name', order: 'ASC' }}
               perPage={100}
               filterToQuery={taxonNameFilterToQuery}
+              className="md:col-span-2 xl:col-span-3"
             >
               <AutocompleteInput label="New name" optionText="scientific_name" />
             </ReferenceInput>

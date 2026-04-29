@@ -1,16 +1,16 @@
 from datetime import datetime
 from typing import Optional
 
-import psycopg2
 from fastapi import APIRouter, Depends, Query, Response
 from fastapi_key_auth import AuthorizerDependency
-from sqlalchemy import and_, case, func, or_, select
+from sqlalchemy import String, and_, case, cast, func, or_, select
 from sqlalchemy.orm import Session, aliased
 
 from app.db.checklist.schema import CheckList
 from app.db.classification_system.model import ClassificationSystem
 from app.db.conscode_taxon.model import Conscodetaxon
 from app.db.conservation_code.model import Conservationcode
+from app.db.cross_reference.enums import CROSS_REFERENCE_TYPE_EXPORT_VALUES
 from app.db.cross_reference.model import CrossReference
 from app.db.hierarchy.model import Hierarchy
 from app.db.informal_group.model import InformalGroup
@@ -22,6 +22,19 @@ from app.db.vernacular.model import Vernacular
 
 checklist_router = r = APIRouter(prefix="/checklist")
 authorizer = AuthorizerDependency(key_pattern="API_KEY_")
+
+
+def cross_reference_type_export_case():
+    cross_reference_type = cast(CrossReference.cross_reference_type, String)
+    return case(
+        [
+            (cross_reference_type == internal_value.value, export_value)
+            for internal_value, export_value in (
+                CROSS_REFERENCE_TYPE_EXPORT_VALUES.items()
+            )
+        ],
+        else_=cross_reference_type,
+    )
 
 
 @r.get(
@@ -127,8 +140,8 @@ async def curation_checklist(
             original_name.created_on.label("created"),
             original_name.updated_on.label("updated"),
             original_name.taxon_name_id.label("scientificNameId"),
-            CrossReference.cross_reference_type.label("crossReferenceType"),
-            CrossReference.cross_reference_id.label("crossReferenceId"),
+            cross_reference_type_export_case().label("crossReferenceType"),
+            cast(CrossReference.cross_reference_id, String).label("crossReferenceId"),
             CrossReference.created_on.label("cross_reference_created_on").label(
                 "crossReferenceCreated"
             ),
