@@ -84,6 +84,11 @@ type TaxonNameRecord = {
   deleted?: boolean;
 };
 
+type KingdomOption = {
+  id: number;
+  name: string;
+};
+
 type TaxonNamesResponse = {
   data: TaxonNameRecord[];
   total: number;
@@ -178,6 +183,7 @@ type TaxonNameFilters = {
   acceptedName: string;
   reviewReason: string;
   taxonRank: string;
+  kingdomIds: string[];
   conservationCode: string;
   authority: string;
   conservationCodeActive: string;
@@ -355,7 +361,7 @@ const parseTotal = (response: Response, rows: unknown[]) => {
 };
 
 const buildFilterObject = (filters: TaxonNameFilters) => {
-  const nextFilter: Record<string, string | boolean | null> = {};
+  const nextFilter: Record<string, string | boolean | null | number[]> = {};
   const trimmedQuery = filters.q.trim();
   const trimmedId = filters.id.trim();
   const isExactNomosIdSearch = /^\d+$/.test(trimmedQuery);
@@ -434,6 +440,11 @@ const buildFilterObject = (filters: TaxonNameFilters) => {
   }
   if (filters.taxonRank) {
     nextFilter.taxon_rank___rank_name = filters.taxonRank;
+  }
+  if (filters.kingdomIds.length > 0) {
+    nextFilter.kingdom_id = filters.kingdomIds
+      .map((kingdomId) => Number(kingdomId))
+      .filter((kingdomId) => !Number.isNaN(kingdomId));
   }
   if (filters.conservationCode) {
     nextFilter.conscode_taxons___conservation_code___conservation_code_value =
@@ -518,6 +529,39 @@ const fetchTaxonNames = async (
     data,
     total: parseTotal(response, data),
   } satisfies TaxonNamesResponse;
+};
+
+const fetchKingdomOptions = async (
+  retryOnAuthError = true
+): Promise<KingdomOption[]> => {
+  const sort = encodeURIComponent(JSON.stringify(['kingdom_name', 'ASC']));
+  const range = encodeURIComponent(JSON.stringify([0, 999]));
+  const filter = encodeURIComponent(JSON.stringify({}));
+  const response = await fetch(
+    `${BACKEND_URL}/kingdoms?sort=${sort}&range=${range}&filter=${filter}`,
+    { headers: buildHeaders() }
+  );
+
+  if (response.status === 401 && retryOnAuthError) {
+    await authProvider.checkError({ status: 401 });
+    return fetchKingdomOptions(false);
+  }
+
+  if (!response.ok) {
+    return [];
+  }
+
+  const rows = await response.json();
+  if (!Array.isArray(rows)) {
+    return [];
+  }
+
+  return rows
+    .map((row: Record<string, unknown>) => ({
+      id: Number(row.kingdom_id ?? row.id),
+      name: String(row.kingdom_name ?? ''),
+    }))
+    .filter((kingdom) => !Number.isNaN(kingdom.id) && kingdom.name);
 };
 
 const fetchReferenceMap = async (
@@ -1117,6 +1161,10 @@ const TaxonNamesPage = () => {
       acceptedName: searchParams.get('accepted_name') || '',
       reviewReason: searchParams.get('review_reason') || '',
       taxonRank: searchParams.get('taxon_rank') || '',
+      kingdomIds: (searchParams.get('kingdom_ids') || '')
+        .split(',')
+        .map((kingdomId) => kingdomId.trim())
+        .filter(Boolean),
       conservationCode: searchParams.get('conservation_code') || '',
       authority: searchParams.get('authority') || '',
       conservationCodeActive: searchParams.get('conservation_code_active') || '',
@@ -1144,6 +1192,7 @@ const TaxonNamesPage = () => {
   const [draftFilters, setDraftFilters] = React.useState(filters);
   const [publicationMap, setPublicationMap] = React.useState<Record<number, string>>({});
   const [userMap, setUserMap] = React.useState<Record<number, string>>({});
+  const [kingdomOptions, setKingdomOptions] = React.useState<KingdomOption[]>([]);
   const [ancestorMaps, setAncestorMaps] = React.useState<
     Partial<Record<AncestorResource, Record<number, string>>>
   >({});
@@ -1167,6 +1216,20 @@ const TaxonNamesPage = () => {
   React.useEffect(() => {
     setDraftFilters(filters);
   }, [filters]);
+
+  React.useEffect(() => {
+    let active = true;
+
+    fetchKingdomOptions().then((kingdoms) => {
+      if (active) {
+        setKingdomOptions(kingdoms);
+      }
+    });
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   React.useEffect(() => {
     let active = true;
@@ -1254,6 +1317,14 @@ const TaxonNamesPage = () => {
   }, [state.data]);
 
   const totalPages = Math.max(Math.ceil(state.total / perPage), 1);
+  const kingdomLabelMap = React.useMemo(
+    () =>
+      kingdomOptions.reduce<Record<string, string>>((acc, kingdom) => {
+        acc[String(kingdom.id)] = kingdom.name;
+        return acc;
+      }, {}),
+    [kingdomOptions]
+  );
   const activeFilterBadges = React.useMemo(
     () =>
       [
@@ -1270,6 +1341,14 @@ const TaxonNamesPage = () => {
           : null,
         filters.author ? { label: 'Author', value: filters.author } : null,
         filters.taxonRank ? { label: 'Taxon rank', value: filters.taxonRank } : null,
+        filters.kingdomIds.length > 0
+          ? {
+              label: 'Kingdom',
+              value: filters.kingdomIds
+                .map((kingdomId) => kingdomLabelMap[kingdomId] ?? kingdomId)
+                .join(', '),
+            }
+          : null,
         filters.publicationStatus
           ? { label: 'Status', value: filters.publicationStatus }
           : null,
@@ -1341,7 +1420,7 @@ const TaxonNamesPage = () => {
           ? { label: 'Deleted only', value: 'Yes' }
           : null,
       ].filter(Boolean) as Array<{ label: string; value: string }>,
-    [canUseDeletedFilter, filters]
+    [canUseDeletedFilter, filters, kingdomLabelMap]
   );
 
   const updateParams = (
@@ -1366,6 +1445,13 @@ const TaxonNamesPage = () => {
     }
     if (typeof next.sortOrder === 'string') {
       params.set('sortOrder', next.sortOrder);
+    }
+    if (Array.isArray(next.kingdomIds)) {
+      if (next.kingdomIds.length > 0) {
+        params.set('kingdom_ids', next.kingdomIds.join(','));
+      } else {
+        params.delete('kingdom_ids');
+      }
     }
     ([
       ['q', next.q],
@@ -1447,6 +1533,7 @@ const TaxonNamesPage = () => {
       acceptedName: draftFilters.acceptedName.trim(),
       reviewReason: draftFilters.reviewReason.trim(),
       taxonRank: draftFilters.taxonRank,
+      kingdomIds: draftFilters.kingdomIds,
       conservationCode: draftFilters.conservationCode.trim(),
       authority: draftFilters.authority,
       conservationCodeActive: draftFilters.conservationCodeActive,
@@ -1695,6 +1782,42 @@ const TaxonNamesPage = () => {
     </div>
   );
 
+  const renderKingdomFilter = () => (
+    <div className="space-y-2">
+      <label className="text-sm font-medium">Kingdom</label>
+      <div className="max-h-48 space-y-2 overflow-auto rounded-xl border border-border px-3 py-2">
+        {kingdomOptions.length > 0 ? (
+          kingdomOptions.map((kingdom) => {
+            const kingdomId = String(kingdom.id);
+            const checked = draftFilters.kingdomIds.includes(kingdomId);
+
+            return (
+              <label
+                key={kingdom.id}
+                className="flex items-center gap-2 text-sm"
+              >
+                <Checkbox
+                  checked={checked}
+                  onCheckedChange={(nextChecked) =>
+                    setDraftFilters((current) => ({
+                      ...current,
+                      kingdomIds: nextChecked
+                        ? [...current.kingdomIds, kingdomId]
+                        : current.kingdomIds.filter((id) => id !== kingdomId),
+                    }))
+                  }
+                />
+                <span>{kingdom.name}</span>
+              </label>
+            );
+          })
+        ) : (
+          <p className="text-sm text-muted-foreground">No kingdoms available</p>
+        )}
+      </div>
+    </div>
+  );
+
   const renderDeletedOnlyFilter = () => (
     <div className="space-y-2">
       <label className="inline-flex items-center gap-2 text-sm font-medium">
@@ -1738,6 +1861,7 @@ const TaxonNamesPage = () => {
       acceptedName: '',
       reviewReason: '',
       taxonRank: '',
+      kingdomIds: [],
       conservationCode: '',
       authority: '',
       conservationCodeActive: '',
@@ -1928,6 +2052,7 @@ const TaxonNamesPage = () => {
                 }))
               )
             )}
+            {renderKingdomFilter()}
             {renderSelectFilter(
               'Publication status',
               'publicationStatus',
