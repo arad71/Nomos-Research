@@ -674,7 +674,6 @@ def join_parent_names(
     parent_values = [value for value in parent_values if value]
     if not parent_values:
         return None
-    parent_values = compact_same_genus_hybrid_parent_values(parent_values)
     if italicize:
         parent_values = [calculated.italicize_name(value) for value in parent_values]
     return separator.join(parent_values)
@@ -692,27 +691,6 @@ def best_parent_name_value(parent: TaxonName, italicize: bool = False) -> str | 
     return calculated.italicize_name(value) if italicize else value
 
 
-def compact_same_genus_hybrid_parent_values(
-    parent_values: list[str],
-) -> list[str]:
-    if len(parent_values) < 2:
-        return parent_values
-
-    compacted_values = [parent_values[0]]
-    shared_genus = extract_leading_name_token(parent_values[0])
-    if not shared_genus:
-        return parent_values
-
-    for index, parent_value in enumerate(parent_values[1:], start=1):
-        if index == 1:
-            compacted_values.append(
-                remove_shared_leading_genus(parent_value, shared_genus) or parent_value
-            )
-        else:
-            compacted_values.append(parent_value)
-    return compacted_values
-
-
 def extract_leading_name_token(value: str | None) -> str | None:
     normalized_value = normalize_parallel_name_part(value)
     if not normalized_value:
@@ -722,20 +700,6 @@ def extract_leading_name_token(value: str | None) -> str | None:
         return None
     token = (match.group(1) or "").strip()
     return token or None
-
-
-def remove_shared_leading_genus(
-    value: str | None,
-    shared_genus: str | None,
-) -> str | None:
-    normalized_value = normalize_parallel_name_part(value)
-    if not normalized_value or not shared_genus:
-        return normalized_value
-    prefix = f"{shared_genus} "
-    if not normalized_value.startswith(prefix):
-        return normalized_value
-    stripped_value = normalized_value[len(prefix) :].strip()
-    return stripped_value or normalized_value
 
 
 def build_higher_rank_infrageneric_name(
