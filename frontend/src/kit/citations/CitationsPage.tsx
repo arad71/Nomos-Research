@@ -9,6 +9,7 @@ import RecordActionButtons from '../shared/RecordActionButtons';
 import { BACKEND_URL } from '../../config';
 import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';
+import { formatAuthorOption } from '../authors/authorDisplay';
 import AuthorType from '../shared/choices/AuthorType';
 
 type SortOrder = 'ASC' | 'DESC';
@@ -111,7 +112,7 @@ const fetchReferenceMap = async (
   resource: string,
   ids: number[],
   idField: string,
-  labelField: string,
+  labelField: string | ((row: Record<string, unknown>) => string),
   retryOnAuthError = true
 ) => {
   if (!ids.length) return {} as Record<number, string>;
@@ -131,7 +132,8 @@ const fetchReferenceMap = async (
   if (!Array.isArray(rows)) return {};
   return rows.reduce((acc: Record<number, string>, row: Record<string, unknown>) => {
     const key = Number(row[idField] ?? row.id);
-    const value = String(row[labelField] ?? '');
+    const value =
+      typeof labelField === 'function' ? labelField(row) : String(row[labelField] ?? '');
     if (!Number.isNaN(key) && value) acc[key] = value;
     return acc;
   }, {});
@@ -260,7 +262,7 @@ const CitationsPage = () => {
     );
     Promise.all([
       fetchReferenceMap('taxon_names', taxonNameIds, 'taxon_name_id', 'formatted_scientific_name'),
-      fetchReferenceMap('authors', authorIds, 'author_id', 'display_name'),
+      fetchReferenceMap('authors', authorIds, 'author_id', formatAuthorOption),
       fetchReferenceMap('users', userIds, 'user_id', 'full_name'),
     ]).then(([nextTaxonNameMap, nextAuthorMap, nextUserMap]) => {
       setTaxonNameMap(nextTaxonNameMap);
@@ -370,7 +372,7 @@ const CitationsPage = () => {
       );
       const [exportTaxonNameMap, exportAuthorMap, exportUserMap] = await Promise.all([
         fetchReferenceMap('taxon_names', taxonNameIds, 'taxon_name_id', 'formatted_scientific_name'),
-        fetchReferenceMap('authors', authorIds, 'author_id', 'display_name'),
+        fetchReferenceMap('authors', authorIds, 'author_id', formatAuthorOption),
         fetchReferenceMap('users', userIds, 'user_id', 'full_name'),
       ]);
       const csv = buildExportCsv(allRecords, exportTaxonNameMap, exportAuthorMap, exportUserMap);
@@ -386,12 +388,23 @@ const CitationsPage = () => {
       case 'taxonName':
         return (
           <span className="inline-flex items-center gap-2">
-            <span>{renderHtml(record.taxon_name_id ? taxonNameMap[record.taxon_name_id] : '')}</span>
+            {record.taxon_name_id ? (
+              <Link
+                to={`/taxon_names/${record.taxon_name_id}/show`}
+                className="hover:underline"
+              >
+                {renderHtml(taxonNameMap[record.taxon_name_id] ?? '')}
+              </Link>
+            ) : null}
             {record.deleted ? <Badge variant="destructive">Deleted</Badge> : null}
           </span>
         );
       case 'author':
-        return (record.author_id && authorMap[record.author_id]) || '';
+        return record.author_id ? (
+          <Link to={`/authors/${record.author_id}/show`} className="hover:underline">
+            {authorMap[record.author_id] ?? ''}
+          </Link>
+        ) : '';
       case 'authorType':
         return record.author_type ? authorTypeMap[record.author_type] ?? record.author_type : '';
       case 'authorOrder':

@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { RecordField } from '@/components/admin/record-field';
 import { ReferenceField } from '@/components/admin/reference-field';
 import { Show } from '@/components/admin/show';
+import { formatAuthorOption } from '../authors/authorDisplay';
 import AuthorType from '../shared/choices/AuthorType';
 import HistoryInfoBox from '../shared/HistoryInfoBox';
 import RecordPageActions from '../shared/RecordPageActions';
@@ -51,7 +52,7 @@ const CitationShowPage = () => (
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
       <div className="grid gap-6 rounded-2xl border border-border bg-card p-6 md:grid-cols-2">
         <RecordField label="Taxon name" source="taxon_name_id">
-          <ReferenceField source="taxon_name_id" reference="taxon_names">
+          <ReferenceField source="taxon_name_id" reference="taxon_names" link="show">
             <RecordField
               label=""
               render={(record: { formatted_scientific_name?: string | null }) => (
@@ -61,8 +62,8 @@ const CitationShowPage = () => (
           </ReferenceField>
         </RecordField>
         <RecordField label="Author" source="author_id">
-          <ReferenceField source="author_id" reference="authors">
-            <RecordField source="abbreviation" label="" />
+          <ReferenceField source="author_id" reference="authors" link="show">
+            <RecordField label="" render={formatAuthorOption} />
           </ReferenceField>
         </RecordField>
         <RecordField

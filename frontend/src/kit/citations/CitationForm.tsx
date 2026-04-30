@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { CreateInDialogButton } from '@react-admin/ra-form-layout';
 import { ThemeProvider, createTheme } from '@mui/material';
-import { minValue, required } from 'ra-core';
+import { minValue, required, useInput } from 'ra-core';
 import { useFormContext } from 'react-hook-form';
 import { AutocompleteInput } from '@/components/admin/autocomplete-input';
 import { NumberInput } from '@/components/admin/number-input';
@@ -9,6 +9,7 @@ import { ReferenceInput } from '@/components/admin/reference-input';
 import { SelectInput } from '@/components/admin/select-input';
 import { SimpleForm } from '@/components/admin/simple-form';
 import AuthorForm from '../authors/AuthorForm';
+import { formatAuthorOption } from '../authors/authorDisplay';
 import AuthorType from '../shared/choices/AuthorType';
 
 const requiredValue = required();
@@ -36,6 +37,11 @@ const relatedDialogButtonProps = {
 
 type CitationFormProps = {
   hideTaxonName?: boolean;
+};
+
+const HiddenInput = ({ source }: { source: string }) => {
+  useInput({ source });
+  return null;
 };
 
 const EnterpriseDialogThemeProvider = ({ children }: { children: React.ReactNode }) => {
@@ -125,6 +131,7 @@ const CreateAuthorButton = () => {
 const CitationForm = ({ hideTaxonName = false }: CitationFormProps) => (
   <SimpleForm className="max-w-none">
     <div className="grid max-w-4xl gap-4 md:grid-cols-2">
+      {hideTaxonName ? <HiddenInput source="taxon_name_id" /> : null}
       {!hideTaxonName ? (
         <div className="md:col-span-2">
           <ReferenceInput
@@ -154,7 +161,7 @@ const CitationForm = ({ hideTaxonName = false }: CitationFormProps) => (
           >
             <AutocompleteInput
               label="Author"
-              optionText="abbreviation"
+              optionText={formatAuthorOption}
               validate={requiredValue}
             />
           </ReferenceInput>

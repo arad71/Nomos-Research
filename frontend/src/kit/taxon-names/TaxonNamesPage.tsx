@@ -1499,14 +1499,20 @@ const TaxonNamesPage = () => {
         return textOrEmpty(record.volume_information);
       case 'status':
         return (
-          <div className="flex flex-wrap gap-2">
+          <div className="inline-flex min-w-max !flex-nowrap items-center gap-2 !whitespace-nowrap">
             {getPublicationStatusLabel(record.publication_status) ? (
-              <Badge variant="outline">
+              <Badge variant="outline" className="shrink-0 whitespace-nowrap">
                 {getPublicationStatusLabel(record.publication_status)}
               </Badge>
             ) : null}
-            {record.review ? <Badge variant="secondary">Review</Badge> : null}
-            {record.is_current ? <Badge>Current</Badge> : null}
+            {record.review ? (
+              <Badge variant="secondary" className="shrink-0 whitespace-nowrap">
+                Review
+              </Badge>
+            ) : null}
+            {record.is_current ? (
+              <Badge className="shrink-0 whitespace-nowrap">Current</Badge>
+            ) : null}
           </div>
         );
       case 'reviewFlag':
@@ -2050,7 +2056,13 @@ const TaxonNamesPage = () => {
               label={columnLabelMap[column.key]}
               disableSort={!sortableColumns[column.key]}
               headerClassName={column.key === 'actions' ? 'text-right' : undefined}
-              cellClassName={column.key === 'actions' ? 'align-top' : undefined}
+              cellClassName={
+                column.key === 'actions'
+                  ? 'align-top'
+                  : column.key === 'status'
+                    ? 'min-w-56 whitespace-nowrap [&>div]:!flex-nowrap [&>div]:!whitespace-nowrap'
+                    : undefined
+              }
               render={(record) => renderCellContent(column.key, record)}
             />
           ))}

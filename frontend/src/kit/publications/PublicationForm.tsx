@@ -8,6 +8,7 @@ import { ReferenceInput } from '@/components/admin/reference-input';
 import { SimpleForm } from '@/components/admin/simple-form';
 import { TextInput } from '@/components/admin/text-input';
 import PublicationTaxonPublicationsSection from './PublicationTaxonPublicationsSection';
+import { formatAuthorOption } from '../authors/authorDisplay';
 import { validateOptionalDoi, validateOptionalHttpUrl } from '../shared/publicationDoi';
 
 const requiredValue = required();
@@ -82,7 +83,7 @@ const PublicationForm = () => {
             sort={{ field: 'abbreviation', order: 'ASC' }}
             perPage={100}
           >
-            <AutocompleteArrayInput label="Authors" optionText="abbreviation" className="xl:col-span-4" />
+            <AutocompleteArrayInput label="Authors" optionText={formatAuthorOption} className="xl:col-span-4" />
           </ReferenceArrayInput>
           <TextInput source="publisher" className="xl:col-span-4" />
           <ReferenceInput
