@@ -23,19 +23,7 @@ export default defineConfig({
   },
   preview: {
     port: 3000,
-    allowedHosts: [
-      'nomos-frontend',
-      'nomo-test.bio.wa.gov.au',
-      'nomos.bio.wa.gov.au',
-      'localhost',
-      'host.docker.internal',
-    ],
-    proxy: {
-      '/api': {
-        target: 'http://host.docker.internal:8000',
-        changeOrigin: true,
-      },
-    },
+    allowedHosts: ['nomos-frontend', 'nomo-test.bio.wa.gov.au', 'nomos.bio.wa.gov.au'],
   },
   build: {
     outDir: 'build',
@@ -57,7 +45,11 @@ export default defineConfig({
             '@react-admin/ra-relationships',
             '@react-admin/ra-editable-datagrid',
           ],
-          forms: ['final-form', 'final-form-arrays', 'react-final-form'],
+          forms: [
+            'final-form',
+            'final-form-arrays',
+            'react-final-form',
+          ],
           editor: ['ra-input-rich-text'],
         },
       },
