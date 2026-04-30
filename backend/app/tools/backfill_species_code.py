@@ -18,7 +18,6 @@ from app.db.taxon_name.model import TaxonName
 from app.db.taxon_name.species_code import generate_species_code
 from app.db.taxon_rank.model import TaxonRank
 
-# ✅ Create a Typer app
 app = typer.Typer(help="Maintenance tools for taxon_name data")
 
 
@@ -42,21 +41,22 @@ def backfill_species_code(
     batch_size: int = typer.Option(
         5000,
         "--batch-size",
-        help="Commit every N records",
+        help="Flush every N records (single commit at end)",
     ),
 ):
     """Backfill species_code for existing taxon_name records."""
-    db: Session = get_db().__next__()
+
+    db: Session = next(get_db())
 
     logger.info("Starting species_code backfill")
     logger.info(f"  dry_run={dry_run}, limit={limit}, overwrite={overwrite}")
 
-    # Query all non-deleted taxon names at species level and below
     query = (
         db.query(TaxonName)
         .join(TaxonRank, TaxonName.rank_id == TaxonRank.taxon_rank_id)
         .filter(TaxonName.deleted == False)  # noqa: E712
         .filter(TaxonRank.uninomial == False)  # noqa: E712
+        .order_by(TaxonName.taxon_name_id.asc())
     )
 
     if not overwrite:
@@ -73,7 +73,7 @@ def backfill_species_code(
 
     updated = skipped = errors = 0
 
-    for taxon_name in query.yield_per(batch_size):
+    for i, taxon_name in enumerate(query.yield_per(batch_size), start=1):
         try:
             new_code = generate_species_code(taxon_name)
 
@@ -90,22 +90,24 @@ def backfill_species_code(
             else:
                 taxon_name.species_code = new_code
                 taxon_name.calculate_name = False
-                db.add(taxon_name)
 
             updated += 1
 
-            if not dry_run and updated % batch_size == 0:
-                db.commit()
-                logger.info(f"Committed batch: {updated}/{total}")
+            # ✅ flush, NOT commit
+            if not dry_run and i % batch_size == 0:
+                db.flush()
+                logger.info(f"Flushed batch: {i}/{total}")
 
-        except Exception as exc:
+        except Exception:
             errors += 1
-            logger.error(
-                f"Error processing taxon_name_id={taxon_name.taxon_name_id}: {exc}"
+            logger.exception(
+                "Error processing taxon_name_id=%s",
+                taxon_name.taxon_name_id,
             )
 
     if not dry_run and updated > 0:
         db.commit()
+        logger.info("Final commit complete")
 
     prefix = "[DRY RUN] " if dry_run else ""
     logger.info(

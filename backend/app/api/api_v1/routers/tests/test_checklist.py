@@ -1,3 +1,4 @@
+import pytest
 from starlette import status
 
 from app.db.cross_reference.model import CrossReference
@@ -353,6 +354,42 @@ def test_checklist(
             "conscodeList",
         ],
     )
+
+
+@pytest.mark.parametrize(
+    ("stored_type", "exported_type"),
+    [
+        ("subjective_synonym", "taxonomic_synonym"),
+        ("objective_synonym", "nomenclatural_synonym"),
+        ("isonym", "informal_synonym"),
+        ("misapplied_name", "misapplied_name"),
+    ],
+)
+def test_checklist_exports_cross_reference_type_names(
+    client,
+    test_db,
+    test_cross_reference: CrossReference,
+    test_hierarchies: dict[str, Hierarchy],
+    checklist_api_key,
+    stored_type,
+    exported_type,
+):
+    assert len(test_hierarchies) == 5
+    test_cross_reference.cross_reference_type = stored_type
+    test_db.commit()
+
+    response = client.get(
+        CURATION_ENDPOINT + "?validated=true", headers={"x-api-key": checklist_api_key}
+    )
+
+    assert response.status_code == 200
+    rows = [
+        row
+        for row in response.json()
+        if row["crossReferenceId"] == str(test_cross_reference.cross_reference_id)
+    ]
+    assert len(rows) == 1
+    assert rows[0]["crossReferenceType"] == exported_type
 
 
 def test_checklist_permission(client):

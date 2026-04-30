@@ -227,6 +227,9 @@ class TaxonName(BaseModel, TableMixin):
         doc=constants.SPECIES_CODE,
         index=True,
     )
+    legacy_publication_id = sqlalchemy.Column(
+        sqlalchemy.Integer, comment=constants.LEGACY_PUBLICATION_ID
+    )
     admin_comment = sqlalchemy.Column(sqlalchemy.String)
     kingdom_name = association_proxy("kingdom", "kingdom_name")
     rank_name = association_proxy("taxon_rank", "rank_name")

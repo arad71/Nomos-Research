@@ -7,7 +7,10 @@ import { Checkbox } from '@/components/ui/checkbox';
 import authProvider from '../app/authProvider';
 import AuthorizedButtonLink from '../shared/AuthorizedButtonLink';
 import RecordActionButtons from '../shared/RecordActionButtons';
-import CrossRefType from '../shared/choices/CrossRefType';
+import CrossRefType, {
+  getCrossRefTypeExportValue,
+  getCrossRefTypeLabel,
+} from '../shared/choices/CrossRefType';
 import { BACKEND_URL } from '../../config';
 import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';
@@ -294,11 +297,6 @@ const downloadCsv = (filename: string, content: string) => {
   URL.revokeObjectURL(url);
 };
 
-const crossRefTypeMap = CrossRefType.reduce<Record<string, string>>((acc, option) => {
-  acc[option.id] = option.name;
-  return acc;
-}, {});
-
 const booleanOptions = [
   { label: 'Any', value: '' },
   { label: 'Yes', value: 'true' },
@@ -441,8 +439,7 @@ const CrossReferencesPage = () => {
         filters.crossReferenceType
           ? {
               label: 'Cross reference type',
-              value:
-                crossRefTypeMap[filters.crossReferenceType] || filters.crossReferenceType,
+              value: getCrossRefTypeLabel(filters.crossReferenceType),
             }
           : null,
         canUseDeletedFilter && filters.deleted
@@ -498,10 +495,8 @@ const CrossReferencesPage = () => {
         return record.old_name_id ? exportTaxonNameMap[record.old_name_id] ?? '' : '';
       case 'newName':
         return record.new_name_id ? exportTaxonNameMap[record.new_name_id] ?? '' : '';
-      case 'crossReferenceType':
-        return record.cross_reference_type
-          ? crossRefTypeMap[record.cross_reference_type] ?? record.cross_reference_type
-          : '';
+      case 'type':
+        return getCrossRefTypeExportValue(record.cross_reference_type);
       case 'authorisedBy':
         return record.authorised_by ?? '';
       case 'authorisedOn':
@@ -615,9 +610,7 @@ const CrossReferencesPage = () => {
           record.new_name_id ? taxonNameMap[record.new_name_id] : undefined
         );
       case 'type':
-        return record.cross_reference_type
-          ? crossRefTypeMap[record.cross_reference_type] ?? record.cross_reference_type
-          : '';
+        return getCrossRefTypeLabel(record.cross_reference_type);
       case 'authorisedBy':
         return textOrEmpty(record.authorised_by);
       case 'authorisedOn':

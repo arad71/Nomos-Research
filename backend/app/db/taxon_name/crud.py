@@ -651,6 +651,10 @@ class TaxonNameCrud(crud.Crud):
             taxon_name.canonical_name_without_rank = append_ms_suffix(
                 taxon_name.canonical_name_without_rank
             )
+            taxon_name.infragenus_name = append_ms_suffix(taxon_name.infragenus_name)
+            taxon_name.infragenus_name_with_rank = append_ms_suffix(
+                taxon_name.infragenus_name_with_rank
+            )
         else:
             taxon_name.scientific_name = remove_ms_suffix(taxon_name.scientific_name)
             taxon_name.formatted_scientific_name = remove_ms_suffix(
@@ -659,6 +663,10 @@ class TaxonNameCrud(crud.Crud):
             taxon_name.canonical_name = remove_ms_suffix(taxon_name.canonical_name)
             taxon_name.canonical_name_without_rank = remove_ms_suffix(
                 taxon_name.canonical_name_without_rank
+            )
+            taxon_name.infragenus_name = remove_ms_suffix(taxon_name.infragenus_name)
+            taxon_name.infragenus_name_with_rank = remove_ms_suffix(
+                taxon_name.infragenus_name_with_rank
             )
 
         if db.is_modified(taxon_name):
