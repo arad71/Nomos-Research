@@ -70,14 +70,6 @@ import {
 import VernacularForm from '../vernaculars/VernacularForm';
 import { formatAuthorOption } from '../authors/authorDisplay';
 
-const crossRefTypeMap = CrossRefType.reduce<Record<string, string>>(
-  (acc, item) => {
-    acc[item.id] = item.name;
-    return acc;
-  },
-  {}
-);
-
 const INFRASPECIFIC_RANK_ABBREVIATIONS = [
   'nothovar.',
   'subsect.',
