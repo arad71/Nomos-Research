@@ -32,21 +32,8 @@ module.exports = {
     jest: true,
     es6: true,
   },
-  plugins: ['react-hooks'],
   settings: {
     ecmascript: 6,
     jsx: true,
-    'import/resolver': {
-      node: {
-        paths: ['src'],
-      },
-    },
-    'import/parsers': {
-      '@typescript-eslint/parser': ['.ts', '.tsx'],
-    },
-    react: {
-      pragma: 'React',
-      version: '16.8',
-    },
   },
 };
