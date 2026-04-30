@@ -1,3 +1,4 @@
+from datetime import date
 from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -23,8 +24,8 @@ class AuthorBase(BaseModel):
     initials: Optional[str] = Field(None, description=INITIALS)
     orc_id: Optional[str] = Field(None, description=ORC_ID)
     discipline: Optional[str] = Field(None, description=DISCIPLINE)
-    effective_from: Optional[str] = Field(None, description=EFFECTIVE_FROM)
-    effective_to: Optional[str] = Field(None, description=EFFECTIVE_TO)
+    effective_from: Optional[date] = Field(None, description=EFFECTIVE_FROM)
+    effective_to: Optional[date] = Field(None, description=EFFECTIVE_TO)
 
 
 class AuthorCreate(AuthorBase):
@@ -41,8 +42,8 @@ class Author(AuthorBase, TableBase):
     display_name: str
     deleted: bool
     discipline: Optional[str]
-    effective_from: Optional[str]
-    effective_to: Optional[str]
+    effective_from: Optional[date]
+    effective_to: Optional[date]
 
     # Pydantic v2: use model_config instead of class Config
     model_config = ConfigDict(

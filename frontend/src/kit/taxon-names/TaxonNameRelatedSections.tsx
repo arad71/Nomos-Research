@@ -68,6 +68,7 @@ import {
   transformPublicationPayload,
 } from '../shared/publicationDoi';
 import VernacularForm from '../vernaculars/VernacularForm';
+import { formatAuthorOption } from '../authors/authorDisplay';
 
 const HtmlValue = ({ value }: { value?: string | null }) => {
   if (!value) {
@@ -1615,6 +1616,99 @@ type TaxonNameRelatedSectionsProps = {
   sections?: RelatedSectionKey[];
 };
 
+type CitationRowRecord = {
+  id?: string | number;
+  citation_id?: string | number;
+  author_id?: string | number | null;
+  author_type?: string | null;
+  author_order?: number | null;
+};
+
+const CitationRows = ({
+  editable,
+  recordId,
+}: {
+  editable: boolean;
+  recordId: string | number;
+}) => {
+  const { data = [], isPending, error } = useGetList<CitationRowRecord>(
+    'citations',
+    {
+      filter: { taxon_name_id: recordId },
+      pagination: { page: 1, perPage: 100 },
+      sort: { field: 'author_order', order: 'ASC' },
+    },
+    { enabled: Boolean(recordId) }
+  );
+
+  if (isPending) {
+    return <div className="text-sm text-muted-foreground">Loading citations...</div>;
+  }
+
+  if (error) {
+    return (
+      <EmptyState>
+        {error instanceof Error
+          ? `Could not load citations for this taxon name: ${error.message}`
+          : 'Could not load citations for this taxon name.'}
+      </EmptyState>
+    );
+  }
+
+  if (!data.length) {
+    return <EmptyState>No citations linked to this taxon name yet.</EmptyState>;
+  }
+
+  return (
+    <div className="min-w-0 max-w-full rounded-md border border-border">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Author</TableHead>
+            <TableHead>Author type</TableHead>
+            <TableHead>Order</TableHead>
+            {editable ? <TableHead>Actions</TableHead> : null}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {data.map((citation, index) => (
+            <RecordContextProvider
+              key={citation.id ?? citation.citation_id ?? index}
+              value={citation}
+            >
+              <TableRow>
+                <TableCell>
+                  <ReferenceField
+                    source="author_id"
+                    reference="authors"
+                    link={editable ? 'show' : false}
+                  >
+                    <RecordField label="" render={formatAuthorOption} />
+                  </ReferenceField>
+                </TableCell>
+                <TableCell>{citation.author_type ?? ''}</TableCell>
+                <TableCell>{citation.author_order ?? ''}</TableCell>
+                {editable ? (
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <EditRelatedButton label="Edit citation">
+                        <DialogFormPadding>
+                          <CitationForm hideTaxonName />
+                        </DialogFormPadding>
+                      </EditRelatedButton>
+                      <DeleteRelatedButton resource="citations" />
+                    </div>
+                  </TableCell>
+                ) : null}
+              </TableRow>
+            </RecordContextProvider>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+};
+
 const TaxonNameRelatedSections = ({
   editable = false,
   embedded = false,
@@ -1623,6 +1717,7 @@ const TaxonNameRelatedSections = ({
   const record = useRecordContext<{ id?: string | number }>();
   const recordId = record?.id;
   const navigate = useNavigate();
+  const refresh = useRefresh();
   const visibleSections = new Set<RelatedSectionKey>(
     sections ?? [
       'authors',
@@ -1974,6 +2069,7 @@ const TaxonNameRelatedSections = ({
                     maxWidth="md"
                     title="Create citation"
                     label="Create citation"
+                    mutationOptions={{ onSuccess: refresh }}
                     ButtonProps={relatedDialogButtonProps}
                   >
                     <DialogFormPadding>
@@ -1985,40 +2081,7 @@ const TaxonNameRelatedSections = ({
             />
             {editable ? (
               recordId ? (
-                <ReferenceManyField
-                  reference="citations"
-                  target="taxon_name_id"
-                  sort={{ field: 'author_order', order: 'ASC' }}
-                  empty={
-                    <EmptyState>
-                      No citations linked to this taxon name yet.
-                    </EmptyState>
-                  }
-                >
-                  <DataTable rowClick={false} bulkActionButtons={false}>
-                    <DataTable.Col label="Author">
-                      <ReferenceField
-                        source="author_id"
-                        reference="authors"
-                        link="show"
-                      >
-                        <RecordField source="abbreviation" label="" />
-                      </ReferenceField>
-                    </DataTable.Col>
-                    <DataTable.Col source="author_type" label="Author type" />
-                    <DataTable.Col source="author_order" label="Order" />
-                    <DataTable.Col label="Actions">
-                      <div className="flex items-center gap-2">
-                        <EditRelatedButton label="Edit citation">
-                          <DialogFormPadding>
-                            <CitationForm hideTaxonName />
-                          </DialogFormPadding>
-                        </EditRelatedButton>
-                        <DeleteRelatedButton resource="citations" />
-                      </div>
-                    </DataTable.Col>
-                  </DataTable>
-                </ReferenceManyField>
+                <CitationRows editable recordId={recordId} />
               ) : (
                 <EmptyState>
                   Save the taxon name first, then you can add citations inline
@@ -2026,30 +2089,7 @@ const TaxonNameRelatedSections = ({
                 </EmptyState>
               )
             ) : recordId ? (
-              <ReferenceManyField
-                reference="citations"
-                target="taxon_name_id"
-                sort={{ field: 'author_order', order: 'ASC' }}
-                empty={
-                  <EmptyState>
-                    No citations linked to this taxon name yet.
-                  </EmptyState>
-                }
-              >
-                <DataTable rowClick={false} bulkActionButtons={false}>
-                  <DataTable.Col label="Author">
-                    <ReferenceField
-                      source="author_id"
-                      reference="authors"
-                      link={false}
-                    >
-                      <RecordField source="abbreviation" label="" />
-                    </ReferenceField>
-                  </DataTable.Col>
-                  <DataTable.Col source="author_type" label="Author type" />
-                  <DataTable.Col source="author_order" label="Order" />
-                </DataTable>
-              </ReferenceManyField>
+              <CitationRows editable={false} recordId={recordId} />
             ) : null}
           </section>
         ) : null}

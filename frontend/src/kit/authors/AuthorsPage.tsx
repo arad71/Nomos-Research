@@ -7,6 +7,8 @@ import { DataTable } from '@/components/admin/data-table';
 import authProvider from '../app/authProvider';
 import AuthorizedButtonLink from '../shared/AuthorizedButtonLink';
 import RecordActionButtons from '../shared/RecordActionButtons';
+import { formatAuthorOption } from './authorDisplay';
+import AuthorDiscipline from '../shared/choices/AuthorDiscipline';
 import { BACKEND_URL } from '../../config';
 import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';
@@ -20,7 +22,11 @@ type AuthorRecord = {
   surname?: string;
   first_names?: string;
   initials?: string;
+  discipline?: string;
+  effective_from?: string;
+  effective_to?: string;
   orc_id?: string;
+  legacy_id_name?: string;
   updated_by?: number;
   updated_on?: string;
   deleted?: boolean;
@@ -33,6 +39,11 @@ type AuthorsResponse = {
 
 type AuthorFilters = {
   q: string;
+  abbreviation: string;
+  surname: string;
+  firstNames: string;
+  discipline: string;
+  legacyIdName: string;
   deleted: string;
 };
 
@@ -41,6 +52,9 @@ type ColumnKey =
   | 'surname'
   | 'firstNames'
   | 'initials'
+  | 'discipline'
+  | 'effectiveFrom'
+  | 'effectiveTo'
   | 'orcId'
   | 'updatedBy'
   | 'updated'
@@ -59,6 +73,9 @@ const defaultColumns: ColumnKey[] = [
   'surname',
   'firstNames',
   'initials',
+  'discipline',
+  'effectiveFrom',
+  'effectiveTo',
   'orcId',
   'actions',
 ];
@@ -67,6 +84,9 @@ const columnOptions: Array<{ key: ColumnKey; label: string }> = [
   { key: 'surname', label: 'Surname' },
   { key: 'firstNames', label: 'First names' },
   { key: 'initials', label: 'Initials' },
+  { key: 'discipline', label: 'Discipline' },
+  { key: 'effectiveFrom', label: 'Effective from' },
+  { key: 'effectiveTo', label: 'Effective to' },
   { key: 'orcId', label: 'ORC ID' },
   { key: 'updatedBy', label: 'Updated by' },
   { key: 'updated', label: 'Updated on' },
@@ -82,6 +102,9 @@ const sortableColumns: Partial<Record<ColumnKey, string>> = {
   surname: 'surname',
   firstNames: 'first_names',
   initials: 'initials',
+  discipline: 'discipline',
+  effectiveFrom: 'effective_from',
+  effectiveTo: 'effective_to',
   orcId: 'orc_id',
   updatedBy: 'updated_by',
   updated: 'updated_on',
@@ -107,6 +130,29 @@ const parseTotal = (response: Response, rows: unknown[]) => {
     if (!Number.isNaN(total)) return total;
   }
   return rows.length;
+};
+
+const emptyAuthorFilters: AuthorFilters = {
+  q: '',
+  abbreviation: '',
+  surname: '',
+  firstNames: '',
+  discipline: '',
+  legacyIdName: '',
+  deleted: '',
+};
+
+const buildFilterObject = (filters: AuthorFilters) => {
+  const filterObject: Record<string, string | boolean> = {};
+  const trimmedQuery = filters.q.trim();
+  if (trimmedQuery) filterObject.q = trimmedQuery;
+  if (filters.abbreviation) filterObject.abbreviation__contains = filters.abbreviation;
+  if (filters.surname) filterObject.surname__contains = filters.surname;
+  if (filters.firstNames) filterObject.first_names__contains = filters.firstNames;
+  if (filters.discipline) filterObject.discipline__contains = filters.discipline;
+  if (filters.legacyIdName) filterObject.legacy_id_name__contains = filters.legacyIdName;
+  if (filters.deleted) filterObject.deleted = filters.deleted === 'true';
+  return filterObject;
 };
 
 const fetchReferenceMap = async (
@@ -149,10 +195,7 @@ const fetchAuthors = async (
 ): Promise<AuthorsResponse> => {
   const sort = encodeURIComponent(JSON.stringify([sortField, sortOrder]));
   const range = encodeURIComponent(JSON.stringify([(page - 1) * perPage, page * perPage - 1]));
-  const filterObject = {
-    ...(filters.q ? { q: filters.q } : {}),
-    ...(filters.deleted ? { deleted: filters.deleted === 'true' } : {}),
-  };
+  const filterObject = buildFilterObject(filters);
   const filter = encodeURIComponent(JSON.stringify(filterObject));
   const response = await fetch(
     `${BACKEND_URL}/authors?sort=${sort}&range=${range}&filter=${filter}`,
@@ -206,7 +249,13 @@ const AuthorsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const filters = React.useMemo<AuthorFilters>(
     () => ({
+      ...emptyAuthorFilters,
       q: searchParams.get('q') || '',
+      abbreviation: searchParams.get('abbreviation') || '',
+      surname: searchParams.get('surname') || '',
+      firstNames: searchParams.get('firstNames') || '',
+      discipline: searchParams.get('discipline') || '',
+      legacyIdName: searchParams.get('legacyIdName') || '',
       deleted: canUseDeletedFilter ? searchParams.get('deleted') || '' : '',
     }),
     [canUseDeletedFilter, searchParams]
@@ -258,6 +307,11 @@ const AuthorsPage = () => {
   const totalPages = Math.max(Math.ceil(state.total / perPage), 1);
   const activeFilterBadges = [
     ...(filters.q ? [{ label: 'Query', value: filters.q }] : []),
+    ...(filters.abbreviation ? [{ label: 'Abbreviation', value: filters.abbreviation }] : []),
+    ...(filters.surname ? [{ label: 'Surname', value: filters.surname }] : []),
+    ...(filters.firstNames ? [{ label: 'First names', value: filters.firstNames }] : []),
+    ...(filters.discipline ? [{ label: 'Discipline', value: filters.discipline }] : []),
+    ...(filters.legacyIdName ? [{ label: 'Legacy ID name', value: filters.legacyIdName }] : []),
     ...(canUseDeletedFilter && filters.deleted ? [{ label: 'Deleted only', value: 'Yes' }] : []),
   ];
 
@@ -274,15 +328,39 @@ const AuthorsPage = () => {
     event.preventDefault();
     updateParams({
       q: draftFilters.q || null,
+      abbreviation: draftFilters.abbreviation.trim() || null,
+      surname: draftFilters.surname.trim() || null,
+      firstNames: draftFilters.firstNames.trim() || null,
+      discipline: draftFilters.discipline || null,
+      legacyIdName: draftFilters.legacyIdName.trim() || null,
       deleted: canUseDeletedFilter ? draftFilters.deleted || null : null,
       page: 1,
     });
   };
 
   const clearAllFilters = () => {
-    setDraftFilters({ q: '', deleted: '' });
+    setDraftFilters(emptyAuthorFilters);
     setSearchParams(new URLSearchParams());
   };
+
+  const renderTextFilter = (
+    label: string,
+    key: keyof Pick<
+      AuthorFilters,
+      'abbreviation' | 'surname' | 'firstNames' | 'legacyIdName'
+    >
+  ) => (
+    <div className="space-y-2">
+      <label className="text-sm font-medium">{label}</label>
+      <input
+        value={draftFilters[key]}
+        onChange={(event) =>
+          setDraftFilters((current) => ({ ...current, [key]: event.target.value }))
+        }
+        className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm outline-none ring-offset-background transition placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
+      />
+    </div>
+  );
 
   const exportColumnOptions = columnOptions.filter((column) => column.key !== 'actions');
 
@@ -300,6 +378,12 @@ const AuthorsPage = () => {
         return record.first_names ?? '';
       case 'initials':
         return record.initials ?? '';
+      case 'discipline':
+        return record.discipline ?? '';
+      case 'effectiveFrom':
+        return record.effective_from ?? '';
+      case 'effectiveTo':
+        return record.effective_to ?? '';
       case 'orcId':
         return record.orc_id ?? '';
       case 'updatedBy':
@@ -354,7 +438,7 @@ const AuthorsPage = () => {
       case 'abbreviation':
         return (
           <span className="inline-flex items-center gap-2">
-            <span>{record.abbreviation ?? ''}</span>
+            <span>{formatAuthorOption(record)}</span>
             {record.deleted ? <Badge variant="destructive">Deleted</Badge> : null}
           </span>
         );
@@ -364,6 +448,12 @@ const AuthorsPage = () => {
         return record.first_names ?? '';
       case 'initials':
         return record.initials ?? '';
+      case 'discipline':
+        return record.discipline ?? '';
+      case 'effectiveFrom':
+        return <span className="text-muted-foreground">{formatDate(record.effective_from)}</span>;
+      case 'effectiveTo':
+        return <span className="text-muted-foreground">{formatDate(record.effective_to)}</span>;
       case 'orcId':
         return record.orc_id ?? '';
       case 'updatedBy':
@@ -393,7 +483,7 @@ const AuthorsPage = () => {
             <h1 className="text-2xl font-semibold tracking-tight">Authors</h1>
             <Badge variant="outline">{state.total} result{state.total === 1 ? '' : 's'}</Badge>
             {activeFilterBadges.map((filter) => (
-              <Badge key={filter.value} variant="outline">
+              <Badge key={`${filter.label}:${filter.value}`} variant="outline">
                 {filter.label}: {filter.value}
               </Badge>
             ))}
@@ -436,6 +526,29 @@ const AuthorsPage = () => {
                 className="h-10 w-full rounded-xl border border-border bg-background pl-9 pr-3 text-sm outline-none ring-offset-background transition placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
               />
             </div>
+          </div>
+          <div className="grid gap-4">
+            {renderTextFilter('Abbreviation', 'abbreviation')}
+            {renderTextFilter('Surname', 'surname')}
+            {renderTextFilter('First names', 'firstNames')}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Discipline</label>
+              <select
+                value={draftFilters.discipline}
+                onChange={(event) =>
+                  setDraftFilters((current) => ({ ...current, discipline: event.target.value }))
+                }
+                className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <option value="">Any discipline</option>
+                {AuthorDiscipline.map((discipline) => (
+                  <option key={discipline.id} value={discipline.id}>
+                    {discipline.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            {renderTextFilter('Legacy ID name', 'legacyIdName')}
           </div>
           {canUseDeletedFilter ? (
             <label className="flex items-center gap-2 text-sm font-medium">

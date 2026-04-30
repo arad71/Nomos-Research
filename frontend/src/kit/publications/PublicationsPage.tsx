@@ -10,6 +10,7 @@ import RecordActionButtons from '../shared/RecordActionButtons';
 import { BACKEND_URL } from '../../config';
 import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';
+import { formatAuthorOption } from '../authors/authorDisplay';
 
 type SortOrder = 'ASC' | 'DESC';
 
@@ -240,7 +241,7 @@ const fetchReferenceMap = async (
   resource: string,
   ids: number[],
   idField: string,
-  labelField: string,
+  labelField: string | ((row: Record<string, unknown>) => string),
   retryOnAuthError = true
 ) => {
   if (!ids.length) return {} as Record<number, string>;
@@ -260,7 +261,8 @@ const fetchReferenceMap = async (
   if (!Array.isArray(rows)) return {};
   return rows.reduce((acc: Record<number, string>, row: Record<string, unknown>) => {
     const key = Number(row[idField] ?? row.id);
-    const value = String(row[labelField] ?? '');
+    const value =
+      typeof labelField === 'function' ? labelField(row) : String(row[labelField] ?? '');
     if (!Number.isNaN(key) && value) acc[key] = value;
     return acc;
   }, {});
@@ -730,7 +732,7 @@ const PublicationsPage = () => {
     const loadReferences = async () => {
       const [nextUserMap, nextAuthorMap, nextPublicationMap, taxonPublications] = await Promise.all([
         fetchReferenceMap('users', userIds, 'user_id', 'full_name'),
-        fetchReferenceMap('authors', authorIds, 'author_id', 'abbreviation'),
+        fetchReferenceMap('authors', authorIds, 'author_id', formatAuthorOption),
         fetchReferenceMap('publications', publicationIds, 'publication_id', 'abbreviated_title'),
         fetchTaxonPublicationsViaDataProvider(dataProvider, publicationIdsForTaxonLinks),
       ]);
@@ -968,7 +970,7 @@ const PublicationsPage = () => {
       );
       const [exportUserMap, exportAuthorMap, exportPublicationMap, exportTaxonPublications] = await Promise.all([
         fetchReferenceMap('users', userIds, 'user_id', 'full_name'),
-        fetchReferenceMap('authors', authorIds, 'author_id', 'abbreviation'),
+        fetchReferenceMap('authors', authorIds, 'author_id', formatAuthorOption),
         fetchReferenceMap('publications', publicationReferenceIds, 'publication_id', 'abbreviated_title'),
         fetchTaxonPublications(exportPublicationIds),
       ]);
