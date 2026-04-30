@@ -671,7 +671,10 @@ def join_parent_names(
         " × ",
     )
     parent_values = [
-        best_parent_name_value(parent, italicize=False, name_value=name_value)
+        bracket_hybrid_parent_name(
+            parent,
+            best_parent_name_value(parent, italicize=False, name_value=name_value),
+        )
         for parent in parent_taxa
     ]
     parent_values = [value for value in parent_values if value]
@@ -703,6 +706,28 @@ def best_parent_name_value(
     return calculated.italicize_name(value) if italicize else value
 
 
+def bracket_hybrid_parent_name(parent: TaxonName, value: str | None) -> str | None:
+    if not value or not parent_is_hybrid_formula_group(parent=parent, value=value):
+        return value
+
+    stripped_value = value.strip()
+    if stripped_value.startswith("(") and stripped_value.endswith(")"):
+        return stripped_value
+
+    return f"({stripped_value})"
+
+
+def parent_is_hybrid_formula_group(parent: TaxonName, value: str) -> bool:
+    hybrid_category = getattr(getattr(parent, "hybrid_category", None), "value", None)
+    if bool(getattr(parent, "is_hybrid", False)) or hybrid_category in {
+        "hybrid_formula",
+        "intergrade",
+    }:
+        return True
+
+    return bool(re.search(r"\s(?:×|x|X|-)\s", value))
+
+
 def build_parent_formatted_scientific_name(parent: TaxonName) -> str | None:
     uninomial = getattr(parent, "uninomial", None)
     specific_epithet = getattr(parent, "specific_epithet", None)
@@ -728,9 +753,40 @@ def build_parent_formatted_scientific_name(parent: TaxonName) -> str | None:
             italicize=True,
         )
 
-    return getattr(parent, "formatted_scientific_name", None) or getattr(
-        parent, "scientific_name", None
+    formatted_scientific_name = getattr(parent, "formatted_scientific_name", None)
+    if formatted_scientific_name:
+        return unitalicize_infraspecific_rank_abbreviations(formatted_scientific_name)
+
+    return getattr(parent, "scientific_name", None)
+
+
+def unitalicize_infraspecific_rank_abbreviations(value: str) -> str:
+    rank_values = sorted(
+        {rank for rank in RankAbbreviationVals.values() if rank.endswith(".")},
+        key=len,
+        reverse=True,
     )
+    if not rank_values:
+        return value
+
+    rank_pattern = "|".join(re.escape(rank) for rank in rank_values)
+    pattern = re.compile(rf"<i>([^<]*?)\s+({rank_pattern})\s+([^<]*?)</i>")
+
+    def replace_rank(match: re.Match[str]) -> str:
+        name_before_rank = (match.group(1) or "").strip()
+        rank_abbreviation = match.group(2)
+        name_after_rank = (match.group(3) or "").strip()
+
+        replacement_parts = []
+        if name_before_rank:
+            replacement_parts.append(f"<i>{name_before_rank}</i>")
+        replacement_parts.append(rank_abbreviation)
+        if name_after_rank:
+            replacement_parts.append(f"<i>{name_after_rank}</i>")
+
+        return " ".join(replacement_parts)
+
+    return pattern.sub(replace_rank, value)
 
 
 def normalize_rank_abbreviation(rank_abbreviation: object | None) -> str | None:
