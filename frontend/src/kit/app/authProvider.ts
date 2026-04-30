@@ -1,4 +1,4 @@
-import decodeJwt, { JwtPayload } from 'jwt-decode';
+import { jwtDecode as decodeJwt, type JwtPayload } from 'jwt-decode';
 import { AUTH_PROVIDER, BASE_URL } from '../../config';
 import Role from './role';
 
@@ -272,6 +272,8 @@ function getAuthToken(params: RequestInit = { method: 'POST' }) {
     });
 }
 
+const canSilentlyRefreshToken = () => useAuth2();
+
 const authProvider = {
   login: ({ username, password }: LoginForm) => {
     const params: RequestInit = { method: 'POST' };
@@ -291,7 +293,10 @@ const authProvider = {
   checkError: (error: { status: number }) => {
     const status = error.status;
     if (status === 401) {
-      return getAuthToken();
+      if (canSilentlyRefreshToken()) {
+        return getAuthToken();
+      }
+      return Promise.reject('Authentication required');
     }
     if (status === 403) {
       return Promise.reject('Forbidden - you do not have access to the resource');
@@ -306,11 +311,16 @@ const authProvider = {
       }
       return Promise.reject();
     }
-    const decoded: JwtPayload = decodeJwt(token);
+    let decoded: JwtPayload;
+    try {
+      decoded = decodeJwt(token);
+    } catch {
+      return canSilentlyRefreshToken() ? getAuthToken() : Promise.reject();
+    }
     if (decoded && decoded.exp && decoded.exp > Date.now() / 1000) {
       return Promise.resolve();
     }
-    return getAuthToken();
+    return canSilentlyRefreshToken() ? getAuthToken() : Promise.reject();
   },
   getPermissions: async () => {
     let scopes = parseStoredScopes();

@@ -1,4 +1,4 @@
-import decodeJwt from 'jwt-decode';
+import { jwtDecode as decodeJwt } from 'jwt-decode';
 import { BASE_URL } from '../config';
 import { clearLocalStorage } from '../kit/app/authProvider';
 
