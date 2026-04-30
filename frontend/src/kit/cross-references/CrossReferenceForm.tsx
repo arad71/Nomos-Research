@@ -36,7 +36,7 @@ const CrossReferenceForm = ({
               source="old_name_id"
               reference="taxon_names"
               sort={{ field: 'canonical_name', order: 'ASC' }}
-              perPage={100}
+              perPage={1000}
               filterToQuery={taxonNameFilterToQuery}
             >
               <AutocompleteInput
@@ -51,7 +51,7 @@ const CrossReferenceForm = ({
               source="new_name_id"
               reference="taxon_names"
               sort={{ field: 'canonical_name', order: 'ASC' }}
-              perPage={100}
+              perPage={1000}
               filterToQuery={taxonNameFilterToQuery}
               className="md:col-span-2 xl:col-span-3"
             >

@@ -21,7 +21,7 @@ const InformalGroupForm = () => (
         source="taxon_name_id"
         reference="taxon_names"
         sort={{ field: 'canonical_name', order: 'ASC' }}
-        perPage={100}
+        perPage={1000}
         filterToQuery={(searchText: string) => ({
           scientific_name__ilike: `%${searchText}%`,
         })}
