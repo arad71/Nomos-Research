@@ -23,7 +23,7 @@ export default defineConfig({
   },
   preview: {
     port: 3000,
-    allowedHosts: ['nomos-frontend', 'nomo-test.bio.wa.gov.au', 'nomos.bio.wa.gov.au', ],
+    allowedHosts: ['nomos-frontend', 'nomo-test.bio.wa.gov.au', 'nomos.bio.wa.gov.au'],
   },
   build: {
     outDir: 'build',
