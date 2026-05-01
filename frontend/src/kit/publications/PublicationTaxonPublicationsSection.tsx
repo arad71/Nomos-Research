@@ -159,11 +159,11 @@ const HtmlValue = ({ value }: { value?: string | null }) => {
   return <span dangerouslySetInnerHTML={{ __html: value }} />;
 };
 
-const LinkedTaxonCell = ({ clickable }: { clickable: boolean }) => (
+const LinkedTaxonCell = () => (
   <ReferenceField
     source="taxon_name_id"
     reference="taxon_names"
-    link={clickable ? 'show' : false}
+    link="show"
   >
     <RecordField
       label=""
@@ -231,7 +231,7 @@ const PublicationTaxonPublicationsSection = ({
           >
             <DataTable rowClick={false} bulkActionButtons={false}>
               <DataTable.Col label="Taxon name">
-                <LinkedTaxonCell clickable={!editable} />
+                <LinkedTaxonCell />
               </DataTable.Col>
               <DataTable.Col source="page_reference" label="Page reference" />
               <DataTable.Col source="figure_reference" label="Figure reference" />
