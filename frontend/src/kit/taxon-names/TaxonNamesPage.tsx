@@ -20,6 +20,7 @@ import authProvider from '../app/authProvider';
 import AuthorizedButtonLink from '../shared/AuthorizedButtonLink';
 import RecordActionButtons from '../shared/RecordActionButtons';
 import ConservationType from '../shared/choices/ConservationType';
+import NaturalisedStatus from '../shared/choices/NaturalisedStatus';
 import PublicationStatus from '../shared/choices/PublicationStatus';
 import TaxonRank from '../shared/choices/TaxonRank';
 import { useCanBulkDelete } from '../shared/useCanBulkDelete';
@@ -64,6 +65,7 @@ type TaxonNameRecord = {
   source?: string;
   external_id?: string;
   family_code?: string;
+  species_code?: string;
   editor?: string;
   naturalised_status?: string;
   naturalised_certainty?: boolean;
@@ -80,6 +82,11 @@ type TaxonNameRecord = {
   updated_by?: number;
   updated_on?: string;
   deleted?: boolean;
+};
+
+type KingdomOption = {
+  id: number;
+  name: string;
 };
 
 type TaxonNamesResponse = {
@@ -133,6 +140,7 @@ type ColumnKey =
   | 'source'
   | 'externalId'
   | 'familyCode'
+  | 'speciesCode'
   | 'editor'
   | 'naturalisedStatus'
   | 'naturalisedCertainty'
@@ -175,10 +183,12 @@ type TaxonNameFilters = {
   acceptedName: string;
   reviewReason: string;
   taxonRank: string;
+  kingdomIds: string[];
   conservationCode: string;
   authority: string;
   conservationCodeActive: string;
   publicationStatus: string;
+  naturalisedStatus: string;
   review: string;
   isCurrent: string;
   waCensus: string;
@@ -192,12 +202,14 @@ const PER_PAGE_OPTIONS = [15, 25, 50, 100] as const;
 const TABLE_STORE_KEY = 'taxon_names.kit.datatable.v4';
 const DEFAULT_SORT_FIELD = 'updated_on';
 const DEFAULT_SORT_ORDER: SortOrder = 'DESC';
+const NATURALISED_STATUS_NOT_SET = '__not_set__';
 const defaultColumns: ColumnKey[] = [
   'id',
   'name',
   'rank',
   'kingdom',
   'yearPublished',
+  'speciesCode',
   'status',
   'updated',
   'actions',
@@ -208,6 +220,7 @@ const columnOptions: Array<{ key: ColumnKey; label: string }> = [
   { key: 'rank', label: 'Rank' },
   { key: 'kingdom', label: 'Kingdom' },
   { key: 'yearPublished', label: 'Year published' },
+  { key: 'speciesCode', label: 'Species code' },
   { key: 'status', label: 'Status' },
   { key: 'updated', label: 'Updated on' },
   { key: 'legacyId', label: 'LegacyID' },
@@ -303,6 +316,7 @@ const sortableColumns: Partial<Record<ColumnKey, string>> = {
   source: 'source',
   externalId: 'external_id',
   familyCode: 'family_code',
+  speciesCode: 'species_code',
   editor: 'editor',
   naturalisedStatus: 'naturalised_status',
   naturalisedCertainty: 'naturalised_certainty',
@@ -347,7 +361,7 @@ const parseTotal = (response: Response, rows: unknown[]) => {
 };
 
 const buildFilterObject = (filters: TaxonNameFilters) => {
-  const nextFilter: Record<string, string | boolean> = {};
+  const nextFilter: Record<string, string | boolean | null | number[]> = {};
   const trimmedQuery = filters.q.trim();
   const trimmedId = filters.id.trim();
   const isExactNomosIdSearch = /^\d+$/.test(trimmedQuery);
@@ -427,6 +441,11 @@ const buildFilterObject = (filters: TaxonNameFilters) => {
   if (filters.taxonRank) {
     nextFilter.taxon_rank___rank_name = filters.taxonRank;
   }
+  if (filters.kingdomIds.length > 0) {
+    nextFilter.kingdom_id = filters.kingdomIds
+      .map((kingdomId) => Number(kingdomId))
+      .filter((kingdomId) => !Number.isNaN(kingdomId));
+  }
   if (filters.conservationCode) {
     nextFilter.conscode_taxons___conservation_code___conservation_code_value =
       filters.conservationCode;
@@ -441,6 +460,12 @@ const buildFilterObject = (filters: TaxonNameFilters) => {
   }
   if (filters.publicationStatus) {
     nextFilter.publication_status = filters.publicationStatus;
+  }
+  if (filters.naturalisedStatus) {
+    nextFilter.naturalised_status =
+      filters.naturalisedStatus === NATURALISED_STATUS_NOT_SET
+        ? null
+        : filters.naturalisedStatus;
   }
   if (filters.review) {
     nextFilter.review = filters.review === 'true';
@@ -504,6 +529,39 @@ const fetchTaxonNames = async (
     data,
     total: parseTotal(response, data),
   } satisfies TaxonNamesResponse;
+};
+
+const fetchKingdomOptions = async (
+  retryOnAuthError = true
+): Promise<KingdomOption[]> => {
+  const sort = encodeURIComponent(JSON.stringify(['kingdom_name', 'ASC']));
+  const range = encodeURIComponent(JSON.stringify([0, 999]));
+  const filter = encodeURIComponent(JSON.stringify({}));
+  const response = await fetch(
+    `${BACKEND_URL}/kingdoms?sort=${sort}&range=${range}&filter=${filter}`,
+    { headers: buildHeaders() }
+  );
+
+  if (response.status === 401 && retryOnAuthError) {
+    await authProvider.checkError({ status: 401 });
+    return fetchKingdomOptions(false);
+  }
+
+  if (!response.ok) {
+    return [];
+  }
+
+  const rows = await response.json();
+  if (!Array.isArray(rows)) {
+    return [];
+  }
+
+  return rows
+    .map((row: Record<string, unknown>) => ({
+      id: Number(row.kingdom_id ?? row.id),
+      name: String(row.kingdom_name ?? ''),
+    }))
+    .filter((kingdom) => !Number.isNaN(kingdom.id) && kingdom.name);
 };
 
 const fetchReferenceMap = async (
@@ -759,6 +817,28 @@ const publicationStatusLabelMap = PublicationStatus.reduce<Record<string, string
 const getPublicationStatusLabel = (value?: string | null) =>
   value ? publicationStatusLabelMap[value] ?? value : '';
 
+const naturalisedStatusOptions = [
+  { label: 'Any status', value: '' },
+  { label: 'Not set', value: NATURALISED_STATUS_NOT_SET },
+  ...NaturalisedStatus.map((option) => ({
+    label: option.name,
+    value: option.id,
+  })),
+];
+
+const naturalisedStatusLabelMap = NaturalisedStatus.reduce<Record<string, string>>(
+  (acc, option) => {
+    acc[option.id] = option.name;
+    return acc;
+  },
+  {}
+);
+
+const getNaturalisedStatusLabel = (value: string) =>
+  value === NATURALISED_STATUS_NOT_SET
+    ? 'Not set'
+    : naturalisedStatusLabelMap[value] ?? value;
+
 const booleanOptions = [
   { label: 'Any', value: '' },
   { label: 'Yes', value: 'true' },
@@ -904,6 +984,8 @@ const getExportValue = (
       return record.external_id ?? '';
     case 'familyCode':
       return record.family_code ?? '';
+    case 'speciesCode':
+      return record.species_code ?? '';
     case 'editor':
       return record.editor ?? '';
     case 'naturalisedStatus':
@@ -1079,10 +1161,15 @@ const TaxonNamesPage = () => {
       acceptedName: searchParams.get('accepted_name') || '',
       reviewReason: searchParams.get('review_reason') || '',
       taxonRank: searchParams.get('taxon_rank') || '',
+      kingdomIds: (searchParams.get('kingdom_ids') || '')
+        .split(',')
+        .map((kingdomId) => kingdomId.trim())
+        .filter(Boolean),
       conservationCode: searchParams.get('conservation_code') || '',
       authority: searchParams.get('authority') || '',
       conservationCodeActive: searchParams.get('conservation_code_active') || '',
       publicationStatus: searchParams.get('publication_status') || '',
+      naturalisedStatus: searchParams.get('naturalised_status') || '',
       review: searchParams.get('review') || '',
       isCurrent: searchParams.get('is_current') || '',
       waCensus: searchParams.get('is_wa_recognised') || '',
@@ -1105,6 +1192,7 @@ const TaxonNamesPage = () => {
   const [draftFilters, setDraftFilters] = React.useState(filters);
   const [publicationMap, setPublicationMap] = React.useState<Record<number, string>>({});
   const [userMap, setUserMap] = React.useState<Record<number, string>>({});
+  const [kingdomOptions, setKingdomOptions] = React.useState<KingdomOption[]>([]);
   const [ancestorMaps, setAncestorMaps] = React.useState<
     Partial<Record<AncestorResource, Record<number, string>>>
   >({});
@@ -1128,6 +1216,20 @@ const TaxonNamesPage = () => {
   React.useEffect(() => {
     setDraftFilters(filters);
   }, [filters]);
+
+  React.useEffect(() => {
+    let active = true;
+
+    fetchKingdomOptions().then((kingdoms) => {
+      if (active) {
+        setKingdomOptions(kingdoms);
+      }
+    });
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   React.useEffect(() => {
     let active = true;
@@ -1215,6 +1317,14 @@ const TaxonNamesPage = () => {
   }, [state.data]);
 
   const totalPages = Math.max(Math.ceil(state.total / perPage), 1);
+  const kingdomLabelMap = React.useMemo(
+    () =>
+      kingdomOptions.reduce<Record<string, string>>((acc, kingdom) => {
+        acc[String(kingdom.id)] = kingdom.name;
+        return acc;
+      }, {}),
+    [kingdomOptions]
+  );
   const activeFilterBadges = React.useMemo(
     () =>
       [
@@ -1231,8 +1341,22 @@ const TaxonNamesPage = () => {
           : null,
         filters.author ? { label: 'Author', value: filters.author } : null,
         filters.taxonRank ? { label: 'Taxon rank', value: filters.taxonRank } : null,
+        filters.kingdomIds.length > 0
+          ? {
+              label: 'Kingdom',
+              value: filters.kingdomIds
+                .map((kingdomId) => kingdomLabelMap[kingdomId] ?? kingdomId)
+                .join(', '),
+            }
+          : null,
         filters.publicationStatus
           ? { label: 'Status', value: filters.publicationStatus }
+          : null,
+        filters.naturalisedStatus
+          ? {
+              label: 'Naturalised status',
+              value: getNaturalisedStatusLabel(filters.naturalisedStatus),
+            }
           : null,
         filters.review ? { label: 'Review', value: getBooleanLabel(filters.review) } : null,
         filters.isCurrent
@@ -1296,7 +1420,7 @@ const TaxonNamesPage = () => {
           ? { label: 'Deleted only', value: 'Yes' }
           : null,
       ].filter(Boolean) as Array<{ label: string; value: string }>,
-    [canUseDeletedFilter, filters]
+    [canUseDeletedFilter, filters, kingdomLabelMap]
   );
 
   const updateParams = (
@@ -1321,6 +1445,13 @@ const TaxonNamesPage = () => {
     }
     if (typeof next.sortOrder === 'string') {
       params.set('sortOrder', next.sortOrder);
+    }
+    if (Array.isArray(next.kingdomIds)) {
+      if (next.kingdomIds.length > 0) {
+        params.set('kingdom_ids', next.kingdomIds.join(','));
+      } else {
+        params.delete('kingdom_ids');
+      }
     }
     ([
       ['q', next.q],
@@ -1351,6 +1482,7 @@ const TaxonNamesPage = () => {
       ['authority', next.authority],
       ['conservation_code_active', next.conservationCodeActive],
       ['publication_status', next.publicationStatus],
+      ['naturalised_status', next.naturalisedStatus],
       ['review', next.review],
       ['is_current', next.isCurrent],
       ['is_wa_recognised', next.waCensus],
@@ -1401,10 +1533,12 @@ const TaxonNamesPage = () => {
       acceptedName: draftFilters.acceptedName.trim(),
       reviewReason: draftFilters.reviewReason.trim(),
       taxonRank: draftFilters.taxonRank,
+      kingdomIds: draftFilters.kingdomIds,
       conservationCode: draftFilters.conservationCode.trim(),
       authority: draftFilters.authority,
       conservationCodeActive: draftFilters.conservationCodeActive,
       publicationStatus: draftFilters.publicationStatus,
+      naturalisedStatus: draftFilters.naturalisedStatus,
       review: draftFilters.review,
       isCurrent: draftFilters.isCurrent,
       waCensus: draftFilters.waCensus,
@@ -1492,14 +1626,20 @@ const TaxonNamesPage = () => {
         return textOrEmpty(record.volume_information);
       case 'status':
         return (
-          <div className="flex flex-wrap gap-2">
+          <div className="inline-flex min-w-max !flex-nowrap items-center gap-2 !whitespace-nowrap">
             {getPublicationStatusLabel(record.publication_status) ? (
-              <Badge variant="outline">
+              <Badge variant="outline" className="shrink-0 whitespace-nowrap">
                 {getPublicationStatusLabel(record.publication_status)}
               </Badge>
             ) : null}
-            {record.review ? <Badge variant="secondary">Review</Badge> : null}
-            {record.is_current ? <Badge>Current</Badge> : null}
+            {record.review ? (
+              <Badge variant="secondary" className="shrink-0 whitespace-nowrap">
+                Review
+              </Badge>
+            ) : null}
+            {record.is_current ? (
+              <Badge className="shrink-0 whitespace-nowrap">Current</Badge>
+            ) : null}
           </div>
         );
       case 'reviewFlag':
@@ -1554,6 +1694,8 @@ const TaxonNamesPage = () => {
         return textOrEmpty(record.external_id);
       case 'familyCode':
         return textOrEmpty(record.family_code);
+      case 'speciesCode':
+        return textOrEmpty(record.species_code);
       case 'editor':
         return textOrEmpty(record.editor);
       case 'naturalisedStatus':
@@ -1646,6 +1788,42 @@ const TaxonNamesPage = () => {
     </div>
   );
 
+  const renderKingdomFilter = () => (
+    <div className="space-y-2">
+      <label className="text-sm font-medium">Kingdom</label>
+      <div className="max-h-48 space-y-2 overflow-auto rounded-xl border border-border px-3 py-2">
+        {kingdomOptions.length > 0 ? (
+          kingdomOptions.map((kingdom) => {
+            const kingdomId = String(kingdom.id);
+            const checked = draftFilters.kingdomIds.includes(kingdomId);
+
+            return (
+              <label
+                key={kingdom.id}
+                className="flex items-center gap-2 text-sm"
+              >
+                <Checkbox
+                  checked={checked}
+                  onCheckedChange={(nextChecked) =>
+                    setDraftFilters((current) => ({
+                      ...current,
+                      kingdomIds: nextChecked
+                        ? [...current.kingdomIds, kingdomId]
+                        : current.kingdomIds.filter((id) => id !== kingdomId),
+                    }))
+                  }
+                />
+                <span>{kingdom.name}</span>
+              </label>
+            );
+          })
+        ) : (
+          <p className="text-sm text-muted-foreground">No kingdoms available</p>
+        )}
+      </div>
+    </div>
+  );
+
   const renderDeletedOnlyFilter = () => (
     <div className="space-y-2">
       <label className="inline-flex items-center gap-2 text-sm font-medium">
@@ -1689,10 +1867,12 @@ const TaxonNamesPage = () => {
       acceptedName: '',
       reviewReason: '',
       taxonRank: '',
+      kingdomIds: [],
       conservationCode: '',
       authority: '',
       conservationCodeActive: '',
       publicationStatus: '',
+      naturalisedStatus: '',
       review: '',
       isCurrent: '',
       waCensus: '',
@@ -1878,10 +2058,16 @@ const TaxonNamesPage = () => {
                 }))
               )
             )}
+            {renderKingdomFilter()}
             {renderSelectFilter(
               'Publication status',
               'publicationStatus',
               publicationStatusOptions
+            )}
+            {renderSelectFilter(
+              'Naturalised status',
+              'naturalisedStatus',
+              naturalisedStatusOptions
             )}
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
               {renderSelectFilter('Review', 'review', booleanOptions)}
@@ -2041,7 +2227,13 @@ const TaxonNamesPage = () => {
               label={columnLabelMap[column.key]}
               disableSort={!sortableColumns[column.key]}
               headerClassName={column.key === 'actions' ? 'text-right' : undefined}
-              cellClassName={column.key === 'actions' ? 'align-top' : undefined}
+              cellClassName={
+                column.key === 'actions'
+                  ? 'align-top'
+                  : column.key === 'status'
+                    ? 'min-w-56 whitespace-nowrap [&>div]:!flex-nowrap [&>div]:!whitespace-nowrap'
+                    : undefined
+              }
               render={(record) => renderCellContent(column.key, record)}
             />
           ))}

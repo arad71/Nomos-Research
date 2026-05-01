@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import decodeJwt from 'jwt-decode';
+import { jwtDecode as decodeJwt } from 'jwt-decode';
 import {
   ChevronLeft,
   ChevronRight,

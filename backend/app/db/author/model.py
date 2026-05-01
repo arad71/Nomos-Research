@@ -1,10 +1,13 @@
-from sqlalchemy import Column, Integer, String, func
+from sqlalchemy import Column, Date, Integer, String, func
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import column_property, relationship
 from sqlalchemy.schema import Index
 
 from app.db.author.constants import (
     AUTHOR,
+    DISCIPLINE,
+    EFFECTIVE_FROM,
+    EFFECTIVE_TO,
     FIRST_NAMES,
     INITIALS,
     ORC_ID,
@@ -40,6 +43,9 @@ class Author(BaseModel, TableMixin):
     first_names = Column(String(60), comment=FIRST_NAMES, doc=FIRST_NAMES)
     initials = Column(String(30), comment=INITIALS, doc=INITIALS)
     orc_id = Column(String(255), comment=ORC_ID, doc=ORC_ID)
+    discipline = Column(String(255), comment=DISCIPLINE, doc=DISCIPLINE)
+    effective_from = Column(Date, comment=EFFECTIVE_FROM, doc=EFFECTIVE_FROM)
+    effective_to = Column(Date, comment=EFFECTIVE_TO, doc=EFFECTIVE_TO)
     publications = relationship(
         "Publication", secondary="publication_author", back_populates="author"
     )

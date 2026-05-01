@@ -6,6 +6,7 @@ import { ReferenceArrayField } from '@/components/admin/reference-array-field';
 import { ReferenceField } from '@/components/admin/reference-field';
 import { Show } from '@/components/admin/show';
 import { SingleFieldList } from '@/components/admin/single-field-list';
+import { formatAuthorOption } from '../authors/authorDisplay';
 import HistoryInfoBox from '../shared/HistoryInfoBox';
 import PublicationTaxonPublicationsSection from './PublicationTaxonPublicationsSection';
 import RecordPageActions from '../shared/RecordPageActions';
@@ -144,7 +145,7 @@ const PublicationShowPage = () => (
               <RecordField label="Authors" className="xl:col-span-4">
                 <ReferenceArrayField reference="authors" source="author_ids">
                   <SingleFieldList>
-                    <RecordField source="abbreviation" label="" />
+                    <RecordField label="" render={formatAuthorOption} />
                   </SingleFieldList>
                 </ReferenceArrayField>
               </RecordField>

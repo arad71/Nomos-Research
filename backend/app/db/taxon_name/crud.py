@@ -23,12 +23,16 @@ from app.db.taxon_name.infrageneric_names import (
 )
 from app.db.taxon_name.model import TaxonName
 from app.db.taxon_name.parallel_name_preview import generate_parallel_name_preview
+from app.db.taxon_name.species_code import (
+    generate_species_code,
+    should_generate_species_code,
+)
 from app.db.taxon_name_parent.model import TaxonNameParent
 from app.db.taxon_rank.model import TaxonRank
 from app.db.user.model import User
 
 CALCULATE_LOG = "/app/log/calculate.log"
-
+# CALCULATE_LOG = "/mnt/c/Projects_BIO/Nomos/backend/app/log/calculate.log"
 INFRAGENUS = "Infragenus"
 
 INFRAGENUS_WITH_RANK = "Infragenus with rank"
@@ -290,6 +294,8 @@ class TaxonNameCrud(crud.Crud):
                 )
                 db.add(informal_group)
             db.commit()
+        cls.calculate_species_code(db_taxon_name)
+        db.commit()
         cls.calculate_name_formats(db, db_taxon_name.taxon_name_id)
         return db_taxon_name
 
@@ -379,6 +385,8 @@ class TaxonNameCrud(crud.Crud):
             db.commit()
             delattr(taxon_name, "classification_system_ids")
         db_taxon_name = super().edit_item(db, current_user, taxon_name_id, taxon_name)
+        cls.calculate_species_code(db_taxon_name)
+        db.commit()
         cls.calculate_name_formats(db, db_taxon_name.taxon_name_id)
         return db_taxon_name
 
@@ -643,6 +651,10 @@ class TaxonNameCrud(crud.Crud):
             taxon_name.canonical_name_without_rank = append_ms_suffix(
                 taxon_name.canonical_name_without_rank
             )
+            taxon_name.infragenus_name = append_ms_suffix(taxon_name.infragenus_name)
+            taxon_name.infragenus_name_with_rank = append_ms_suffix(
+                taxon_name.infragenus_name_with_rank
+            )
         else:
             taxon_name.scientific_name = remove_ms_suffix(taxon_name.scientific_name)
             taxon_name.formatted_scientific_name = remove_ms_suffix(
@@ -651,6 +663,10 @@ class TaxonNameCrud(crud.Crud):
             taxon_name.canonical_name = remove_ms_suffix(taxon_name.canonical_name)
             taxon_name.canonical_name_without_rank = remove_ms_suffix(
                 taxon_name.canonical_name_without_rank
+            )
+            taxon_name.infragenus_name = remove_ms_suffix(taxon_name.infragenus_name)
+            taxon_name.infragenus_name_with_rank = remove_ms_suffix(
+                taxon_name.infragenus_name_with_rank
             )
 
         if db.is_modified(taxon_name):
@@ -700,3 +716,13 @@ class TaxonNameCrud(crud.Crud):
         cls.calculation_total = 0
         cls.calculation_modified = 0
         cls.calculation_unmodified = 0
+
+    @classmethod
+    def calculate_species_code(cls, taxon_name: TaxonName) -> None:
+        """
+        Calculate and assign species_code for a TaxonName if applicable.
+        """
+        if should_generate_species_code(taxon_name):
+            taxon_name.species_code = generate_species_code(taxon_name)
+        else:
+            taxon_name.species_code = None

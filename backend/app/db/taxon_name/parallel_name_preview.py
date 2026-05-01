@@ -208,19 +208,78 @@ def derive_parallel_name(
 
     if parent_taxa:
         if len(parent_taxa) >= 2:
+            is_named_hybrid = (
+                bool(getattr(taxon_name, "is_hybrid", False))
+                and getattr(getattr(taxon_name, "hybrid_category", None), "value", None)
+                == "named_hybrid"
+            )
+            if is_named_hybrid and rank_name in {
+                SPECIES_RANK_NAME,
+                *INFRASPECIFIC_RANK_NAMES,
+            }:
+                strategy = "named_hybrid_parent_genus_inheritance"
+                first_parent = parent_taxa[0]
+                first_parent_value = (
+                    normalize_parallel_name_part(first_parent.uninomial)
+                    or normalize_parallel_name_part(
+                        best_parent_name_value(first_parent, italicize=False)
+                    )
+                    or normalize_parallel_name_part(first_parent.scientific_name)
+                    or normalize_parallel_name_part(first_parent.canonical_name)
+                )
+                parent_genus = extract_leading_name_token(first_parent_value)
+                if parent_genus:
+                    components.uninomial = parent_genus
+                    notes.append(
+                        f"Derived named-hybrid genus from the first linked parent taxon {first_parent.taxon_name_id}."
+                    )
+                else:
+                    notes.append(
+                        f"Could not derive a genus token from the first linked parent taxon {first_parent.taxon_name_id}; kept the current parallel uninomial value."
+                    )
+                notes.append(
+                    "Retained the child epithet and author while using parent links only to determine named-hybrid lineage."
+                )
+                derived_canonical_name = calculated.calculate_canonical_name_string(
+                    components
+                )
+                derived_scientific_name = calculated.calculate_scientific_name_string(
+                    components=components,
+                    is_autonym=taxon_name.is_autonym,
+                    italicize=False,
+                )
+                derived_formatted_scientific_name = (
+                    calculated.calculate_scientific_name_string(
+                        components=components,
+                        is_autonym=taxon_name.is_autonym,
+                        italicize=True,
+                    )
+                )
+                return {
+                    "strategy": strategy,
+                    "notes": notes,
+                    "parent_taxon_name_ids": [
+                        parent.taxon_name_id for parent in parent_taxa
+                    ],
+                    "uninomial": components.uninomial,
+                    "canonical_name": derived_canonical_name,
+                    "scientific_name": derived_scientific_name,
+                    "formatted_scientific_name": derived_formatted_scientific_name,
+                }
             strategy = "hybrid_parent_formula"
             notes.append(
                 "Derived from ordered parent links using the current hybrid separator rules."
             )
             parent_formula_canonical = join_parent_names(taxon_name, parent_taxa)
-            parent_formula_scientific = calculated.filter_join(
-                [parent_formula_canonical, taxon_name.author]
+            parent_formula_scientific = join_parent_names(
+                taxon_name,
+                parent_taxa,
+                name_value="scientific",
             )
-            parent_formula_scientific_formatted = calculated.filter_join(
-                [
-                    join_parent_names(taxon_name, parent_taxa, italicize=True),
-                    taxon_name.author,
-                ]
+            parent_formula_scientific_formatted = join_parent_names(
+                taxon_name,
+                parent_taxa,
+                name_value="formatted_scientific",
             )
             return {
                 "strategy": strategy,
@@ -605,54 +664,142 @@ def join_parent_names(
     taxon_name: TaxonName,
     parent_taxa: list[TaxonName],
     italicize: bool = False,
+    name_value: str = "canonical",
 ) -> str | None:
     separator = HYBRID_SEPARATOR_BY_CATEGORY.get(
         taxon_name.hybrid_category.value if taxon_name.hybrid_category else None,
         " × ",
     )
     parent_values = [
-        best_parent_name_value(parent, italicize=False) for parent in parent_taxa
+        bracket_hybrid_parent_name(
+            parent,
+            best_parent_name_value(parent, italicize=False, name_value=name_value),
+        )
+        for parent in parent_taxa
     ]
     parent_values = [value for value in parent_values if value]
     if not parent_values:
         return None
-    parent_values = compact_same_genus_hybrid_parent_values(parent_values)
     if italicize:
         parent_values = [calculated.italicize_name(value) for value in parent_values]
     return separator.join(parent_values)
 
 
-def best_parent_name_value(parent: TaxonName, italicize: bool = False) -> str | None:
-    value = (
-        parent.infragenus_name
-        or parent.canonical_name_without_rank
-        or parent.canonical_name
-        or parent.uninomial
-    )
+def best_parent_name_value(
+    parent: TaxonName,
+    italicize: bool = False,
+    name_value: str = "canonical",
+) -> str | None:
+    if name_value == "formatted_scientific":
+        value = build_parent_formatted_scientific_name(parent)
+    elif name_value == "scientific":
+        value = parent.scientific_name
+    else:
+        value = (
+            parent.infragenus_name
+            or parent.canonical_name_without_rank
+            or parent.canonical_name
+            or parent.uninomial
+        )
     if not value:
         return None
     return calculated.italicize_name(value) if italicize else value
 
 
-def compact_same_genus_hybrid_parent_values(
-    parent_values: list[str],
-) -> list[str]:
-    if len(parent_values) < 2:
-        return parent_values
+def bracket_hybrid_parent_name(parent: TaxonName, value: str | None) -> str | None:
+    if not value or not parent_is_hybrid_formula_group(parent=parent, value=value):
+        return value
 
-    compacted_values = [parent_values[0]]
-    shared_genus = extract_leading_name_token(parent_values[0])
-    if not shared_genus:
-        return parent_values
+    stripped_value = value.strip()
+    if stripped_value.startswith("(") and stripped_value.endswith(")"):
+        return stripped_value
 
-    for index, parent_value in enumerate(parent_values[1:], start=1):
-        if index == 1:
-            compacted_values.append(
-                remove_shared_leading_genus(parent_value, shared_genus) or parent_value
-            )
-        else:
-            compacted_values.append(parent_value)
-    return compacted_values
+    return f"({stripped_value})"
+
+
+def parent_is_hybrid_formula_group(parent: TaxonName, value: str) -> bool:
+    hybrid_category = getattr(getattr(parent, "hybrid_category", None), "value", None)
+    if bool(getattr(parent, "is_hybrid", False)) or hybrid_category in {
+        "hybrid_formula",
+        "intergrade",
+    }:
+        return True
+
+    return bool(re.search(r"\s(?:×|x|X|-)\s", value))
+
+
+def build_parent_formatted_scientific_name(parent: TaxonName) -> str | None:
+    uninomial = getattr(parent, "uninomial", None)
+    specific_epithet = getattr(parent, "specific_epithet", None)
+    infraspecific_epithet = getattr(parent, "infraspecific_epithet", None)
+    author = getattr(parent, "author", None)
+
+    if uninomial and specific_epithet:
+        rank_abbreviation = (
+            getattr(parent, "rank_abbreviation", None)
+            or getattr(parent, "rank_abbrev", None)
+            or getattr(getattr(parent, "taxon_rank", None), "rank_abbrev", None)
+        )
+        rank_abbreviation = normalize_rank_abbreviation(rank_abbreviation)
+        return calculated.calculate_scientific_name_string(
+            components=schema.NameStringComponents(
+                uninomial=uninomial,
+                specific_epithet=specific_epithet,
+                rank_abbreviation=rank_abbreviation,
+                infraspecific_epithet=infraspecific_epithet,
+                author=author,
+            ),
+            is_autonym=bool(getattr(parent, "is_autonym", False)),
+            italicize=True,
+        )
+
+    formatted_scientific_name = getattr(parent, "formatted_scientific_name", None)
+    if formatted_scientific_name:
+        return unitalicize_infraspecific_rank_abbreviations(formatted_scientific_name)
+
+    return getattr(parent, "scientific_name", None)
+
+
+def unitalicize_infraspecific_rank_abbreviations(value: str) -> str:
+    rank_values = sorted(
+        {rank for rank in RankAbbreviationVals.values() if rank.endswith(".")},
+        key=len,
+        reverse=True,
+    )
+    if not rank_values:
+        return value
+
+    rank_pattern = "|".join(re.escape(rank) for rank in rank_values)
+    pattern = re.compile(rf"<i>([^<]*?)\s+({rank_pattern})\s+([^<]*?)</i>")
+
+    def replace_rank(match: re.Match[str]) -> str:
+        name_before_rank = (match.group(1) or "").strip()
+        rank_abbreviation = match.group(2)
+        name_after_rank = (match.group(3) or "").strip()
+
+        replacement_parts = []
+        if name_before_rank:
+            replacement_parts.append(f"<i>{name_before_rank}</i>")
+        replacement_parts.append(rank_abbreviation)
+        if name_after_rank:
+            replacement_parts.append(f"<i>{name_after_rank}</i>")
+
+        return " ".join(replacement_parts)
+
+    return pattern.sub(replace_rank, value)
+
+
+def normalize_rank_abbreviation(rank_abbreviation: object | None) -> str | None:
+    if not rank_abbreviation:
+        return None
+
+    raw_value = getattr(rank_abbreviation, "value", rank_abbreviation)
+    if not isinstance(raw_value, str):
+        return None
+    if raw_value.endswith("."):
+        return raw_value
+
+    return RankAbbreviationVals.get(raw_value, f"{raw_value}.")
 
 
 def extract_leading_name_token(value: str | None) -> str | None:
@@ -664,20 +811,6 @@ def extract_leading_name_token(value: str | None) -> str | None:
         return None
     token = (match.group(1) or "").strip()
     return token or None
-
-
-def remove_shared_leading_genus(
-    value: str | None,
-    shared_genus: str | None,
-) -> str | None:
-    normalized_value = normalize_parallel_name_part(value)
-    if not normalized_value or not shared_genus:
-        return normalized_value
-    prefix = f"{shared_genus} "
-    if not normalized_value.startswith(prefix):
-        return normalized_value
-    stripped_value = normalized_value[len(prefix) :].strip()
-    return stripped_value or normalized_value
 
 
 def build_higher_rank_infrageneric_name(
@@ -765,10 +898,7 @@ def ensure_rank_abbreviation_from_taxon(
     if not rank_abbrev:
         return
 
-    components.rank_abbreviation = RankAbbreviationVals.get(
-        rank_abbrev,
-        f"{rank_abbrev}.",
-    )
+    components.rank_abbreviation = normalize_rank_abbreviation(rank_abbrev)
 
 
 def extract_stored_bracketed_scientific_component(

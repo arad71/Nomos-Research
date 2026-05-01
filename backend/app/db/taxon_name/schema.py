@@ -91,9 +91,15 @@ class TaxonNameBase(BaseModel):
     is_wa_recognised: Optional[bool] = Field(
         default=False, description=constants.IS_WA_RECOGNISED
     )
+    species_code: Optional[str] = Field(
+        default=None, description=constants.SPECIES_CODE
+    )
     legacy_id: Optional[str] = Field(default=None, description=constants.LEGACY_ID)
     admin_comment: Optional[str] = None
     classification_system_ids: Optional[list[int]] = None
+    legacy_publication_id: Optional[int] = Field(
+        default=None, description=constants.LEGACY_PUBLICATION_ID
+    )
 
     # ---- Cross-field validation (Pydantic v2) ----
     @model_validator(mode="after")

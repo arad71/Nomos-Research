@@ -145,7 +145,7 @@ const TaxonNameFormInner = ({
             reference="taxon_ranks"
             sort={{ field: 'rank_name', order: 'ASC' }}
             filter={kingdomId ? { kingdom_id: kingdomId } : undefined}
-            perPage={100}
+            perPage={1000}
           >
             <AutocompleteInput
               optionText={formatRankOption}

@@ -59,6 +59,10 @@ def calculate_fields(
         target.formatted_scientific_name = append_ms_suffix(
             target.formatted_scientific_name
         )
+        target.infragenus_name = append_ms_suffix(target.infragenus_name)
+        target.infragenus_name_with_rank = append_ms_suffix(
+            target.infragenus_name_with_rank
+        )
     else:
         target.canonical_name = remove_ms_suffix(target.canonical_name)
         target.canonical_name_without_rank = remove_ms_suffix(
@@ -67,6 +71,10 @@ def calculate_fields(
         target.scientific_name = remove_ms_suffix(target.scientific_name)
         target.formatted_scientific_name = remove_ms_suffix(
             target.formatted_scientific_name
+        )
+        target.infragenus_name = remove_ms_suffix(target.infragenus_name)
+        target.infragenus_name_with_rank = remove_ms_suffix(
+            target.infragenus_name_with_rank
         )
 
 
@@ -270,7 +278,7 @@ def format_specific_epithet_for_display(
         else normalized_specific_epithet
     )
     if hybrid_marker_on_specific_epithet:
-        return f"×{display_value}"
+        return f"× {display_value}"
     return display_value
 
 
@@ -293,7 +301,7 @@ def format_infraspecific_epithet_for_display(
         else normalized_infraspecific_epithet
     )
     if hybrid_marker_on_infraspecific_epithet:
-        return f"×{display_value}"
+        return f"× {display_value}"
     return display_value
 
 
