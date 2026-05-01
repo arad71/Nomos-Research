@@ -20,7 +20,7 @@ const httpClient = (url: any, options?: any) => {
   const token = localStorage.getItem('token');
   options.headers.set('Authorization', `Bearer ${token}`);
 
-  const normalizeApiError = (detail: any, error?: any): string => {
+  const normalizeApiError = (detail: any): string => {
     if (typeof detail === 'string') {
       return detail;
     }
@@ -43,25 +43,13 @@ const httpClient = (url: any, options?: any) => {
       }
       return JSON.stringify(detail);
     }
-    if (typeof error?.body?.message === 'string') {
-      return error.body.message;
-    }
-    if (typeof error?.body === 'string' && error.body.trim()) {
-      return error.body;
-    }
-    if (typeof error?.message === 'string' && error.message.trim()) {
-      return error.message;
-    }
-    if (error?.status) {
-      return `Request failed (${error.status})`;
-    }
     return 'Request failed';
   };
 
   return fetchUtils.fetchJson(url, options).catch((error: any) => {
     return new Promise((resolve, reject) => {
       const detail = error?.body?.detail;
-      reject({ message: normalizeApiError(detail, error), status: error?.status });
+      reject({ message: normalizeApiError(detail), status: error?.status });
     });
   });
 };
