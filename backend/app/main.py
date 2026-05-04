@@ -29,6 +29,7 @@ from app.api.api_v1.routers.taxon_name_parents import taxon_name_parents_router
 from app.api.api_v1.routers.taxon_names import taxon_names_router
 from app.api.api_v1.routers.taxon_publications import taxon_publications_router
 from app.api.api_v1.routers.taxon_ranks import taxon_ranks_router
+from app.api.api_v1.routers.trusted_sources import trusted_sources_router
 from app.api.api_v1.routers.user_roles import user_roles_router
 from app.api.api_v1.routers.users import users_router
 from app.api.api_v1.routers.vernaculars import vernaculars_router
@@ -200,6 +201,13 @@ app.include_router(
     vernaculars_router,
     prefix=API_V1_URL,
     tags=["vernaculars"],
+    dependencies=[Depends(get_current_active_user)],
+)
+
+app.include_router(
+    trusted_sources_router,
+    prefix=API_V1_URL,
+    tags=["trusted_sources"],
     dependencies=[Depends(get_current_active_user)],
 )
 
