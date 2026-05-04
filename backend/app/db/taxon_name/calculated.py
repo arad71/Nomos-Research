@@ -334,6 +334,13 @@ def calculate_canonical_name_string(
         ]
     )
 
+def _build_authority_with_ex(primary_authors, ex_authors):
+    primary_str = stringify_citation_authors(primary_authors) if primary_authors else None
+    ex_str = stringify_citation_authors(ex_authors) if ex_authors else None
+    
+    if primary_str and ex_str:
+        return f"{primary_str} ex {ex_str}"
+    return primary_str or ex_str
 
 def map_authors(
     target: model.TaxonName,
@@ -373,16 +380,30 @@ def map_authors(
     else:
         # Non-Animal Names
         val = ""
-        if enums.AuthorType.basionym in author_types:
-            basionym_authors = stringify_citation_authors(
-                author_types[enums.AuthorType.basionym]
-            )
-            val = f"({basionym_authors})"
-        if enums.AuthorType.current in author_types:
-            current_authors = stringify_citation_authors(
-                author_types[enums.AuthorType.current]
-            )
-            val = filter_join([val, current_authors])
+        # if enums.AuthorType.basionym in author_types:
+        #     basionym_authors = stringify_citation_authors(
+        #         author_types[enums.AuthorType.basionym]
+        #     )
+        #     val = f"({basionym_authors})"
+        # if enums.AuthorType.current in author_types:
+        #     current_authors = stringify_citation_authors(
+        #         author_types[enums.AuthorType.current]
+        #     )
+        #     val = filter_join([val, current_authors])
+        basionym_str=_build_authority_with_ex(
+            author_types.get(enums.AuthorType.basionym),
+            author_types.get(enums.AuthorType.ex_basionym),
+        )
+        if basionym_str:
+            val = f"({basionym_str})"
+        
+        current_str=_build_authority_with_ex(
+            author_types.get(enums.AuthorType.current),
+            author_types.get(enums.AuthorType.ex_current),
+        )
+        if current_str:
+            val = filter_join([val, current_str])
+
         if val:
             return val
     return None
