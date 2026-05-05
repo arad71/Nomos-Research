@@ -69,6 +69,13 @@ class CrossReferenceBase(BaseModel):
                     "reference_comments is required when new_name_id is null"
                 )
 
+        if self.cross_reference_type in _ALLOWED_NULL_NEW_NAME_TYPES:
+            self.new_name_id = None  # Ensure new_name_id is set to None for these types
+            if not self.reference_comments or not self.reference_comments.strip():
+                raise ValueError(
+                    "reference_comments is required when new_name_id is null"
+                )
+
         return self
 
 
