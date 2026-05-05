@@ -1,6 +1,40 @@
 from types import SimpleNamespace
 
-from app.db.taxon_name.parallel_name_preview import join_parent_names
+from app.db.taxon_name.parallel_name_preview import (
+    derive_parallel_name,
+    join_parent_names,
+)
+
+
+def test_derive_parallel_name_marks_genus_level_named_hybrid():
+    taxon_name = SimpleNamespace(
+        taxon_name_id=1,
+        author="D.L.Jones & M.A.Clem.",
+        is_autonym=False,
+        taxon_rank=SimpleNamespace(rank_name="Genus", rank_abbrev=None),
+        rank_name="Genus",
+        is_hybrid=True,
+        hybrid_category=SimpleNamespace(value="named_hybrid"),
+        taxon_name_parents=[],
+        parallel_override_uninomial="Cyanthera",
+        parallel_override_specific_epithet=None,
+        parallel_override_infraspecific_epithet=None,
+        uninomial="Cyanthera",
+        specific_epithet=None,
+        infraspecific_epithet=None,
+        canonical_name="Cyanthera",
+        scientific_name="Cyanthera D.L.Jones & M.A.Clem.",
+    )
+
+    derived = derive_parallel_name(None, taxon_name, strict=True)
+
+    assert derived["uninomial"] == "Cyanthera"
+    assert derived["canonical_name"] == "× Cyanthera"
+    assert derived["scientific_name"] == "× Cyanthera D.L.Jones & M.A.Clem."
+    assert (
+        derived["formatted_scientific_name"]
+        == "× <i>Cyanthera</i> D.L.Jones & M.A.Clem."
+    )
 
 
 def test_join_parent_names_keeps_repeated_genus_for_hybrid_formula():

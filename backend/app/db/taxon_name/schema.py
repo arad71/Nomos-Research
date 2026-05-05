@@ -201,6 +201,7 @@ class NameStringComponents(BaseModel):
     infraspecific_epithet: Optional[str] = None
     author: Optional[str] = None
     is_hybrid_formula: bool = False
+    hybrid_marker_on_uninomial: bool = False
     hybrid_marker_on_specific_epithet: bool = False
     hybrid_marker_on_infraspecific_epithet: bool = False
 

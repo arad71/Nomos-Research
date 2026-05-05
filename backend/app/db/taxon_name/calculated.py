@@ -140,8 +140,10 @@ def calculate_scientific_name_string(
         components.uninomial,
         is_hybrid_formula=(
             components.is_hybrid_formula
+            and not components.hybrid_marker_on_uninomial
             and not components.hybrid_marker_on_specific_epithet
         ),
+        hybrid_marker_on_uninomial=components.hybrid_marker_on_uninomial,
         italicize=italicize,
     )
     if uninomial:
@@ -240,9 +242,14 @@ def format_uninomial_for_display(
     uninomial: str | None,
     *,
     is_hybrid_formula: bool = False,
+    hybrid_marker_on_uninomial: bool = False,
     italicize: bool = False,
 ) -> str | None:
-    normalized_uninomial = uninomial.strip() if uninomial else None
+    normalized_uninomial = (
+        strip_hybrid_formula_prefix(uninomial)
+        if hybrid_marker_on_uninomial
+        else uninomial.strip() if uninomial else None
+    )
     if not normalized_uninomial:
         return None
     if is_hybrid_formula:
@@ -256,6 +263,8 @@ def format_uninomial_for_display(
     display_value = (
         italicize_name(normalized_uninomial) if italicize else normalized_uninomial
     )
+    if hybrid_marker_on_uninomial:
+        return f"× {display_value}"
     return display_value
 
 
@@ -316,8 +325,10 @@ def calculate_canonical_name_string(
                 components.uninomial,
                 is_hybrid_formula=(
                     components.is_hybrid_formula
+                    and not components.hybrid_marker_on_uninomial
                     and not components.hybrid_marker_on_specific_epithet
                 ),
+                hybrid_marker_on_uninomial=components.hybrid_marker_on_uninomial,
                 italicize=False,
             ),
             format_specific_epithet_for_display(
