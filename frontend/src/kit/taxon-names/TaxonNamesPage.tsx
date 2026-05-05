@@ -202,6 +202,7 @@ type TaxonNameFilters = {
   specificEpithet: string;
   acceptedName: string;
   reviewReason: string;
+  speciesCode: string;
   taxonRank: string;
   kingdomIds: string[];
   conservationCode: string;
@@ -279,6 +280,7 @@ const columnOptions: Array<{ key: ColumnKey; label: string }> = [
   { key: 'source', label: 'Source' },
   { key: 'externalId', label: 'External ID' },
   { key: 'familyCode', label: 'Family code' },
+  { key: 'speciesCode', label: 'Species code' },
   { key: 'editor', label: 'Editor' },
   { key: 'naturalisedStatus', label: 'Naturalised status' },
   { key: 'naturalisedCertainty', label: 'Naturalised certainty' },
@@ -459,6 +461,9 @@ const buildFilterObject = (filters: TaxonNameFilters) => {
   }
   if (filters.reviewReason) {
     nextFilter.review_reason__contains = filters.reviewReason;
+  }
+  if (filters.speciesCode) {
+    nextFilter.species_code__contains = filters.speciesCode;
   }
   if (filters.taxonRank) {
     nextFilter.taxon_rank___rank_name = filters.taxonRank;
@@ -1297,6 +1302,7 @@ const TaxonNamesPage = () => {
       specificEpithet: searchParams.get('specific_epithet') || '',
       acceptedName: searchParams.get('accepted_name') || '',
       reviewReason: searchParams.get('review_reason') || '',
+      speciesCode: searchParams.get('species_code') || '',
       taxonRank: searchParams.get('taxon_rank') || '',
       kingdomIds: (searchParams.get('kingdom_ids') || '')
         .split(',')
@@ -1548,6 +1554,9 @@ const TaxonNamesPage = () => {
         filters.reviewReason
           ? { label: 'Review reason', value: filters.reviewReason }
           : null,
+        filters.speciesCode
+          ? { label: 'Species code', value: filters.speciesCode }
+          : null,
         filters.conservationCode
           ? { label: 'Conservation code', value: filters.conservationCode }
           : null,
@@ -1625,6 +1634,7 @@ const TaxonNamesPage = () => {
       ['specific_epithet', next.specificEpithet],
       ['accepted_name', next.acceptedName],
       ['review_reason', next.reviewReason],
+      ['species_code', next.speciesCode],
       ['taxon_rank', next.taxonRank],
       ['conservation_code', next.conservationCode],
       ['authority', next.authority],
@@ -1680,6 +1690,7 @@ const TaxonNamesPage = () => {
       specificEpithet: draftFilters.specificEpithet.trim(),
       acceptedName: draftFilters.acceptedName.trim(),
       reviewReason: draftFilters.reviewReason.trim(),
+      speciesCode: draftFilters.speciesCode.trim(),
       taxonRank: draftFilters.taxonRank,
       kingdomIds: draftFilters.kingdomIds,
       conservationCode: draftFilters.conservationCode.trim(),
@@ -2026,6 +2037,7 @@ const TaxonNamesPage = () => {
       specificEpithet: '',
       acceptedName: '',
       reviewReason: '',
+      speciesCode: '',
       taxonRank: '',
       kingdomIds: [],
       conservationCode: '',
@@ -2208,6 +2220,7 @@ const TaxonNamesPage = () => {
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
               {renderTextFilter('NomosID', 'id')}
               {renderTextFilter('LegacyID', 'legacyId')}
+              {renderTextFilter('Species code', 'speciesCode')}
             </div>
             {renderTextFilter('Scientific name', 'scientificName')}
             {renderTextFilter('Author', 'author')}
