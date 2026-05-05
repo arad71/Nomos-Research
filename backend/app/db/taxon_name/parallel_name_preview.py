@@ -182,6 +182,14 @@ def derive_parallel_name(
     ensure_rank_abbreviation_from_taxon(taxon_name=taxon_name, components=components)
 
     if (
+        rank_name == "genus"
+        and bool(getattr(taxon_name, "is_hybrid", False))
+        and getattr(getattr(taxon_name, "hybrid_category", None), "value", None)
+        == "named_hybrid"
+        and components.uninomial
+    ):
+        components.hybrid_marker_on_uninomial = True
+    if (
         rank_name == SPECIES_RANK_NAME
         and bool(getattr(taxon_name, "is_hybrid", False))
         and getattr(getattr(taxon_name, "hybrid_category", None), "value", None)
