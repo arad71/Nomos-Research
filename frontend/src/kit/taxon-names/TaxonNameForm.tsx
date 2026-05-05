@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { maxValue, minValue, number, required } from 'ra-core';
+import { maxValue, minValue, number, required, useRecordContext } from 'ra-core';
+import { useGetList, useGetOne } from 'react-admin';
 import { AutocompleteArrayInput } from '@/components/admin/autocomplete-array-input';
 import { AutocompleteInput } from '@/components/admin/autocomplete-input';
 import { BooleanInput } from '@/components/admin/boolean-input';
@@ -11,6 +12,8 @@ import { ReferenceInput } from '@/components/admin/reference-input';
 import { SelectInput } from '@/components/admin/select-input';
 import { SimpleForm } from '@/components/admin/simple-form';
 import { TextInput } from '@/components/admin/text-input';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 import { parseDateOnlyToDateTime } from '../shared/dateOnlyDateTime';
 import NaturalisedStatus from '../shared/choices/NaturalisedStatus';
 import PublicationStatus from '../shared/choices/PublicationStatus';
@@ -22,11 +25,32 @@ const maxDay = maxValue(31);
 const maxMonth = maxValue(12);
 
 type TaxonNameFormValues = {
+  kingdom_id?: string | number | null;
+  rank_id?: string | number | null;
+  taxon_rank_id?: string | number | null;
+  publication_status?: string | null;
+  is_current?: boolean;
+  validated?: boolean;
+  authorised_by?: string | null;
+  authorised_on?: string | Date | null;
+  contributed_by?: string | null;
+  contributed_on?: string | Date | null;
+  naturalised_status?: string | null;
+  classification_system_ids?: Array<string | number> | null;
+  parallel_override_specific_epithet?: string | null;
+  parallel_override_infraspecific_epithet?: string | null;
   review?: boolean;
   review_reason?: string | null;
   specific_epithet?: string | null;
   infraspecific_epithet?: string | null;
   is_autonym?: boolean;
+};
+
+type ValidationRequirement = {
+  key: string;
+  label: string;
+  met: boolean;
+  pending?: boolean;
 };
 
 const validateReviewReason = (value?: string | null, allValues?: TaxonNameFormValues) => {
@@ -65,6 +89,249 @@ const parseNullableBoolean = (value: string) => {
 const formatNullableBoolean = (value: boolean | null | undefined) => {
   if (value === null || value === undefined) return '';
   return value ? 'true' : 'false';
+};
+
+const hasValue = (value: unknown) =>
+  value !== null && value !== undefined && String(value).trim() !== '';
+
+const hasValidDate = (value: unknown) => {
+  if (!hasValue(value)) {
+    return false;
+  }
+
+  if (value instanceof Date) {
+    return !Number.isNaN(value.getTime());
+  }
+
+  return !Number.isNaN(Date.parse(String(value)));
+};
+
+const getMissingValidationRequirements = (requirements: ValidationRequirement[]) =>
+  requirements
+    .filter((requirement) => !requirement.met)
+    .map((requirement) => requirement.label);
+
+const FAMILY_AND_BELOW_RANKS = new Set([
+  'family',
+  'subfamily',
+  'tribe',
+  'subtribe',
+  'genus',
+  'subgenus',
+  'section',
+  'subsection',
+  'species',
+  'subspecies',
+  'variety',
+  'subvariety',
+  'form',
+  'subform',
+]);
+
+const SPECIES_RANKS = new Set(['species']);
+const INFRASPECIFIC_RANKS = new Set([
+  'subspecies',
+  'variety',
+  'subvariety',
+  'form',
+  'subform',
+]);
+
+const ValidatedInput = () => {
+  const record = useRecordContext<{ id?: string | number }>();
+  const recordId = record?.id;
+  const kingdomId = useWatch({ name: 'kingdom_id' });
+  const rankId = useWatch({ name: 'rank_id' });
+  const taxonRankId = useWatch({ name: 'taxon_rank_id' });
+  const publicationStatus = useWatch({ name: 'publication_status' });
+  const isCurrent = useWatch({ name: 'is_current' });
+  const contributedBy = useWatch({ name: 'contributed_by' });
+  const contributedOn = useWatch({ name: 'contributed_on' });
+  const authorisedBy = useWatch({ name: 'authorised_by' });
+  const authorisedOn = useWatch({ name: 'authorised_on' });
+  const naturalisedStatus = useWatch({ name: 'naturalised_status' });
+  const classificationSystemIds = useWatch({ name: 'classification_system_ids' });
+  const parallelSpecificEpithet = useWatch({ name: 'parallel_override_specific_epithet' });
+  const parallelInfraspecificEpithet = useWatch({ name: 'parallel_override_infraspecific_epithet' });
+  const resolvedRankId = rankId ?? taxonRankId;
+
+  const {
+    data: rankRecord,
+    isPending: rankPending,
+  } = useGetOne<{ id?: string | number; rank_name?: string | null }>(
+    'taxon_ranks',
+    { id: resolvedRankId ?? '' },
+    { enabled: hasValue(resolvedRankId) }
+  );
+
+  const {
+    data: parentRows = [],
+    isPending: parentRowsPending,
+  } = useGetList(
+    'taxon_name_parents',
+    {
+      filter: { taxon_name_id: recordId },
+      pagination: { page: 1, perPage: 1 },
+      sort: { field: 'sequence', order: 'ASC' },
+    },
+    { enabled: Boolean(recordId) }
+  );
+
+  const {
+    data: authorRows = [],
+    isPending: authorRowsPending,
+  } = useGetList(
+    'citations',
+    {
+      filter: { taxon_name_id: recordId },
+      pagination: { page: 1, perPage: 1 },
+      sort: { field: 'author_order', order: 'ASC' },
+    },
+    { enabled: Boolean(recordId) }
+  );
+
+  const requirements = React.useMemo<ValidationRequirement[]>(
+    () => {
+      const rankName = rankRecord?.rank_name?.toLowerCase() ?? '';
+      const needsInformalGroup = FAMILY_AND_BELOW_RANKS.has(rankName);
+      const needsSpecificEpithet = SPECIES_RANKS.has(rankName) || INFRASPECIFIC_RANKS.has(rankName);
+      const needsInfraspecificEpithet = INFRASPECIFIC_RANKS.has(rankName);
+
+      return [
+      { key: 'kingdom', label: 'Kingdom', met: hasValue(kingdomId) },
+      {
+        key: 'rank',
+        label: 'Rank',
+        met: hasValue(rankId) || hasValue(taxonRankId),
+        pending: hasValue(resolvedRankId) && rankPending,
+      },
+      {
+        key: 'parent',
+        label: 'Parent',
+        met: Boolean(recordId) && parentRows.length > 0,
+        pending: Boolean(recordId) && parentRowsPending,
+      },
+      {
+        key: 'authors',
+        label: 'Author/s',
+        met: Boolean(recordId) && authorRows.length > 0,
+        pending: Boolean(recordId) && authorRowsPending,
+      },
+      {
+        key: 'publication_status',
+        label: 'Publication status',
+        met: hasValue(publicationStatus),
+      },
+      { key: 'is_current', label: 'Current', met: isCurrent === true },
+      {
+        key: 'informal_group',
+        label: 'Informal group',
+        met: !needsInformalGroup || Boolean(classificationSystemIds?.length),
+        pending: hasValue(resolvedRankId) && rankPending,
+      },
+      {
+        key: 'contributed_by',
+        label: 'Contributed by',
+        met: hasValue(contributedBy),
+      },
+      {
+        key: 'contributed_on',
+        label: 'Contributed on',
+        met: hasValidDate(contributedOn),
+      },
+      {
+        key: 'authorised_by',
+        label: 'Authorised by',
+        met: hasValue(authorisedBy),
+      },
+      {
+        key: 'authorised_on',
+        label: 'Authorised on',
+        met: hasValidDate(authorisedOn),
+      },
+      {
+        key: 'naturalised_status',
+        label: 'Naturalised status',
+        met: hasValue(naturalisedStatus),
+      },
+      {
+        key: 'specific_epithet',
+        label: 'Parallel specific epithet',
+        met: !needsSpecificEpithet || hasValue(parallelSpecificEpithet),
+        pending: hasValue(resolvedRankId) && rankPending,
+      },
+      {
+        key: 'infraspecific_epithet',
+        label: 'Parallel infraspecific epithet',
+        met: !needsInfraspecificEpithet || hasValue(parallelInfraspecificEpithet),
+        pending: hasValue(resolvedRankId) && rankPending,
+      },
+    ];
+    },
+    [
+      authorRows.length,
+      authorRowsPending,
+      authorisedBy,
+      authorisedOn,
+      classificationSystemIds?.length,
+      contributedBy,
+      contributedOn,
+      isCurrent,
+      kingdomId,
+      naturalisedStatus,
+      parallelInfraspecificEpithet,
+      parallelSpecificEpithet,
+      parentRows.length,
+      parentRowsPending,
+      publicationStatus,
+      rankId,
+      rankPending,
+      rankRecord?.rank_name,
+      recordId,
+      resolvedRankId,
+      taxonRankId,
+    ]
+  );
+
+  const missingRequirements = React.useMemo(
+    () => getMissingValidationRequirements(requirements),
+    [requirements]
+  );
+  const isLoadingRequirements = requirements.some((requirement) => requirement.pending);
+  const canValidate = !isLoadingRequirements && missingRequirements.length === 0;
+
+  const statusBadge = (
+    <Badge
+      variant={canValidate ? 'default' : 'secondary'}
+      className={cn(
+        !canValidate &&
+          'border-amber-300 bg-amber-100 text-amber-900 hover:bg-amber-100'
+      )}
+    >
+      {canValidate ? 'Ready to validate' : 'Not ready to validate'}
+    </Badge>
+  );
+
+  const helperText = canValidate ? null : (
+    <span className="text-sm text-amber-900">
+      {isLoadingRequirements
+        ? 'Checking validation requirements...'
+        : `Missing: ${missingRequirements.join(', ')}`}
+    </span>
+  );
+
+  return (
+    <BooleanInput
+      source="validated"
+      label={
+        <span className="flex flex-wrap items-center gap-2">
+          <span>Validated</span>
+          {statusBadge}
+        </span>
+      }
+      helperText={helperText}
+    />
+  );
 };
 
 const classificationSystemFilterToQuery = (searchText: string) => ({
@@ -151,15 +418,6 @@ const TaxonNameFormInner = ({
               disabled={!kingdomId}
             />
           </ReferenceInput>
-          <BooleanInput source="review" label="Review?" />
-          {review ? (
-            <TextInput
-              source="review_reason"
-              label="Review reason"
-              className="xl:col-span-2"
-              validate={validateReviewReason}
-            />
-          ) : null}
 
           <div className="hidden md:block md:col-span-2 xl:col-span-4" aria-hidden="true" />
           <TextInput source="uninomial" validate={requiredValue} />
@@ -190,13 +448,27 @@ const TaxonNameFormInner = ({
           />
 
           <div className="hidden md:block md:col-span-2 xl:col-span-4" aria-hidden="true" />
-          <SelectInput source="publication_status" choices={PublicationStatus} />
-          <BooleanInput source="is_current" label="Current" />
-          <BooleanInput source="validated" label="Validated" />
-          <BooleanInput source="is_wa_recognised" label="WA census" />
-
-          <div className="hidden md:block md:col-span-2 xl:col-span-4" aria-hidden="true" />
           <TextInput source="legacy_id" label="LegacyID" className="xl:col-span-4" />
+
+          <div className="mt-8 space-y-4 rounded-2xl border border-border/80 bg-muted/10 p-4 md:col-span-2 xl:col-span-4">
+            <div className="space-y-1">
+              <h3 className="text-base font-semibold tracking-tight">Status</h3>
+            </div>
+            <div className="grid max-w-2xl gap-4">
+              <SelectInput source="publication_status" choices={PublicationStatus} />
+              <BooleanInput source="is_current" label="Current" />
+              <ValidatedInput />
+              <BooleanInput source="is_wa_recognised" label="WA census" />
+              <BooleanInput source="review" label="Review?" />
+              {review ? (
+                <TextInput
+                  source="review_reason"
+                  label="Review reason"
+                  validate={validateReviewReason}
+                />
+              ) : null}
+            </div>
+          </div>
         </div>
       </section>
 
