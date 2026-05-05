@@ -20,7 +20,6 @@ const minYear = minValue(1735);
 const minOne = minValue(1);
 const maxDay = maxValue(31);
 const maxMonth = maxValue(12);
-const EMPTY_CHOICE = '__empty__';
 
 type TaxonNameFormValues = {
   review?: boolean;
@@ -52,20 +51,19 @@ const validateInfraspecificEpithet = (value?: string | null, allValues?: TaxonNa
 };
 
 const nullableBooleanChoices = [
-  { id: EMPTY_CHOICE, name: '' },
   { id: 'true', name: 'Yes' },
   { id: 'false', name: 'No' },
 ];
 
 const parseNullableBoolean = (value: string) => {
-  if (value === EMPTY_CHOICE) return null;
+  if (value === '') return null;
   if (value === 'true') return true;
   if (value === 'false') return false;
   return value;
 };
 
 const formatNullableBoolean = (value: boolean | null | undefined) => {
-  if (value === null || value === undefined) return EMPTY_CHOICE;
+  if (value === null || value === undefined) return '';
   return value ? 'true' : 'false';
 };
 
