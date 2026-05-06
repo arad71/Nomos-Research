@@ -250,10 +250,32 @@ function useAuth2() {
   return AUTH_PROVIDER === 'auth2';
 }
 
+type StoredTokenState = 'missing' | 'invalid' | 'expired' | 'valid';
+
+const getStoredTokenState = (): StoredTokenState => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    return 'missing';
+  }
+
+  try {
+    const decoded: JwtPayload = decodeJwt(token);
+    if (!decoded.exp) {
+      return 'invalid';
+    }
+
+    return decoded.exp > Date.now() / 1000 ? 'valid' : 'expired';
+  } catch {
+    return 'invalid';
+  }
+};
+
+let authTokenRequest: Promise<void> | null = null;
+
 function getAuthToken(params: RequestInit = { method: 'POST' }) {
   const url = useAuth2() ? 'api/auth2token' : 'api/token';
   const request = new Request(`${BASE_URL}/${url}`, params);
-  return fetch(request)
+  authTokenRequest ??= fetch(request)
     .then((response) => {
       if (response.status < 200 || response.status >= 300) {
         throw new Error(response.statusText);
@@ -269,7 +291,12 @@ function getAuthToken(params: RequestInit = { method: 'POST' }) {
       if (logout_url) {
         localStorage.setItem('logout_url', logout_url);
       }
+    })
+    .finally(() => {
+      authTokenRequest = null;
     });
+
+  return authTokenRequest;
 }
 
 const canSilentlyRefreshToken = () => useAuth2();
@@ -293,7 +320,8 @@ const authProvider = {
   checkError: (error: { status: number }) => {
     const status = error.status;
     if (status === 401) {
-      if (canSilentlyRefreshToken()) {
+      const tokenState = getStoredTokenState();
+      if (canSilentlyRefreshToken() && tokenState !== 'valid') {
         return getAuthToken();
       }
       return Promise.reject('Authentication required');
@@ -304,20 +332,8 @@ const authProvider = {
     return Promise.resolve();
   },
   checkAuth: () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      if (useAuth2()) {
-        return getAuthToken();
-      }
-      return Promise.reject();
-    }
-    let decoded: JwtPayload;
-    try {
-      decoded = decodeJwt(token);
-    } catch {
-      return canSilentlyRefreshToken() ? getAuthToken() : Promise.reject();
-    }
-    if (decoded && decoded.exp && decoded.exp > Date.now() / 1000) {
+    const tokenState = getStoredTokenState();
+    if (tokenState === 'valid') {
       return Promise.resolve();
     }
     return canSilentlyRefreshToken() ? getAuthToken() : Promise.reject();
