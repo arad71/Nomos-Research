@@ -4,7 +4,7 @@ const AuthorDiscipline = [
   { id: 'Mycology', name: 'Mycology' },
   { id: 'Phycology', name: 'Phycology' },
   { id: 'Microbiology', name: 'Microbiology' },
-  { id: 'Paleontology', name: 'Paleontology' },
+  { id: 'Palaeontology', name: 'Palaeontology' },
   { id: 'Entomology', name: 'Entomology' },
   { id: 'Marine biology', name: 'Marine biology' },
   { id: 'Conservation biology', name: 'Conservation biology' },

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useRecordContext } from 'ra-core';
+import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { RecordField } from '@/components/admin/record-field';
 import { ReferenceArrayField } from '@/components/admin/reference-array-field';
@@ -90,6 +91,27 @@ const ExternalUrlLink = ({ value }: { value?: string | null }) => {
   );
 };
 
+const AuthorLink = () => {
+  const author = useRecordContext<{
+    id?: string | number;
+    author_id?: string | number;
+  }>();
+  const authorId = author?.id ?? author?.author_id;
+  const label = formatAuthorOption(author);
+
+  if (!label) {
+    return null;
+  }
+
+  return (
+    <Badge variant="outline" asChild>
+      <Link to={authorId != null ? `/authors/${authorId}/show` : '#'}>
+        {label}
+      </Link>
+    </Badge>
+  );
+};
+
 const PublicationShowPage = () => (
   <Show resource="publications" title={<PublicationShowTitle />} actions={<PublicationShowActions />}>
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
@@ -145,13 +167,13 @@ const PublicationShowPage = () => (
               <RecordField label="Authors" className="xl:col-span-4">
                 <ReferenceArrayField reference="authors" source="author_ids">
                   <SingleFieldList>
-                    <RecordField label="" render={formatAuthorOption} />
+                    <AuthorLink />
                   </SingleFieldList>
                 </ReferenceArrayField>
               </RecordField>
               <RecordField source="publisher" label="Publisher" className="xl:col-span-4" />
               <RecordField label="Parent publication" source="parent_id" className="xl:col-span-4">
-                <ReferenceField source="parent_id" reference="publications">
+                <ReferenceField source="parent_id" reference="publications" link="show">
                   <RecordField source="abbreviated_title" label="" />
                 </ReferenceField>
               </RecordField>
