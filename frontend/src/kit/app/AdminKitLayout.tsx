@@ -198,8 +198,12 @@ const AdminKitLayout = () => {
             const items = (
               await Promise.all(
                 section.items.map(async (item) => {
+                  if (!hasAnyRole(roles, item.roles)) {
+                    return null;
+                  }
+
                   if (!item.resource || !item.action) {
-                    return hasAnyRole(roles, item.roles) ? item : null;
+                    return item;
                   }
 
                   const canAccess = await authProvider.canAccess({
