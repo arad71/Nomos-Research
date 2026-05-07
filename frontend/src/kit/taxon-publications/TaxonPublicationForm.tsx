@@ -137,7 +137,7 @@ const TaxonPublicationForm = ({
             source="taxon_name_id"
             reference="taxon_names"
             sort={{ field: 'canonical_name', order: 'ASC' }}
-            perPage={1000}
+            perPage={200}
           >
             <AutocompleteInput
               label="Taxon name"
@@ -154,7 +154,7 @@ const TaxonPublicationForm = ({
               source="publication_id"
               reference="publications"
               sort={{ field: 'abbreviated_title', order: 'ASC' }}
-              perPage={1000}
+              perPage={200}
             >
               <AutocompleteInput
                 label="Publication"

@@ -83,7 +83,7 @@ const PublicationForm = () => {
             source="author_ids"
             reference="authors"
             sort={{ field: 'abbreviation', order: 'ASC' }}
-            perPage={1000}
+            perPage={200}
           >
             <AutocompleteArrayInput label="Authors" optionText={formatAuthorOption} className="xl:col-span-4" />
           </ReferenceArrayInput>
@@ -92,7 +92,7 @@ const PublicationForm = () => {
             source="parent_id"
             reference="publications"
             sort={{ field: 'abbreviated_title', order: 'ASC' }}
-            perPage={1000}
+            perPage={200}
           >
             <AutocompleteInput
               label="Parent publication"
@@ -132,7 +132,7 @@ const PublicationForm = () => {
             source="duplicate_of_id"
             reference="publications"
             sort={{ field: 'abbreviated_title', order: 'ASC' }}
-            perPage={1000}
+            perPage={200}
           >
             <AutocompleteInput label="Duplicate of" optionText="abbreviated_title" className="xl:col-span-4" />
           </ReferenceInput>
