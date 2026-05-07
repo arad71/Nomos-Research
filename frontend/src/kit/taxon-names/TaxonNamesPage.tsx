@@ -89,6 +89,25 @@ type KingdomOption = {
   name: string;
 };
 
+type TaxonPublicationRecord = {
+  id?: number | string;
+  taxon_publication_id?: number | string;
+  taxon_name_id?: number | string;
+  publication_id?: number | string;
+  page_reference?: string | null;
+  figure_reference?: string | null;
+  notes?: string | null;
+  deleted?: boolean | null;
+};
+
+type PublicationTitleRecord = {
+  id?: number | string;
+  publication_id?: number | string;
+  display_title?: string | null;
+  title?: string | null;
+  abbreviated_title?: string | null;
+};
+
 type TaxonNamesResponse = {
   data: TaxonNameRecord[];
   total: number;
@@ -118,6 +137,7 @@ type ColumnKey =
   | 'monthPublished'
   | 'dayPublished'
   | 'publication'
+  | 'publicationReferences'
   | 'volumeInformation'
   | 'status'
   | 'reviewFlag'
@@ -182,6 +202,7 @@ type TaxonNameFilters = {
   specificEpithet: string;
   acceptedName: string;
   reviewReason: string;
+  speciesCode: string;
   taxonRank: string;
   kingdomIds: string[];
   conservationCode: string;
@@ -200,6 +221,7 @@ type TaxonNameFilters = {
 const DEFAULT_PER_PAGE = 25;
 const PER_PAGE_OPTIONS = [15, 25, 50, 100] as const;
 const TABLE_STORE_KEY = 'taxon_names.kit.datatable.v4';
+const PUBLICATION_REFERENCE_DISPLAY_VERSION = 2;
 const DEFAULT_SORT_FIELD = 'updated_on';
 const DEFAULT_SORT_ORDER: SortOrder = 'DESC';
 const NATURALISED_STATUS_NOT_SET = '__not_set__';
@@ -238,6 +260,7 @@ const columnOptions: Array<{ key: ColumnKey; label: string }> = [
   { key: 'monthPublished', label: 'Month published' },
   { key: 'dayPublished', label: 'Day published' },
   { key: 'publication', label: 'Publication' },
+  { key: 'publicationReferences', label: 'Publication references' },
   { key: 'volumeInformation', label: 'Volume information' },
   { key: 'reviewFlag', label: 'Review?' },
   { key: 'waCensusField', label: 'WA census' },
@@ -257,6 +280,7 @@ const columnOptions: Array<{ key: ColumnKey; label: string }> = [
   { key: 'source', label: 'Source' },
   { key: 'externalId', label: 'External ID' },
   { key: 'familyCode', label: 'Family code' },
+  { key: 'speciesCode', label: 'Species code' },
   { key: 'editor', label: 'Editor' },
   { key: 'naturalisedStatus', label: 'Naturalised status' },
   { key: 'naturalisedCertainty', label: 'Naturalised certainty' },
@@ -438,6 +462,9 @@ const buildFilterObject = (filters: TaxonNameFilters) => {
   if (filters.reviewReason) {
     nextFilter.review_reason__contains = filters.reviewReason;
   }
+  if (filters.speciesCode) {
+    nextFilter.species_code__contains = filters.speciesCode;
+  }
   if (filters.taxonRank) {
     nextFilter.taxon_rank___rank_name = filters.taxonRank;
   }
@@ -535,7 +562,7 @@ const fetchKingdomOptions = async (
   retryOnAuthError = true
 ): Promise<KingdomOption[]> => {
   const sort = encodeURIComponent(JSON.stringify(['kingdom_name', 'ASC']));
-  const range = encodeURIComponent(JSON.stringify([0, 999]));
+  const range = encodeURIComponent(JSON.stringify([0, 199]));
   const filter = encodeURIComponent(JSON.stringify({}));
   const response = await fetch(
     `${BACKEND_URL}/kingdoms?sort=${sort}&range=${range}&filter=${filter}`,
@@ -605,6 +632,100 @@ const fetchReferenceMap = async (
     }
     return acc;
   }, {});
+};
+
+const fetchPublicationReferenceMapViaDataProvider = async (
+  dataProvider: ReturnType<typeof useDataProvider>,
+  taxonNameIds: number[]
+) => {
+  if (!taxonNameIds.length) {
+    return {} as Record<number, string[]>;
+  }
+
+  const fetchForResource = async (
+    resource: 'taxon-publications' | 'taxon_publications'
+  ) => {
+    const batches = await Promise.all(
+      taxonNameIds.map(async (taxonNameId) => {
+        const response = await dataProvider.getManyReference(resource, {
+          target: 'taxon_name_id',
+          id: taxonNameId,
+          pagination: { page: 1, perPage: 100 },
+          sort: { field: 'taxon_publication_id', order: 'ASC' },
+          filter: {},
+        });
+
+        const rows = Array.isArray(response?.data)
+          ? (response.data as TaxonPublicationRecord[])
+          : [];
+        const labels = (
+          await Promise.all(
+            rows.map(async (row) => {
+              const linkId = row.taxon_publication_id ?? row.id ?? '';
+              const rowForDisplay =
+                linkId && !row.publication_id
+                  ? ((await dataProvider
+                      .getOne(resource, { id: linkId })
+                      .then((detail) => detail?.data)
+                      .catch(() => row)) as TaxonPublicationRecord)
+                  : row;
+
+              const displayLinkId =
+                rowForDisplay.taxon_publication_id ?? rowForDisplay.id ?? '';
+              const displayPublicationId = rowForDisplay.publication_id ?? '';
+              let displayPublicationTitle = displayPublicationId
+                ? `Publication ${displayPublicationId}`
+                : '';
+
+              if (displayPublicationId) {
+                try {
+                  const publication = await dataProvider.getOne('publications', {
+                    id: displayPublicationId,
+                  });
+                  const publicationData = publication?.data as
+                    | PublicationTitleRecord
+                    | undefined;
+                  displayPublicationTitle =
+                    publicationData?.display_title ||
+                    publicationData?.title ||
+                    publicationData?.abbreviated_title ||
+                    displayPublicationTitle;
+                } catch {
+                  // Keep the publication-id fallback.
+                }
+              }
+
+              return displayLinkId ? displayPublicationTitle : '';
+            })
+          )
+        ).filter(Boolean);
+
+        return [taxonNameId, Array.from(new Set(labels))] as const;
+      })
+    );
+
+    return batches.reduce<Record<number, string[]>>((acc, [taxonNameId, labels]) => {
+      if (labels.length) {
+        acc[taxonNameId] = labels;
+      }
+      return acc;
+    }, {});
+  };
+
+  try {
+    const hyphenRows = await fetchForResource('taxon-publications');
+    if (Object.keys(hyphenRows).length) {
+      return hyphenRows;
+    }
+  } catch {
+    // Try underscore resource fallback below.
+  }
+
+  try {
+    return await fetchForResource('taxon_publications');
+  } catch {
+    return {};
+  }
 };
 
 const ANCESTOR_RESOURCES = [
@@ -872,8 +993,22 @@ const escapeCsvValue = (value: string | number | boolean | null | undefined) => 
 const stripHtml = (value?: string | null) =>
   value ? value.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim() : '';
 
+const formatPublicationReferenceLabel = (value: string) => {
+  const linkIdMatch = value.match(/taxon_publication_id:\s*([^|]+)/);
+  const publicationIdMatch = value.match(/publication_id:\s*([^|]+)/);
+
+  if (linkIdMatch) {
+    const linkId = linkIdMatch[1].trim();
+    const publicationId = publicationIdMatch?.[1]?.trim() ?? '';
+    return [linkId, publicationId].filter(Boolean).join(' - ');
+  }
+
+  return value;
+};
+
 type ExportMaps = {
   publicationMap: Record<number, string>;
+  publicationReferenceMap: Record<number, string[]>;
   userMap: Record<number, string>;
   ancestorMaps: Partial<Record<AncestorResource, Record<number, string>>>;
   conservationCodeMap: Record<number, string[]>;
@@ -934,6 +1069,12 @@ const getExportValue = (
     case 'publication':
       return (record.publication_id && maps.publicationMap[record.publication_id]) ||
         (record.publication_id ? `Publication ${record.publication_id}` : '');
+    case 'publicationReferences':
+      return (
+        maps.publicationReferenceMap[taxonNameId]
+          ?.map(formatPublicationReferenceLabel)
+          .join('; ') ?? ''
+      );
     case 'volumeInformation':
       return record.volume_information ?? '';
     case 'status':
@@ -1125,6 +1266,7 @@ const TaxonNamesBulkActionsToolbar = ({
 
 const TaxonNamesPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const dataProvider = useDataProvider();
   const [showAdvancedFilters, setShowAdvancedFilters] = React.useState(false);
   const { canAccess: canViewDeleted } = useCanAccess({
     resource: 'taxon_names',
@@ -1160,6 +1302,7 @@ const TaxonNamesPage = () => {
       specificEpithet: searchParams.get('specific_epithet') || '',
       acceptedName: searchParams.get('accepted_name') || '',
       reviewReason: searchParams.get('review_reason') || '',
+      speciesCode: searchParams.get('species_code') || '',
       taxonRank: searchParams.get('taxon_rank') || '',
       kingdomIds: (searchParams.get('kingdom_ids') || '')
         .split(',')
@@ -1191,6 +1334,9 @@ const TaxonNamesPage = () => {
     searchParams.get('sortOrder') === 'ASC' ? 'ASC' : DEFAULT_SORT_ORDER;
   const [draftFilters, setDraftFilters] = React.useState(filters);
   const [publicationMap, setPublicationMap] = React.useState<Record<number, string>>({});
+  const [publicationReferenceMap, setPublicationReferenceMap] = React.useState<
+    Record<number, string[]>
+  >({});
   const [userMap, setUserMap] = React.useState<Record<number, string>>({});
   const [kingdomOptions, setKingdomOptions] = React.useState<KingdomOption[]>([]);
   const [ancestorMaps, setAncestorMaps] = React.useState<
@@ -1282,22 +1428,30 @@ const TaxonNamesPage = () => {
     const taxonNameIds = Array.from(
       new Set(
         state.data
-          .map((record) => record.id)
-          .filter((value): value is number => typeof value === 'number')
+          .map((record) => getTaxonNameId(record))
+          .filter((value) => value > 0)
       )
     );
     let active = true;
 
     Promise.all([
       fetchReferenceMap('publications', publicationIds, 'publication_id', 'title'),
+      fetchPublicationReferenceMapViaDataProvider(dataProvider, taxonNameIds),
       fetchReferenceMap('users', userIds, 'user_id', 'full_name'),
       fetchConservationCodeMap(taxonNameIds),
       ...ANCESTOR_RESOURCES.map((resource) => fetchAncestorMap(resource, taxonNameIds)),
-    ]).then(([publications, users, conservationCodes, ...ancestorResults]) => {
+    ]).then(([
+      publications,
+      publicationReferences,
+      users,
+      conservationCodes,
+      ...ancestorResults
+    ]) => {
       if (!active) {
         return;
       }
       setPublicationMap(publications);
+      setPublicationReferenceMap(publicationReferences);
       setUserMap(users);
       setConservationCodeMap(conservationCodes);
       setAncestorMaps(
@@ -1314,7 +1468,7 @@ const TaxonNamesPage = () => {
     return () => {
       active = false;
     };
-  }, [state.data]);
+  }, [dataProvider, state.data, PUBLICATION_REFERENCE_DISPLAY_VERSION]);
 
   const totalPages = Math.max(Math.ceil(state.total / perPage), 1);
   const kingdomLabelMap = React.useMemo(
@@ -1400,6 +1554,9 @@ const TaxonNamesPage = () => {
         filters.reviewReason
           ? { label: 'Review reason', value: filters.reviewReason }
           : null,
+        filters.speciesCode
+          ? { label: 'Species code', value: filters.speciesCode }
+          : null,
         filters.conservationCode
           ? { label: 'Conservation code', value: filters.conservationCode }
           : null,
@@ -1477,6 +1634,7 @@ const TaxonNamesPage = () => {
       ['specific_epithet', next.specificEpithet],
       ['accepted_name', next.acceptedName],
       ['review_reason', next.reviewReason],
+      ['species_code', next.speciesCode],
       ['taxon_rank', next.taxonRank],
       ['conservation_code', next.conservationCode],
       ['authority', next.authority],
@@ -1532,6 +1690,7 @@ const TaxonNamesPage = () => {
       specificEpithet: draftFilters.specificEpithet.trim(),
       acceptedName: draftFilters.acceptedName.trim(),
       reviewReason: draftFilters.reviewReason.trim(),
+      speciesCode: draftFilters.speciesCode.trim(),
       taxonRank: draftFilters.taxonRank,
       kingdomIds: draftFilters.kingdomIds,
       conservationCode: draftFilters.conservationCode.trim(),
@@ -1622,6 +1781,18 @@ const TaxonNamesPage = () => {
       case 'publication':
         return (record.publication_id && publicationMap[record.publication_id]) ||
           (record.publication_id ? `Publication ${record.publication_id}` : '');
+      case 'publicationReferences':
+        return publicationReferenceMap[taxonNameId]?.length ? (
+          <div className="flex max-w-80 flex-wrap gap-2">
+            {publicationReferenceMap[taxonNameId].map((reference) => (
+              <Badge key={reference} variant="outline">
+                {formatPublicationReferenceLabel(reference)}
+              </Badge>
+            ))}
+          </div>
+        ) : (
+          ''
+        );
       case 'volumeInformation':
         return textOrEmpty(record.volume_information);
       case 'status':
@@ -1866,6 +2037,7 @@ const TaxonNamesPage = () => {
       specificEpithet: '',
       acceptedName: '',
       reviewReason: '',
+      speciesCode: '',
       taxonRank: '',
       kingdomIds: [],
       conservationCode: '',
@@ -1921,17 +2093,19 @@ const TaxonNamesPage = () => {
       const taxonNameIds = Array.from(
         new Set(
           allRecords
-            .map((record) => record.id)
-            .filter((value): value is number => typeof value === 'number')
+            .map((record) => getTaxonNameId(record))
+            .filter((value) => value > 0)
         )
       );
       const [
         exportPublicationMap,
+        exportPublicationReferenceMap,
         exportUserMap,
         exportConservationCodeMap,
         ...exportAncestorResults
       ] = await Promise.all([
         fetchReferenceMap('publications', publicationIds, 'publication_id', 'title'),
+        fetchPublicationReferenceMapViaDataProvider(dataProvider, taxonNameIds),
         fetchReferenceMap('users', userIds, 'user_id', 'full_name'),
         fetchConservationCodeMap(taxonNameIds),
         ...ANCESTOR_RESOURCES.map((resource) => fetchAncestorMap(resource, taxonNameIds)),
@@ -1948,6 +2122,7 @@ const TaxonNamesPage = () => {
 
       const csv = buildExportCsv(allRecords, exportColumnOptions, {
         publicationMap: exportPublicationMap,
+        publicationReferenceMap: exportPublicationReferenceMap,
         userMap: exportUserMap,
         ancestorMaps: exportAncestorMaps,
         conservationCodeMap: exportConservationCodeMap,
@@ -2045,6 +2220,7 @@ const TaxonNamesPage = () => {
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
               {renderTextFilter('NomosID', 'id')}
               {renderTextFilter('LegacyID', 'legacyId')}
+              {renderTextFilter('Species code', 'speciesCode')}
             </div>
             {renderTextFilter('Scientific name', 'scientificName')}
             {renderTextFilter('Author', 'author')}

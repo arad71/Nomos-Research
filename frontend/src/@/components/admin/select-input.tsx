@@ -236,8 +236,14 @@ export const SelectInput = (props: SelectInputProps) => {
     finalChoices = [...finalChoices, createItem];
   }
 
+  const hasSelectedValue =
+    field.value !== undefined &&
+    field.value !== null &&
+    field.value !== emptyValue;
+
   // Handle reset functionality
   const handleReset = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
     e.stopPropagation();
     field.onChange(emptyValue);
   };
@@ -276,7 +282,7 @@ export const SelectInput = (props: SelectInputProps) => {
             >
               <SelectValue placeholder={renderEmptyItemOption()} />
 
-              {field.value && field.value !== emptyValue ? (
+              {hasSelectedValue ? (
                 <div
                   role="button"
                   className="p-0 ml-auto pointer-events-auto hover:bg-transparent text-muted-foreground opacity-50 hover:opacity-100"

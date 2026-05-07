@@ -161,6 +161,7 @@ const getRolesDefinition = (): Permissions => {
     { action: ['create', 'delete'], resource: 'user_roles' },
     { action: ['create', 'edit'], resource: 'kingdoms' },
     { action: ['create', 'edit'], resource: 'taxon_ranks' },
+    { action: ['edit'], resource: 'taxon_names' },
     { action: ['create', 'edit', 'delete'], resource: 'classification_systems' },
   ];
 
@@ -190,6 +191,11 @@ const matchesResource = (permissionResource: string, resource: string) =>
 
 const ADMIN_ONLY_RESOURCES = new Set(['users', 'roles', 'user_roles']);
 const ADMIN_ACCESS_ROLES = new Set([Role.APPLICATION_SUPPORT, Role.SUPER_ADMIN]);
+const HYBRID_ROLLOUT_RESOURCES = new Set(['hybrid_rollout']);
+const HYBRID_ROLLOUT_ACCESS_ROLES = new Set([
+  Role.APPLICATION_SUPPORT,
+  Role.SUPER_ADMIN,
+]);
 const REVIEW_QUEUE_RESOURCES = new Set(['taxon_name_parent_reviews']);
 const REVIEW_QUEUE_ACCESS_ROLES = new Set([
   Role.OFFICER,
@@ -214,6 +220,15 @@ const canAccessWithScopes = (scopes: string[], { action, resource }: CanAccessPa
   if (ADMIN_ONLY_RESOURCES.has(resource)) {
     const hasAdminAccessRole = scopes.some((scope) => ADMIN_ACCESS_ROLES.has(scope as keyof typeof Role));
     if (!hasAdminAccessRole) {
+      return false;
+    }
+  }
+
+  if (HYBRID_ROLLOUT_RESOURCES.has(resource)) {
+    const hasHybridRolloutAccessRole = scopes.some((scope) =>
+      HYBRID_ROLLOUT_ACCESS_ROLES.has(scope as keyof typeof Role)
+    );
+    if (!hasHybridRolloutAccessRole) {
       return false;
     }
   }
@@ -250,10 +265,34 @@ function useAuth2() {
   return AUTH_PROVIDER === 'auth2';
 }
 
+type StoredTokenState = 'missing' | 'invalid' | 'expired' | 'valid';
+
+const TOKEN_EXPIRY_BUFFER_SECONDS = 60;
+
+const getStoredTokenState = (expiryBufferSeconds = 0): StoredTokenState => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    return 'missing';
+  }
+
+  try {
+    const decoded: JwtPayload = decodeJwt(token);
+    if (!decoded.exp) {
+      return 'invalid';
+    }
+
+    return decoded.exp - expiryBufferSeconds > Date.now() / 1000 ? 'valid' : 'expired';
+  } catch {
+    return 'invalid';
+  }
+};
+
+let authTokenRequest: Promise<string> | null = null;
+
 function getAuthToken(params: RequestInit = { method: 'POST' }) {
   const url = useAuth2() ? 'api/auth2token' : 'api/token';
   const request = new Request(`${BASE_URL}/${url}`, params);
-  return fetch(request)
+  authTokenRequest ??= fetch(request)
     .then((response) => {
       if (response.status < 200 || response.status >= 300) {
         throw new Error(response.statusText);
@@ -269,10 +308,29 @@ function getAuthToken(params: RequestInit = { method: 'POST' }) {
       if (logout_url) {
         localStorage.setItem('logout_url', logout_url);
       }
+      return accessToken;
+    })
+    .finally(() => {
+      authTokenRequest = null;
     });
+
+  return authTokenRequest;
 }
 
 const canSilentlyRefreshToken = () => useAuth2();
+
+export const ensureValidAuthToken = async ({ forceRefresh = false } = {}) => {
+  const token = localStorage.getItem('token');
+  if (!forceRefresh && token && getStoredTokenState(TOKEN_EXPIRY_BUFFER_SECONDS) === 'valid') {
+    return token;
+  }
+
+  if (!canSilentlyRefreshToken()) {
+    return token;
+  }
+
+  return getAuthToken();
+};
 
 const authProvider = {
   login: ({ username, password }: LoginForm) => {
@@ -293,7 +351,8 @@ const authProvider = {
   checkError: (error: { status: number }) => {
     const status = error.status;
     if (status === 401) {
-      if (canSilentlyRefreshToken()) {
+      const tokenState = getStoredTokenState();
+      if (canSilentlyRefreshToken() && tokenState !== 'valid') {
         return getAuthToken();
       }
       return Promise.reject('Authentication required');
@@ -304,20 +363,8 @@ const authProvider = {
     return Promise.resolve();
   },
   checkAuth: () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      if (useAuth2()) {
-        return getAuthToken();
-      }
-      return Promise.reject();
-    }
-    let decoded: JwtPayload;
-    try {
-      decoded = decodeJwt(token);
-    } catch {
-      return canSilentlyRefreshToken() ? getAuthToken() : Promise.reject();
-    }
-    if (decoded && decoded.exp && decoded.exp > Date.now() / 1000) {
+    const tokenState = getStoredTokenState();
+    if (tokenState === 'valid') {
       return Promise.resolve();
     }
     return canSilentlyRefreshToken() ? getAuthToken() : Promise.reject();
