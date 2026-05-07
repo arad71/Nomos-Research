@@ -69,6 +69,11 @@ import {
 } from '../shared/publicationDoi';
 import VernacularForm from '../vernaculars/VernacularForm';
 import { formatAuthorOption } from '../authors/authorDisplay';
+import {
+  getStoredRoles,
+  hasAnyRole,
+  HYBRID_ROLLOUT_ROLES,
+} from '../../adminShell';
 
 const INFRASPECIFIC_RANK_ABBREVIATIONS = [
   'nothovar.',
@@ -1764,6 +1769,7 @@ const TaxonNameRelatedSections = ({
   const recordId = record?.id;
   const navigate = useNavigate();
   const refresh = useRefresh();
+  const canViewHybridRollout = hasAnyRole(getStoredRoles(), HYBRID_ROLLOUT_ROLES);
   const visibleSections = new Set<RelatedSectionKey>(
     sections ?? [
       'authors',
@@ -1788,7 +1794,7 @@ const TaxonNameRelatedSections = ({
       >
         {!editable ? (
           <>
-            {visibleSections.has('parents') ? (
+            {visibleSections.has('parents') && canViewHybridRollout ? (
               <section className="space-y-4">
                 <ParallelNamePreviewPanel recordId={recordId} />
               </section>
@@ -2012,7 +2018,7 @@ const TaxonNameRelatedSections = ({
 
         {visibleSections.has('parents') ? (
           <>
-            {editable ? (
+            {editable && canViewHybridRollout ? (
               <section className="space-y-4">
                 <ParallelNamePreviewPanel recordId={recordId} />
               </section>

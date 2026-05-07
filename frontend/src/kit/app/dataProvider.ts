@@ -9,49 +9,68 @@ import type {
 import simpleRestProvider from 'ra-data-simple-rest';
 import { BACKEND_URL } from '../../config';
 import type { InfragenericData } from '../taxon-names/infrageneric/TaxonTypes';
+import { ensureValidAuthToken } from './authProvider';
 
-const httpClient = (url: any, options?: any) => {
+const normalizeApiError = (detail: any): string => {
+  if (typeof detail === 'string') {
+    return detail;
+  }
+  if (Array.isArray(detail)) {
+    return detail
+      .map((item) => {
+        if (typeof item === 'string') {
+          return item;
+        }
+        if (item && typeof item === 'object' && typeof item.msg === 'string') {
+          return item.msg;
+        }
+        return JSON.stringify(item);
+      })
+      .join('\n');
+  }
+  if (detail && typeof detail === 'object') {
+    if (typeof detail.msg === 'string') {
+      return detail.msg;
+    }
+    return JSON.stringify(detail);
+  }
+  return 'Request failed';
+};
+
+const withAuthHeader = async (options: any = {}, { forceRefresh = false } = {}) => {
+  const nextOptions = { ...options };
+  nextOptions.headers = new Headers(nextOptions.headers ?? { Accept: 'application/json' });
+
+  const token = await ensureValidAuthToken({ forceRefresh });
+  if (token) {
+    nextOptions.headers.set('Authorization', `Bearer ${token}`);
+  }
+
+  return nextOptions;
+};
+
+const fetchJsonWithNormalizedError = (url: any, options: any) =>
+  fetchUtils.fetchJson(url, options).catch((error: any) => {
+    const detail = error?.body?.detail;
+    return Promise.reject({ message: normalizeApiError(detail), status: error?.status });
+  });
+
+const httpClient = async (url: any, options?: any) => {
   if (!options) {
     options = {};
   }
-  if (!options.headers) {
-    options.headers = new Headers({ Accept: 'application/json' });
+  const authenticatedOptions = await withAuthHeader(options);
+
+  try {
+    return await fetchJsonWithNormalizedError(url, authenticatedOptions);
+  } catch (error: any) {
+    if (error?.status !== 401) {
+      throw error;
+    }
+
+    const refreshedOptions = await withAuthHeader(options, { forceRefresh: true });
+    return fetchJsonWithNormalizedError(url, refreshedOptions);
   }
-  const token = localStorage.getItem('token');
-  options.headers.set('Authorization', `Bearer ${token}`);
-
-  const normalizeApiError = (detail: any): string => {
-    if (typeof detail === 'string') {
-      return detail;
-    }
-    if (Array.isArray(detail)) {
-      return detail
-        .map((item) => {
-          if (typeof item === 'string') {
-            return item;
-          }
-          if (item && typeof item === 'object' && typeof item.msg === 'string') {
-            return item.msg;
-          }
-          return JSON.stringify(item);
-        })
-        .join('\n');
-    }
-    if (detail && typeof detail === 'object') {
-      if (typeof detail.msg === 'string') {
-        return detail.msg;
-      }
-      return JSON.stringify(detail);
-    }
-    return 'Request failed';
-  };
-
-  return fetchUtils.fetchJson(url, options).catch((error: any) => {
-    return new Promise((resolve, reject) => {
-      const detail = error?.body?.detail;
-      reject({ message: normalizeApiError(detail), status: error?.status });
-    });
-  });
 };
 
 const resourceIdMap: Record<string, string> = {

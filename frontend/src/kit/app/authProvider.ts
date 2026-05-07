@@ -161,6 +161,7 @@ const getRolesDefinition = (): Permissions => {
     { action: ['create', 'delete'], resource: 'user_roles' },
     { action: ['create', 'edit'], resource: 'kingdoms' },
     { action: ['create', 'edit'], resource: 'taxon_ranks' },
+    { action: ['edit'], resource: 'taxon_names' },
     { action: ['create', 'edit', 'delete'], resource: 'classification_systems' },
   ];
 
@@ -190,6 +191,11 @@ const matchesResource = (permissionResource: string, resource: string) =>
 
 const ADMIN_ONLY_RESOURCES = new Set(['users', 'roles', 'user_roles']);
 const ADMIN_ACCESS_ROLES = new Set([Role.APPLICATION_SUPPORT, Role.SUPER_ADMIN]);
+const HYBRID_ROLLOUT_RESOURCES = new Set(['hybrid_rollout']);
+const HYBRID_ROLLOUT_ACCESS_ROLES = new Set([
+  Role.APPLICATION_SUPPORT,
+  Role.SUPER_ADMIN,
+]);
 const REVIEW_QUEUE_RESOURCES = new Set(['taxon_name_parent_reviews']);
 const REVIEW_QUEUE_ACCESS_ROLES = new Set([
   Role.OFFICER,
@@ -214,6 +220,15 @@ const canAccessWithScopes = (scopes: string[], { action, resource }: CanAccessPa
   if (ADMIN_ONLY_RESOURCES.has(resource)) {
     const hasAdminAccessRole = scopes.some((scope) => ADMIN_ACCESS_ROLES.has(scope as keyof typeof Role));
     if (!hasAdminAccessRole) {
+      return false;
+    }
+  }
+
+  if (HYBRID_ROLLOUT_RESOURCES.has(resource)) {
+    const hasHybridRolloutAccessRole = scopes.some((scope) =>
+      HYBRID_ROLLOUT_ACCESS_ROLES.has(scope as keyof typeof Role)
+    );
+    if (!hasHybridRolloutAccessRole) {
       return false;
     }
   }
@@ -252,7 +267,9 @@ function useAuth2() {
 
 type StoredTokenState = 'missing' | 'invalid' | 'expired' | 'valid';
 
-const getStoredTokenState = (): StoredTokenState => {
+const TOKEN_EXPIRY_BUFFER_SECONDS = 60;
+
+const getStoredTokenState = (expiryBufferSeconds = 0): StoredTokenState => {
   const token = localStorage.getItem('token');
   if (!token) {
     return 'missing';
@@ -264,13 +281,13 @@ const getStoredTokenState = (): StoredTokenState => {
       return 'invalid';
     }
 
-    return decoded.exp > Date.now() / 1000 ? 'valid' : 'expired';
+    return decoded.exp - expiryBufferSeconds > Date.now() / 1000 ? 'valid' : 'expired';
   } catch {
     return 'invalid';
   }
 };
 
-let authTokenRequest: Promise<void> | null = null;
+let authTokenRequest: Promise<string> | null = null;
 
 function getAuthToken(params: RequestInit = { method: 'POST' }) {
   const url = useAuth2() ? 'api/auth2token' : 'api/token';
@@ -291,6 +308,7 @@ function getAuthToken(params: RequestInit = { method: 'POST' }) {
       if (logout_url) {
         localStorage.setItem('logout_url', logout_url);
       }
+      return accessToken;
     })
     .finally(() => {
       authTokenRequest = null;
@@ -300,6 +318,19 @@ function getAuthToken(params: RequestInit = { method: 'POST' }) {
 }
 
 const canSilentlyRefreshToken = () => useAuth2();
+
+export const ensureValidAuthToken = async ({ forceRefresh = false } = {}) => {
+  const token = localStorage.getItem('token');
+  if (!forceRefresh && token && getStoredTokenState(TOKEN_EXPIRY_BUFFER_SECONDS) === 'valid') {
+    return token;
+  }
+
+  if (!canSilentlyRefreshToken()) {
+    return token;
+  }
+
+  return getAuthToken();
+};
 
 const authProvider = {
   login: ({ username, password }: LoginForm) => {
