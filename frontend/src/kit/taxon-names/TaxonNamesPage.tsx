@@ -562,7 +562,7 @@ const fetchKingdomOptions = async (
   retryOnAuthError = true
 ): Promise<KingdomOption[]> => {
   const sort = encodeURIComponent(JSON.stringify(['kingdom_name', 'ASC']));
-  const range = encodeURIComponent(JSON.stringify([0, 999]));
+  const range = encodeURIComponent(JSON.stringify([0, 199]));
   const filter = encodeURIComponent(JSON.stringify({}));
   const response = await fetch(
     `${BACKEND_URL}/kingdoms?sort=${sort}&range=${range}&filter=${filter}`,

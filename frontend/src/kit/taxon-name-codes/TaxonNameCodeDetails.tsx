@@ -257,7 +257,7 @@ export const TaxonNameCodeDetails = ({ editable = false }: { editable?: boolean 
       <ReferenceManyField
         reference="conscode_taxons"
         target="taxon_name_id"
-        perPage={1000}
+        perPage={200}
         sort={{ field: 'effective_from', order: 'DESC' }}
         empty={
           <div className="rounded-xl border border-dashed border-border p-6 text-sm text-muted-foreground">

@@ -1335,7 +1335,7 @@ const PublicationEditableSection = () => {
           source="publication_id"
           reference="publications"
           sort={{ field: 'abbreviated_title', order: 'ASC' }}
-          perPage={1000}
+          perPage={200}
           className="w-full"
         >
           <AutocompleteInput optionText="display_title" label="Publication" />
