@@ -2016,7 +2016,7 @@ const TaxonNameRelatedSections = ({
           </>
         ) : null}
 
-        {visibleSections.has('parents') ? (
+        {visibleSections.has('parents') && (!editable || canViewHybridRollout) ? (
           <>
             {editable && canViewHybridRollout ? (
               <section className="space-y-4">
