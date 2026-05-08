@@ -20,6 +20,7 @@ import authProvider from '../app/authProvider';
 import AuthorizedButtonLink from '../shared/AuthorizedButtonLink';
 import RecordActionButtons from '../shared/RecordActionButtons';
 import ConservationType from '../shared/choices/ConservationType';
+import HybridCategory from '../shared/choices/HybridCategory';
 import NaturalisedStatus from '../shared/choices/NaturalisedStatus';
 import PublicationStatus from '../shared/choices/PublicationStatus';
 import TaxonRank from '../shared/choices/TaxonRank';
@@ -45,6 +46,7 @@ type TaxonNameRecord = {
   publication_id?: number;
   volume_information?: string;
   publication_status?: string;
+  hybrid_category?: string | null;
   review?: boolean;
   is_autonym?: boolean;
   is_current?: boolean;
@@ -210,6 +212,7 @@ type TaxonNameFilters = {
   conservationCodeActive: string;
   publicationStatus: string;
   naturalisedStatus: string;
+  hybridType: string;
   review: string;
   isCurrent: string;
   waCensus: string;
@@ -493,6 +496,9 @@ const buildFilterObject = (filters: TaxonNameFilters) => {
       filters.naturalisedStatus === NATURALISED_STATUS_NOT_SET
         ? null
         : filters.naturalisedStatus;
+  }
+  if (filters.hybridType) {
+    nextFilter.hybrid_category = filters.hybridType;
   }
   if (filters.review) {
     nextFilter.review = filters.review === 'true';
@@ -960,6 +966,24 @@ const getNaturalisedStatusLabel = (value: string) =>
     ? 'Not set'
     : naturalisedStatusLabelMap[value] ?? value;
 
+const hybridTypeOptions = [
+  { label: 'Any type', value: '' },
+  ...HybridCategory.map((option) => ({
+    label: option.name,
+    value: option.id,
+  })),
+];
+
+const hybridTypeLabelMap = HybridCategory.reduce<Record<string, string>>(
+  (acc, option) => {
+    acc[option.id] = option.name;
+    return acc;
+  },
+  {}
+);
+
+const getHybridTypeLabel = (value: string) => hybridTypeLabelMap[value] ?? value;
+
 const booleanOptions = [
   { label: 'Any', value: '' },
   { label: 'Yes', value: 'true' },
@@ -1313,6 +1337,7 @@ const TaxonNamesPage = () => {
       conservationCodeActive: searchParams.get('conservation_code_active') || '',
       publicationStatus: searchParams.get('publication_status') || '',
       naturalisedStatus: searchParams.get('naturalised_status') || '',
+      hybridType: searchParams.get('hybrid_category') || '',
       review: searchParams.get('review') || '',
       isCurrent: searchParams.get('is_current') || '',
       waCensus: searchParams.get('is_wa_recognised') || '',
@@ -1512,6 +1537,9 @@ const TaxonNamesPage = () => {
               value: getNaturalisedStatusLabel(filters.naturalisedStatus),
             }
           : null,
+        filters.hybridType
+          ? { label: 'Hybrid type', value: getHybridTypeLabel(filters.hybridType) }
+          : null,
         filters.review ? { label: 'Review', value: getBooleanLabel(filters.review) } : null,
         filters.isCurrent
           ? { label: 'Current', value: getBooleanLabel(filters.isCurrent) }
@@ -1641,6 +1669,7 @@ const TaxonNamesPage = () => {
       ['conservation_code_active', next.conservationCodeActive],
       ['publication_status', next.publicationStatus],
       ['naturalised_status', next.naturalisedStatus],
+      ['hybrid_category', next.hybridType],
       ['review', next.review],
       ['is_current', next.isCurrent],
       ['is_wa_recognised', next.waCensus],
@@ -1698,6 +1727,7 @@ const TaxonNamesPage = () => {
       conservationCodeActive: draftFilters.conservationCodeActive,
       publicationStatus: draftFilters.publicationStatus,
       naturalisedStatus: draftFilters.naturalisedStatus,
+      hybridType: draftFilters.hybridType,
       review: draftFilters.review,
       isCurrent: draftFilters.isCurrent,
       waCensus: draftFilters.waCensus,
@@ -2045,6 +2075,7 @@ const TaxonNamesPage = () => {
       conservationCodeActive: '',
       publicationStatus: '',
       naturalisedStatus: '',
+      hybridType: '',
       review: '',
       isCurrent: '',
       waCensus: '',
@@ -2245,6 +2276,7 @@ const TaxonNamesPage = () => {
               'naturalisedStatus',
               naturalisedStatusOptions
             )}
+            {renderSelectFilter('Hybrid type', 'hybridType', hybridTypeOptions)}
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
               {renderSelectFilter('Review', 'review', booleanOptions)}
               {renderSelectFilter('Current', 'isCurrent', booleanOptions)}
