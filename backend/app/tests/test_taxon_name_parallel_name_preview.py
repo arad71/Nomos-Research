@@ -227,6 +227,42 @@ def test_join_parent_names_brackets_hybrid_formula_parent():
     )
 
 
+def test_join_parent_names_does_not_bracket_named_hybrid_parent():
+    taxon_name = SimpleNamespace(
+        hybrid_category=SimpleNamespace(value="hybrid_formula")
+    )
+    parent_taxa = [
+        SimpleNamespace(
+            infragenus_name=None,
+            canonical_name_without_rank="Acacia rhodophloia",
+            canonical_name=None,
+            scientific_name="Acacia rhodophloia Maslin",
+            formatted_scientific_name="<i>Acacia rhodophloia</i> Maslin",
+            uninomial="Acacia",
+            is_hybrid=False,
+            hybrid_category=None,
+        ),
+        SimpleNamespace(
+            infragenus_name=None,
+            canonical_name_without_rank="Acacia × xanthina",
+            canonical_name=None,
+            scientific_name="Acacia × xanthina A.R.Bean",
+            formatted_scientific_name="<i>Acacia</i> ×<i>xanthina</i> A.R.Bean",
+            uninomial=None,
+            specific_epithet="xanthina",
+            is_hybrid=True,
+            hybrid_category=SimpleNamespace(value="named_hybrid"),
+        ),
+    ]
+
+    assert join_parent_names(taxon_name, parent_taxa) == (
+        "Acacia rhodophloia × Acacia × xanthina"
+    )
+    assert join_parent_names(taxon_name, parent_taxa, name_value="scientific") == (
+        "Acacia rhodophloia Maslin × Acacia × xanthina A.R.Bean"
+    )
+
+
 def test_join_parent_names_unitalicizes_rank_in_stored_hybrid_parent():
     taxon_name = SimpleNamespace(
         hybrid_category=SimpleNamespace(value="hybrid_formula")
