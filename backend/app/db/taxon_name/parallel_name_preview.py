@@ -727,11 +727,10 @@ def bracket_hybrid_parent_name(parent: TaxonName, value: str | None) -> str | No
 
 def parent_is_hybrid_formula_group(parent: TaxonName, value: str) -> bool:
     hybrid_category = getattr(getattr(parent, "hybrid_category", None), "value", None)
-    if bool(getattr(parent, "is_hybrid", False)) or hybrid_category in {
-        "hybrid_formula",
-        "intergrade",
-    }:
+    if hybrid_category in {"hybrid_formula", "intergrade"}:
         return True
+    if hybrid_category:
+        return False
 
     return bool(re.search(r"\s(?:×|x|X|-)\s", value))
 
