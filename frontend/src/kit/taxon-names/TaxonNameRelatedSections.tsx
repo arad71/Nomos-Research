@@ -1151,14 +1151,20 @@ const relatedDialogButtonProps = {
 
 const EditRelatedButton = ({
   children,
+  id,
   label = 'Edit',
+  resource,
   title,
 }: {
   children: React.ReactNode;
+  id?: string | number;
   label?: string;
+  resource?: string;
   title?: string;
 }) => (
   <EditInDialogButton
+    id={id}
+    resource={resource}
     fullWidth
     maxWidth="md"
     title={title ?? label}
@@ -1742,7 +1748,11 @@ const CitationRows = ({
                 {editable ? (
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <EditRelatedButton label="Edit citation">
+                      <EditRelatedButton
+                        id={citation.id ?? citation.citation_id}
+                        resource="citations"
+                        label="Edit citation"
+                      >
                         <DialogFormPadding>
                           <CitationForm hideTaxonName />
                         </DialogFormPadding>
@@ -2016,7 +2026,7 @@ const TaxonNameRelatedSections = ({
           </>
         ) : null}
 
-        {visibleSections.has('parents') ? (
+        {visibleSections.has('parents') && (!editable || canViewHybridRollout) ? (
           <>
             {editable && canViewHybridRollout ? (
               <section className="space-y-4">
