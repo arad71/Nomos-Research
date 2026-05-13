@@ -75,6 +75,8 @@ import {
   HYBRID_ROLLOUT_ROLES,
 } from '../../adminShell';
 
+const LEGACY_PUBLICATION_ROLES = ['SUPER_ADMIN', 'APPLICATION_SUPPORT'];
+
 const INFRASPECIFIC_RANK_ABBREVIATIONS = [
   'nothovar.',
   'subsect.',
@@ -1770,6 +1772,10 @@ const TaxonNameRelatedSections = ({
   const navigate = useNavigate();
   const refresh = useRefresh();
   const canViewHybridRollout = hasAnyRole(getStoredRoles(), HYBRID_ROLLOUT_ROLES);
+  const canViewLegacyPublication = hasAnyRole(
+    getStoredRoles(),
+    LEGACY_PUBLICATION_ROLES
+  );
   const visibleSections = new Set<RelatedSectionKey>(
     sections ?? [
       'authors',
@@ -2206,8 +2212,8 @@ const TaxonNameRelatedSections = ({
           </section>
         ) : null}
 
-        {visibleSections.has('publication') ? (
-          <section className="mt-12 space-y-4">
+        {visibleSections.has('publication') && canViewLegacyPublication ? (
+          <section className="mt-12 space-y-4 rounded-2xl border border-red-200 bg-red-50/70 p-4 dark:border-red-900/60 dark:bg-red-950/20">
             <SectionHeader
               title="Publication"
               description="Linked publication for this taxon name."
