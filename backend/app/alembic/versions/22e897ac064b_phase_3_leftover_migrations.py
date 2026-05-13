@@ -110,5 +110,3 @@ def downgrade():
     op.drop_index("idx_taxon_publication_taxon_name_id", table_name="taxon_publication")
 
     op.drop_index("idx_taxon_name_scientific_name_trgm", table_name="taxon_name")
-
-    op.drop_index("idx_hierarchy_taxon_name_id", table_name="hierarchy")
