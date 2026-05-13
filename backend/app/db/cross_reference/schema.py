@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from app.db.cross_reference import enums
 from app.db.cross_reference.constants import (
@@ -53,29 +53,31 @@ class CrossReferenceBase(BaseModel):
         description="Associated publication ID",
     )
 
+    @field_validator("new_name_id", mode="before")
+    @classmethod
+    def empty_to_none(cls, value):
+        if value in ("", "Search", None):
+            return None
+        return value
+
     # Cross-field business rules
     @model_validator(mode="after")
     def validate_new_name_and_rationale(self):
-        # Rule 1: new_name_id mandatory except for restricted types
-        if self.new_name_id is None:
-            if self.cross_reference_type not in _ALLOWED_NULL_NEW_NAME_TYPES:
+        if self.cross_reference_type in _ALLOWED_NULL_NEW_NAME_TYPES:
+            if self.new_name_id is None:
+                if not self.reference_comments or not self.reference_comments.strip():
+                    raise ValueError(
+                        "reference_comments is required when new_name_id is null"
+                    )
+            else:
+                raise ValueError(
+                    "new_name_id should be null for the selected cross_reference_type"
+                )
+        else:
+            if self.new_name_id is None:
                 raise ValueError(
                     "new_name_id is required for the selected cross_reference_type"
                 )
-
-            # Rule 2: rationale required when new_name_id is NULL
-            if not self.reference_comments or not self.reference_comments.strip():
-                raise ValueError(
-                    "reference_comments is required when new_name_id is null"
-                )
-
-        if self.cross_reference_type in _ALLOWED_NULL_NEW_NAME_TYPES:
-            self.new_name_id = None  # Ensure new_name_id is set to None for these types
-            if not self.reference_comments or not self.reference_comments.strip():
-                raise ValueError(
-                    "reference_comments is required when new_name_id is null"
-                )
-
         return self
 
 
