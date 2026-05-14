@@ -37,6 +37,61 @@ def test_derive_parallel_name_marks_genus_level_named_hybrid():
     )
 
 
+def test_derive_parallel_name_includes_cultivar_epithet():
+    parent = SimpleNamespace(
+        taxon_name_id=10,
+        deleted=False,
+        taxon_rank=SimpleNamespace(rank_name="Species", rank_abbrev=None),
+        rank_name="Species",
+        uninomial="Lomandra",
+        specific_epithet="confertifolia",
+        infraspecific_epithet=None,
+        canonical_name="Lomandra confertifolia",
+        canonical_name_without_rank="Lomandra confertifolia",
+        scientific_name="Lomandra confertifolia",
+        formatted_scientific_name="<i>Lomandra</i> <i>confertifolia</i>",
+    )
+    taxon_name = SimpleNamespace(
+        taxon_name_id=1,
+        author=None,
+        cultivar_epithet="merlom ruby",
+        is_autonym=False,
+        taxon_rank=SimpleNamespace(rank_name="Variety", rank_abbrev="var"),
+        rank_name="Variety",
+        is_hybrid=False,
+        hybrid_category=None,
+        taxon_name_parents=[
+            SimpleNamespace(
+                deleted=False,
+                parent_taxon_name=parent,
+                parent_taxon_name_id=parent.taxon_name_id,
+                sequence=1,
+            )
+        ],
+        parallel_override_uninomial=None,
+        parallel_override_specific_epithet=None,
+        parallel_override_infraspecific_epithet="rubiginosa",
+        uninomial="Lomandra",
+        specific_epithet="confertifolia",
+        infraspecific_epithet="rubiginosa",
+        canonical_name="Lomandra confertifolia var. rubiginosa",
+        scientific_name="Lomandra confertifolia var. rubiginosa",
+    )
+
+    derived = derive_parallel_name(None, taxon_name, strict=True)
+
+    assert derived["canonical_name"] == (
+        "Lomandra confertifolia var. rubiginosa \u2018Merlom Ruby\u2019"
+    )
+    assert derived["scientific_name"] == (
+        "Lomandra confertifolia var. rubiginosa \u2018Merlom Ruby\u2019"
+    )
+    assert derived["formatted_scientific_name"] == (
+        "<i>Lomandra</i> <i>confertifolia</i> var. "
+        "<i>rubiginosa</i> \u2018Merlom Ruby\u2019"
+    )
+
+
 def test_join_parent_names_keeps_repeated_genus_for_hybrid_formula():
     taxon_name = SimpleNamespace(
         hybrid_category=SimpleNamespace(value="hybrid_formula")

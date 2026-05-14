@@ -30,8 +30,6 @@ import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import {
-  appendCultivarToPlainName,
-  formatCultivarEpithetForDisplay,
   hasCultivarEpithet,
 } from './cultivar';
 
@@ -934,22 +932,14 @@ const stripHtml = (value?: string | null) =>
   value ? value.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim() : '';
 
 const getPlainFormattedDisplayName = (record: TaxonNameRecord) =>
-  appendCultivarToPlainName(
-    stripHtml(record.formatted_scientific_name) || record.scientific_name || '',
-    record.cultivar_epithet
-  );
+  stripHtml(record.formatted_scientific_name) || record.scientific_name || '';
 
 const renderName = (record: TaxonNameRecord) => {
-  const cultivarDisplay = formatCultivarEpithetForDisplay(record.cultivar_epithet);
-
   if (record.formatted_scientific_name) {
     return (
-      <>
-        <span
-          dangerouslySetInnerHTML={{ __html: record.formatted_scientific_name }}
-        />
-        {cultivarDisplay ? <span> {cultivarDisplay}</span> : null}
-      </>
+      <span
+        dangerouslySetInnerHTML={{ __html: record.formatted_scientific_name }}
+      />
     );
   }
 

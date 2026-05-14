@@ -20,7 +20,6 @@ import NaturalisedStatus from '../shared/choices/NaturalisedStatus';
 import PublicationStatus from '../shared/choices/PublicationStatus';
 import {
   hasCultivarEpithet,
-  parseCultivarEpithet,
   validateCultivarEpithet,
 } from './cultivar';
 
@@ -50,6 +49,7 @@ type TaxonNameFormValues = {
   specific_epithet?: string | null;
   infraspecific_epithet?: string | null;
   cultivar_epithet?: string | null;
+  has_cultivar?: boolean | null;
   is_autonym?: boolean;
 };
 
@@ -369,25 +369,32 @@ const formatRankOption = (choice?: {
 const CultivarFields = () => {
   const { setValue } = useFormContext();
   const cultivarEpithet = useWatch({ name: 'cultivar_epithet' });
+  const hasCultivar = useWatch({ name: 'has_cultivar' });
   const [showCultivarField, setShowCultivarField] = React.useState(
-    hasCultivarEpithet(cultivarEpithet)
+    Boolean(hasCultivar ?? hasCultivarEpithet(cultivarEpithet))
   );
+  const hasUserToggled = React.useRef(false);
 
   React.useEffect(() => {
-    if (hasCultivarEpithet(cultivarEpithet)) {
-      setShowCultivarField(true);
-    }
-  }, [cultivarEpithet]);
-
-  const toggleCultivar = (checked: boolean) => {
-    setShowCultivarField(checked);
-
-    if (!checked) {
-      setValue('cultivar_epithet', null, {
-        shouldDirty: true,
-        shouldValidate: true,
+    if (!hasUserToggled.current) {
+      const nextShowCultivarField = Boolean(
+        hasCultivar ?? hasCultivarEpithet(cultivarEpithet)
+      );
+      setShowCultivarField(nextShowCultivarField);
+      setValue('has_cultivar', nextShowCultivarField, {
+        shouldDirty: false,
+        shouldValidate: false,
       });
     }
+  }, [cultivarEpithet, hasCultivar, setValue]);
+
+  const toggleCultivar = (checked: boolean) => {
+    hasUserToggled.current = true;
+    setShowCultivarField(checked);
+    setValue('has_cultivar', checked, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
   };
 
   return (
@@ -406,7 +413,6 @@ const CultivarFields = () => {
         <TextInput
           source="cultivar_epithet"
           label="Cultivar epithet"
-          parse={parseCultivarEpithet}
           validate={validateCultivarEpithet}
           helperText="Store the raw epithet only, without quotation marks."
         />

@@ -1,5 +1,4 @@
 import {
-  appendCultivarToPlainName,
   formatCultivarEpithetForDisplay,
   normalizeCultivarEpithet,
   parseCultivarEpithet,
@@ -21,11 +20,5 @@ describe('cultivar formatting', () => {
 
   it('adds display quotes and title case without mutating the base name', () => {
     expect(formatCultivarEpithetForDisplay('merlom ruby')).toBe('\u2018Merlom Ruby\u2019');
-    expect(
-      appendCultivarToPlainName(
-        'Lomandra confertifolia subsp. rubiginosa',
-        'merlom ruby'
-      )
-    ).toBe('Lomandra confertifolia subsp. rubiginosa \u2018Merlom Ruby\u2019');
   });
 });

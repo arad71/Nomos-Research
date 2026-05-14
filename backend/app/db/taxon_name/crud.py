@@ -13,7 +13,11 @@ import app.db.crud as crud
 import app.db.taxon_name.schema as schema
 from app.db.hierarchy.model import Hierarchy
 from app.db.informal_group.model import InformalGroup
-from app.db.taxon_name.calculated import append_ms_suffix, remove_ms_suffix
+from app.db.taxon_name.calculated import (
+    append_cultivar_epithet_to_name,
+    append_ms_suffix,
+    remove_ms_suffix,
+)
 
 # from app.db.taxon_name.calculated import append_ms_suffix
 from app.db.taxon_name.enums import PublicationStatus
@@ -666,7 +670,28 @@ class TaxonNameCrud(crud.Crud):
                 taxon_name.calculate_name = False
         print(taxon_name.infragenus_name)
 
-        # Aplly or remove ms suffix on publication status
+        taxon_name.canonical_name = append_cultivar_epithet_to_name(
+            taxon_name.canonical_name,
+            taxon_name.cultivar_epithet,
+        )
+        taxon_name.canonical_name_without_rank = (
+            append_cultivar_epithet_to_name(
+                taxon_name.canonical_name_without_rank,
+                taxon_name.cultivar_epithet,
+            )
+        )
+        taxon_name.scientific_name = append_cultivar_epithet_to_name(
+            taxon_name.scientific_name,
+            taxon_name.cultivar_epithet,
+        )
+        taxon_name.formatted_scientific_name = (
+            append_cultivar_epithet_to_name(
+                taxon_name.formatted_scientific_name,
+                taxon_name.cultivar_epithet,
+            )
+        )
+
+        # Apply or remove ms suffix on publication status
         if taxon_name.publication_status == PublicationStatus.manuscript_name:
             taxon_name.scientific_name = append_ms_suffix(taxon_name.scientific_name)
             taxon_name.formatted_scientific_name = append_ms_suffix(

@@ -115,6 +115,7 @@ def derive_parallel_name(
     strategy = "stored_fields"
     components = schema.NameStringComponents(
         author=taxon_name.author,
+        cultivar_epithet=getattr(taxon_name, "cultivar_epithet", None),
         is_hybrid_formula=(
             bool(getattr(taxon_name, "is_hybrid", False))
             and getattr(getattr(taxon_name, "hybrid_category", None), "value", None)

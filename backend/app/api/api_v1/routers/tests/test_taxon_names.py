@@ -170,8 +170,14 @@ def test_create_taxon_name_with_cultivar_epithet(
     response_json = response.json()
     assert response_json["cultivar_epithet"] == "bluff cream"
     assert response_json["has_cultivar"] is True
-    assert response_json["scientific_name"] == "Callistemon"
-    assert response_json["formatted_scientific_name"] == "<i>Callistemon</i>"
+    assert response_json["canonical_name"] == "Callistemon \u2018Bluff Cream\u2019"
+    assert response_json["canonical_name_without_rank"] == (
+        "Callistemon \u2018Bluff Cream\u2019"
+    )
+    assert response_json["scientific_name"] == "Callistemon \u2018Bluff Cream\u2019"
+    assert response_json["formatted_scientific_name"] == (
+        "<i>Callistemon</i> \u2018Bluff Cream\u2019"
+    )
 
 
 def test_create_taxon_name_rejects_quoted_cultivar_epithet(

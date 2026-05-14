@@ -22,6 +22,51 @@ from . import enums as taxon_name_enums
 HYBRID_FORMULA_PREFIX_RE = re.compile(r"^(?:×|x|X)\s+")
 
 
+def normalize_cultivar_epithet(value: str | None) -> str | None:
+    if value is None:
+        return None
+    normalized = re.sub(r"\s+", " ", value.strip())
+    return normalized or None
+
+
+def title_case_cultivar_epithet(value: str | None) -> str | None:
+    normalized = normalize_cultivar_epithet(value)
+    if not normalized:
+        return None
+    return re.sub(
+        r"(^|[\s-])([a-z])",
+        lambda match: f"{match.group(1)}{match.group(2).upper()}",
+        normalized.lower(),
+    )
+
+
+def format_cultivar_epithet_for_display(value: str | None) -> str | None:
+    title_cased = title_case_cultivar_epithet(value)
+    return f"\u2018{title_cased}\u2019" if title_cased else None
+
+
+def append_cultivar_epithet_to_name(
+    name: str | None,
+    cultivar_epithet: str | None,
+) -> str | None:
+    cultivar_display = format_cultivar_epithet_for_display(cultivar_epithet)
+    if not name or not cultivar_display:
+        return name
+
+    if normalize_cultivar_name_for_comparison(name).endswith(
+        normalize_cultivar_name_for_comparison(cultivar_display)
+    ):
+        return name
+
+    return f"{name} {cultivar_display}"
+
+
+def normalize_cultivar_name_for_comparison(value: str | None) -> str:
+    if value is None:
+        return ""
+    return re.sub(r"\s+", " ", value.strip()).lower()
+
+
 def calculate_fields(
     mapper: sqlalchemy.orm.mapper,
     connection: sqlalchemy.orm.Session,
@@ -168,6 +213,7 @@ def calculate_scientific_name_string(
         parts.append(components.rank_abbreviation)
         parts.append(infraspecific_epithet)
         parts.append(components.author)
+    parts.append(format_cultivar_epithet_for_display(components.cultivar_epithet))
 
     return filter_join(parts)
 
@@ -216,6 +262,7 @@ def get_name_components(
         if target.taxon_rank.rank_abbrev:
             vals.rank_abbreviation = RankAbbreviationVals[target.taxon_rank.rank_abbrev]
     vals.infraspecific_epithet = target.infraspecific_epithet
+    vals.cultivar_epithet = target.cultivar_epithet
     vals.author = target.author
     if apply_hybrid_semantics:
         hybrid_category_value = getattr(
@@ -342,6 +389,7 @@ def calculate_canonical_name_string(
                 hybrid_marker_on_infraspecific_epithet=components.hybrid_marker_on_infraspecific_epithet,
                 italicize=False,
             ),
+            format_cultivar_epithet_for_display(components.cultivar_epithet),
         ]
     )
 

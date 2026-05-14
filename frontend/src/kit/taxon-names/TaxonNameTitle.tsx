@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useGetOne, useRecordContext } from 'ra-core';
 import { Badge } from '@/components/ui/badge';
-import { formatCultivarEpithetForDisplay } from './cultivar';
 
 type TaxonNameTitleRecord = {
   id?: string | number | null;
@@ -9,7 +8,6 @@ type TaxonNameTitleRecord = {
   legacy_id?: string | number | null;
   scientific_name?: string | null;
   formatted_scientific_name?: string | null;
-  cultivar_epithet?: string | null;
   is_current?: boolean | null;
   deleted?: boolean | null;
   rank_id?: string | number | null;
@@ -29,7 +27,6 @@ const TaxonNameTitle = ({ fallback }: { fallback: string }) => {
   }
 
   const title = record.formatted_scientific_name || record.scientific_name || fallback;
-  const cultivarDisplay = formatCultivarEpithetForDisplay(record.cultivar_epithet);
   const nomosId = record.taxon_name_id ?? record.id;
 
   return (
@@ -40,7 +37,6 @@ const TaxonNameTitle = ({ fallback }: { fallback: string }) => {
       <span className="inline-flex items-center gap-2">
         <span>
           <span dangerouslySetInnerHTML={{ __html: title }} />
-          {cultivarDisplay ? <span> {cultivarDisplay}</span> : null}
         </span>
         {record.is_current ? <Badge>Current</Badge> : null}
         {record.deleted ? <Badge variant="destructive">Deleted</Badge> : null}

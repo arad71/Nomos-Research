@@ -32,13 +32,3 @@ export const formatCultivarEpithetForDisplay = (value?: string | null) => {
   const titleCased = titleCaseCultivarEpithet(value);
   return titleCased ? `\u2018${titleCased}\u2019` : '';
 };
-
-export const appendCultivarToPlainName = (
-  baseName?: string | null,
-  cultivarEpithet?: string | null
-) => {
-  const base = normalizeCultivarEpithet(baseName);
-  const cultivar = formatCultivarEpithetForDisplay(cultivarEpithet);
-
-  return [base, cultivar].filter(Boolean).join(' ');
-};
