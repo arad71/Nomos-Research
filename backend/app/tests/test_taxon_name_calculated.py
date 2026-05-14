@@ -279,11 +279,17 @@ def test_calculate_names_with_cultivar_epithet():
 
 
 def test_append_cultivar_epithet_to_stored_name_is_idempotent():
-    assert append_cultivar_epithet_to_name(
-        "Sargassum ilicifolium var. oocystoides Grunow",
-        "golden form",
-    ) == "Sargassum ilicifolium var. oocystoides Grunow \u2018Golden Form\u2019"
-    assert append_cultivar_epithet_to_name(
-        "Sargassum ilicifolium var. oocystoides Grunow \u2018Golden Form\u2019",
-        "golden form",
-    ) == "Sargassum ilicifolium var. oocystoides Grunow \u2018Golden Form\u2019"
+    assert (
+        append_cultivar_epithet_to_name(
+            "Sargassum ilicifolium var. oocystoides Grunow",
+            "golden form",
+        )
+        == "Sargassum ilicifolium var. oocystoides Grunow \u2018Golden Form\u2019"
+    )
+    assert (
+        append_cultivar_epithet_to_name(
+            "Sargassum ilicifolium var. oocystoides Grunow \u2018Golden Form\u2019",
+            "golden form",
+        )
+        == "Sargassum ilicifolium var. oocystoides Grunow \u2018Golden Form\u2019"
+    )

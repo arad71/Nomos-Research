@@ -274,7 +274,7 @@ def test_search_taxon_names_by_formatted_cultivar_name(
     search_response = client.get(
         "/api/v1/taxon_names",
         headers=superuser_token_headers,
-        params={"filter": "{\"q\":\"Callistemon 'Bluff Cream'\"}"},
+        params={"filter": '{"q":"Callistemon \'Bluff Cream\'"}'},
     )
 
     assert search_response.status_code == status.HTTP_200_OK

@@ -45,7 +45,9 @@ CANONICAL = "Canonical"
 
 CANONICAL_WITHOUT_RANK = "Canonical without rank"
 HYBRID_FORMULA_PREFIX_RE = re.compile(r"^(?:×|x|X)\s+")
-CULTIVAR_QUOTE_RE = re.compile(r"['\"`\u2018\u2019\u201A\u201B\u201C\u201D\u201E\u201F]")
+CULTIVAR_QUOTE_RE = re.compile(
+    r"['\"`\u2018\u2019\u201A\u201B\u201C\u201D\u201E\u201F]"
+)
 
 
 class TaxonNameCrud(crud.Crud):
@@ -674,21 +676,17 @@ class TaxonNameCrud(crud.Crud):
             taxon_name.canonical_name,
             taxon_name.cultivar_epithet,
         )
-        taxon_name.canonical_name_without_rank = (
-            append_cultivar_epithet_to_name(
-                taxon_name.canonical_name_without_rank,
-                taxon_name.cultivar_epithet,
-            )
+        taxon_name.canonical_name_without_rank = append_cultivar_epithet_to_name(
+            taxon_name.canonical_name_without_rank,
+            taxon_name.cultivar_epithet,
         )
         taxon_name.scientific_name = append_cultivar_epithet_to_name(
             taxon_name.scientific_name,
             taxon_name.cultivar_epithet,
         )
-        taxon_name.formatted_scientific_name = (
-            append_cultivar_epithet_to_name(
-                taxon_name.formatted_scientific_name,
-                taxon_name.cultivar_epithet,
-            )
+        taxon_name.formatted_scientific_name = append_cultivar_epithet_to_name(
+            taxon_name.formatted_scientific_name,
+            taxon_name.cultivar_epithet,
         )
 
         # Apply or remove ms suffix on publication status

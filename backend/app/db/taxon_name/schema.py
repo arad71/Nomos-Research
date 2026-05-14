@@ -13,7 +13,9 @@ from app.db.schemas import TableBase
 from app.db.taxon_name import enums
 from app.db.taxon_rank.schema import TaxonRank
 
-QUOTE_CHARACTER_RE = re.compile(r"['\"`\u2018\u2019\u201A\u201B\u201C\u201D\u201E\u201F]")
+QUOTE_CHARACTER_RE = re.compile(
+    r"['\"`\u2018\u2019\u201A\u201B\u201C\u201D\u201E\u201F]"
+)
 
 
 def normalize_cultivar_epithet(value: Any) -> Any:
