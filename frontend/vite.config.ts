@@ -27,8 +27,6 @@ export default defineConfig({
       'nomos-frontend',
       'nomo-test.bio.wa.gov.au',
       'nomos.bio.wa.gov.au',
-      'flux.bdr.wa.gov.au',
-      'helios.bio.wa.gov.au',
     ],
   },
   build: {
@@ -51,7 +49,11 @@ export default defineConfig({
             '@react-admin/ra-relationships',
             '@react-admin/ra-editable-datagrid',
           ],
-          forms: ['final-form', 'final-form-arrays', 'react-final-form'],
+          forms: [
+            'final-form',
+            'final-form-arrays',
+            'react-final-form'
+          ],
           editor: ['ra-input-rich-text'],
         },
       },
