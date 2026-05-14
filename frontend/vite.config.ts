@@ -7,19 +7,13 @@ export default defineConfig({
   plugins: [react(), tailwindcss(), tsconfigPaths()],
   envPrefix: ['VITE_', 'REACT_APP_', 'AUTH_'],
   resolve: {
-    dedupe: ['react', 'react-dom', '@emotion/react', '@emotion/styled'],
     alias: {
       '@mui/icons-material': '@mui/icons-material/esm',
     },
   },
   server: {
     port: 3000,
-    allowedHosts: [
-      'host.docker.internal',
-      'localhost',
-      '127.0.0.1',
-      'nomos-frontend',
-    ],
+    allowedHosts: ['host.docker.internal', 'localhost', 'nomos-frontend'],
     proxy: {
       '/api': {
         target: 'http://host.docker.internal:8000',
@@ -32,21 +26,10 @@ export default defineConfig({
     allowedHosts: [
       'nomos-frontend',
       'nomo-test.bio.wa.gov.au',
-      'nomos-test.bdr.wa.gov.au',
-      'nomos.bdr.wa.gov.au',
       'nomos.bio.wa.gov.au',
       'flux.bdr.wa.gov.au',
       'helios.bio.wa.gov.au',
-      'localhost',
-      '127.0.0.1',
-      'host.docker.internal',
     ],
-    proxy: {
-      '/api': {
-        target: 'http://host.docker.internal:8000',
-        changeOrigin: true,
-      },
-    },
   },
   build: {
     outDir: 'build',
