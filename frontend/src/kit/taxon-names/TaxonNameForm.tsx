@@ -190,6 +190,19 @@ const ValidatedInput = () => {
     { enabled: Boolean(recordId) }
   );
 
+  const {
+    data: hierarchyRows = [],
+    isPending: hierarchyRowsPending,
+  } = useGetList(
+    'hierarchies',
+    {
+      filter: { taxon_name_id: recordId },
+      pagination: { page: 1, perPage: 1 },
+      sort: { field: 'path', order: 'ASC' },
+    },
+    { enabled: Boolean(recordId) }
+  );
+
   const requirements = React.useMemo<ValidationRequirement[]>(
     () => {
       const rankName = rankRecord?.rank_name?.toLowerCase() ?? '';
@@ -216,6 +229,12 @@ const ValidatedInput = () => {
         label: 'Author/s',
         met: Boolean(recordId) && authorRows.length > 0,
         pending: Boolean(recordId) && authorRowsPending,
+      },
+      {
+        key: 'hierarchy',
+        label: 'Hierarchy',
+        met: Boolean(recordId) && hierarchyRows.length > 0,
+        pending: Boolean(recordId) && hierarchyRowsPending,
       },
       {
         key: 'publication_status',
@@ -276,6 +295,8 @@ const ValidatedInput = () => {
       classificationSystemIds?.length,
       contributedBy,
       contributedOn,
+      hierarchyRows.length,
+      hierarchyRowsPending,
       isCurrent,
       kingdomId,
       naturalisedStatus,
@@ -308,7 +329,7 @@ const ValidatedInput = () => {
           'border-amber-300 bg-amber-100 text-amber-900 hover:bg-amber-100'
       )}
     >
-      {canValidate ? 'Ready to validate' : 'Not ready to validate'}
+      Ready to validate
     </Badge>
   );
 
@@ -326,7 +347,7 @@ const ValidatedInput = () => {
       label={
         <span className="flex flex-wrap items-center gap-2">
           <span>Validated</span>
-          {statusBadge}
+          {canValidate ? statusBadge : null}
         </span>
       }
       helperText={helperText}

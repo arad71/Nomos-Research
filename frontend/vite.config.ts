@@ -29,24 +29,7 @@ export default defineConfig({
   },
   preview: {
     port: 3000,
-    allowedHosts: [
-      'nomos-frontend',
-      'nomo-test.bio.wa.gov.au',
-      'nomos-test.bdr.wa.gov.au',
-      'nomos.bdr.wa.gov.au',
-      'nomos.bio.wa.gov.au',
-      'flux.bdr.wa.gov.au',
-      'helios.bio.wa.gov.au',
-      'localhost',
-      '127.0.0.1',
-      'host.docker.internal',
-    ],
-    proxy: {
-      '/api': {
-        target: 'http://host.docker.internal:8000',
-        changeOrigin: true,
-      },
-    },
+    allowedHosts: ['nomos-frontend', 'nomo-test.bio.wa.gov.au', 'nomos.bio.wa.gov.au', 'flux.bdr.wa.gov.au', 'helios.bio.wa.gov.au'],
   },
   build: {
     outDir: 'build',
