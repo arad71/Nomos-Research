@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+import re
 from datetime import datetime
-from typing import Optional
+from typing import Any, Optional
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 from pydantic.config import ConfigDict
 
 import app.db.taxon_name.constants as constants
@@ -11,6 +12,17 @@ from app.db.kingdom.schema import Kingdom
 from app.db.schemas import TableBase
 from app.db.taxon_name import enums
 from app.db.taxon_rank.schema import TaxonRank
+
+QUOTE_CHARACTER_RE = re.compile(r"['\"`\u2018\u2019\u201A\u201B\u201C\u201D\u201E\u201F]")
+
+
+def normalize_cultivar_epithet(value: Any) -> Any:
+    if value is None:
+        return None
+    if not isinstance(value, str):
+        return value
+    normalized = re.sub(r"\s+", " ", value.strip())
+    return normalized or None
 
 
 class TaxonNameBase(BaseModel):
@@ -22,6 +34,7 @@ class TaxonNameBase(BaseModel):
     parallel_override_specific_epithet: Optional[str] = None
     infraspecific_epithet: Optional[str] = None
     parallel_override_infraspecific_epithet: Optional[str] = None
+    cultivar_epithet: Optional[str] = None
     is_autonym: Optional[bool] = Field(default=None, description=constants.AUTONYM)
     is_hybrid: Optional[bool] = Field(default=False, description=constants.IS_HYBRID)
     hybrid_category: Optional[enums.HybridCategory] = Field(
@@ -101,6 +114,14 @@ class TaxonNameBase(BaseModel):
         default=None, description=constants.LEGACY_PUBLICATION_ID
     )
 
+    @field_validator("cultivar_epithet", mode="before")
+    @classmethod
+    def _normalize_cultivar_epithet(cls, value: Any) -> Any:
+        normalized = normalize_cultivar_epithet(value)
+        if normalized and QUOTE_CHARACTER_RE.search(normalized):
+            raise ValueError("cultivar_epithet must not contain quote characters")
+        return normalized
+
     # ---- Cross-field validation (Pydantic v2) ----
     @model_validator(mode="after")
     def _validate_autonym(self) -> "TaxonNameBase":
@@ -165,6 +186,7 @@ class TaxonName(TaxonNameBase, TableBase):
     cons_code: Optional[str] = None
     scientific_name: Optional[str] = None
     formatted_scientific_name: Optional[str] = None
+    has_cultivar: bool = False
     species_code: Optional[str] = None
     canonical_name_without_rank: Optional[str] = None
     path: Optional[list[str]] = None

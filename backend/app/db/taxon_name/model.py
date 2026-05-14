@@ -46,6 +46,7 @@ class TaxonName(BaseModel, TableMixin):
     canonical_name_without_rank = sqlalchemy.Column(sqlalchemy.String, index=True)
     scientific_name = sqlalchemy.Column(sqlalchemy.String, index=True)
     formatted_scientific_name = sqlalchemy.Column(sqlalchemy.String)
+    cultivar_epithet = sqlalchemy.Column(sqlalchemy.String(100), index=True)
     species_code = sqlalchemy.Column(
         sqlalchemy.String(50),
         index=True,
@@ -255,6 +256,60 @@ class TaxonName(BaseModel, TableMixin):
             informal_group.classification_system.classification_system_id
             for informal_group in self.informal_groups
         ]
+
+    @hybrid_property
+    def has_cultivar(self):
+        return bool((self.cultivar_epithet or "").strip())
+
+    @has_cultivar.expression
+    def has_cultivar(cls):
+        return sqlalchemy.and_(
+            cls.cultivar_epithet.isnot(None),
+            sqlalchemy.func.length(sqlalchemy.func.trim(cls.cultivar_epithet)) > 0,
+        )
+
+    @hybrid_property
+    def cultivar_search_text(self):
+        return " ".join(
+            part
+            for part in [
+                " ".join(
+                    part
+                    for part in [self.scientific_name, self.cultivar_epithet]
+                    if part
+                ),
+                " ".join(
+                    part
+                    for part in [self.canonical_name, self.cultivar_epithet]
+                    if part
+                ),
+                self.scientific_name,
+                self.canonical_name,
+                self.formatted_scientific_name,
+                self.cultivar_epithet,
+            ]
+            if part
+        )
+
+    @cultivar_search_text.expression
+    def cultivar_search_text(cls):
+        return sqlalchemy.func.concat(
+            sqlalchemy.func.coalesce(cls.scientific_name, ""),
+            " ",
+            sqlalchemy.func.coalesce(cls.cultivar_epithet, ""),
+            " ",
+            sqlalchemy.func.coalesce(cls.canonical_name, ""),
+            " ",
+            sqlalchemy.func.coalesce(cls.cultivar_epithet, ""),
+            " ",
+            sqlalchemy.func.coalesce(cls.scientific_name, ""),
+            " ",
+            sqlalchemy.func.coalesce(cls.canonical_name, ""),
+            " ",
+            sqlalchemy.func.coalesce(cls.formatted_scientific_name, ""),
+            " ",
+            sqlalchemy.func.coalesce(cls.cultivar_epithet, ""),
+        )
 
 
 sqlalchemy.event.listen(TaxonName, "before_insert", calculated.calculate_fields)
