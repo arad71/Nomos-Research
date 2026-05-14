@@ -52,7 +52,7 @@ export default defineConfig({
           forms: [
             'final-form',
             'final-form-arrays',
-            'react-final-form'
+            'react-final-form',
           ],
           editor: ['ra-input-rich-text'],
         },
