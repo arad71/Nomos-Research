@@ -13,10 +13,16 @@ import { SelectInput } from '@/components/admin/select-input';
 import { SimpleForm } from '@/components/admin/simple-form';
 import { TextInput } from '@/components/admin/text-input';
 import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import { parseDateOnlyToDateTime } from '../shared/dateOnlyDateTime';
 import NaturalisedStatus from '../shared/choices/NaturalisedStatus';
 import PublicationStatus from '../shared/choices/PublicationStatus';
+import {
+  hasCultivarEpithet,
+  parseCultivarEpithet,
+  validateCultivarEpithet,
+} from './cultivar';
 
 const requiredValue = required();
 const minYear = minValue(1735);
@@ -43,6 +49,7 @@ type TaxonNameFormValues = {
   review_reason?: string | null;
   specific_epithet?: string | null;
   infraspecific_epithet?: string | null;
+  cultivar_epithet?: string | null;
   is_autonym?: boolean;
 };
 
@@ -359,6 +366,55 @@ const formatRankOption = (choice?: {
   return choice.rank_name;
 };
 
+const CultivarFields = () => {
+  const { setValue } = useFormContext();
+  const cultivarEpithet = useWatch({ name: 'cultivar_epithet' });
+  const [showCultivarField, setShowCultivarField] = React.useState(
+    hasCultivarEpithet(cultivarEpithet)
+  );
+
+  React.useEffect(() => {
+    if (hasCultivarEpithet(cultivarEpithet)) {
+      setShowCultivarField(true);
+    }
+  }, [cultivarEpithet]);
+
+  const toggleCultivar = (checked: boolean) => {
+    setShowCultivarField(checked);
+
+    if (!checked) {
+      setValue('cultivar_epithet', null, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+    }
+  };
+
+  return (
+    <>
+      <div className="flex items-center gap-2">
+        <Switch
+          id="taxon-name-has-cultivar"
+          checked={showCultivarField}
+          onCheckedChange={toggleCultivar}
+        />
+        <label htmlFor="taxon-name-has-cultivar" className="text-sm font-medium">
+          Cultivar
+        </label>
+      </div>
+      {showCultivarField ? (
+        <TextInput
+          source="cultivar_epithet"
+          label="Cultivar epithet"
+          parse={parseCultivarEpithet}
+          validate={validateCultivarEpithet}
+          helperText="Store the raw epithet only, without quotation marks."
+        />
+      ) : null}
+    </>
+  );
+};
+
 const TaxonNameFormInner = ({
   topContent,
   relatedSections,
@@ -423,7 +479,14 @@ const TaxonNameFormInner = ({
           <TextInput source="uninomial" validate={requiredValue} />
           <TextInput source="specific_epithet" />
           <TextInput source="infraspecific_epithet" validate={validateInfraspecificEpithet} />
-          {infraspecificEpithet ? <BooleanInput source="is_autonym" label="Autonym" /> : null}
+          <div className="hidden md:block md:col-span-2 xl:col-span-4" aria-hidden="true" />
+          <CultivarFields />
+          {infraspecificEpithet ? (
+            <>
+              <div className="hidden md:block md:col-span-2 xl:col-span-4" aria-hidden="true" />
+              <BooleanInput source="is_autonym" label="Autonym" />
+            </>
+          ) : null}
 
           <div className="hidden md:block md:col-span-2 xl:col-span-4" aria-hidden="true" />
           <NumberInput
