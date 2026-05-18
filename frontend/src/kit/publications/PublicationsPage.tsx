@@ -134,6 +134,22 @@ const DEFAULT_SORT_ORDER: SortOrder = 'ASC';
 const EXPORT_BATCH_SIZE = 500;
 const SEARCH_FETCH_LIMIT = 5000;
 
+const publicationReferenceTypeLabelMap = PublicationReferenceType.reduce<Record<string, string>>(
+  (labels, option) => ({
+    ...labels,
+    [option.id]: option.name,
+    [option.id.toLowerCase()]: option.name,
+  }),
+  {}
+);
+
+const getPublicationReferenceTypeLabel = (value?: string | null) =>
+  value
+    ? publicationReferenceTypeLabelMap[value] ??
+      publicationReferenceTypeLabelMap[value.toLowerCase()] ??
+      value
+    : '';
+
 const defaultColumns: ColumnKey[] = [
   'publicationId',
   'referenceType',
@@ -1028,7 +1044,7 @@ const PublicationsPage = () => {
       case 'bhlUrl':
         return record.bhl_url ?? '';
       case 'referenceType':
-        return record.reference_type ?? '';
+        return getPublicationReferenceTypeLabel(record.reference_type);
       case 'referenceAuthorRole':
         return record.reference_author_role ?? '';
       case 'duplicateOf':
@@ -1252,7 +1268,7 @@ const PublicationsPage = () => {
       case 'bhlUrl':
         return record.bhl_url ?? '';
       case 'referenceType':
-        return record.reference_type ?? '';
+        return getPublicationReferenceTypeLabel(record.reference_type);
       case 'referenceAuthorRole':
         return record.reference_author_role ?? '';
       case 'duplicateOf':
