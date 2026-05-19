@@ -13,6 +13,7 @@ import { Button } from '../../components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { formatAuthorOption } from '../authors/authorDisplay';
 import PublicationReferenceType from '../shared/choices/PublicationReferenceType';
+import { getPublicationReferenceTypeLabel } from '../shared/choices/publicationReferenceTypeLabel';
 
 type SortOrder = 'ASC' | 'DESC';
 
@@ -133,22 +134,6 @@ const DEFAULT_SORT_FIELD = 'display_title';
 const DEFAULT_SORT_ORDER: SortOrder = 'ASC';
 const EXPORT_BATCH_SIZE = 500;
 const SEARCH_FETCH_LIMIT = 5000;
-
-const publicationReferenceTypeLabelMap = PublicationReferenceType.reduce<Record<string, string>>(
-  (labels, option) => ({
-    ...labels,
-    [option.id]: option.name,
-    [option.id.toLowerCase()]: option.name,
-  }),
-  {}
-);
-
-const getPublicationReferenceTypeLabel = (value?: string | null) =>
-  value
-    ? publicationReferenceTypeLabelMap[value] ??
-      publicationReferenceTypeLabelMap[value.toLowerCase()] ??
-      value
-    : '';
 
 const defaultColumns: ColumnKey[] = [
   'publicationId',
