@@ -1165,8 +1165,8 @@ const EditRelatedButton = ({
   title?: string;
 }) => (
   <EditInDialogButton
-    id={id}
     resource={resource}
+    {...(id != null ? { id } : {})}
     fullWidth
     maxWidth="md"
     title={title ?? label}
@@ -2079,7 +2079,10 @@ const TaxonNameRelatedSections = ({
                       <DataTable.Col label="Actions">
                         <div className="flex items-center gap-2">
                           <ParentSequenceButtons />
-                          <EditRelatedButton label="Edit parent name row">
+                          <EditRelatedButton
+                            resource="taxon_name_parents"
+                            label="Edit parent name row"
+                          >
                             <DialogFormPadding>
                               <TaxonNameParentForm hideTaxonName />
                             </DialogFormPadding>
