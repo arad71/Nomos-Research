@@ -34,15 +34,13 @@ def extension_exists(extension_name):
     bind = op.get_bind()
     return bool(
         bind.execute(
-            sa.text(
-                """
+            sa.text("""
                 SELECT EXISTS (
                     SELECT 1
                     FROM pg_extension
                     WHERE extname = :extension_name
                 )
-                """
-            ),
+                """),
             {"extension_name": extension_name},
         ).scalar()
     )
