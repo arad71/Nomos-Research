@@ -30,6 +30,51 @@ def index_exists(table_name, index_name):
     return index_name in [idx["name"] for idx in inspector.get_indexes(table_name)]
 
 
+def extension_exists(extension_name):
+    bind = op.get_bind()
+    return bool(
+        bind.execute(
+            sa.text(
+                """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM pg_extension
+                    WHERE extname = :extension_name
+                )
+                """
+            ),
+            {"extension_name": extension_name},
+        ).scalar()
+    )
+
+
+def azure_extension_allowed(extension_name):
+    bind = op.get_bind()
+    allowed_extensions = bind.execute(
+        sa.text("SELECT current_setting('azure.extensions', true)")
+    ).scalar()
+
+    if allowed_extensions is None:
+        return True
+
+    return extension_name in {
+        extension.strip().lower()
+        for extension in allowed_extensions.split(",")
+        if extension.strip()
+    }
+
+
+def ensure_pg_trgm():
+    if extension_exists("pg_trgm"):
+        return True
+
+    if not azure_extension_allowed("pg_trgm"):
+        return False
+
+    op.execute("CREATE EXTENSION IF NOT EXISTS pg_trgm")
+    return extension_exists("pg_trgm")
+
+
 def upgrade():
     # taxon_name_parent indexes
     if not index_exists("taxon_name_parent", "idx_taxon_name_parent_taxon_id"):
@@ -51,11 +96,10 @@ def upgrade():
             postgresql_where=sa.text("deleted = false"),
         )
 
-    # extension (must use raw SQL)
-    op.execute("CREATE EXTENSION IF NOT EXISTS pg_trgm")
-
     # GIN + trigram index
-    if not index_exists("taxon_name", "idx_taxon_name_scientific_name_trgm"):
+    if ensure_pg_trgm() and not index_exists(
+        "taxon_name", "idx_taxon_name_scientific_name_trgm"
+    ):
         op.create_index(
             "idx_taxon_name_scientific_name_trgm",
             "taxon_name",
@@ -109,4 +153,5 @@ def downgrade():
     )
     op.drop_index("idx_taxon_publication_taxon_name_id", table_name="taxon_publication")
 
-    op.drop_index("idx_taxon_name_scientific_name_trgm", table_name="taxon_name")
+    if index_exists("taxon_name", "idx_taxon_name_scientific_name_trgm"):
+        op.drop_index("idx_taxon_name_scientific_name_trgm", table_name="taxon_name")
