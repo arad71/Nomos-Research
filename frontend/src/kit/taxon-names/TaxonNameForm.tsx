@@ -337,7 +337,7 @@ const ValidatedInput = () => {
     <span className="text-sm text-amber-900">
       {isLoadingRequirements
         ? 'Checking validation requirements...'
-        : `Missing: ${missingRequirements.join(', ')}`}
+        : `Check: ${missingRequirements.join(', ')}`}
     </span>
   );
 
