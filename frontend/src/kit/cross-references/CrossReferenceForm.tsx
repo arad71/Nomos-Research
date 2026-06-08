@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { required } from 'ra-core';
 import { AutocompleteInput } from '@/components/admin/autocomplete-input';
+import { BooleanInput } from '@/components/admin/boolean-input';
 import { DateInput } from '@/components/admin/date-input';
 import { ReferenceInput } from '@/components/admin/reference-input';
 import { SelectInput } from '@/components/admin/select-input';
@@ -63,6 +64,12 @@ const CrossReferenceForm = ({
             label="Cross reference type"
             choices={CrossRefType}
             validate={requiredValue}
+            className="md:col-span-2 xl:col-span-3"
+          />
+          <BooleanInput
+            source="is_active"
+            label="Active"
+            defaultValue
             className="md:col-span-2 xl:col-span-3"
           />
         </div>

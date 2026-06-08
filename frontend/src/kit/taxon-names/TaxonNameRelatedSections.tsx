@@ -1220,6 +1220,7 @@ type RelatedNameCardRecord = {
   new_name_id?: string | number | null;
   cross_reference_type?: string | null;
   reference_comments?: string | null;
+  is_active?: boolean | null;
 };
 
 const RelatedNameCards = ({
@@ -1256,6 +1257,12 @@ const RelatedNameCards = ({
                   </Badge>
                   <Badge variant="outline" className="w-fit">
                     {getCrossRefTypeLabel(crossRef.cross_reference_type)}
+                  </Badge>
+                  <Badge
+                    variant={crossRef.is_active === false ? 'outline' : 'secondary'}
+                    className="w-fit"
+                  >
+                    {crossRef.is_active === false ? 'Inactive' : 'Active'}
                   </Badge>
                 </div>
               </CardHeader>
