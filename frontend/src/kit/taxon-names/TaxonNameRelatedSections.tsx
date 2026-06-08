@@ -2125,7 +2125,7 @@ const TaxonNameRelatedSections = ({
         ) : null}
 
         {visibleSections.has('authors') ? (
-          <section className="mt-12 space-y-4">
+          <section className="mt-12 space-y-4 border-t border-border pt-12">
             <SectionHeader
               title="Authors"
               description="Citation author rows linked to this taxon name."
@@ -2164,7 +2164,7 @@ const TaxonNameRelatedSections = ({
         ) : null}
 
         {visibleSections.has('publicationReferences') ? (
-          <section className="mt-12 space-y-4">
+          <section className="mt-12 space-y-4 border-t border-border pt-12">
             <SectionHeader
               title="Publication references"
               description="Taxon-specific references for linked publications (page, figure, notes)."
