@@ -14,6 +14,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { formatAuthorOption } from '../authors/authorDisplay';
 import PublicationReferenceType from '../shared/choices/PublicationReferenceType';
 import { formatCrossReferenceOption } from '../taxon-publications/TaxonPublicationForm';
+import { getPublicationReferenceTypeLabel } from '../shared/choices/publicationReferenceTypeLabel';
 
 type SortOrder = 'ASC' | 'DESC';
 
@@ -1093,7 +1094,7 @@ const PublicationsPage = () => {
       case 'bhlUrl':
         return record.bhl_url ?? '';
       case 'referenceType':
-        return record.reference_type ?? '';
+        return getPublicationReferenceTypeLabel(record.reference_type);
       case 'referenceAuthorRole':
         return record.reference_author_role ?? '';
       case 'duplicateOf':
@@ -1370,7 +1371,7 @@ const PublicationsPage = () => {
       case 'bhlUrl':
         return record.bhl_url ?? '';
       case 'referenceType':
-        return record.reference_type ?? '';
+        return getPublicationReferenceTypeLabel(record.reference_type);
       case 'referenceAuthorRole':
         return record.reference_author_role ?? '';
       case 'duplicateOf':

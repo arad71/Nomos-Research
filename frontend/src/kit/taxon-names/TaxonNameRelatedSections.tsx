@@ -75,6 +75,8 @@ import {
   HYBRID_ROLLOUT_ROLES,
 } from '../../adminShell';
 
+const LEGACY_PUBLICATION_ROLES = ['SUPER_ADMIN', 'APPLICATION_SUPPORT'];
+
 const INFRASPECIFIC_RANK_ABBREVIATIONS = [
   'nothovar.',
   'subsect.',
@@ -1163,8 +1165,8 @@ const EditRelatedButton = ({
   title?: string;
 }) => (
   <EditInDialogButton
-    id={id}
     resource={resource}
+    {...(id != null ? { id } : {})}
     fullWidth
     maxWidth="md"
     title={title ?? label}
@@ -1650,7 +1652,14 @@ const TaxonNameRelatedSections = ({
   const recordId = record?.id;
   const navigate = useNavigate();
   const refresh = useRefresh();
-  const canViewHybridRollout = hasAnyRole(getStoredRoles(), HYBRID_ROLLOUT_ROLES);
+  const canViewHybridRollout = hasAnyRole(
+    getStoredRoles(),
+    HYBRID_ROLLOUT_ROLES
+  );
+  const canViewLegacyPublication = hasAnyRole(
+    getStoredRoles(),
+    LEGACY_PUBLICATION_ROLES
+  );
   const visibleSections = new Set<RelatedSectionKey>(
     sections ?? [
       'authors',
@@ -1941,7 +1950,10 @@ const TaxonNameRelatedSections = ({
                       <DataTable.Col label="Actions">
                         <div className="flex items-center gap-2">
                           <ParentSequenceButtons />
-                          <EditRelatedButton label="Edit parent name row">
+                          <EditRelatedButton
+                            resource="taxon_name_parents"
+                            label="Edit parent name row"
+                          >
                             <DialogFormPadding>
                               <TaxonNameParentForm hideTaxonName />
                             </DialogFormPadding>
@@ -2036,8 +2048,8 @@ const TaxonNameRelatedSections = ({
           />
         ) : null}
 
-        {visibleSections.has('publication') ? (
-          <section className="mt-12 space-y-4">
+        {visibleSections.has('publication') && canViewLegacyPublication ? (
+          <section className="mt-12 space-y-4 rounded-2xl border border-red-200 bg-red-50/70 p-4 dark:border-red-900/60 dark:bg-red-950/20">
             <SectionHeader
               title="Publication"
               description="Linked publication for this taxon name."
