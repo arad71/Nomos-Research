@@ -13,7 +13,10 @@ import { DeleteButton } from '@/components/admin/delete-button';
 import { RecordField } from '@/components/admin/record-field';
 import { ReferenceField } from '@/components/admin/reference-field';
 import { ReferenceManyField } from '@/components/admin/reference-many-field';
-import TaxonPublicationForm from '../taxon-publications/TaxonPublicationForm';
+import { Badge } from '@/components/ui/badge';
+import TaxonPublicationForm, {
+  formatCrossReferenceOption,
+} from '../taxon-publications/TaxonPublicationForm';
 
 const relatedDialogButtonProps = {
   variant: 'outlined' as const,
@@ -181,6 +184,52 @@ const LinkedTaxonCell = () => (
   </ReferenceField>
 );
 
+const LinkedParentCell = () => {
+  const record = useRecordContext<{
+    taxon_name_id?: string | number | null;
+    cross_reference_id?: string | number | null;
+  }>();
+
+  if (record?.taxon_name_id) {
+    return (
+      <div className="flex items-center gap-2">
+        <Badge variant="outline">Taxon name</Badge>
+        <LinkedTaxonCell />
+      </div>
+    );
+  }
+
+  if (record?.cross_reference_id) {
+    return (
+      <div className="flex items-center gap-2">
+        <Badge variant="outline">Cross reference</Badge>
+        <ReferenceField
+          source="cross_reference_id"
+          reference="cross_references"
+          link="show"
+        >
+          <RecordField
+            label=""
+            render={(crossReference: {
+              id?: string | number | null;
+              cross_reference_id?: string | number | null;
+            } & Record<string, unknown>) =>
+              formatCrossReferenceOption(crossReference) ||
+              `Cross reference #${
+                crossReference?.cross_reference_id ??
+                crossReference?.id ??
+                record.cross_reference_id
+              }`
+            }
+          />
+        </ReferenceField>
+      </div>
+    );
+  }
+
+  return <span className="text-muted-foreground">No parent linked</span>;
+};
+
 type PublicationTaxonPublicationsSectionProps = {
   editable?: boolean;
 };
@@ -196,9 +245,9 @@ const PublicationTaxonPublicationsSection = ({
       <section className="mt-12 space-y-4 border-t border-border pt-12">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="space-y-1">
-            <h3 className="text-base font-semibold tracking-tight">Linked taxon references</h3>
+            <h3 className="text-base font-semibold tracking-tight">Linked publication references</h3>
             <p className="text-sm text-muted-foreground">
-              Taxon links using this publication, including page, figure, and notes metadata.
+              Taxon-name and cross-reference links using this publication, including page, figure, and notes metadata.
             </p>
           </div>
           {editable && publicationId ? (
@@ -207,12 +256,15 @@ const PublicationTaxonPublicationsSection = ({
               record={{ publication_id: publicationId }}
               fullWidth
               maxWidth="md"
-              title="Create taxon publication link"
-              label="Create taxon publication link"
+              title="Create publication reference"
+              label="Create publication reference"
               ButtonProps={relatedDialogButtonProps}
             >
               <DialogFormPadding>
-                <TaxonPublicationForm hidePublication />
+                <TaxonPublicationForm
+                  hidePublication
+                  hideCrossReference={false}
+                />
               </DialogFormPadding>
             </CreateInDialogButton>
           ) : null}
@@ -225,13 +277,13 @@ const PublicationTaxonPublicationsSection = ({
             sort={{ field: 'taxon_publication_id', order: 'ASC' }}
             empty={
               <EmptyState>
-                No taxon links are using this publication yet.
+                No publication references are using this publication yet.
               </EmptyState>
             }
           >
             <DataTable rowClick={false} bulkActionButtons={false}>
-              <DataTable.Col label="Taxon name">
-                <LinkedTaxonCell />
+              <DataTable.Col label="Linked record">
+                <LinkedParentCell />
               </DataTable.Col>
               <DataTable.Col source="page_reference" label="Page reference" />
               <DataTable.Col source="figure_reference" label="Figure reference" />
@@ -241,7 +293,10 @@ const PublicationTaxonPublicationsSection = ({
                   <div className="flex items-center gap-2">
                     <EditRelatedButton label="Edit taxon publication link">
                       <DialogFormPadding>
-                        <TaxonPublicationForm hidePublication />
+                        <TaxonPublicationForm
+                          hidePublication
+                          hideCrossReference={false}
+                        />
                       </DialogFormPadding>
                     </EditRelatedButton>
                     <DeleteRelatedButton resource="taxon-publications" />

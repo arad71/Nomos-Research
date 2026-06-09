@@ -8,6 +8,7 @@ import { getCrossRefTypeLabel } from '../shared/choices/CrossRefType';
 import { formatDateOnly } from '../shared/dateOnlyDateTime';
 import HistoryInfoBox from '../shared/HistoryInfoBox';
 import RecordPageActions from '../shared/RecordPageActions';
+import PublicationReferenceSection from '../taxon-publications/PublicationReferenceSection';
 
 const HtmlValue = ({ value }: { value?: string | null }) => {
   if (!value) {
@@ -43,6 +44,22 @@ const CrossReferenceShowActions = () => {
       editTo={record?.id != null ? `/cross_references/${record.id}` : null}
       restoreable
       showDelete={false}
+    />
+  );
+};
+
+const CrossReferencePublicationReferences = () => {
+  const record = useRecordContext<{
+    id?: string | number;
+    cross_reference_id?: string | number;
+  }>();
+  const recordId = record?.cross_reference_id ?? record?.id;
+
+  return (
+    <PublicationReferenceSection
+      parentId={recordId}
+      parentField="cross_reference_id"
+      parentLabel="cross reference"
     />
   );
 };
@@ -121,6 +138,8 @@ const CrossReferenceShowPage = () => (
             />
           </div>
         </section>
+
+        <CrossReferencePublicationReferences />
 
         <section className="mt-12 space-y-4 border-t border-border pt-12">
           <div className="space-y-1">

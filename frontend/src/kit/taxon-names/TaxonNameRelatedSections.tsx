@@ -61,7 +61,7 @@ import CrossReferenceForm from '../cross-references/CrossReferenceForm';
 import HierarchyForm from '../hierarchies/HierarchyForm';
 import TaxonNameParentForm from '../taxon-name-parents/TaxonNameParentForm';
 import PublicationForm from '../publications/PublicationForm';
-import TaxonPublicationForm from '../taxon-publications/TaxonPublicationForm';
+import PublicationReferenceSection from '../taxon-publications/PublicationReferenceSection';
 import HybridCategory from '../shared/choices/HybridCategory';
 import {
   normalizeDoi,
@@ -1528,142 +1528,6 @@ const EditPublicationButton = () => {
   );
 };
 
-type TaxonPublicationLinkRecord = {
-  id?: string | number;
-  taxon_publication_id?: string | number;
-  publication_id?: string | number | null;
-  page_reference?: string | null;
-  figure_reference?: string | null;
-  notes?: string | null;
-};
-
-const PublicationReferenceCards = ({ editable }: { editable: boolean }) => {
-  const { data = [] } = useListContext<TaxonPublicationLinkRecord>();
-
-  const publicationIds = React.useMemo(
-    () =>
-      Array.from(
-        new Set(
-          data
-            .map((row) => row.publication_id)
-            .filter(
-              (value): value is string | number =>
-                value !== null && value !== undefined && value !== ''
-            )
-        )
-      ),
-    [data]
-  );
-
-  const { data: publications = [] } = useGetMany(
-    'publications',
-    { ids: publicationIds },
-    { enabled: publicationIds.length > 0 }
-  );
-
-  const publicationMap = React.useMemo(
-    () =>
-      new Map(
-        (Array.isArray(publications) ? publications : []).map((publication) => [
-          String(publication.id ?? publication.publication_id ?? ''),
-          publication,
-        ])
-      ),
-    [publications]
-  );
-
-  return (
-    <div className="space-y-3">
-      {data.map((row, index) => {
-        const rowId = row.id ?? row.taxon_publication_id;
-        const publication = publicationMap.get(String(row.publication_id ?? ''));
-        const publicationLabel =
-          publication?.display_title ??
-          publication?.abbreviated_title ??
-          (row.publication_id ? `Publication ${row.publication_id}` : 'No publication');
-        const publicationDoi =
-          typeof publication?.doi === 'string' && publication.doi.trim()
-            ? publication.doi
-            : null;
-
-        return (
-          <RecordContextProvider key={String(rowId ?? `publication-link-${index}`)} value={row}>
-            <div className="rounded-xl border border-border bg-card p-4">
-              <div className="space-y-1">
-                <div className="space-y-1">
-                  <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                    Publication
-                  </div>
-                  {row.publication_id ? (
-                    <Link
-                      to={`/publications/${row.publication_id}/show`}
-                      className="text-sm font-medium text-foreground hover:underline"
-                    >
-                      {publicationLabel}
-                    </Link>
-                  ) : (
-                    <div className="text-sm font-medium text-foreground">
-                      {publicationLabel}
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className="mt-3 grid gap-3 md:grid-cols-2">
-                <div className="space-y-1">
-                  <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                    Page reference
-                  </div>
-                  <div className="text-sm text-foreground">
-                    {row.page_reference || 'Not set'}
-                  </div>
-                </div>
-                <div className="space-y-1">
-                  <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                    Figure reference
-                  </div>
-                  <div className="text-sm text-foreground">
-                    {row.figure_reference || 'Not set'}
-                  </div>
-                </div>
-                {publicationDoi ? (
-                  <div className="space-y-1 md:col-span-2">
-                    <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                      DOI
-                    </div>
-                    <div className="text-sm text-foreground">
-                      <PublicationDoiLink value={publicationDoi} />
-                    </div>
-                  </div>
-                ) : null}
-                <div className="space-y-1 md:col-span-2">
-                  <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                    Notes
-                  </div>
-                  <div className="text-sm text-foreground">
-                    {row.notes || 'Not set'}
-                  </div>
-                </div>
-              </div>
-              {editable ? (
-                <div className="-mx-4 -mb-4 mt-4 rounded-b-xl border-t border-border bg-muted/20 px-4 py-3">
-                  <div className="flex items-center justify-end gap-2">
-                    <EditRelatedButton label="Edit publication reference">
-                      <DialogFormPadding>
-                        <TaxonPublicationForm hideTaxonName />
-                      </DialogFormPadding>
-                    </EditRelatedButton>
-                    <DeleteRelatedButton resource="taxon-publications" />
-                  </div>
-                </div>
-              ) : null}
-            </div>
-          </RecordContextProvider>
-        );
-      })}
-    </div>
-  );
-};
-
 type RelatedSectionKey =
   | 'authors'
   | 'publicationReferences'
@@ -2164,63 +2028,12 @@ const TaxonNameRelatedSections = ({
         ) : null}
 
         {visibleSections.has('publicationReferences') ? (
-          <section className="mt-12 space-y-4 border-t border-border pt-12">
-            <SectionHeader
-              title="Publication references"
-              description="Taxon-specific references for linked publications (page, figure, notes)."
-              action={
-                editable && recordId ? (
-                  <CreateInDialogButton
-                    resource="taxon-publications"
-                    record={{ taxon_name_id: recordId }}
-                    fullWidth
-                    maxWidth="md"
-                    title="Create publication reference"
-                    label="Create publication reference"
-                    ButtonProps={relatedDialogButtonProps}
-                  >
-                    <DialogFormPadding>
-                      <TaxonPublicationForm hideTaxonName />
-                    </DialogFormPadding>
-                  </CreateInDialogButton>
-                ) : undefined
-              }
-            />
-            {editable ? (
-              recordId ? (
-                <ReferenceManyField
-                  reference="taxon-publications"
-                  target="taxon_name_id"
-                  sort={{ field: 'taxon_publication_id', order: 'ASC' }}
-                  empty={
-                    <EmptyState>
-                      No publication references linked to this taxon name yet.
-                    </EmptyState>
-                  }
-                >
-                  <PublicationReferenceCards editable />
-                </ReferenceManyField>
-              ) : (
-                <EmptyState>
-                  Save the taxon name first, then you can add publication
-                  references inline here.
-                </EmptyState>
-              )
-            ) : recordId ? (
-              <ReferenceManyField
-                reference="taxon-publications"
-                target="taxon_name_id"
-                sort={{ field: 'taxon_publication_id', order: 'ASC' }}
-                empty={
-                  <EmptyState>
-                    No publication references linked to this taxon name yet.
-                  </EmptyState>
-                }
-              >
-                <PublicationReferenceCards editable={false} />
-              </ReferenceManyField>
-            ) : null}
-          </section>
+          <PublicationReferenceSection
+            editable={editable}
+            parentId={recordId}
+            parentField="taxon_name_id"
+            parentLabel="taxon name"
+          />
         ) : null}
 
         {visibleSections.has('publication') ? (
