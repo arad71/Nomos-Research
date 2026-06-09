@@ -18,11 +18,16 @@ const HtmlValue = ({ value }: { value?: string | null }) => {
 };
 
 const CrossReferenceShowTitle = () => {
-  const record = useRecordContext<{ id?: string | number; deleted?: boolean | null }>();
+  const record = useRecordContext<{
+    id?: string | number;
+    deleted?: boolean | null;
+    is_active?: boolean | null;
+  }>();
   const title = record?.id != null ? `Related name #${record.id}` : 'Related name';
   return (
     <span className="inline-flex items-center gap-2">
       <span>{title}</span>
+      {record?.is_active === false ? <Badge variant="outline">Inactive</Badge> : null}
       {record?.deleted ? <Badge variant="destructive">Deleted</Badge> : null}
     </span>
   );
@@ -84,9 +89,16 @@ const CrossReferenceShowPage = () => (
             <RecordField
               source="cross_reference_type"
               label="Cross reference type"
-              className="md:col-span-2 xl:col-span-3"
+              className="md:col-span-2"
               render={(record: { cross_reference_type?: string | null }) =>
                 getCrossRefTypeLabel(record.cross_reference_type)
+              }
+            />
+            <RecordField
+              source="is_active"
+              label="Active"
+              render={(record: { is_active?: boolean | null }) =>
+                record.is_active === false ? 'No' : 'Yes'
               }
             />
           </div>

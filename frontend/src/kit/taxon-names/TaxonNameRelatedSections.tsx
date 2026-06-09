@@ -1222,6 +1222,7 @@ type RelatedNameCardRecord = {
   new_name_id?: string | number | null;
   cross_reference_type?: string | null;
   reference_comments?: string | null;
+  is_active?: boolean | null;
 };
 
 const RelatedNameCards = ({
@@ -1258,6 +1259,12 @@ const RelatedNameCards = ({
                   </Badge>
                   <Badge variant="outline" className="w-fit">
                     {getCrossRefTypeLabel(crossRef.cross_reference_type)}
+                  </Badge>
+                  <Badge
+                    variant={crossRef.is_active === false ? 'outline' : 'secondary'}
+                    className="w-fit"
+                  >
+                    {crossRef.is_active === false ? 'Inactive' : 'Active'}
                   </Badge>
                 </div>
               </CardHeader>
@@ -2130,7 +2137,7 @@ const TaxonNameRelatedSections = ({
         ) : null}
 
         {visibleSections.has('authors') ? (
-          <section className="mt-12 space-y-4">
+          <section className="mt-12 space-y-4 border-t border-border pt-12">
             <SectionHeader
               title="Authors"
               description="Citation author rows linked to this taxon name."
@@ -2169,7 +2176,7 @@ const TaxonNameRelatedSections = ({
         ) : null}
 
         {visibleSections.has('publicationReferences') ? (
-          <section className="mt-12 space-y-4">
+          <section className="mt-12 space-y-4 border-t border-border pt-12">
             <SectionHeader
               title="Publication references"
               description="Taxon-specific references for linked publications (page, figure, notes)."
