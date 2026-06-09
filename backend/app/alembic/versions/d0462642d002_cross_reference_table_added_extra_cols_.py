@@ -77,8 +77,7 @@ def upgrade() -> None:
     if not constraint_exists(
         "cross_reference", "chk_cross_reference_rationale_required"
     ):
-        op.execute(
-            """
+        op.execute("""
             UPDATE cross_reference
             SET reference_comments = 'Migration backfill: no new name supplied'
             WHERE new_name_id IS NULL
@@ -86,8 +85,7 @@ def upgrade() -> None:
                 reference_comments IS NULL
                 OR length(trim(reference_comments)) = 0
               )
-            """
-        )
+            """)
         op.create_check_constraint(
             "chk_cross_reference_rationale_required",
             "cross_reference",
