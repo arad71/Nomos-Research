@@ -121,13 +121,13 @@ class CrossReference(BaseModel, TableMixin):
             """,
             name="chk_cross_reference_new_name_required",
         ),
-        # Rule 2: Mandatory rationale when new_name_id IS NULL
+        # Rule 2: Mandatory internal rationale when new_name_id IS NULL
         CheckConstraint(
             """
             new_name_id IS NOT NULL
             OR (
-                reference_comments IS NOT NULL
-                AND length(trim(reference_comments)) > 0
+                internal_comments IS NOT NULL
+                AND length(trim(internal_comments)) > 0
             )
             """,
             name="chk_cross_reference_rationale_required",

@@ -65,9 +65,9 @@ class CrossReferenceBase(BaseModel):
     def validate_new_name_and_rationale(self):
         if self.cross_reference_type in _ALLOWED_NULL_NEW_NAME_TYPES:
             if self.new_name_id is None:
-                if not self.reference_comments or not self.reference_comments.strip():
+                if not self.internal_comments or not self.internal_comments.strip():
                     raise ValueError(
-                        "reference_comments is required when new_name_id is null"
+                        "internal_comments is required when new_name_id is null"
                     )
             else:
                 raise ValueError(

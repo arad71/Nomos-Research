@@ -1215,6 +1215,23 @@ const DialogFormPadding = ({ children }: { children: React.ReactNode }) => (
   <div className="px-4 py-2 sm:px-6">{children}</div>
 );
 
+const CrossReferencePublicationReferences = () => {
+  const record = useRecordContext<{
+    id?: string | number;
+    cross_reference_id?: string | number;
+  }>();
+  const recordId = record?.cross_reference_id ?? record?.id;
+
+  return (
+    <PublicationReferenceSection
+      editable
+      parentId={recordId}
+      parentField="cross_reference_id"
+      parentLabel="cross reference"
+    />
+  );
+};
+
 type RelatedNameCardRecord = {
   id?: string | number;
   cross_reference_id?: string | number;
@@ -1223,6 +1240,21 @@ type RelatedNameCardRecord = {
   cross_reference_type?: string | null;
   reference_comments?: string | null;
   is_active?: boolean | null;
+};
+
+type RelatedNamePublicationReferenceRecord = {
+  id?: string | number;
+  taxon_publication_id?: string | number;
+  cross_reference_id?: string | number | null;
+  publication_id?: string | number | null;
+};
+
+type RelatedNamePublicationRecord = {
+  id?: string | number;
+  publication_id?: string | number;
+  display_title?: string | null;
+  abbreviated_title?: string | null;
+  title?: string | null;
 };
 
 const RelatedNameCards = ({
@@ -1237,6 +1269,117 @@ const RelatedNameCards = ({
   showOpenAction?: boolean;
 }) => {
   const { data } = useListContext<RelatedNameCardRecord>();
+  const dataProvider = useDataProvider();
+  const [publicationReferenceMap, setPublicationReferenceMap] = React.useState<
+    Record<string, RelatedNamePublicationReferenceRecord[]>
+  >({});
+  const [publicationMap, setPublicationMap] = React.useState<
+    Record<string, RelatedNamePublicationRecord>
+  >({});
+
+  const crossReferenceIds = React.useMemo(
+    () =>
+      Array.from(
+        new Set(
+          (data ?? [])
+            .map((crossRef) => crossRef.cross_reference_id ?? crossRef.id)
+            .filter(
+              (value): value is string | number =>
+                value !== null && value !== undefined && value !== ''
+            )
+            .map(String)
+        )
+      ),
+    [data]
+  );
+
+  React.useEffect(() => {
+    let active = true;
+
+    const loadPublicationReferences = async () => {
+      if (!crossReferenceIds.length) {
+        setPublicationReferenceMap({});
+        setPublicationMap({});
+        return;
+      }
+
+      const batches = await Promise.all(
+        crossReferenceIds.map(async (crossReferenceId) => {
+          try {
+            const response = await dataProvider.getList('taxon-publications', {
+              pagination: { page: 1, perPage: 100 },
+              sort: { field: 'taxon_publication_id', order: 'ASC' },
+              filter: { cross_reference_id: Number(crossReferenceId) },
+            });
+            return Array.isArray(response?.data)
+              ? (response.data as RelatedNamePublicationReferenceRecord[])
+              : [];
+          } catch {
+            return [];
+          }
+        })
+      );
+      const publicationReferences = batches.flat();
+      const nextPublicationReferenceMap =
+        publicationReferences.reduce<
+          Record<string, RelatedNamePublicationReferenceRecord[]>
+        >((acc, row) => {
+          const crossReferenceId = row.cross_reference_id;
+          if (crossReferenceId === null || crossReferenceId === undefined) {
+            return acc;
+          }
+          const key = String(crossReferenceId);
+          if (!acc[key]) {
+            acc[key] = [];
+          }
+          acc[key].push(row);
+          return acc;
+        }, {});
+
+      const publicationIds = Array.from(
+        new Set(
+          publicationReferences
+            .map((row) => row.publication_id)
+            .filter(
+              (value): value is string | number =>
+                value !== null && value !== undefined && value !== ''
+            )
+        )
+      );
+      const publications = publicationIds.length
+        ? await dataProvider
+            .getMany('publications', { ids: publicationIds })
+            .then((response) =>
+              Array.isArray(response?.data)
+                ? (response.data as RelatedNamePublicationRecord[])
+                : []
+            )
+            .catch(() => [])
+        : [];
+      const nextPublicationMap = publications.reduce<
+        Record<string, RelatedNamePublicationRecord>
+      >((acc, publication) => {
+        const publicationId = publication.publication_id ?? publication.id;
+        if (publicationId !== null && publicationId !== undefined) {
+          acc[String(publicationId)] = publication;
+        }
+        return acc;
+      }, {});
+
+      if (!active) {
+        return;
+      }
+
+      setPublicationReferenceMap(nextPublicationReferenceMap);
+      setPublicationMap(nextPublicationMap);
+    };
+
+    void loadPublicationReferences();
+
+    return () => {
+      active = false;
+    };
+  }, [crossReferenceIds, dataProvider]);
 
   if (!data?.length) {
     return null;
@@ -1248,6 +1391,36 @@ const RelatedNameCards = ({
         const crossReferenceId = crossRef.cross_reference_id ?? crossRef.id;
         const relatedTaxonId = crossRef[nameSource];
         const cardRecord = { ...crossRef, id: crossReferenceId };
+        const linkedPublications = (crossReferenceId != null
+          ? publicationReferenceMap[String(crossReferenceId)] ?? []
+          : []
+        )
+          .map((row, index) => {
+            const publicationId = row.publication_id;
+            const publication =
+              publicationId !== null && publicationId !== undefined
+                ? publicationMap[String(publicationId)]
+                : undefined;
+            return {
+              key:
+                row.taxon_publication_id ??
+                row.id ??
+                `${String(crossReferenceId)}-publication-${index}`,
+              publicationId,
+              label:
+                publication?.display_title ??
+                publication?.abbreviated_title ??
+                publication?.title ??
+                (publicationId ? `Publication ${publicationId}` : ''),
+            };
+          })
+          .filter((publication) => publication.label)
+          .filter(
+            (publication, index, values) =>
+              values.findIndex(
+                (value) => value.publicationId === publication.publicationId
+              ) === index
+          );
 
         return (
           <RecordContextProvider key={String(crossReferenceId)} value={cardRecord}>
@@ -1292,6 +1465,28 @@ const RelatedNameCards = ({
                     {crossRef.reference_comments}
                   </p>
                 ) : null}
+                {linkedPublications.length ? (
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    {linkedPublications.map((publication) =>
+                      publication.publicationId ? (
+                        <Link
+                          key={publication.key}
+                          to={`/publications/${publication.publicationId}/show`}
+                          className="rounded-md border border-border px-2 py-0.5 text-xs hover:bg-accent"
+                        >
+                          {publication.label}
+                        </Link>
+                      ) : (
+                        <span
+                          key={publication.key}
+                          className="rounded-md border border-border px-2 py-0.5 text-xs"
+                        >
+                          {publication.label}
+                        </span>
+                      )
+                    )}
+                  </div>
+                ) : null}
               </CardContent>
               {editable ? (
                 <CardFooter className="flex flex-wrap items-center justify-end gap-2 border-t border-border px-4 pb-3 pt-3 [.border-t]:pt-3">
@@ -1300,6 +1495,7 @@ const RelatedNameCards = ({
                       <CrossReferenceForm
                         hideNewName={nameSource === 'old_name_id'}
                         hideOldName={nameSource === 'new_name_id'}
+                        beforeNotes={<CrossReferencePublicationReferences />}
                       />
                     </DialogFormPadding>
                   </EditRelatedButton>
@@ -2321,7 +2517,10 @@ const TaxonNameRelatedSections = ({
                           ButtonProps={relatedDialogButtonProps}
                         >
                           <DialogFormPadding>
-                            <CrossReferenceForm hideNewName />
+                            <CrossReferenceForm
+                              hideNewName
+                              beforeNotes={<CrossReferencePublicationReferences />}
+                            />
                           </DialogFormPadding>
                         </CreateInDialogButton>
                       ) : undefined
@@ -2358,7 +2557,10 @@ const TaxonNameRelatedSections = ({
                           ButtonProps={relatedDialogButtonProps}
                         >
                           <DialogFormPadding>
-                            <CrossReferenceForm hideOldName />
+                            <CrossReferenceForm
+                              hideOldName
+                              beforeNotes={<CrossReferencePublicationReferences />}
+                            />
                           </DialogFormPadding>
                         </CreateInDialogButton>
                       ) : undefined
