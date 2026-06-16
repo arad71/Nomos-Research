@@ -467,11 +467,20 @@ def derive_parallel_name(
         higher_rank_infrageneric = build_higher_rank_infrageneric_name(
             parent=parent_taxa[0],
             components=components,
+            include_rank_abbreviation=rank_name != "subgenus",
+            italicize=False,
+        )
+        higher_rank_infrageneric_canonical = build_higher_rank_infrageneric_name(
+            parent=parent_taxa[0],
+            components=components,
+            include_author=False,
+            include_rank_abbreviation=rank_name != "subgenus",
             italicize=False,
         )
         higher_rank_infrageneric_formatted = build_higher_rank_infrageneric_name(
             parent=parent_taxa[0],
             components=components,
+            include_rank_abbreviation=rank_name != "subgenus",
             italicize=True,
         )
         if higher_rank_infrageneric:
@@ -485,7 +494,7 @@ def derive_parallel_name(
                 notes=notes,
                 parent_taxon_name_ids=[parent.taxon_name_id for parent in parent_taxa],
                 uninomial=components.uninomial,
-                canonical_name=best_parent_name_value(parent_taxa[0], italicize=False),
+                canonical_name=higher_rank_infrageneric_canonical,
                 scientific_name=higher_rank_infrageneric,
                 formatted_scientific_name=higher_rank_infrageneric_formatted,
             )
@@ -856,6 +865,8 @@ def build_higher_rank_infrageneric_name(
     *,
     parent: TaxonName,
     components: schema.NameStringComponents,
+    include_author: bool = True,
+    include_rank_abbreviation: bool = True,
     italicize: bool = False,
 ) -> str | None:
     parent_value = best_parent_name_value(parent, italicize=italicize)
@@ -868,13 +879,18 @@ def build_higher_rank_infrageneric_name(
         return None
 
     bracketed_component = calculated.filter_join(
-        [components.rank_abbreviation, infrageneric_value]
+        [
+            components.rank_abbreviation if include_rank_abbreviation else None,
+            infrageneric_value,
+        ]
     )
     main_name = (
         f"{parent_value} ({bracketed_component})"
         if bracketed_component
         else parent_value
     )
+    if not include_author:
+        return main_name
     return calculated.filter_join([main_name, components.author])
 
 
