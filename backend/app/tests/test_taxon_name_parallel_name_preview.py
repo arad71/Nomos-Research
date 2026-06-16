@@ -6,6 +6,38 @@ from app.db.taxon_name.parallel_name_preview import (
 )
 
 
+def test_derive_parallel_name_appends_ms_suffix_for_manuscript_names():
+    taxon_name = SimpleNamespace(
+        taxon_name_id=1,
+        author="D.L.Jones & M.A.Clem.",
+        is_autonym=False,
+        taxon_rank=SimpleNamespace(rank_name="Genus", rank_abbrev=None),
+        rank_name="Genus",
+        publication_status="manuscript_name",
+        is_hybrid=False,
+        hybrid_category=None,
+        taxon_name_parents=[],
+        parallel_override_uninomial="Cyanthera",
+        parallel_override_specific_epithet=None,
+        parallel_override_infraspecific_epithet=None,
+        uninomial="Cyanthera",
+        specific_epithet=None,
+        infraspecific_epithet=None,
+        canonical_name="Cyanthera ms",
+        scientific_name="Cyanthera D.L.Jones & M.A.Clem. ms",
+    )
+
+    derived = derive_parallel_name(None, taxon_name, strict=True)
+
+    assert derived["uninomial"] == "Cyanthera"
+    assert derived["canonical_name"] == "Cyanthera ms"
+    assert derived["scientific_name"] == "Cyanthera D.L.Jones & M.A.Clem. ms"
+    assert (
+        derived["formatted_scientific_name"]
+        == "<i>Cyanthera</i> D.L.Jones & M.A.Clem. ms"
+    )
+
+
 def test_derive_parallel_name_marks_genus_level_named_hybrid():
     taxon_name = SimpleNamespace(
         taxon_name_id=1,
@@ -35,6 +67,52 @@ def test_derive_parallel_name_marks_genus_level_named_hybrid():
         derived["formatted_scientific_name"]
         == "× <i>Cyanthera</i> D.L.Jones & M.A.Clem."
     )
+
+
+def test_derive_parallel_name_uses_bracketed_subgenus_for_canonical_name():
+    parent = SimpleNamespace(
+        taxon_name_id=1,
+        rank_name="Genus",
+        taxon_rank=SimpleNamespace(rank_name="Genus", rank_abbrev=None),
+        infragenus_name=None,
+        canonical_name_without_rank="Hypocaccus",
+        canonical_name="Hypocaccus",
+        scientific_name="Hypocaccus Thomson, 1867",
+        formatted_scientific_name="<i>Hypocaccus</i> Thomson, 1867",
+        uninomial="Hypocaccus",
+        deleted=False,
+    )
+    taxon_name = SimpleNamespace(
+        taxon_name_id=2,
+        author="Reichardt, 1926",
+        is_autonym=False,
+        taxon_rank=SimpleNamespace(rank_name="Subgenus", rank_abbrev="subg."),
+        rank_name="Subgenus",
+        publication_status="published",
+        is_hybrid=False,
+        hybrid_category=None,
+        taxon_name_parents=[
+            SimpleNamespace(
+                parent_taxon_name=parent,
+                parent_taxon_name_id=parent.taxon_name_id,
+                sequence=1,
+                deleted=False,
+            )
+        ],
+        parallel_override_uninomial="Baeckmanniolus",
+        parallel_override_specific_epithet=None,
+        parallel_override_infraspecific_epithet=None,
+        uninomial="Baeckmanniolus",
+        specific_epithet=None,
+        infraspecific_epithet=None,
+        canonical_name="Hypocaccus",
+        scientific_name="Hypocaccus (Baeckmanniolus) Reichardt, 1926",
+    )
+
+    derived = derive_parallel_name(None, taxon_name, strict=True)
+
+    assert derived["canonical_name"] == "Hypocaccus (Baeckmanniolus)"
+    assert derived["scientific_name"] == ("Hypocaccus (Baeckmanniolus) Reichardt, 1926")
 
 
 def test_join_parent_names_keeps_repeated_genus_for_hybrid_formula():

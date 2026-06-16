@@ -125,6 +125,8 @@ const getRolesDefinition = (): Permissions => {
     { action: ['create', 'edit'], resource: 'kingdoms' },
     { action: ['create', 'edit'], resource: 'publications' },
     { action: ['create', 'edit'], resource: 'publication_authors' },
+    { action: ['create', 'edit'], resource: 'taxon-publications' },
+    { action: ['create', 'edit'], resource: 'taxon_publications' },
     { action: ['create', 'edit'], resource: 'taxon_names' },
     { action: ['create', 'edit'], resource: 'taxon_name_parents' },
     { action: ['create', 'edit'], resource: 'taxon_name_parent_reviews' },
@@ -143,6 +145,8 @@ const getRolesDefinition = (): Permissions => {
     { action: ['create', 'edit', 'delete'], resource: 'conscode_taxons' },
     { action: ['create', 'edit', 'delete'], resource: 'publications' },
     { action: ['create', 'edit'], resource: 'publication_authors' },
+    { action: ['create', 'edit', 'delete'], resource: 'taxon-publications' },
+    { action: ['create', 'edit', 'delete'], resource: 'taxon_publications' },
     { action: ['create', 'edit', 'delete'], resource: 'taxon_names' },
     { action: ['create', 'edit', 'delete'], resource: 'taxon_name_parents' },
     { action: ['create', 'edit', 'delete'], resource: 'taxon_name_parent_reviews' },
@@ -162,6 +166,8 @@ const getRolesDefinition = (): Permissions => {
     { action: ['create', 'edit'], resource: 'kingdoms' },
     { action: ['create', 'edit'], resource: 'taxon_ranks' },
     { action: ['edit'], resource: 'taxon_names' },
+    { action: ['create', 'edit', 'delete'], resource: 'taxon-publications' },
+    { action: ['create', 'edit', 'delete'], resource: 'taxon_publications' },
     { action: ['create', 'edit', 'delete'], resource: 'classification_systems' },
   ];
 
