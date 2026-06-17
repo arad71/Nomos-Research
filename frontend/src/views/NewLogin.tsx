@@ -17,6 +17,7 @@ import { Field, Form } from 'react-final-form';
 import { useNavigate } from 'react-router-dom';
 import dbcaLogo from '../assets/img/logo-dbca-bio-dark.svg';
 import logo from '../assets/img/tom-ohlin-owYSd_TXoEc-unsplash-1500.jpg';
+import { AUTH_PROVIDER } from '../config';
 import authProvider from '../kit/app/authProvider';
 
 interface Props {
@@ -100,10 +101,12 @@ const NewLogin = (props: Props) => {
   const { redirectTo } = props;
   const classes = useStyles();
   const [loading, setLoading] = useSafeSetState(false);
+  const [auth2Error, setAuth2Error] = useSafeSetState(false);
   const login = useLogin();
   const navigate = useNavigate();
   const translate = useTranslate();
   const notify = useNotify();
+  const isAuth2 = AUTH_PROVIDER === 'auth2';
 
   React.useEffect(() => {
     let active = true;
@@ -115,12 +118,16 @@ const NewLogin = (props: Props) => {
           navigate(redirectTo || '/kit', { replace: true });
         }
       })
-      .catch(() => undefined);
+      .catch(() => {
+        if (active && isAuth2) {
+          setAuth2Error(true);
+        }
+      });
 
     return () => {
       active = false;
     };
-  }, [navigate, redirectTo]);
+  }, [isAuth2, navigate, redirectTo, setAuth2Error]);
 
   const validate = (values: FormData) => {
     const errors = { username: undefined, password: undefined };
@@ -182,40 +189,54 @@ const NewLogin = (props: Props) => {
           <Typography component="h1" variant="h6">
             Log in
           </Typography>
-          <Form
-            onSubmit={submit}
-            validate={validate}
-            render={({ handleSubmit }) => (
-              <form className={classes.form} onSubmit={handleSubmit} noValidate>
-                <Field
-                  autoFocus
-                  id="username"
-                  name="username"
-                  component={Input}
-                  label={translate('ra.auth.username')}
-                  disabled={loading}
-                />
-                <Field
-                  id="password"
-                  name="password"
-                  component={Input}
-                  label={translate('ra.auth.password')}
-                  type="password"
-                  disabled={loading}
-                  autoComplete="current-password"
-                />
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  className={classes.submit}
-                  disableElevation
-                >
-                  Login
-                </Button>
-              </form>
-            )}
-          />
+          {isAuth2 ? (
+            <div className={classes.loginHelpers}>
+              <Typography variant="body1">
+                Checking DBCA single sign-on...
+              </Typography>
+              {auth2Error ? (
+                <Typography variant="body2" color="error">
+                  Single sign-on did not provide a valid Nomos session. Please
+                  refresh the page or contact support if this continues.
+                </Typography>
+              ) : null}
+            </div>
+          ) : (
+            <Form
+              onSubmit={submit}
+              validate={validate}
+              render={({ handleSubmit }) => (
+                <form className={classes.form} onSubmit={handleSubmit} noValidate>
+                  <Field
+                    autoFocus
+                    id="username"
+                    name="username"
+                    component={Input}
+                    label={translate('ra.auth.username')}
+                    disabled={loading}
+                  />
+                  <Field
+                    id="password"
+                    name="password"
+                    component={Input}
+                    label={translate('ra.auth.password')}
+                    type="password"
+                    disabled={loading}
+                    autoComplete="current-password"
+                  />
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    className={classes.submit}
+                    disableElevation
+                  >
+                    Login
+                  </Button>
+                </form>
+              )}
+            />
+          )}
         </div>
       </Grid>
       <Grid item xs={false} sm={4} md={6} className={classes.image} />

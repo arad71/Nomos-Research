@@ -78,7 +78,7 @@ const HierarchyFormFields = ({ hideTaxonName = false }: HierarchyFormFieldsProps
           source="taxon_name_id"
           reference="taxon_names"
           sort={{ field: 'canonical_name', order: 'ASC' }}
-          perPage={1000}
+          perPage={200}
           filterToQuery={(searchText: string) => ({
             scientific_name__ilike: `%${searchText}%`,
           })}

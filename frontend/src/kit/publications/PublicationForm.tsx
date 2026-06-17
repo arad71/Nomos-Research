@@ -5,10 +5,12 @@ import { BooleanInput } from '@/components/admin/boolean-input';
 import { NumberInput } from '@/components/admin/number-input';
 import { ReferenceArrayInput } from '@/components/admin/reference-array-input';
 import { ReferenceInput } from '@/components/admin/reference-input';
+import { SelectInput } from '@/components/admin/select-input';
 import { SimpleForm } from '@/components/admin/simple-form';
 import { TextInput } from '@/components/admin/text-input';
 import PublicationTaxonPublicationsSection from './PublicationTaxonPublicationsSection';
 import { formatAuthorOption } from '../authors/authorDisplay';
+import PublicationReferenceType from '../shared/choices/PublicationReferenceType';
 import { validateOptionalDoi, validateOptionalHttpUrl } from '../shared/publicationDoi';
 
 const requiredValue = required();
@@ -81,7 +83,7 @@ const PublicationForm = () => {
             source="author_ids"
             reference="authors"
             sort={{ field: 'abbreviation', order: 'ASC' }}
-            perPage={1000}
+            perPage={200}
           >
             <AutocompleteArrayInput label="Authors" optionText={formatAuthorOption} className="xl:col-span-4" />
           </ReferenceArrayInput>
@@ -90,7 +92,7 @@ const PublicationForm = () => {
             source="parent_id"
             reference="publications"
             sort={{ field: 'abbreviated_title', order: 'ASC' }}
-            perPage={1000}
+            perPage={200}
           >
             <AutocompleteInput
               label="Parent publication"
@@ -120,13 +122,17 @@ const PublicationForm = () => {
             className="xl:col-span-4"
             validate={validateOptionalHttpUrl}
           />
-          <TextInput source="reference_type" label="Reference type" />
+          <SelectInput
+            source="reference_type"
+            label="Reference type"
+            choices={PublicationReferenceType}
+          />
           <TextInput source="reference_author_role" label="Reference author role" />
           <ReferenceInput
             source="duplicate_of_id"
             reference="publications"
             sort={{ field: 'abbreviated_title', order: 'ASC' }}
-            perPage={1000}
+            perPage={200}
           >
             <AutocompleteInput label="Duplicate of" optionText="abbreviated_title" className="xl:col-span-4" />
           </ReferenceInput>

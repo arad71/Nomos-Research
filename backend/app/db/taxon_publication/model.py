@@ -1,9 +1,10 @@
-from sqlalchemy import Column, ForeignKey, Integer, String, Text
+from sqlalchemy import CheckConstraint, Column, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.schema import Index
 
 from app.db.models import BaseModel, TableMixin
 from app.db.taxon_publication.constants import (
+    CROSS_REFERENCE_ID,
     FIGURE_REFERENCE,
     NOTES,
     PAGE_REFERENCE,
@@ -23,13 +24,30 @@ class TaxonPublication(BaseModel, TableMixin):
     taxon_name_id = Column(
         Integer,
         ForeignKey("taxon_name.taxon_name_id"),
-        nullable=False,
+        nullable=True,
         comment=TAXON_NAME_ID,
         doc=TAXON_NAME_ID,
     )
 
     taxon_name = relationship(
         "TaxonName",
+        backref=backref(
+            name_plural,
+            lazy="dynamic",
+            cascade="all, delete-orphan",
+        ),
+    )
+
+    cross_reference_id = Column(
+        Integer,
+        ForeignKey("cross_reference.cross_reference_id"),
+        nullable=True,
+        comment=CROSS_REFERENCE_ID,
+        doc=CROSS_REFERENCE_ID,
+    )
+
+    cross_reference = relationship(
+        "CrossReference",
         backref=backref(
             name_plural,
             lazy="dynamic",
@@ -75,12 +93,32 @@ class TaxonPublication(BaseModel, TableMixin):
         doc=NOTES,
     )
 
-    legacy_id_columns = ["taxon_name_id", "publication_id"]
+    legacy_id_columns = ["taxon_name_id", "cross_reference_id", "publication_id"]
 
     __table_args__ = (
+        CheckConstraint(
+            """
+            (
+                taxon_name_id IS NOT NULL
+                AND cross_reference_id IS NULL
+            )
+            OR (
+                taxon_name_id IS NULL
+                AND cross_reference_id IS NOT NULL
+            )
+            """,
+            name="chk_taxon_publication_single_parent",
+        ),
         Index(
             f"ix_{__tablename__}_taxon_publication_isactive",
             "taxon_name_id",
+            "publication_id",
+            unique=True,
+            postgresql_where="deleted = FALSE",
+        ),
+        Index(
+            f"ix_{__tablename__}_cross_reference_publication_isactive",
+            "cross_reference_id",
             "publication_id",
             unique=True,
             postgresql_where="deleted = FALSE",
