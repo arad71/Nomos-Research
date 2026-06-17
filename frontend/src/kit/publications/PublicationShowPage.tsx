@@ -11,6 +11,7 @@ import { formatAuthorOption } from '../authors/authorDisplay';
 import HistoryInfoBox from '../shared/HistoryInfoBox';
 import PublicationTaxonPublicationsSection from './PublicationTaxonPublicationsSection';
 import RecordPageActions from '../shared/RecordPageActions';
+import { getPublicationReferenceTypeLabel } from '../shared/choices/publicationReferenceTypeLabel';
 import { normalizeDoi, sanitizeExternalUrl } from '../shared/publicationDoi';
 
 const HtmlValue = ({ value }: { value?: string | null }) => {
@@ -205,7 +206,12 @@ const PublicationShowPage = () => (
                   <ExternalUrlLink value={record.bhl_url} />
                 )}
               />
-              <RecordField source="reference_type" label="Reference type" />
+              <RecordField
+                label="Reference type"
+                render={(record: { reference_type?: string | null }) =>
+                  getPublicationReferenceTypeLabel(record.reference_type)
+                }
+              />
               <RecordField source="reference_author_role" label="Reference author role" />
               <RecordField label="Duplicate of" source="duplicate_of_id" className="xl:col-span-4">
                 <ReferenceField source="duplicate_of_id" reference="publications">

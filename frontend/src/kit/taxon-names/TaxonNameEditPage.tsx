@@ -62,7 +62,6 @@ const TaxonNameEditPage = () => {
                   sections={[
                     'authors',
                     'publicationReferences',
-                    'publication',
                     'vernaculars',
                     'hierarchy',
                     'relatedNames',
