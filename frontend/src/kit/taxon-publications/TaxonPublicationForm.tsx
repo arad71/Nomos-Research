@@ -8,6 +8,7 @@ import { ReferenceInput } from '@/components/admin/reference-input';
 import { SimpleForm } from '@/components/admin/simple-form';
 import { TextInput } from '@/components/admin/text-input';
 import PublicationForm from '../publications/PublicationForm';
+import { getCrossRefTypeLabel } from '../shared/choices/CrossRefType';
 import { transformPublicationPayload } from '../shared/publicationDoi';
 
 const requiredValue = required();
@@ -34,6 +35,7 @@ const relatedDialogButtonProps = {
 
 type TaxonPublicationFormProps = {
   hideTaxonName?: boolean;
+  hideCrossReference?: boolean;
   hidePublication?: boolean;
 };
 
@@ -91,6 +93,37 @@ const EnterpriseDialogThemeProvider = ({
   return <ThemeProvider theme={muiTheme}>{children}</ThemeProvider>;
 };
 
+const getScientificNameLabel = (
+  value?:
+    | string
+    | null
+    | {
+        scientific_name?: string | null;
+        formatted_scientific_name?: string | null;
+      }
+) => {
+  if (typeof value === 'string') return value;
+  return value?.scientific_name ?? value?.formatted_scientific_name ?? '';
+};
+
+export const formatCrossReferenceOption = (record?: Record<string, unknown>) => {
+  if (!record) return '';
+
+  const typeLabel = getCrossRefTypeLabel(
+    record.cross_reference_type as string | null | undefined
+  );
+  const oldName =
+    getScientificNameLabel(record.old_name as Parameters<typeof getScientificNameLabel>[0]) ||
+    String(record.old_name___scientific_name ?? '');
+  const newName =
+    getScientificNameLabel(record.new_name as Parameters<typeof getScientificNameLabel>[0]) ||
+    String(record.new_name___scientific_name ?? '');
+  const nameLabel =
+    oldName || newName ? `${oldName || 'No old name'} -> ${newName || 'No new name'}` : '';
+
+  return [typeLabel, nameLabel].filter(Boolean).join(': ');
+};
+
 const CreatePublicationButton = () => {
   const form = useFormContext();
 
@@ -127,10 +160,17 @@ const CreatePublicationButton = () => {
 
 const TaxonPublicationForm = ({
   hideTaxonName = false,
+  hideCrossReference = true,
   hidePublication = false,
 }: TaxonPublicationFormProps) => (
   <SimpleForm className="max-w-none">
     <div className="grid max-w-5xl gap-4 md:grid-cols-2">
+      {!hideTaxonName && !hideCrossReference ? (
+        <p className="md:col-span-2 text-sm text-muted-foreground">
+          Link this publication reference to either a taxon name or a cross
+          reference.
+        </p>
+      ) : null}
       {!hideTaxonName ? (
         <div className="md:col-span-2">
           <ReferenceInput
@@ -142,7 +182,24 @@ const TaxonPublicationForm = ({
             <AutocompleteInput
               label="Taxon name"
               optionText="scientific_name"
-              validate={requiredValue}
+              validate={hideCrossReference ? requiredValue : undefined}
+            />
+          </ReferenceInput>
+        </div>
+      ) : null}
+      {!hideCrossReference ? (
+        <div className="md:col-span-2">
+          <ReferenceInput
+            source="cross_reference_id"
+            reference="cross_references"
+            sort={{ field: 'cross_reference_id', order: 'ASC' }}
+            perPage={200}
+          >
+            <AutocompleteInput
+              label="Cross reference"
+              optionText={formatCrossReferenceOption}
+              inputText={formatCrossReferenceOption}
+              validate={hideTaxonName ? requiredValue : undefined}
             />
           </ReferenceInput>
         </div>

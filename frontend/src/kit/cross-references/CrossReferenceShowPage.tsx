@@ -8,6 +8,7 @@ import { getCrossRefTypeLabel } from '../shared/choices/CrossRefType';
 import { formatDateOnly } from '../shared/dateOnlyDateTime';
 import HistoryInfoBox from '../shared/HistoryInfoBox';
 import RecordPageActions from '../shared/RecordPageActions';
+import PublicationReferenceSection from '../taxon-publications/PublicationReferenceSection';
 
 const HtmlValue = ({ value }: { value?: string | null }) => {
   if (!value) {
@@ -18,11 +19,16 @@ const HtmlValue = ({ value }: { value?: string | null }) => {
 };
 
 const CrossReferenceShowTitle = () => {
-  const record = useRecordContext<{ id?: string | number; deleted?: boolean | null }>();
+  const record = useRecordContext<{
+    id?: string | number;
+    deleted?: boolean | null;
+    is_active?: boolean | null;
+  }>();
   const title = record?.id != null ? `Related name #${record.id}` : 'Related name';
   return (
     <span className="inline-flex items-center gap-2">
       <span>{title}</span>
+      {record?.is_active === false ? <Badge variant="outline">Inactive</Badge> : null}
       {record?.deleted ? <Badge variant="destructive">Deleted</Badge> : null}
     </span>
   );
@@ -38,6 +44,22 @@ const CrossReferenceShowActions = () => {
       editTo={record?.id != null ? `/cross_references/${record.id}` : null}
       restoreable
       showDelete={false}
+    />
+  );
+};
+
+const CrossReferencePublicationReferences = () => {
+  const record = useRecordContext<{
+    id?: string | number;
+    cross_reference_id?: string | number;
+  }>();
+  const recordId = record?.cross_reference_id ?? record?.id;
+
+  return (
+    <PublicationReferenceSection
+      parentId={recordId}
+      parentField="cross_reference_id"
+      parentLabel="cross reference"
     />
   );
 };
@@ -84,9 +106,16 @@ const CrossReferenceShowPage = () => (
             <RecordField
               source="cross_reference_type"
               label="Cross reference type"
-              className="md:col-span-2 xl:col-span-3"
+              className="md:col-span-2"
               render={(record: { cross_reference_type?: string | null }) =>
                 getCrossRefTypeLabel(record.cross_reference_type)
+              }
+            />
+            <RecordField
+              source="is_active"
+              label="Active"
+              render={(record: { is_active?: boolean | null }) =>
+                record.is_active === false ? 'No' : 'Yes'
               }
             />
           </div>
@@ -109,6 +138,8 @@ const CrossReferenceShowPage = () => (
             />
           </div>
         </section>
+
+        <CrossReferencePublicationReferences />
 
         <section className="mt-12 space-y-4 border-t border-border pt-12">
           <div className="space-y-1">

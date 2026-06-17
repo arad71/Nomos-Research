@@ -217,6 +217,10 @@ const defaultHiddenColumns = columnOptions
 const HtmlValue = ({ value }: { value?: string | null }) =>
   value ? <span dangerouslySetInnerHTML={{ __html: value }} /> : null;
 
+const stopTableInteraction = (event: React.SyntheticEvent) => {
+  event.stopPropagation();
+};
+
 const formatTitle = (value?: string | null) => {
   if (!value) return 'Not set';
   return value
@@ -385,7 +389,7 @@ const ParallelNameReviewPage = () => {
   }, [filters.hasParentLink, filters.onlyMismatches, filters.parallelUninomialOverride, previewByTaxonId, state.data]);
 
   const completedAuditRows = React.useMemo<ReviewRecord[]>(() => {
-    if (!lastAuditRun?.result?.mismatch_rows?.length) return [];
+    if (!lastAuditRun?.result) return [];
     return lastAuditRun.result.mismatch_rows.map((row) => ({
       id: row.taxon_name_id,
       taxon_name_id: row.taxon_name_id,
@@ -400,7 +404,7 @@ const ParallelNameReviewPage = () => {
     }));
   }, [lastAuditRun]);
 
-  const usingFullAuditRows = !auditRunning && completedAuditRows.length > 0;
+  const usingFullAuditRows = filters.onlyMismatches && !auditRunning && Boolean(lastAuditRun?.result);
   const pagedFullAuditRows = React.useMemo(() => {
     if (!usingFullAuditRows) return [];
     const start = (page - 1) * perPage;
@@ -482,6 +486,14 @@ const ParallelNameReviewPage = () => {
       .then((status) => {
         if (!active) return;
         setAuditJobStatus(status);
+        if (status.status === 'completed' && status.result) {
+          const run = {
+            runAt: status.finished_at || new Date().toISOString(),
+            result: status.result,
+          };
+          setLastAuditRun(run);
+          localStorage.setItem(AUDIT_RESULT_STORAGE_KEY, JSON.stringify(run));
+        }
         if (status.status === 'running') {
           setAuditRunning(true);
         }
@@ -547,7 +559,12 @@ const ParallelNameReviewPage = () => {
       case 'taxonName':
         if (!taxonId) return <span className="text-sm text-muted-foreground">Unknown taxon</span>;
         return (
-          <Link to={`/taxon_names/${taxonId}/show`} className="font-medium text-primary hover:underline">
+          <Link
+            to={`/taxon_names/${taxonId}/show`}
+            className="font-medium text-primary hover:underline"
+            onClick={stopTableInteraction}
+            onAuxClick={stopTableInteraction}
+          >
             {record.formatted_scientific_name ? (
               <HtmlValue value={record.formatted_scientific_name} />
             ) : (
@@ -627,10 +644,16 @@ const ParallelNameReviewPage = () => {
       case 'actions':
         return taxonId ? (
           <Button asChild variant="outline" size="sm">
-            <Link to={`/taxon_names/${taxonId}/show`}>
+            <a
+              href={`/taxon_names/${taxonId}/show`}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={stopTableInteraction}
+              onAuxClick={stopTableInteraction}
+            >
               <ExternalLink className="h-4 w-4" />
               Open taxon
-            </Link>
+            </a>
           </Button>
         ) : null;
       default:
@@ -735,7 +758,7 @@ const ParallelNameReviewPage = () => {
                 onChange={(event) => setFormFilters((current) => ({ ...current, onlyMismatches: event.target.checked }))}
                 className="h-4 w-4 rounded border-border text-primary focus:ring-ring"
               />
-              Only show non-matches on this page
+              Only show non-matches
             </label>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -744,7 +767,11 @@ const ParallelNameReviewPage = () => {
               Reset
             </Button>
             <Button type="button" variant="outline" onClick={() => void runFullAudit()} disabled={auditRunning}>
-              {auditRunning ? 'Running full audit...' : 'Run Full Audit'}
+              {auditRunning
+                ? 'Finding non-matches...'
+                : lastAuditRun?.result
+                  ? 'Refresh all non-matches'
+                  : 'Find all non-matches'}
             </Button>
             {auditJobStatus?.status === 'running' ? (
               <Badge variant="outline">
@@ -760,7 +787,7 @@ const ParallelNameReviewPage = () => {
               </Badge>
             ) : null}
             {usingFullAuditRows ? (
-              <Badge variant="secondary">Table source: full audit mismatches</Badge>
+              <Badge variant="secondary">Table source: all audited non-matches</Badge>
             ) : (
               <Badge variant="outline">Table source: page preview</Badge>
             )}
@@ -768,8 +795,8 @@ const ParallelNameReviewPage = () => {
               {loading
                 ? 'Loading...'
                 : usingFullAuditRows
-                  ? `${tableRows.length} shown from full audit mismatches of ${tableTotal.toLocaleString()}`
-                  : `${displayedRecords.length} shown in page preview of ${state.total.toLocaleString()} fetched rows`}
+                  ? `${tableRows.length} shown from ${tableTotal.toLocaleString()} audited non-matches`
+                  : `${displayedRecords.length} shown from this page; run audit to find all non-matches`}
             </Badge>
           </div>
         </form>
