@@ -7,6 +7,23 @@ import { ReferenceInput } from '@/components/admin/reference-input';
 import { SimpleForm } from '@/components/admin/simple-form';
 
 const requiredValue = required();
+const MIN_PARENT_SEARCH_LENGTH = 2;
+const PARENT_SEARCH_PAGE_SIZE = 50;
+
+const hasTaxonNameSearch = (filters: Record<string, unknown>) =>
+  typeof filters.scientific_name__ilike === 'string' &&
+  filters.scientific_name__ilike.replace(/%/g, '').trim().length >= MIN_PARENT_SEARCH_LENGTH;
+
+const taxonNameSearchFilter = (searchText: string) => {
+  const trimmedSearch = searchText.trim();
+  if (trimmedSearch.length < MIN_PARENT_SEARCH_LENGTH) {
+    return {};
+  }
+
+  return {
+    scientific_name__ilike: `%${trimmedSearch}%`,
+  };
+};
 
 type TaxonNameParentFormValues = {
   taxon_name_id?: number | string;
@@ -30,7 +47,6 @@ const TaxonNameParentFormFields = ({ hideTaxonName = false }: TaxonNameParentFor
 
   const parentFilter = React.useMemo(() => {
     const filter: Record<string, unknown> = {
-      scientific_name__gt: '',
       deleted: false,
     };
 
@@ -48,16 +64,15 @@ const TaxonNameParentFormFields = ({ hideTaxonName = false }: TaxonNameParentFor
           source="taxon_name_id"
           reference="taxon_names"
           sort={{ field: 'canonical_name', order: 'ASC' }}
-          perPage={1000}
+          perPage={PARENT_SEARCH_PAGE_SIZE}
+          enableGetChoices={hasTaxonNameSearch}
         >
           <AutocompleteInput
             label="Taxon name"
             optionText="scientific_name"
             validate={requiredValue}
-            filterToQuery={(searchText: string) => ({
-              scientific_name__ilike: `%${searchText}%`,
-            })}
-            helperText="Specify the child taxon name that these parent rows belong to."
+            filterToQuery={taxonNameSearchFilter}
+            helperText="Type at least 2 characters to search for the child taxon name."
           />
         </ReferenceInput>
       ) : null}
@@ -66,17 +81,16 @@ const TaxonNameParentFormFields = ({ hideTaxonName = false }: TaxonNameParentFor
         source="parent_taxon_name_id"
         reference="taxon_names"
         sort={{ field: 'canonical_name', order: 'ASC' }}
-        perPage={1000}
+        perPage={PARENT_SEARCH_PAGE_SIZE}
         filter={parentFilter}
+        enableGetChoices={hasTaxonNameSearch}
       >
         <AutocompleteInput
           label="Parent name"
           optionText="scientific_name"
           validate={requiredValue}
-          filterToQuery={(searchText: string) => ({
-            scientific_name__ilike: `%${searchText}%`,
-          })}
-          helperText="Select an existing taxon name to act as a parent. The current taxon name is excluded."
+          filterToQuery={taxonNameSearchFilter}
+          helperText="Type at least 2 characters to search. The current taxon name is excluded."
         />
       </ReferenceInput>
 

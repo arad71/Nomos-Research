@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { required } from 'ra-core';
 import { AutocompleteInput } from '@/components/admin/autocomplete-input';
+import { BooleanInput } from '@/components/admin/boolean-input';
 import { DateInput } from '@/components/admin/date-input';
 import { ReferenceInput } from '@/components/admin/reference-input';
 import { SelectInput } from '@/components/admin/select-input';
@@ -18,11 +19,13 @@ const taxonNameFilterToQuery = (searchText: string) => ({
 type CrossReferenceFormProps = {
   hideOldName?: boolean;
   hideNewName?: boolean;
+  beforeNotes?: React.ReactNode;
 };
 
 const CrossReferenceForm = ({
   hideOldName = false,
   hideNewName = false,
+  beforeNotes,
 }: CrossReferenceFormProps) => (
   <SimpleForm className="max-w-none">
     <div className="grid gap-8">
@@ -36,7 +39,7 @@ const CrossReferenceForm = ({
               source="old_name_id"
               reference="taxon_names"
               sort={{ field: 'canonical_name', order: 'ASC' }}
-              perPage={1000}
+              perPage={200}
               filterToQuery={taxonNameFilterToQuery}
             >
               <AutocompleteInput
@@ -51,7 +54,7 @@ const CrossReferenceForm = ({
               source="new_name_id"
               reference="taxon_names"
               sort={{ field: 'canonical_name', order: 'ASC' }}
-              perPage={1000}
+              perPage={200}
               filterToQuery={taxonNameFilterToQuery}
               className="md:col-span-2 xl:col-span-3"
             >
@@ -63,6 +66,12 @@ const CrossReferenceForm = ({
             label="Cross reference type"
             choices={CrossRefType}
             validate={requiredValue}
+            className="md:col-span-2 xl:col-span-3"
+          />
+          <BooleanInput
+            source="is_active"
+            label="Active"
+            defaultValue
             className="md:col-span-2 xl:col-span-3"
           />
         </div>
@@ -79,6 +88,8 @@ const CrossReferenceForm = ({
           <DateInput source="contributed_on" label="Contributed on" parse={parseDateOnlyToDateTime} className="xl:col-span-2" />
         </div>
       </section>
+
+      {beforeNotes}
 
       <section className="mt-12 space-y-4 border-t border-border pt-12">
         <div className="space-y-1">
