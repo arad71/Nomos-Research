@@ -19,6 +19,11 @@ TAXON_NAME_ID = (
     "to which this publication reference applies."
 )
 
+CROSS_REFERENCE_ID = (
+    "Foreign key to cross_reference.cross_reference_id identifying the cross "
+    "reference to which this publication reference applies."
+)
+
 PUBLICATION_ID = (
     "Foreign key to publication.publication_id identifying the linked "
     "publication record. The publication record itself is reusable "

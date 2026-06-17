@@ -10,7 +10,11 @@ import RecordActionButtons from '../shared/RecordActionButtons';
 import { BACKEND_URL } from '../../config';
 import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { formatAuthorOption } from '../authors/authorDisplay';
+import PublicationReferenceType from '../shared/choices/PublicationReferenceType';
+import { formatCrossReferenceOption } from '../taxon-publications/TaxonPublicationForm';
+import { getPublicationReferenceTypeLabel } from '../shared/choices/publicationReferenceTypeLabel';
 
 type SortOrder = 'ASC' | 'DESC';
 
@@ -54,12 +58,17 @@ type TaxonPublicationRecord = {
   taxon_publication_id?: number;
   publication_id?: number | string;
   taxon_name_id?: number | string;
+  cross_reference_id?: number | string;
   taxon_name___scientific_name?: string;
   taxon_name___formatted_scientific_name?: string;
   taxon_name?: {
     scientific_name?: string | null;
     formatted_scientific_name?: string | null;
   } | null;
+  cross_reference?: Record<string, unknown> | null;
+  cross_reference___cross_reference_type?: string;
+  cross_reference___old_name___scientific_name?: string;
+  cross_reference___new_name___scientific_name?: string;
 };
 
 type PublicationsResponse = {
@@ -71,22 +80,29 @@ type PublicationFilters = {
   q: string;
   taxonQ: string;
   title: string;
+  abbreviatedTitle: string;
   authorName: string;
   doi: string;
   publicationYear: string;
+  volume: string;
+  referenceTypes: string[];
+  parentPublication: string;
   publisher: string;
   published: string;
   deleted: string;
 };
 
 type PublicationQuery = Omit<PublicationFilters, 'taxonQ'> & {
+  authorIds?: number[];
   publicationIds?: number[];
 };
 
 type ColumnKey =
+  | 'publicationId'
   | 'displayTitle'
   | 'authorName'
   | 'linkedTaxonNames'
+  | 'linkedCrossReferences'
   | 'taxonPublicationLinks'
   | 'authors'
   | 'publicationYear'
@@ -124,42 +140,47 @@ const TABLE_STORE_KEY = 'publications.kit.datatable';
 const DEFAULT_SORT_FIELD = 'display_title';
 const DEFAULT_SORT_ORDER: SortOrder = 'ASC';
 const EXPORT_BATCH_SIZE = 500;
+const SEARCH_FETCH_LIMIT = 5000;
 
 const defaultColumns: ColumnKey[] = [
-  'displayTitle',
-  'authorName',
-  'linkedTaxonNames',
-  'taxonPublicationLinks',
+  'publicationId',
+  'referenceType',
+  'title',
   'publicationYear',
-  'published',
-  'abbreviatedTitle',
+  'volume',
+  'edition',
+  'pages',
+  'authors',
+  'parentPublication',
   'actions',
 ];
 const columnOptions: Array<{ key: ColumnKey; label: string }> = [
+  { key: 'publicationId', label: 'Publication ID' },
+  { key: 'referenceType', label: 'Reference Type' },
+  { key: 'title', label: 'Title' },
+  { key: 'publicationYear', label: 'Year' },
+  { key: 'volume', label: 'Volume' },
+  { key: 'edition', label: 'Edition' },
+  { key: 'pages', label: 'Pages' },
+  { key: 'authors', label: 'Authors' },
+  { key: 'parentPublication', label: 'Parent Publication' },
   { key: 'displayTitle', label: 'Display title' },
   { key: 'authorName', label: 'Publication authors' },
   { key: 'linkedTaxonNames', label: 'Linked taxon names' },
+  { key: 'linkedCrossReferences', label: 'Linked cross reference' },
   { key: 'taxonPublicationLinks', label: 'Taxon links' },
-  { key: 'authors', label: 'Authors' },
-  { key: 'publicationYear', label: 'Year' },
   { key: 'publicationMonth', label: 'Month' },
   { key: 'publicationDay', label: 'Day' },
   { key: 'published', label: 'Published' },
   { key: 'abbreviatedTitle', label: 'Abbreviated title' },
-  { key: 'title', label: 'Title' },
   { key: 'doi', label: 'DOI' },
   { key: 'publisher', label: 'Publisher' },
-  { key: 'parentPublication', label: 'Parent publication' },
   { key: 'publishedLocation', label: 'Published location' },
-  { key: 'volume', label: 'Volume' },
-  { key: 'edition', label: 'Edition' },
-  { key: 'pages', label: 'Pages' },
   { key: 'legacyId', label: 'Legacy ID' },
   { key: 'isbn', label: 'ISBN' },
   { key: 'issn', label: 'ISSN' },
   { key: 'tl2', label: 'TL2' },
   { key: 'bhlUrl', label: 'BHL URL' },
-  { key: 'referenceType', label: 'Reference type' },
   { key: 'referenceAuthorRole', label: 'Reference author role' },
   { key: 'duplicateOf', label: 'Duplicate of' },
   { key: 'language', label: 'Language' },
@@ -175,6 +196,7 @@ const columnLabelMap = columnOptions.reduce<Record<ColumnKey, string>>(
   {} as Record<ColumnKey, string>
 );
 const sortableColumns: Partial<Record<ColumnKey, string>> = {
+  publicationId: 'publication_id',
   displayTitle: 'display_title',
   authorName: 'author_name',
   publicationYear: 'publication_year',
@@ -277,23 +299,38 @@ const fetchPublications = async (
   retryOnAuthError = true
 ): Promise<PublicationsResponse> => {
   const sort = encodeURIComponent(JSON.stringify([sortField, sortOrder]));
-  const range = encodeURIComponent(JSON.stringify([(page - 1) * perPage, page * perPage - 1]));
-  const buildFilterPayload = () => {
+  const getRange = (start: number, end: number) => encodeURIComponent(JSON.stringify([start, end]));
+  const range = getRange((page - 1) * perPage, page * perPage - 1);
+  const buildFilterPayload = (includeGlobalQuery = true) => {
     const payload: Record<string, unknown> = {};
-    if (filters.q) payload.q = filters.q;
+    if (includeGlobalQuery && filters.q) payload.q = filters.q;
     if (filters.title) payload.title__contains = filters.title;
-    if (filters.authorName) payload.author_name__contains = filters.authorName;
+    if (filters.abbreviatedTitle) payload.abbreviated_title__contains = filters.abbreviatedTitle;
+    if (filters.authorIds?.length) payload.author___author_id = filters.authorIds;
     if (filters.doi) payload.doi__contains = filters.doi;
     if (filters.publicationYear) payload.publication_year = filters.publicationYear;
+    if (filters.volume) payload.volume__contains = filters.volume;
+    if (filters.referenceTypes.length) payload.reference_type = filters.referenceTypes;
+    if (filters.parentPublication) {
+      const parentPublicationId = Number(filters.parentPublication);
+      if (Number.isInteger(parentPublicationId) && parentPublicationId > 0) {
+        payload.parent_id = parentPublicationId;
+      } else {
+        payload.parent___title__contains = filters.parentPublication;
+      }
+    }
     if (filters.publisher) payload.publisher__contains = filters.publisher;
     if (filters.published) payload.published = filters.published === 'true';
     if (filters.deleted) payload.deleted = filters.deleted === 'true';
     return payload;
   };
-  const requestWithFilter = async (filterPayload: Record<string, unknown>) => {
+  const requestWithFilter = async (
+    filterPayload: Record<string, unknown>,
+    requestRange = range
+  ) => {
     const filter = encodeURIComponent(JSON.stringify(filterPayload));
     const response = await fetch(
-      `${BACKEND_URL}/publications?sort=${sort}&range=${range}&filter=${filter}`,
+      `${BACKEND_URL}/publications?sort=${sort}&range=${requestRange}&filter=${filter}`,
       { headers: buildHeaders() }
     );
     if (response.status === 401 && retryOnAuthError) {
@@ -308,7 +345,41 @@ const fetchPublications = async (
     return { data, total: parseTotal(response, data) };
   };
 
-  const filterPayload = buildFilterPayload();
+  const filterPayload = buildFilterPayload(!filters.q);
+  if (filters.q) {
+    const searchRange = getRange(0, SEARCH_FETCH_LIMIT - 1);
+    const requestSearchMatches = async (baseFilterPayload: Record<string, unknown>) => {
+      const [titleMatches, publisherMatches] = await Promise.all([
+        requestWithFilter({ ...baseFilterPayload, q: filters.q }, searchRange),
+        requestWithFilter({ ...baseFilterPayload, publisher__contains: filters.q }, searchRange),
+      ]);
+      const seen = new Set<string | number>();
+      const data = [...titleMatches.data, ...publisherMatches.data].filter((record) => {
+        const recordId = record.id ?? record.publication_id;
+        if (recordId == null) return true;
+        if (seen.has(recordId)) return false;
+        seen.add(recordId);
+        return true;
+      });
+      return {
+        data: data.slice((page - 1) * perPage, page * perPage),
+        total: data.length,
+      };
+    };
+    if (!filters.publicationIds?.length) {
+      return requestSearchMatches(filterPayload);
+    }
+    const byPublicationId = await requestSearchMatches({
+      ...filterPayload,
+      publication_id: filters.publicationIds,
+    });
+    if (byPublicationId.total > 0) return byPublicationId;
+    return requestSearchMatches({
+      ...filterPayload,
+      id: filters.publicationIds,
+    });
+  }
+
   if (!filters.publicationIds?.length) {
     return requestWithFilter(filterPayload);
   }
@@ -360,7 +431,9 @@ const dedupeTaxonPublicationRows = (rows: TaxonPublicationRecord[]) => {
   rows.forEach((row, index) => {
     const key =
       String(row.taxon_publication_id ?? row.id ?? '') ||
-      `${row.publication_id ?? ''}-${row.taxon_name_id ?? ''}-${index}`;
+      `${row.publication_id ?? ''}-${row.taxon_name_id ?? ''}-${
+        row.cross_reference_id ?? ''
+      }-${index}`;
     if (seen.has(key)) return;
     seen.add(key);
     deduped.push(row);
@@ -415,6 +488,46 @@ const fetchTaxonPublicationsViaDataProvider = async (
   } catch {
     return [];
   }
+};
+
+const fetchAuthorIdsByQuery = async (
+  authorQuery: string,
+  retryOnAuthError = true
+): Promise<number[]> => {
+  const trimmedQuery = authorQuery.trim();
+  if (!trimmedQuery) return [];
+  const queryParts = trimmedQuery.split(/\s+/);
+  const terms = Array.from(
+    new Set(
+      [
+        trimmedQuery,
+        trimmedQuery.replace(/\.\s+/g, '.'),
+        queryParts[queryParts.length - 1] ?? '',
+      ].filter(Boolean)
+    )
+  );
+  const sort = encodeURIComponent(JSON.stringify(['abbreviation', 'ASC']));
+  const range = encodeURIComponent(JSON.stringify([0, 5000]));
+  const authorIdBatches = await Promise.all(
+    terms.map(async (term) => {
+      const filter = encodeURIComponent(JSON.stringify({ q: term }));
+      const response = await fetch(
+        `${BACKEND_URL}/authors?sort=${sort}&range=${range}&filter=${filter}`,
+        { headers: buildHeaders() }
+      );
+      if (response.status === 401 && retryOnAuthError) {
+        await authProvider.checkError({ status: 401 });
+        return fetchAuthorIdsByQuery(authorQuery, false);
+      }
+      if (!response.ok) return [];
+      const rows = await response.json();
+      if (!Array.isArray(rows)) return [];
+      return uniqueNumericIds(
+        rows.map((row: Record<string, unknown>) => row.author_id ?? row.id)
+      );
+    })
+  );
+  return uniqueNumericIds(authorIdBatches.flat());
 };
 
 const fetchTaxonPublicationRowsByLinkedTaxonQueryViaDataProvider = async (
@@ -609,6 +722,29 @@ const getTaxonLabelFromLink = (
   );
 };
 
+const getCrossReferenceLabelFromLink = (
+  link: TaxonPublicationRecord,
+  crossReferenceMap: Record<number, string>
+) => {
+  const crossReferenceId = toNumberId(link.cross_reference_id);
+  if (crossReferenceId && crossReferenceMap[crossReferenceId]) {
+    return crossReferenceMap[crossReferenceId];
+  }
+
+  return (
+    formatCrossReferenceOption(
+      (link.cross_reference as Record<string, unknown> | null | undefined) ??
+        {
+          cross_reference_type: link.cross_reference___cross_reference_type,
+          old_name___scientific_name:
+            link.cross_reference___old_name___scientific_name,
+          new_name___scientific_name:
+            link.cross_reference___new_name___scientific_name,
+        }
+    ) || (crossReferenceId ? `Cross reference #${crossReferenceId}` : '')
+  );
+};
+
 const formatDate = (value?: string) => {
   if (!value) return '';
   const date = new Date(value);
@@ -645,9 +781,16 @@ const PublicationsPage = () => {
       q: searchParams.get('q') || '',
       taxonQ: searchParams.get('taxonQ') || '',
       title: searchParams.get('title') || '',
+      abbreviatedTitle: searchParams.get('abbreviatedTitle') || '',
       authorName: searchParams.get('authorName') || '',
       doi: searchParams.get('doi') || '',
       publicationYear: searchParams.get('publicationYear') || '',
+      volume: searchParams.get('volume') || '',
+      referenceTypes: [
+        ...searchParams.getAll('referenceType'),
+        ...searchParams.getAll('referenceTypes'),
+      ].filter(Boolean),
+      parentPublication: searchParams.get('parentPublication') || '',
       publisher: searchParams.get('publisher') || '',
       published: searchParams.get('published') || '',
       deleted: searchParams.get('deleted') || '',
@@ -669,6 +812,7 @@ const PublicationsPage = () => {
   const [authorMap, setAuthorMap] = React.useState<Record<number, string>>({});
   const [publicationMap, setPublicationMap] = React.useState<Record<number, string>>({});
   const [taxonNameMap, setTaxonNameMap] = React.useState<Record<number, string>>({});
+  const [crossReferenceMap, setCrossReferenceMap] = React.useState<Record<number, string>>({});
   const [taxonPublicationMap, setTaxonPublicationMap] = React.useState<
     Record<number, TaxonPublicationRecord[]>
   >({});
@@ -689,13 +833,24 @@ const PublicationsPage = () => {
       const publicationQuery: PublicationQuery = {
         q: filters.q,
         title: filters.title,
+        abbreviatedTitle: filters.abbreviatedTitle,
         authorName: filters.authorName,
         doi: filters.doi,
         publicationYear: filters.publicationYear,
+        volume: filters.volume,
+        referenceTypes: filters.referenceTypes,
+        parentPublication: filters.parentPublication,
         publisher: filters.publisher,
         published: filters.published,
         deleted: filters.deleted,
       };
+      if (filters.authorName) {
+        const authorIds = await fetchAuthorIdsByQuery(filters.authorName);
+        if (!authorIds.length) {
+          return { data: [], total: 0 };
+        }
+        publicationQuery.authorIds = authorIds;
+      }
       if (!filters.taxonQ) {
         return fetchPublications(page, perPage, sortField, sortOrder, publicationQuery);
       }
@@ -739,15 +894,33 @@ const PublicationsPage = () => {
       const taxonNameIds = uniqueNumericIds(
         taxonPublications.map((link) => link.taxon_name_id)
       );
+      const crossReferenceIds = uniqueNumericIds(
+        taxonPublications.map((link) => link.cross_reference_id)
+      );
       const nextTaxonNameMap = await fetchReferenceMap(
         'taxon_names',
         taxonNameIds,
         'taxon_name_id',
         'scientific_name'
       );
+      const nextCrossReferenceMap = await fetchReferenceMap(
+        'cross_references',
+        crossReferenceIds,
+        'cross_reference_id',
+        formatCrossReferenceOption
+      );
       const fallbackTaxonNameMap =
         Object.keys(nextTaxonNameMap).length === 0
           ? await fetchReferenceMap('taxon_names', taxonNameIds, 'id', 'scientific_name')
+          : {};
+      const fallbackCrossReferenceMap =
+        Object.keys(nextCrossReferenceMap).length === 0
+          ? await fetchReferenceMap(
+              'cross_references',
+              crossReferenceIds,
+              'id',
+              formatCrossReferenceOption
+            )
           : {};
       if (!active) return;
       setUserMap(nextUserMap);
@@ -755,6 +928,10 @@ const PublicationsPage = () => {
       setPublicationMap(nextPublicationMap);
       setTaxonPublicationMap(mapTaxonPublicationsByPublication(taxonPublications));
       setTaxonNameMap({ ...fallbackTaxonNameMap, ...nextTaxonNameMap });
+      setCrossReferenceMap({
+        ...fallbackCrossReferenceMap,
+        ...nextCrossReferenceMap,
+      });
     };
     void loadReferences();
     return () => {
@@ -767,18 +944,33 @@ const PublicationsPage = () => {
     ...(filters.q ? [{ label: 'Publication query', value: filters.q }] : []),
     ...(filters.taxonQ ? [{ label: 'Linked taxon query', value: filters.taxonQ }] : []),
     ...(filters.title ? [{ label: 'Title', value: filters.title }] : []),
+    ...(filters.abbreviatedTitle
+      ? [{ label: 'Abbreviated Title', value: filters.abbreviatedTitle }]
+      : []),
     ...(filters.authorName ? [{ label: 'Author', value: filters.authorName }] : []),
     ...(filters.doi ? [{ label: 'DOI', value: filters.doi }] : []),
     ...(filters.publicationYear ? [{ label: 'Year', value: filters.publicationYear }] : []),
+    ...(filters.volume ? [{ label: 'Volume', value: filters.volume }] : []),
+    ...(filters.referenceTypes.length
+      ? [{ label: 'Reference Type', value: filters.referenceTypes.join(', ') }]
+      : []),
+    ...(filters.parentPublication
+      ? [{ label: 'Parent Publication', value: filters.parentPublication }]
+      : []),
     ...(filters.publisher ? [{ label: 'Publisher', value: filters.publisher }] : []),
     ...(filters.published ? [{ label: 'Published', value: filters.published }] : []),
     ...(filters.deleted ? [{ label: 'Deleted', value: filters.deleted }] : []),
   ];
 
-  const updateParams = (updates: Record<string, string | number | null>) => {
+  const updateParams = (updates: Record<string, string | number | string[] | null>) => {
     const next = new URLSearchParams(searchParams);
     Object.entries(updates).forEach(([key, value]) => {
-      if (value === null || value === '') next.delete(key);
+      if (Array.isArray(value)) {
+        next.delete(key);
+        value.forEach((item) => {
+          if (item) next.append(key, item);
+        });
+      } else if (value === null || value === '') next.delete(key);
       else next.set(key, String(value));
     });
     setSearchParams(next);
@@ -790,9 +982,14 @@ const PublicationsPage = () => {
       q: draftFilters.q || null,
       taxonQ: draftFilters.taxonQ || null,
       title: draftFilters.title || null,
+      abbreviatedTitle: draftFilters.abbreviatedTitle || null,
       authorName: draftFilters.authorName || null,
       doi: draftFilters.doi || null,
       publicationYear: draftFilters.publicationYear || null,
+      volume: draftFilters.volume || null,
+      referenceType: draftFilters.referenceTypes,
+      referenceTypes: null,
+      parentPublication: draftFilters.parentPublication || null,
       publisher: draftFilters.publisher || null,
       published: draftFilters.published || null,
       deleted: draftFilters.deleted || null,
@@ -805,9 +1002,13 @@ const PublicationsPage = () => {
       q: '',
       taxonQ: '',
       title: '',
+      abbreviatedTitle: '',
       authorName: '',
       doi: '',
       publicationYear: '',
+      volume: '',
+      referenceTypes: [],
+      parentPublication: '',
       publisher: '',
       published: '',
       deleted: '',
@@ -824,17 +1025,28 @@ const PublicationsPage = () => {
     exportAuthorMap: Record<number, string>,
     exportPublicationMap: Record<number, string>,
     exportTaxonPublicationMap: Record<number, TaxonPublicationRecord[]>,
-    exportTaxonNameMap: Record<number, string>
+    exportTaxonNameMap: Record<number, string>,
+    exportCrossReferenceMap: Record<number, string>
   ) => {
     const publicationId = record.publication_id ?? record.id ?? 0;
     switch (column) {
+      case 'publicationId':
+        return record.publication_id ?? record.id ?? '';
       case 'displayTitle':
         return record.display_title ?? '';
       case 'authorName':
         return record.author_name ?? '';
       case 'linkedTaxonNames':
         return (exportTaxonPublicationMap[publicationId] ?? [])
+          .filter((link) => link.taxon_name_id)
           .map((link) => getTaxonLabelFromLink(link, exportTaxonNameMap))
+          .filter(Boolean)
+          .filter((value, index, values) => values.indexOf(value) === index)
+          .join('; ');
+      case 'linkedCrossReferences':
+        return (exportTaxonPublicationMap[publicationId] ?? [])
+          .filter((link) => link.cross_reference_id)
+          .map((link) => getCrossReferenceLabelFromLink(link, exportCrossReferenceMap))
           .filter(Boolean)
           .filter((value, index, values) => values.indexOf(value) === index)
           .join('; ');
@@ -882,7 +1094,7 @@ const PublicationsPage = () => {
       case 'bhlUrl':
         return record.bhl_url ?? '';
       case 'referenceType':
-        return record.reference_type ?? '';
+        return getPublicationReferenceTypeLabel(record.reference_type);
       case 'referenceAuthorRole':
         return record.reference_author_role ?? '';
       case 'duplicateOf':
@@ -910,7 +1122,8 @@ const PublicationsPage = () => {
     exportAuthorMap: Record<number, string>,
     exportPublicationMap: Record<number, string>,
     exportTaxonPublicationMap: Record<number, TaxonPublicationRecord[]>,
-    exportTaxonNameMap: Record<number, string>
+    exportTaxonNameMap: Record<number, string>,
+    exportCrossReferenceMap: Record<number, string>
   ) =>
     [
       exportColumnOptions.map((column) => column.label),
@@ -923,7 +1136,8 @@ const PublicationsPage = () => {
             exportAuthorMap,
             exportPublicationMap,
             exportTaxonPublicationMap,
-            exportTaxonNameMap
+            exportTaxonNameMap,
+            exportCrossReferenceMap
           )
         )
       ),
@@ -935,6 +1149,13 @@ const PublicationsPage = () => {
     if (isExporting || state.total === 0) return;
     try {
       setIsExporting(true);
+      const exportAuthorFilterIds =
+        filters.authorName
+          ? await fetchAuthorIdsByQuery(filters.authorName)
+          : undefined;
+      if (filters.authorName && (!exportAuthorFilterIds || exportAuthorFilterIds.length === 0)) {
+        return;
+      }
       const publicationIdsByTaxon =
         filters.taxonQ
           ? await fetchPublicationIdsByTaxonQuery(dataProvider, filters.taxonQ)
@@ -948,12 +1169,17 @@ const PublicationsPage = () => {
         const result = await fetchPublications(currentPage, EXPORT_BATCH_SIZE, sortField, sortOrder, {
           q: filters.q,
           title: filters.title,
+          abbreviatedTitle: filters.abbreviatedTitle,
           authorName: filters.authorName,
           doi: filters.doi,
           publicationYear: filters.publicationYear,
+          volume: filters.volume,
+          referenceTypes: filters.referenceTypes,
+          parentPublication: filters.parentPublication,
           publisher: filters.publisher,
           published: filters.published,
           deleted: filters.deleted,
+          authorIds: exportAuthorFilterIds,
           publicationIds: publicationIdsByTaxon,
         });
         allRecords.push(...result.data);
@@ -977,11 +1203,20 @@ const PublicationsPage = () => {
       const exportTaxonNameIds = uniqueNumericIds(
         exportTaxonPublications.map((link) => link.taxon_name_id)
       );
+      const exportCrossReferenceIds = uniqueNumericIds(
+        exportTaxonPublications.map((link) => link.cross_reference_id)
+      );
       const exportTaxonNameMap = await fetchReferenceMap(
         'taxon_names',
         exportTaxonNameIds,
         'taxon_name_id',
         'scientific_name'
+      );
+      const exportCrossReferenceMap = await fetchReferenceMap(
+        'cross_references',
+        exportCrossReferenceIds,
+        'cross_reference_id',
+        formatCrossReferenceOption
       );
       const csv = buildExportCsv(
         allRecords,
@@ -989,7 +1224,8 @@ const PublicationsPage = () => {
         exportAuthorMap,
         exportPublicationMap,
         mapTaxonPublicationsByPublication(exportTaxonPublications),
-        exportTaxonNameMap
+        exportTaxonNameMap,
+        exportCrossReferenceMap
       );
       downloadCsv(`publications_${new Date().toISOString().slice(0, 10)}.csv`, csv);
     } finally {
@@ -1000,13 +1236,32 @@ const PublicationsPage = () => {
   const renderCellContent = (column: ColumnKey, record: PublicationRecord) => {
     const publicationId = record.publication_id ?? record.id ?? 0;
     const linkedTaxa = (taxonPublicationMap[publicationId] ?? [])
+      .filter((link) => link.taxon_name_id)
       .map((link, index) => ({
         key: link.taxon_publication_id ?? link.id ?? `${publicationId}-${index}`,
         taxonNameId: toNumberId(link.taxon_name_id),
         label: getTaxonLabelFromLink(link, taxonNameMap),
       }))
       .filter((taxon) => Boolean(taxon.label));
+    const linkedCrossReferences = (taxonPublicationMap[publicationId] ?? [])
+      .map((link, index) => ({
+        key:
+          link.taxon_publication_id ??
+          link.id ??
+          `${publicationId}-cross-reference-${index}`,
+        crossReferenceId: toNumberId(link.cross_reference_id),
+        label: getCrossReferenceLabelFromLink(link, crossReferenceMap),
+      }))
+      .filter((crossReference) => crossReference.crossReferenceId !== undefined)
+      .filter(
+        (crossReference, index, values) =>
+          values.findIndex(
+            (value) => value.crossReferenceId === crossReference.crossReferenceId
+          ) === index
+      );
     switch (column) {
+      case 'publicationId':
+        return record.publication_id ?? record.id ?? '';
       case 'displayTitle':
         return (
           <span className="inline-flex items-center gap-2">
@@ -1041,6 +1296,30 @@ const PublicationsPage = () => {
                   {taxon.label}
                 </span>
               )
+            ))}
+            {hiddenCount > 0 ? (
+              <Badge variant="outline">+{hiddenCount} more</Badge>
+            ) : null}
+          </span>
+        );
+      }
+      case 'linkedCrossReferences': {
+        if (!linkedCrossReferences.length) {
+          return <span className="text-muted-foreground">No linked cross references</span>;
+        }
+        const visibleCrossReferences = linkedCrossReferences.slice(0, 3);
+        const hiddenCount = linkedCrossReferences.length - visibleCrossReferences.length;
+        return (
+          <span className="inline-flex flex-wrap items-center gap-1.5">
+            {visibleCrossReferences.map((crossReference) => (
+              <Link
+                key={crossReference.key}
+                to={`/cross_references/${crossReference.crossReferenceId}/show`}
+                className="rounded-md border border-border px-2 py-0.5 text-xs hover:bg-accent"
+              >
+                {crossReference.label ||
+                  `Cross reference #${crossReference.crossReferenceId}`}
+              </Link>
             ))}
             {hiddenCount > 0 ? (
               <Badge variant="outline">+{hiddenCount} more</Badge>
@@ -1092,7 +1371,7 @@ const PublicationsPage = () => {
       case 'bhlUrl':
         return record.bhl_url ?? '';
       case 'referenceType':
-        return record.reference_type ?? '';
+        return getPublicationReferenceTypeLabel(record.reference_type);
       case 'referenceAuthorRole':
         return record.reference_author_role ?? '';
       case 'duplicateOf':
@@ -1186,6 +1465,20 @@ const PublicationsPage = () => {
             />
           </div>
           <div className="space-y-2">
+            <label className="text-sm font-medium">Abbreviated Title</label>
+            <input
+              value={draftFilters.abbreviatedTitle}
+              onChange={(event) =>
+                setDraftFilters((current) => ({
+                  ...current,
+                  abbreviatedTitle: event.target.value,
+                }))
+              }
+              placeholder="Filter by abbreviated title"
+              className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm outline-none ring-offset-background transition placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
+            />
+          </div>
+          <div className="space-y-2">
             <label className="text-sm font-medium">Author</label>
             <input
               value={draftFilters.authorName}
@@ -1215,6 +1508,53 @@ const PublicationsPage = () => {
                 setDraftFilters((current) => ({ ...current, publicationYear: event.target.value }))
               }
               placeholder="e.g. 1998"
+              className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm outline-none ring-offset-background transition placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Volume</label>
+            <input
+              value={draftFilters.volume}
+              onChange={(event) =>
+                setDraftFilters((current) => ({ ...current, volume: event.target.value }))
+              }
+              placeholder="Filter by volume"
+              className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm outline-none ring-offset-background transition placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Reference Type</label>
+            <div className="space-y-2 rounded-xl border border-border bg-background p-3">
+              {PublicationReferenceType.map((option) => (
+                <label key={option.id} className="flex items-center gap-2 text-sm">
+                  <Checkbox
+                    checked={draftFilters.referenceTypes.includes(option.id)}
+                    onCheckedChange={(checked) =>
+                      setDraftFilters((current) => ({
+                        ...current,
+                        referenceTypes:
+                          checked === true
+                            ? [...current.referenceTypes, option.id]
+                            : current.referenceTypes.filter((value) => value !== option.id),
+                      }))
+                    }
+                  />
+                  <span>{option.name}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Parent Publication</label>
+            <input
+              value={draftFilters.parentPublication}
+              onChange={(event) =>
+                setDraftFilters((current) => ({
+                  ...current,
+                  parentPublication: event.target.value,
+                }))
+              }
+              placeholder="Filter by parent publication title"
               className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm outline-none ring-offset-background transition placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
             />
           </div>

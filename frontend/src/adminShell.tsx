@@ -42,6 +42,9 @@ export const getStoredRoles = (): string[] =>
 export const hasAnyRole = (roles: string[], allowedRoles?: string[]) =>
   !allowedRoles || allowedRoles.some((role) => roles.includes(role));
 
+export const HYBRID_ROLLOUT_ROLES = ['APPLICATION_SUPPORT', 'SUPER_ADMIN'];
+export const HYBRID_ROLLOUT_RESOURCE = 'hybrid_rollout';
+
 export const adminNavSections: AdminNavSection[] = [
   {
     label: 'Overview',
@@ -180,28 +183,32 @@ export const adminNavSections: AdminNavSection[] = [
         to: '/taxon_name_parent_reviews',
         label: 'Parent Review Queue',
         icon: <RuleIcon fontSize="small" />,
-        resource: 'taxon_name_parent_reviews',
+        roles: HYBRID_ROLLOUT_ROLES,
+        resource: HYBRID_ROLLOUT_RESOURCE,
         action: 'list',
       },
       {
         to: '/parallel_name_review',
         label: 'Parallel Name Review',
         icon: <RuleIcon fontSize="small" />,
-        resource: 'taxon_names',
+        roles: HYBRID_ROLLOUT_ROLES,
+        resource: HYBRID_ROLLOUT_RESOURCE,
         action: 'list',
       },
       {
         to: '/expected_hybrid_review',
         label: 'Expected Hybrids',
         icon: <RuleIcon fontSize="small" />,
-        resource: 'taxon_names',
+        roles: HYBRID_ROLLOUT_ROLES,
+        resource: HYBRID_ROLLOUT_RESOURCE,
         action: 'list',
       },
       {
         to: '/taxon_names_without_parents',
         label: 'No Parent Links',
         icon: <RuleIcon fontSize="small" />,
-        resource: 'taxon_name_parent_reviews',
+        roles: HYBRID_ROLLOUT_ROLES,
+        resource: HYBRID_ROLLOUT_RESOURCE,
         action: 'list',
       },
     ],

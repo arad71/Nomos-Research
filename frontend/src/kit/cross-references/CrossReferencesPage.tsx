@@ -31,6 +31,7 @@ type CrossReferenceRecord = {
   notes?: string;
   internal_comments?: string;
   external_comments?: string;
+  is_active?: boolean;
   updated_by?: number;
   updated_on?: string;
   deleted?: boolean;
@@ -44,6 +45,7 @@ type CrossReferencesResponse = {
 type CrossReferenceFilters = {
   q: string;
   crossReferenceType: string;
+  active: string;
   deleted: string;
 };
 
@@ -59,6 +61,7 @@ type ColumnKey =
   | 'notes'
   | 'internalComments'
   | 'externalComments'
+  | 'active'
   | 'updatedBy'
   | 'updated'
   | 'deleted'
@@ -73,6 +76,7 @@ const EXPORT_BATCH_SIZE = 500;
 
 const defaultColumns: ColumnKey[] = [
   'type',
+  'active',
   'oldName',
   'newName',
   'actions',
@@ -90,6 +94,7 @@ const columnOptions: Array<{ key: ColumnKey; label: string }> = [
   { key: 'notes', label: 'Notes' },
   { key: 'internalComments', label: 'Internal comments' },
   { key: 'externalComments', label: 'External comments' },
+  { key: 'active', label: 'Active' },
   { key: 'updatedBy', label: 'Updated by' },
   { key: 'updated', label: 'Updated on' },
   { key: 'deleted', label: 'Deleted' },
@@ -116,6 +121,7 @@ const sortableColumns: Partial<Record<ColumnKey, string>> = {
   notes: 'notes',
   internalComments: 'internal_comments',
   externalComments: 'external_comments',
+  active: 'is_active',
   updatedBy: 'updated_by',
   updated: 'updated_on',
   deleted: 'deleted',
@@ -153,6 +159,9 @@ const buildFilterObject = (filters: CrossReferenceFilters) => {
   if (filters.q) nextFilter.q = filters.q;
   if (filters.crossReferenceType) {
     nextFilter.cross_reference_type = filters.crossReferenceType;
+  }
+  if (filters.active) {
+    nextFilter.is_active = filters.active === 'true';
   }
   if (filters.deleted) {
     nextFilter.deleted = filters.deleted === 'true';
@@ -310,6 +319,7 @@ const CrossReferencesPage = () => {
     () => ({
       q: searchParams.get('q') || '',
       crossReferenceType: searchParams.get('cross_reference_type') || '',
+      active: searchParams.get('is_active') || '',
       deleted: canUseDeletedFilter ? searchParams.get('deleted') || '' : '',
     }),
     [canUseDeletedFilter, searchParams]
@@ -442,6 +452,12 @@ const CrossReferencesPage = () => {
               value: getCrossRefTypeLabel(filters.crossReferenceType),
             }
           : null,
+        filters.active
+          ? {
+              label: 'Active',
+              value: filters.active === 'true' ? 'Yes' : 'No',
+            }
+          : null,
         canUseDeletedFilter && filters.deleted
           ? { label: 'Deleted only', value: 'Yes' }
           : null,
@@ -468,6 +484,7 @@ const CrossReferencesPage = () => {
     updateParams({
       q: draftFilters.q || null,
       cross_reference_type: draftFilters.crossReferenceType || null,
+      is_active: draftFilters.active || null,
       deleted: canUseDeletedFilter ? draftFilters.deleted || null : null,
       page: 1,
     });
@@ -477,6 +494,7 @@ const CrossReferencesPage = () => {
     setDraftFilters({
       q: '',
       crossReferenceType: '',
+      active: '',
       deleted: '',
     });
     setSearchParams(new URLSearchParams());
@@ -513,6 +531,8 @@ const CrossReferencesPage = () => {
         return record.internal_comments ?? '';
       case 'externalComments':
         return record.external_comments ?? '';
+      case 'active':
+        return record.is_active === undefined ? '' : record.is_active ? 'Yes' : 'No';
       case 'updatedBy':
         return record.updated_by ? exportUserMap[record.updated_by] ?? '' : '';
       case 'updated':
@@ -631,6 +651,8 @@ const CrossReferencesPage = () => {
         return textOrEmpty(record.internal_comments);
       case 'externalComments':
         return textOrEmpty(record.external_comments);
+      case 'active':
+        return booleanOrEmpty(record.is_active);
       case 'updatedBy':
         return (record.updated_by && userMap[record.updated_by]) ||
           (record.updated_by ? `User ${record.updated_by}` : '');
@@ -732,6 +754,26 @@ const CrossReferencesPage = () => {
                 {CrossRefType.map((option) => (
                   <option key={option.id} value={option.id}>
                     {option.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Active</label>
+              <select
+                value={draftFilters.active}
+                onChange={(event) =>
+                  setDraftFilters((current) => ({
+                    ...current,
+                    active: event.target.value,
+                  }))
+                }
+                className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                {booleanOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.value === '' ? 'Any status' : option.label}
                   </option>
                 ))}
               </select>

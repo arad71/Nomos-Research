@@ -75,6 +75,7 @@ import VernacularEditPage from './kit/vernaculars/VernacularEditPage';
 import VernacularShowPage from './kit/vernaculars/VernacularShowPage';
 import VernacularsPage from './kit/vernaculars/VernacularsPage';
 import { logout } from './utils';
+import { HYBRID_ROLLOUT_RESOURCE } from './adminShell';
 
 const useStyles = makeStyles(() => ({
   app: {
@@ -134,19 +135,19 @@ export const Routes: FC = () => {
         />
         <Route
           path="/taxon_name_parent_reviews"
-          element={withAccess('taxon_name_parent_reviews', 'list', <TaxonNameParentReviewsPage />)}
+          element={withAccess(HYBRID_ROLLOUT_RESOURCE, 'list', <TaxonNameParentReviewsPage />)}
         />
         <Route
           path="/parallel_name_review"
-          element={withAccess('taxon_names', 'list', <ParallelNameReviewPage />)}
+          element={withAccess(HYBRID_ROLLOUT_RESOURCE, 'list', <ParallelNameReviewPage />)}
         />
         <Route
           path="/expected_hybrid_review"
-          element={withAccess('taxon_names', 'list', <ExpectedHybridReviewPage />)}
+          element={withAccess(HYBRID_ROLLOUT_RESOURCE, 'list', <ExpectedHybridReviewPage />)}
         />
         <Route
           path="/taxon_names_without_parents"
-          element={withAccess('taxon_name_parent_reviews', 'list', <NoParentLinksPage />)}
+          element={withAccess(HYBRID_ROLLOUT_RESOURCE, 'list', <NoParentLinksPage />)}
         />
         <Route
           path="/taxon_name_parent_reviews/:id"
