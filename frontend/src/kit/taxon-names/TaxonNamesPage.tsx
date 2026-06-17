@@ -20,6 +20,7 @@ import authProvider from '../app/authProvider';
 import AuthorizedButtonLink from '../shared/AuthorizedButtonLink';
 import RecordActionButtons from '../shared/RecordActionButtons';
 import ConservationType from '../shared/choices/ConservationType';
+import HybridCategory from '../shared/choices/HybridCategory';
 import NaturalisedStatus from '../shared/choices/NaturalisedStatus';
 import PublicationStatus from '../shared/choices/PublicationStatus';
 import TaxonRank from '../shared/choices/TaxonRank';
@@ -45,6 +46,7 @@ type TaxonNameRecord = {
   publication_id?: number;
   volume_information?: string;
   publication_status?: string;
+  hybrid_category?: string | null;
   review?: boolean;
   is_autonym?: boolean;
   is_current?: boolean;
@@ -202,6 +204,7 @@ type TaxonNameFilters = {
   specificEpithet: string;
   acceptedName: string;
   reviewReason: string;
+  speciesCode: string;
   taxonRank: string;
   kingdomIds: string[];
   conservationCode: string;
@@ -209,6 +212,7 @@ type TaxonNameFilters = {
   conservationCodeActive: string;
   publicationStatus: string;
   naturalisedStatus: string;
+  hybridType: string;
   review: string;
   isCurrent: string;
   waCensus: string;
@@ -258,7 +262,6 @@ const columnOptions: Array<{ key: ColumnKey; label: string }> = [
   { key: 'author', label: 'Author' },
   { key: 'monthPublished', label: 'Month published' },
   { key: 'dayPublished', label: 'Day published' },
-  { key: 'publication', label: 'Publication' },
   { key: 'publicationReferences', label: 'Publication references' },
   { key: 'volumeInformation', label: 'Volume information' },
   { key: 'reviewFlag', label: 'Review?' },
@@ -460,6 +463,9 @@ const buildFilterObject = (filters: TaxonNameFilters) => {
   if (filters.reviewReason) {
     nextFilter.review_reason__contains = filters.reviewReason;
   }
+  if (filters.speciesCode) {
+    nextFilter.species_code__contains = filters.speciesCode;
+  }
   if (filters.taxonRank) {
     nextFilter.taxon_rank___rank_name = filters.taxonRank;
   }
@@ -488,6 +494,9 @@ const buildFilterObject = (filters: TaxonNameFilters) => {
       filters.naturalisedStatus === NATURALISED_STATUS_NOT_SET
         ? null
         : filters.naturalisedStatus;
+  }
+  if (filters.hybridType) {
+    nextFilter.hybrid_category = filters.hybridType;
   }
   if (filters.review) {
     nextFilter.review = filters.review === 'true';
@@ -557,7 +566,7 @@ const fetchKingdomOptions = async (
   retryOnAuthError = true
 ): Promise<KingdomOption[]> => {
   const sort = encodeURIComponent(JSON.stringify(['kingdom_name', 'ASC']));
-  const range = encodeURIComponent(JSON.stringify([0, 999]));
+  const range = encodeURIComponent(JSON.stringify([0, 199]));
   const filter = encodeURIComponent(JSON.stringify({}));
   const response = await fetch(
     `${BACKEND_URL}/kingdoms?sort=${sort}&range=${range}&filter=${filter}`,
@@ -955,6 +964,24 @@ const getNaturalisedStatusLabel = (value: string) =>
     ? 'Not set'
     : naturalisedStatusLabelMap[value] ?? value;
 
+const hybridTypeOptions = [
+  { label: 'Any type', value: '' },
+  ...HybridCategory.map((option) => ({
+    label: option.name,
+    value: option.id,
+  })),
+];
+
+const hybridTypeLabelMap = HybridCategory.reduce<Record<string, string>>(
+  (acc, option) => {
+    acc[option.id] = option.name;
+    return acc;
+  },
+  {}
+);
+
+const getHybridTypeLabel = (value: string) => hybridTypeLabelMap[value] ?? value;
+
 const booleanOptions = [
   { label: 'Any', value: '' },
   { label: 'Yes', value: 'true' },
@@ -1297,6 +1324,7 @@ const TaxonNamesPage = () => {
       specificEpithet: searchParams.get('specific_epithet') || '',
       acceptedName: searchParams.get('accepted_name') || '',
       reviewReason: searchParams.get('review_reason') || '',
+      speciesCode: searchParams.get('species_code') || '',
       taxonRank: searchParams.get('taxon_rank') || '',
       kingdomIds: (searchParams.get('kingdom_ids') || '')
         .split(',')
@@ -1307,6 +1335,7 @@ const TaxonNamesPage = () => {
       conservationCodeActive: searchParams.get('conservation_code_active') || '',
       publicationStatus: searchParams.get('publication_status') || '',
       naturalisedStatus: searchParams.get('naturalised_status') || '',
+      hybridType: searchParams.get('hybrid_category') || '',
       review: searchParams.get('review') || '',
       isCurrent: searchParams.get('is_current') || '',
       waCensus: searchParams.get('is_wa_recognised') || '',
@@ -1506,6 +1535,9 @@ const TaxonNamesPage = () => {
               value: getNaturalisedStatusLabel(filters.naturalisedStatus),
             }
           : null,
+        filters.hybridType
+          ? { label: 'Hybrid type', value: getHybridTypeLabel(filters.hybridType) }
+          : null,
         filters.review ? { label: 'Review', value: getBooleanLabel(filters.review) } : null,
         filters.isCurrent
           ? { label: 'Current', value: getBooleanLabel(filters.isCurrent) }
@@ -1547,6 +1579,9 @@ const TaxonNamesPage = () => {
           : null,
         filters.reviewReason
           ? { label: 'Review reason', value: filters.reviewReason }
+          : null,
+        filters.speciesCode
+          ? { label: 'Species code', value: filters.speciesCode }
           : null,
         filters.conservationCode
           ? { label: 'Conservation code', value: filters.conservationCode }
@@ -1625,12 +1660,14 @@ const TaxonNamesPage = () => {
       ['specific_epithet', next.specificEpithet],
       ['accepted_name', next.acceptedName],
       ['review_reason', next.reviewReason],
+      ['species_code', next.speciesCode],
       ['taxon_rank', next.taxonRank],
       ['conservation_code', next.conservationCode],
       ['authority', next.authority],
       ['conservation_code_active', next.conservationCodeActive],
       ['publication_status', next.publicationStatus],
       ['naturalised_status', next.naturalisedStatus],
+      ['hybrid_category', next.hybridType],
       ['review', next.review],
       ['is_current', next.isCurrent],
       ['is_wa_recognised', next.waCensus],
@@ -1680,6 +1717,7 @@ const TaxonNamesPage = () => {
       specificEpithet: draftFilters.specificEpithet.trim(),
       acceptedName: draftFilters.acceptedName.trim(),
       reviewReason: draftFilters.reviewReason.trim(),
+      speciesCode: draftFilters.speciesCode.trim(),
       taxonRank: draftFilters.taxonRank,
       kingdomIds: draftFilters.kingdomIds,
       conservationCode: draftFilters.conservationCode.trim(),
@@ -1687,6 +1725,7 @@ const TaxonNamesPage = () => {
       conservationCodeActive: draftFilters.conservationCodeActive,
       publicationStatus: draftFilters.publicationStatus,
       naturalisedStatus: draftFilters.naturalisedStatus,
+      hybridType: draftFilters.hybridType,
       review: draftFilters.review,
       isCurrent: draftFilters.isCurrent,
       waCensus: draftFilters.waCensus,
@@ -1772,11 +1811,14 @@ const TaxonNamesPage = () => {
           (record.publication_id ? `Publication ${record.publication_id}` : '');
       case 'publicationReferences':
         return publicationReferenceMap[taxonNameId]?.length ? (
-          <div className="flex max-w-80 flex-wrap gap-2">
+          <div className="flex max-w-80 flex-col gap-1 whitespace-normal break-words">
             {publicationReferenceMap[taxonNameId].map((reference) => (
-              <Badge key={reference} variant="outline">
+              <span
+                key={reference}
+                className="max-w-full rounded border border-border bg-background px-2 py-1 text-left text-xs leading-5 text-foreground"
+              >
                 {formatPublicationReferenceLabel(reference)}
-              </Badge>
+              </span>
             ))}
           </div>
         ) : (
@@ -2026,6 +2068,7 @@ const TaxonNamesPage = () => {
       specificEpithet: '',
       acceptedName: '',
       reviewReason: '',
+      speciesCode: '',
       taxonRank: '',
       kingdomIds: [],
       conservationCode: '',
@@ -2033,6 +2076,7 @@ const TaxonNamesPage = () => {
       conservationCodeActive: '',
       publicationStatus: '',
       naturalisedStatus: '',
+      hybridType: '',
       review: '',
       isCurrent: '',
       waCensus: '',
@@ -2208,6 +2252,7 @@ const TaxonNamesPage = () => {
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
               {renderTextFilter('NomosID', 'id')}
               {renderTextFilter('LegacyID', 'legacyId')}
+              {renderTextFilter('Species code', 'speciesCode')}
             </div>
             {renderTextFilter('Scientific name', 'scientificName')}
             {renderTextFilter('Author', 'author')}
@@ -2232,6 +2277,7 @@ const TaxonNamesPage = () => {
               'naturalisedStatus',
               naturalisedStatusOptions
             )}
+            {renderSelectFilter('Hybrid type', 'hybridType', hybridTypeOptions)}
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
               {renderSelectFilter('Review', 'review', booleanOptions)}
               {renderSelectFilter('Current', 'isCurrent', booleanOptions)}
@@ -2393,6 +2439,8 @@ const TaxonNamesPage = () => {
               cellClassName={
                 column.key === 'actions'
                   ? 'align-top'
+                  : column.key === 'publicationReferences'
+                    ? 'max-w-80 whitespace-normal break-words align-top'
                   : column.key === 'status'
                     ? 'min-w-56 whitespace-nowrap [&>div]:!flex-nowrap [&>div]:!whitespace-nowrap'
                     : undefined

@@ -140,8 +140,10 @@ def calculate_scientific_name_string(
         components.uninomial,
         is_hybrid_formula=(
             components.is_hybrid_formula
+            and not components.hybrid_marker_on_uninomial
             and not components.hybrid_marker_on_specific_epithet
         ),
+        hybrid_marker_on_uninomial=components.hybrid_marker_on_uninomial,
         italicize=italicize,
     )
     if uninomial:
@@ -240,9 +242,14 @@ def format_uninomial_for_display(
     uninomial: str | None,
     *,
     is_hybrid_formula: bool = False,
+    hybrid_marker_on_uninomial: bool = False,
     italicize: bool = False,
 ) -> str | None:
-    normalized_uninomial = uninomial.strip() if uninomial else None
+    normalized_uninomial = (
+        strip_hybrid_formula_prefix(uninomial)
+        if hybrid_marker_on_uninomial
+        else uninomial.strip() if uninomial else None
+    )
     if not normalized_uninomial:
         return None
     if is_hybrid_formula:
@@ -256,6 +263,8 @@ def format_uninomial_for_display(
     display_value = (
         italicize_name(normalized_uninomial) if italicize else normalized_uninomial
     )
+    if hybrid_marker_on_uninomial:
+        return f"× {display_value}"
     return display_value
 
 
@@ -316,8 +325,10 @@ def calculate_canonical_name_string(
                 components.uninomial,
                 is_hybrid_formula=(
                     components.is_hybrid_formula
+                    and not components.hybrid_marker_on_uninomial
                     and not components.hybrid_marker_on_specific_epithet
                 ),
+                hybrid_marker_on_uninomial=components.hybrid_marker_on_uninomial,
                 italicize=False,
             ),
             format_specific_epithet_for_display(
@@ -333,6 +344,17 @@ def calculate_canonical_name_string(
             ),
         ]
     )
+
+
+def _build_authority_with_ex(primary_authors, ex_authors):
+    primary_str = (
+        stringify_citation_authors(primary_authors) if primary_authors else None
+    )
+    ex_str = stringify_citation_authors(ex_authors) if ex_authors else None
+
+    if primary_str and ex_str:
+        return f"{primary_str} ex {ex_str}"
+    return primary_str or ex_str
 
 
 def map_authors(
@@ -373,16 +395,30 @@ def map_authors(
     else:
         # Non-Animal Names
         val = ""
-        if enums.AuthorType.basionym in author_types:
-            basionym_authors = stringify_citation_authors(
-                author_types[enums.AuthorType.basionym]
-            )
-            val = f"({basionym_authors})"
-        if enums.AuthorType.current in author_types:
-            current_authors = stringify_citation_authors(
-                author_types[enums.AuthorType.current]
-            )
-            val = filter_join([val, current_authors])
+        # if enums.AuthorType.basionym in author_types:
+        #     basionym_authors = stringify_citation_authors(
+        #         author_types[enums.AuthorType.basionym]
+        #     )
+        #     val = f"({basionym_authors})"
+        # if enums.AuthorType.current in author_types:
+        #     current_authors = stringify_citation_authors(
+        #         author_types[enums.AuthorType.current]
+        #     )
+        #     val = filter_join([val, current_authors])
+        basionym_str = _build_authority_with_ex(
+            author_types.get(enums.AuthorType.basionym),
+            author_types.get(enums.AuthorType.ex_basionym),
+        )
+        if basionym_str:
+            val = f"({basionym_str})"
+
+        current_str = _build_authority_with_ex(
+            author_types.get(enums.AuthorType.current),
+            author_types.get(enums.AuthorType.ex_current),
+        )
+        if current_str:
+            val = filter_join([val, current_str])
+
         if val:
             return val
     return None
