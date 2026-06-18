@@ -14,6 +14,13 @@ const TaxonNameCreatePage = () => (
     <div className="grid gap-6">
       <div className="rounded-2xl border border-border bg-card p-6">
         <TaxonNameForm
+          pageTopContent={
+            <TaxonNameRelatedSections
+              editable
+              embedded
+              sections={['parallelNamePreview']}
+            />
+          }
           topContent={
             <TaxonNameRelatedSections
               editable
