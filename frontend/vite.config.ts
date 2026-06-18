@@ -1,4 +1,4 @@
-import { defineConfig, loadEnv } from 'vite';
+import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
@@ -41,14 +41,14 @@ export default defineConfig({
     alias: {
       '@mui/icons-material': '@mui/icons-material/esm',
     },
-    server: {
-      port: 3000,
-      allowedHosts: ['host.docker.internal', 'localhost', 'nomos-frontend'],
-      proxy: {
-        '/api': {
-          target: backendProxyTarget,
-          changeOrigin: true,
-        },
+  },
+  server: {
+    port: 3000,
+    allowedHosts: ['host.docker.internal', 'localhost', 'nomos-frontend'],
+    proxy: {
+      '/api': {
+        target: 'http://host.docker.internal:8000',
+        changeOrigin: true,
       },
     },
   },
@@ -64,5 +64,26 @@ export default defineConfig({
         manualChunks: getManualChunk,
       },
     },
-  };
+  },
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: './src/setupTests.ts',
+    css: true,
+    server: {
+      deps: {
+        inline: [
+          'react-admin',
+          'ra-core',
+          'ra-ui-materialui',
+          '@react-admin/ra-rbac',
+          '@react-admin/ra-navigation',
+          '@react-admin/ra-relationships',
+          '@react-admin/ra-editable-datagrid',
+          '@mui/material',
+          '@mui/icons-material',
+        ],
+      },
+    },
+  },
 });
