@@ -37,6 +37,13 @@ type CrossReferenceRecord = {
   deleted?: boolean;
 };
 
+type PublicationReferenceRecord = {
+  id?: number;
+  taxon_publication_id?: number;
+  publication_id?: number | string;
+  cross_reference_id?: number | string;
+};
+
 type CrossReferencesResponse = {
   data: CrossReferenceRecord[];
   total: number;
@@ -53,6 +60,7 @@ type ColumnKey =
   | 'oldName'
   | 'newName'
   | 'type'
+  | 'linkedPublication'
   | 'authorisedBy'
   | 'authorisedOn'
   | 'contributedBy'
@@ -86,6 +94,7 @@ const columnOptions: Array<{ key: ColumnKey; label: string }> = [
   { key: 'type', label: 'Cross reference type' },
   { key: 'oldName', label: 'Old name' },
   { key: 'newName', label: 'New name' },
+  { key: 'linkedPublication', label: 'Linked publication' },
   { key: 'authorisedBy', label: 'Authorised by' },
   { key: 'authorisedOn', label: 'Authorised on' },
   { key: 'contributedBy', label: 'Contributed by' },
@@ -255,6 +264,65 @@ const fetchReferenceMap = async (
   }, {});
 };
 
+const fetchPublicationReferencesByCrossReferenceIds = async (
+  crossReferenceIds: number[],
+  retryOnAuthError = true
+): Promise<PublicationReferenceRecord[]> => {
+  if (!crossReferenceIds.length) {
+    return [];
+  }
+
+  const sort = encodeURIComponent(JSON.stringify(['taxon_publication_id', 'ASC']));
+  const range = encodeURIComponent(JSON.stringify([0, Math.max(crossReferenceIds.length * 10, 100)]));
+  const filter = encodeURIComponent(
+    JSON.stringify({ cross_reference_id: crossReferenceIds })
+  );
+  const endpoints = ['taxon-publications', 'taxon_publications'];
+  let response: Response | null = null;
+
+  for (const endpoint of endpoints) {
+    const candidate = await fetch(
+      `${BACKEND_URL}/${endpoint}?sort=${sort}&range=${range}&filter=${filter}`,
+      { headers: buildHeaders() }
+    );
+    if (candidate.ok || candidate.status !== 404) {
+      response = candidate;
+      break;
+    }
+  }
+
+  if (!response) {
+    return [];
+  }
+
+  if (response.status === 401 && retryOnAuthError) {
+    await authProvider.checkError({ status: 401 });
+    return fetchPublicationReferencesByCrossReferenceIds(crossReferenceIds, false);
+  }
+
+  if (!response.ok) {
+    return [];
+  }
+
+  const rows = await response.json();
+  return Array.isArray(rows) ? rows : [];
+};
+
+const mapPublicationReferencesByCrossReference = (
+  rows: PublicationReferenceRecord[]
+) =>
+  rows.reduce<Record<number, PublicationReferenceRecord[]>>((acc, row) => {
+    const crossReferenceId = Number(row.cross_reference_id);
+    if (Number.isNaN(crossReferenceId)) {
+      return acc;
+    }
+    if (!acc[crossReferenceId]) {
+      acc[crossReferenceId] = [];
+    }
+    acc[crossReferenceId].push(row);
+    return acc;
+  }, {});
+
 const formatDate = (value?: string) => {
   if (!value) {
     return '';
@@ -336,6 +404,10 @@ const CrossReferencesPage = () => {
     searchParams.get('sortOrder') === 'ASC' ? 'ASC' : DEFAULT_SORT_ORDER;
   const [draftFilters, setDraftFilters] = React.useState(filters);
   const [taxonNameMap, setTaxonNameMap] = React.useState<Record<number, string>>({});
+  const [publicationMap, setPublicationMap] = React.useState<Record<number, string>>({});
+  const [publicationReferenceMap, setPublicationReferenceMap] = React.useState<
+    Record<number, PublicationReferenceRecord[]>
+  >({});
   const [userMap, setUserMap] = React.useState<Record<number, string>>({});
   const [isExporting, setIsExporting] = React.useState(false);
   const [state, setState] = React.useState<{
@@ -424,15 +496,41 @@ const CrossReferencesPage = () => {
 
     let active = true;
 
+    const crossReferenceIds = Array.from(
+      new Set(
+        state.data
+          .map((record) => record.cross_reference_id ?? record.id)
+          .filter((value): value is number => typeof value === 'number')
+      )
+    );
+
     Promise.all([
       fetchReferenceMap('taxon_names', taxonNameIds, 'taxon_name_id', 'formatted_scientific_name'),
       fetchReferenceMap('users', userIds, 'user_id', 'full_name'),
-    ]).then(([taxonNames, users]) => {
+      fetchPublicationReferencesByCrossReferenceIds(crossReferenceIds),
+    ]).then(async ([taxonNames, users, publicationReferences]) => {
+      const publicationIds = Array.from(
+        new Set(
+          publicationReferences
+            .map((row) => Number(row.publication_id))
+            .filter((value) => !Number.isNaN(value))
+        )
+      );
+      const publications = await fetchReferenceMap(
+        'publications',
+        publicationIds,
+        'publication_id',
+        'display_title'
+      );
       if (!active) {
         return;
       }
       setTaxonNameMap(taxonNames);
       setUserMap(users);
+      setPublicationReferenceMap(
+        mapPublicationReferencesByCrossReference(publicationReferences)
+      );
+      setPublicationMap(publications);
     });
 
     return () => {
@@ -506,8 +604,11 @@ const CrossReferencesPage = () => {
     column: ColumnKey,
     record: CrossReferenceRecord,
     exportTaxonNameMap: Record<number, string>,
-    exportUserMap: Record<number, string>
+    exportUserMap: Record<number, string>,
+    exportPublicationReferenceMap: Record<number, PublicationReferenceRecord[]>,
+    exportPublicationMap: Record<number, string>
   ) => {
+    const crossReferenceId = record.cross_reference_id ?? record.id ?? 0;
     switch (column) {
       case 'oldName':
         return record.old_name_id ? exportTaxonNameMap[record.old_name_id] ?? '' : '';
@@ -515,6 +616,17 @@ const CrossReferencesPage = () => {
         return record.new_name_id ? exportTaxonNameMap[record.new_name_id] ?? '' : '';
       case 'type':
         return getCrossRefTypeExportValue(record.cross_reference_type);
+      case 'linkedPublication':
+        return (exportPublicationReferenceMap[crossReferenceId] ?? [])
+          .map((row) => {
+            const publicationId = Number(row.publication_id);
+            return Number.isNaN(publicationId)
+              ? ''
+              : exportPublicationMap[publicationId] ?? `Publication ${publicationId}`;
+          })
+          .filter(Boolean)
+          .filter((value, index, values) => values.indexOf(value) === index)
+          .join('; ');
       case 'authorisedBy':
         return record.authorised_by ?? '';
       case 'authorisedOn':
@@ -547,11 +659,20 @@ const CrossReferencesPage = () => {
   const buildExportCsv = (
     records: CrossReferenceRecord[],
     exportTaxonNameMap: Record<number, string>,
-    exportUserMap: Record<number, string>
+    exportUserMap: Record<number, string>,
+    exportPublicationReferenceMap: Record<number, PublicationReferenceRecord[]>,
+    exportPublicationMap: Record<number, string>
   ) => {
     const rows = records.map((record) =>
       exportColumnOptions.map((column) =>
-        getExportValue(column.key, record, exportTaxonNameMap, exportUserMap)
+        getExportValue(
+          column.key,
+          record,
+          exportTaxonNameMap,
+          exportUserMap,
+          exportPublicationReferenceMap,
+          exportPublicationMap
+        )
       )
     );
 
@@ -595,13 +716,44 @@ const CrossReferencesPage = () => {
             .filter((value): value is number => typeof value === 'number')
         )
       );
+      const crossReferenceIds = Array.from(
+        new Set(
+          allRecords
+            .map((record) => record.cross_reference_id ?? record.id)
+            .filter((value): value is number => typeof value === 'number')
+        )
+      );
 
-      const [nextTaxonNameMap, nextUserMap] = await Promise.all([
+      const [
+        nextTaxonNameMap,
+        nextUserMap,
+        exportPublicationReferences,
+      ] = await Promise.all([
         fetchReferenceMap('taxon_names', taxonNameIds, 'taxon_name_id', 'formatted_scientific_name'),
         fetchReferenceMap('users', userIds, 'user_id', 'full_name'),
+        fetchPublicationReferencesByCrossReferenceIds(crossReferenceIds),
       ]);
+      const publicationIds = Array.from(
+        new Set(
+          exportPublicationReferences
+            .map((row) => Number(row.publication_id))
+            .filter((value) => !Number.isNaN(value))
+        )
+      );
+      const exportPublicationMap = await fetchReferenceMap(
+        'publications',
+        publicationIds,
+        'publication_id',
+        'display_title'
+      );
 
-      const csv = buildExportCsv(allRecords, nextTaxonNameMap, nextUserMap);
+      const csv = buildExportCsv(
+        allRecords,
+        nextTaxonNameMap,
+        nextUserMap,
+        mapPublicationReferencesByCrossReference(exportPublicationReferences),
+        exportPublicationMap
+      );
 
       const dateStamp = new Date().toISOString().slice(0, 10);
       downloadCsv(`cross_references_${dateStamp}.csv`, csv);
@@ -612,6 +764,26 @@ const CrossReferencesPage = () => {
 
   const renderCellContent = (column: ColumnKey, record: CrossReferenceRecord) => {
     const crossReferenceId = record.cross_reference_id ?? record.id ?? 0;
+    const linkedPublications = (publicationReferenceMap[crossReferenceId] ?? [])
+      .map((row, index) => {
+        const publicationId = Number(row.publication_id);
+        return {
+          key:
+            row.taxon_publication_id ??
+            row.id ??
+            `${crossReferenceId}-publication-${index}`,
+          publicationId: Number.isNaN(publicationId) ? undefined : publicationId,
+          label: Number.isNaN(publicationId)
+            ? ''
+            : publicationMap[publicationId] ?? `Publication ${publicationId}`,
+        };
+      })
+      .filter((publication) => publication.label)
+      .filter(
+        (publication, index, values) =>
+          values.findIndex((value) => value.publicationId === publication.publicationId) ===
+          index
+      );
 
     switch (column) {
       case 'oldName':
@@ -631,6 +803,38 @@ const CrossReferencesPage = () => {
         );
       case 'type':
         return getCrossRefTypeLabel(record.cross_reference_type);
+      case 'linkedPublication': {
+        if (!linkedPublications.length) {
+          return <span className="text-muted-foreground">No linked publications</span>;
+        }
+        const visiblePublications = linkedPublications.slice(0, 3);
+        const hiddenCount = linkedPublications.length - visiblePublications.length;
+        return (
+          <span className="inline-flex flex-wrap items-center gap-1.5">
+            {visiblePublications.map((publication) =>
+              publication.publicationId ? (
+                <Link
+                  key={publication.key}
+                  to={`/publications/${publication.publicationId}/show`}
+                  className="rounded-md border border-border px-2 py-0.5 text-xs hover:bg-accent"
+                >
+                  {publication.label}
+                </Link>
+              ) : (
+                <span
+                  key={publication.key}
+                  className="rounded-md border border-border px-2 py-0.5 text-xs"
+                >
+                  {publication.label}
+                </span>
+              )
+            )}
+            {hiddenCount > 0 ? (
+              <Badge variant="outline">+{hiddenCount} more</Badge>
+            ) : null}
+          </span>
+        );
+      }
       case 'authorisedBy':
         return textOrEmpty(record.authorised_by);
       case 'authorisedOn':
