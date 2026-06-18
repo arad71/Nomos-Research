@@ -22,7 +22,10 @@ from app.db.taxon_name.infrageneric_names import (
     InfraGenericNames,
 )
 from app.db.taxon_name.model import TaxonName
-from app.db.taxon_name.parallel_name_preview import generate_parallel_name_preview
+from app.db.taxon_name.parallel_name_preview import (
+    derive_parallel_name,
+    generate_parallel_name_preview,
+)
 from app.db.taxon_name.species_code import (
     generate_species_code,
     should_generate_species_code,
@@ -249,6 +252,18 @@ class TaxonNameCrud(crud.Crud):
         db.commit()
         db.refresh(db_taxon_name)
 
+    @staticmethod
+    def _apply_parallel_derived_name_fields(
+        db: orm.Session,
+        taxon_name: TaxonName,
+    ) -> None:
+        derived = derive_parallel_name(db, taxon_name, strict=True)
+        taxon_name.canonical_name = derived.get("canonical_name")
+        taxon_name.scientific_name = derived.get("scientific_name")
+        taxon_name.formatted_scientific_name = derived.get(
+            "formatted_scientific_name"
+        )
+
     @classmethod
     def create_item(
         cls,
@@ -297,6 +312,11 @@ class TaxonNameCrud(crud.Crud):
         cls.calculate_species_code(db_taxon_name)
         db.commit()
         cls.calculate_name_formats(db, db_taxon_name.taxon_name_id)
+        db.refresh(db_taxon_name)
+        cls._apply_parallel_derived_name_fields(db, db_taxon_name)
+        db.add(db_taxon_name)
+        db.commit()
+        db.refresh(db_taxon_name)
         return db_taxon_name
 
     @classmethod
@@ -388,6 +408,11 @@ class TaxonNameCrud(crud.Crud):
         cls.calculate_species_code(db_taxon_name)
         db.commit()
         cls.calculate_name_formats(db, db_taxon_name.taxon_name_id)
+        db.refresh(db_taxon_name)
+        cls._apply_parallel_derived_name_fields(db, db_taxon_name)
+        db.add(db_taxon_name)
+        db.commit()
+        db.refresh(db_taxon_name)
         return db_taxon_name
 
     @classmethod
@@ -668,6 +693,8 @@ class TaxonNameCrud(crud.Crud):
             taxon_name.infragenus_name_with_rank = remove_ms_suffix(
                 taxon_name.infragenus_name_with_rank
             )
+
+        cls._apply_parallel_derived_name_fields(db, taxon_name)
 
         if db.is_modified(taxon_name):
             if current_user:

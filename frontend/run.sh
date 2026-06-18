@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+if [ ! -d /app/node_modules/vite ] && [ -d /node_modules ]; then
+  cp -a /node_modules/. /app/node_modules/
+fi
+
 case $1 in
   start)
     # The '| cat' is to trick Node that this is an non-TTY terminal

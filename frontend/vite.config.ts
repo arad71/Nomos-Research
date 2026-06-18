@@ -45,6 +45,9 @@ export default defineConfig({
   server: {
     port: 3000,
     allowedHosts: ['host.docker.internal', 'localhost', 'nomos-frontend'],
+    headers: {
+      'Cache-Control': 'no-store',
+    },
     proxy: {
       '/api': {
         target: 'http://host.docker.internal:8000',

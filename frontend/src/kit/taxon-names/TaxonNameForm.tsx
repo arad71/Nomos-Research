@@ -299,22 +299,23 @@ const UninomialInput = () => {
   }, [currentValue, hasOverride]);
 
   return (
-    <div className="grid self-start gap-2">
+    <div className="grid min-w-0 self-start gap-2">
       {showOverrideInput ? (
-        <div className="flex flex-wrap items-start gap-2">
+        <div className="grid min-w-0 gap-2">
           <TextInput
             source="parallel_override_uninomial"
             label="Uninomial"
             validate={requiredValue}
             parse={parseNullableText}
             format={formatNullableText}
-            className="min-w-[260px] flex-1"
+            className="min-w-0"
           />
           {parentDerivedValue ? (
             <Button
               type="button"
               variant="outline"
               size="sm"
+              className="w-fit"
               disabled={isPending}
               onClick={() => {
                 form.setValue('parallel_override_uninomial', null, {
@@ -780,18 +781,18 @@ const TaxonNameFormInner = ({
                 Taxonomic name parts
               </h4>
             </div>
-            <div className="grid items-start gap-4 md:col-span-2 md:grid-cols-2 xl:col-span-4 xl:grid-cols-4">
+            <div className="grid min-w-0 items-start gap-4 md:col-span-2 md:grid-cols-2 xl:col-span-4 xl:grid-cols-4">
               <UninomialInput />
               <TextInput
                 source="parallel_override_specific_epithet"
                 label="Specific epithet"
-                className="self-start"
+                className="min-w-0 self-start"
               />
               <TextInput
                 source="parallel_override_infraspecific_epithet"
                 label="Infraspecific epithet"
                 validate={validateInfraspecificEpithet}
-                className="self-start"
+                className="min-w-0 self-start"
               />
               {parallelInfraspecificEpithet ? (
                 <div className="grid self-start gap-2">
@@ -867,11 +868,7 @@ const TaxonNameFormInner = ({
               </p>
             </div>
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-              <TextInput
-                source="uninomial"
-                label="Current uninomial"
-                validate={requiredValue}
-              />
+              <TextInput source="uninomial" label="Current uninomial" />
               <TextInput source="specific_epithet" label="Current specific epithet" />
               <TextInput
                 source="infraspecific_epithet"
