@@ -263,17 +263,18 @@ def derive_parallel_name(
                         italicize=True,
                     )
                 )
-                return {
-                    "strategy": strategy,
-                    "notes": notes,
-                    "parent_taxon_name_ids": [
+                return derived_parallel_name_result(
+                    taxon_name=taxon_name,
+                    strategy=strategy,
+                    notes=notes,
+                    parent_taxon_name_ids=[
                         parent.taxon_name_id for parent in parent_taxa
                     ],
-                    "uninomial": components.uninomial,
-                    "canonical_name": derived_canonical_name,
-                    "scientific_name": derived_scientific_name,
-                    "formatted_scientific_name": derived_formatted_scientific_name,
-                }
+                    uninomial=components.uninomial,
+                    canonical_name=derived_canonical_name,
+                    scientific_name=derived_scientific_name,
+                    formatted_scientific_name=derived_formatted_scientific_name,
+                )
             strategy = "hybrid_parent_formula"
             notes.append(
                 "Derived from ordered parent links using the current hybrid separator rules."
@@ -289,17 +290,16 @@ def derive_parallel_name(
                 parent_taxa,
                 name_value="formatted_scientific",
             )
-            return {
-                "strategy": strategy,
-                "notes": notes,
-                "parent_taxon_name_ids": [
-                    parent.taxon_name_id for parent in parent_taxa
-                ],
-                "uninomial": parent_formula_canonical,
-                "canonical_name": parent_formula_canonical,
-                "scientific_name": parent_formula_scientific,
-                "formatted_scientific_name": parent_formula_scientific_formatted,
-            }
+            return derived_parallel_name_result(
+                taxon_name=taxon_name,
+                strategy=strategy,
+                notes=notes,
+                parent_taxon_name_ids=[parent.taxon_name_id for parent in parent_taxa],
+                uninomial=parent_formula_canonical,
+                canonical_name=parent_formula_canonical,
+                scientific_name=parent_formula_scientific,
+                formatted_scientific_name=parent_formula_scientific_formatted,
+            )
 
         parent = parent_taxa[0]
         parent_rank_name = (
@@ -432,21 +432,22 @@ def derive_parallel_name(
                     notes.append(
                         f"Built the infrageneric scientific name directly from linked parent taxon {parent.taxon_name_id} without using the legacy overlay fallback."
                     )
-                    return {
-                        "strategy": strategy,
-                        "notes": notes,
-                        "parent_taxon_name_ids": [
+                    return derived_parallel_name_result(
+                        taxon_name=taxon_name,
+                        strategy=strategy,
+                        notes=notes,
+                        parent_taxon_name_ids=[
                             parent.taxon_name_id for parent in parent_taxa
                         ],
-                        "uninomial": components.uninomial,
-                        "canonical_name": calculated.calculate_canonical_name_string(
+                        uninomial=components.uninomial,
+                        canonical_name=calculated.calculate_canonical_name_string(
                             components
                         ),
-                        "scientific_name": strict_overlay_scientific_name,
-                        "formatted_scientific_name": (
+                        scientific_name=strict_overlay_scientific_name,
+                        formatted_scientific_name=(
                             strict_overlay_formatted_scientific_name
                         ),
-                    }
+                    )
 
     if rank_name in HIGHER_RANK_INFRAGENERIC_NAMES and len(parent_taxa) == 1:
         stored_bracketed_component = extract_stored_bracketed_scientific_component(
@@ -466,11 +467,20 @@ def derive_parallel_name(
         higher_rank_infrageneric = build_higher_rank_infrageneric_name(
             parent=parent_taxa[0],
             components=components,
+            include_rank_abbreviation=rank_name != "subgenus",
+            italicize=False,
+        )
+        higher_rank_infrageneric_canonical = build_higher_rank_infrageneric_name(
+            parent=parent_taxa[0],
+            components=components,
+            include_author=False,
+            include_rank_abbreviation=rank_name != "subgenus",
             italicize=False,
         )
         higher_rank_infrageneric_formatted = build_higher_rank_infrageneric_name(
             parent=parent_taxa[0],
             components=components,
+            include_rank_abbreviation=rank_name != "subgenus",
             italicize=True,
         )
         if higher_rank_infrageneric:
@@ -478,19 +488,16 @@ def derive_parallel_name(
             notes.append(
                 f"Built the higher-rank infrageneric name from linked parent taxon {parent_taxa[0].taxon_name_id} and the parallel infrageneric fields."
             )
-            return {
-                "strategy": strategy,
-                "notes": notes,
-                "parent_taxon_name_ids": [
-                    parent.taxon_name_id for parent in parent_taxa
-                ],
-                "uninomial": components.uninomial,
-                "canonical_name": best_parent_name_value(
-                    parent_taxa[0], italicize=False
-                ),
-                "scientific_name": higher_rank_infrageneric,
-                "formatted_scientific_name": higher_rank_infrageneric_formatted,
-            }
+            return derived_parallel_name_result(
+                taxon_name=taxon_name,
+                strategy=strategy,
+                notes=notes,
+                parent_taxon_name_ids=[parent.taxon_name_id for parent in parent_taxa],
+                uninomial=components.uninomial,
+                canonical_name=higher_rank_infrageneric_canonical,
+                scientific_name=higher_rank_infrageneric,
+                formatted_scientific_name=higher_rank_infrageneric_formatted,
+            )
 
     if strict and rank_name not in {SPECIES_RANK_NAME, *INFRASPECIFIC_RANK_NAMES}:
         components.rank_abbreviation = None
@@ -517,14 +524,48 @@ def derive_parallel_name(
             "Strict parallel mode is derived from parent links, parallel fields, and author only."
         )
 
+    return derived_parallel_name_result(
+        taxon_name=taxon_name,
+        strategy=strategy,
+        notes=notes,
+        parent_taxon_name_ids=[parent.taxon_name_id for parent in parent_taxa],
+        uninomial=components.uninomial,
+        canonical_name=derived_canonical_name,
+        scientific_name=derived_scientific_name,
+        formatted_scientific_name=derived_formatted_scientific_name,
+    )
+
+
+def derived_parallel_name_result(
+    *,
+    taxon_name: TaxonName,
+    strategy: str,
+    notes: list[str],
+    parent_taxon_name_ids: list[int],
+    uninomial: str | None,
+    canonical_name: str | None,
+    scientific_name: str | None,
+    formatted_scientific_name: str | None,
+) -> dict[str, object]:
+    publication_status = getattr(taxon_name, "publication_status", None)
+    publication_status_value = getattr(publication_status, "value", publication_status)
+    is_manuscript = publication_status_value == "manuscript_name"
+
+    if is_manuscript:
+        canonical_name = calculated.append_ms_suffix(canonical_name)
+        scientific_name = calculated.append_ms_suffix(scientific_name)
+        formatted_scientific_name = calculated.append_ms_suffix(
+            formatted_scientific_name
+        )
+
     return {
         "strategy": strategy,
         "notes": notes,
-        "parent_taxon_name_ids": [parent.taxon_name_id for parent in parent_taxa],
-        "uninomial": components.uninomial,
-        "canonical_name": derived_canonical_name,
-        "scientific_name": derived_scientific_name,
-        "formatted_scientific_name": derived_formatted_scientific_name,
+        "parent_taxon_name_ids": parent_taxon_name_ids,
+        "uninomial": uninomial,
+        "canonical_name": canonical_name,
+        "scientific_name": scientific_name,
+        "formatted_scientific_name": formatted_scientific_name,
     }
 
 
@@ -824,6 +865,8 @@ def build_higher_rank_infrageneric_name(
     *,
     parent: TaxonName,
     components: schema.NameStringComponents,
+    include_author: bool = True,
+    include_rank_abbreviation: bool = True,
     italicize: bool = False,
 ) -> str | None:
     parent_value = best_parent_name_value(parent, italicize=italicize)
@@ -836,13 +879,18 @@ def build_higher_rank_infrageneric_name(
         return None
 
     bracketed_component = calculated.filter_join(
-        [components.rank_abbreviation, infrageneric_value]
+        [
+            components.rank_abbreviation if include_rank_abbreviation else None,
+            infrageneric_value,
+        ]
     )
     main_name = (
         f"{parent_value} ({bracketed_component})"
         if bracketed_component
         else parent_value
     )
+    if not include_author:
+        return main_name
     return calculated.filter_join([main_name, components.author])
 
 
