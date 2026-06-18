@@ -1388,10 +1388,10 @@ const TaxonNameRelatedSections = ({
               <h3 className="text-lg font-semibold tracking-tight">
                 Taxon name
               </h3>
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)_minmax(0,1.5fr)]">
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                 <RecordField
                   label="NomosID"
-                  className="xl:min-w-0"
+                  className="min-w-0"
                   render={(taxon: {
                     id?: string | number | null;
                     taxon_name_id?: string | number | null;
@@ -1399,7 +1399,7 @@ const TaxonNameRelatedSections = ({
                 />
                 <RecordField
                   label="Formatted scientific name"
-                  className="md:col-span-1 xl:min-w-0"
+                  className="min-w-0 md:col-start-2 xl:col-start-2 xl:col-span-3"
                   render={(taxon: {
                     formatted_scientific_name?: string | null;
                   }) => <HtmlValue value={taxon.formatted_scientific_name} />}
@@ -1407,7 +1407,7 @@ const TaxonNameRelatedSections = ({
                 <RecordField
                   source="canonical_name"
                   label="Canonical name"
-                  className="md:col-span-1 xl:min-w-0"
+                  className="min-w-0 md:col-start-2 xl:col-start-2 xl:col-span-3"
                 />
               </div>
               <SectionHeader title="Taxonomic placement" />
