@@ -49,16 +49,14 @@ def upgrade():
             unique=False,
         )
 
-    op.execute(
-        """
+    op.execute("""
         UPDATE taxon_name
         SET
             legacy_canonical_name = COALESCE(legacy_canonical_name, canonical_name),
             legacy_scientific_name = COALESCE(legacy_scientific_name, scientific_name)
         WHERE legacy_canonical_name IS NULL
            OR legacy_scientific_name IS NULL
-        """
-    )
+        """)
 
 
 def downgrade():

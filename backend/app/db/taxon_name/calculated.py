@@ -128,7 +128,9 @@ def calculate_name_fields(target: model.TaxonName):
         )
 
 
-def get_parallel_name_components(target: model.TaxonName) -> schema.NameStringComponents:
+def get_parallel_name_components(
+    target: model.TaxonName,
+) -> schema.NameStringComponents:
     vals = get_name_components(target)
     if target.parallel_override_uninomial is not None:
         vals.uninomial = target.parallel_override_uninomial

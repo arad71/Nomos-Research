@@ -260,9 +260,7 @@ class TaxonNameCrud(crud.Crud):
         derived = derive_parallel_name(db, taxon_name, strict=True)
         taxon_name.canonical_name = derived.get("canonical_name")
         taxon_name.scientific_name = derived.get("scientific_name")
-        taxon_name.formatted_scientific_name = derived.get(
-            "formatted_scientific_name"
-        )
+        taxon_name.formatted_scientific_name = derived.get("formatted_scientific_name")
 
     @staticmethod
     def _apply_publication_status_suffix(taxon_name: TaxonName) -> None:
