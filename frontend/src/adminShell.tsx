@@ -31,16 +31,28 @@ export interface AdminNavSection {
   items: AdminNavItem[];
 }
 
-export const getStoredRoles = (): string[] =>
-  (localStorage.getItem('masked_scopes') ||
-    localStorage.getItem('scopes') ||
-    '')
+const parseRoles = (value: string | null) =>
+  (value || '')
     .split(',')
     .map((role) => role.trim())
     .filter(Boolean);
 
+export const getStoredRoles = (): string[] =>
+  Array.from(
+    new Set([
+      ...parseRoles(localStorage.getItem('masked_scopes')),
+      ...parseRoles(localStorage.getItem('scopes')),
+      ...parseRoles(localStorage.getItem('original_scopes')),
+    ])
+  );
+
+const normalizeRole = (role: string) => role.trim().toUpperCase();
+
 export const hasAnyRole = (roles: string[], allowedRoles?: string[]) =>
-  !allowedRoles || allowedRoles.some((role) => roles.includes(role));
+  !allowedRoles ||
+  allowedRoles
+    .map(normalizeRole)
+    .some((role) => roles.map(normalizeRole).includes(role));
 
 export const HYBRID_ROLLOUT_ROLES = ['APPLICATION_SUPPORT', 'SUPER_ADMIN'];
 export const HYBRID_ROLLOUT_RESOURCE = 'hybrid_rollout';
@@ -180,34 +192,30 @@ export const adminNavSections: AdminNavSection[] = [
         action: 'list',
       },
       {
-        to: '/taxon_name_parent_reviews',
-        label: 'Parent Review Queue',
+        to: '/taxon_names_without_parents',
+        label: '01 No Parent Links',
         icon: <RuleIcon fontSize="small" />,
-        roles: HYBRID_ROLLOUT_ROLES,
         resource: HYBRID_ROLLOUT_RESOURCE,
         action: 'list',
       },
       {
-        to: '/parallel_name_review',
-        label: 'Parallel Name Review',
+        to: '/taxon_name_parent_reviews',
+        label: '02 Parent Review Queue',
         icon: <RuleIcon fontSize="small" />,
-        roles: HYBRID_ROLLOUT_ROLES,
         resource: HYBRID_ROLLOUT_RESOURCE,
         action: 'list',
       },
       {
         to: '/expected_hybrid_review',
-        label: 'Expected Hybrids',
+        label: '03 Expected Hybrids',
         icon: <RuleIcon fontSize="small" />,
-        roles: HYBRID_ROLLOUT_ROLES,
         resource: HYBRID_ROLLOUT_RESOURCE,
         action: 'list',
       },
       {
-        to: '/taxon_names_without_parents',
-        label: 'No Parent Links',
+        to: '/parallel_name_review',
+        label: '04 Parallel Name Review',
         icon: <RuleIcon fontSize="small" />,
-        roles: HYBRID_ROLLOUT_ROLES,
         resource: HYBRID_ROLLOUT_RESOURCE,
         action: 'list',
       },

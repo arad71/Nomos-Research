@@ -106,6 +106,12 @@ const parseStoredScopes = (): string[] => {
     .filter(Boolean);
 };
 
+const parseStoredOriginalScopes = (): string[] =>
+  (localStorage.getItem('original_scopes') || '')
+    .split(',')
+    .map((scope) => scope.trim())
+    .filter(Boolean);
+
 const getRolesDefinition = (): Permissions => {
   const permissions: Permissions = {};
   permissions[Role.READER] = [
@@ -195,6 +201,8 @@ const getRolesDefinition = (): Permissions => {
 const matchesResource = (permissionResource: string, resource: string) =>
   permissionResource === '*' || permissionResource === resource;
 
+const normalizeRole = (roleName: string) => roleName.trim().toUpperCase();
+
 const ADMIN_ONLY_RESOURCES = new Set(['users', 'roles', 'user_roles']);
 const ADMIN_ACCESS_ROLES = new Set([Role.APPLICATION_SUPPORT, Role.SUPER_ADMIN]);
 const HYBRID_ROLLOUT_RESOURCES = new Set(['hybrid_rollout']);
@@ -223,24 +231,32 @@ const matchesAction = (permissionAction: Actions, action: string) => {
 };
 
 const canAccessWithScopes = (scopes: string[], { action, resource }: CanAccessParams) => {
+  const normalizedScopes = scopes.map(normalizeRole);
+  const normalizedOriginalScopes = parseStoredOriginalScopes().map(normalizeRole);
+
   if (ADMIN_ONLY_RESOURCES.has(resource)) {
-    const hasAdminAccessRole = scopes.some((scope) => ADMIN_ACCESS_ROLES.has(scope as keyof typeof Role));
+    const hasAdminAccessRole = normalizedScopes.some((scope) => ADMIN_ACCESS_ROLES.has(scope as keyof typeof Role));
     if (!hasAdminAccessRole) {
       return false;
     }
   }
 
   if (HYBRID_ROLLOUT_RESOURCES.has(resource)) {
-    const hasHybridRolloutAccessRole = scopes.some((scope) =>
+    const hybridRolloutScopes = Array.from(
+      new Set([...normalizedScopes, ...normalizedOriginalScopes])
+    );
+    const hasHybridRolloutAccessRole = hybridRolloutScopes.some((scope) =>
       HYBRID_ROLLOUT_ACCESS_ROLES.has(scope as keyof typeof Role)
     );
     if (!hasHybridRolloutAccessRole) {
       return false;
     }
+
+    return true;
   }
 
   if (REVIEW_QUEUE_RESOURCES.has(resource)) {
-    const hasReviewQueueAccessRole = scopes.some((scope) =>
+    const hasReviewQueueAccessRole = normalizedScopes.some((scope) =>
       REVIEW_QUEUE_ACCESS_ROLES.has(scope as keyof typeof Role)
     );
     if (!hasReviewQueueAccessRole) {
@@ -248,7 +264,7 @@ const canAccessWithScopes = (scopes: string[], { action, resource }: CanAccessPa
     }
   }
 
-  const permissions = scopes.flatMap((roleName) => getRolesDefinition()[roleName] || []);
+  const permissions = normalizedScopes.flatMap((roleName) => getRolesDefinition()[roleName] || []);
   return permissions.some(
     (permission) =>
       matchesResource(permission.resource, resource) &&

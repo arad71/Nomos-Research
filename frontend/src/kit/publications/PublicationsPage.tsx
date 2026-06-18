@@ -441,55 +441,6 @@ const dedupeTaxonPublicationRows = (rows: TaxonPublicationRecord[]) => {
   return deduped;
 };
 
-const fetchTaxonPublicationsViaDataProvider = async (
-  dataProvider: ReturnType<typeof useDataProvider>,
-  publicationIds: number[]
-) => {
-  if (!publicationIds.length) return [];
-  const resources = ['taxon-publications', 'taxon_publications'] as const;
-
-  const fetchForResource = async (resource: (typeof resources)[number]) => {
-    const batches = await Promise.all(
-      publicationIds.map(async (publicationId) => {
-        const perPage = 250;
-        let page = 1;
-        const rows: TaxonPublicationRecord[] = [];
-        while (true) {
-          const response = await dataProvider.getManyReference(resource, {
-            target: 'publication_id',
-            id: publicationId,
-            pagination: { page, perPage },
-            sort: { field: 'taxon_publication_id', order: 'ASC' },
-            filter: {},
-          });
-          const data = Array.isArray(response?.data)
-            ? (response.data as TaxonPublicationRecord[])
-            : [];
-          rows.push(...data);
-          const total = typeof response?.total === 'number' ? response.total : undefined;
-          if (!data.length) break;
-          if ((total !== undefined && rows.length >= total) || data.length < perPage) break;
-          page += 1;
-        }
-        return rows;
-      })
-    );
-    return dedupeTaxonPublicationRows(batches.flat());
-  };
-
-  try {
-    const rows = await fetchForResource('taxon-publications');
-    if (rows.length > 0) return rows;
-  } catch {
-    // Try underscore resource fallback below.
-  }
-  try {
-    return await fetchForResource('taxon_publications');
-  } catch {
-    return [];
-  }
-};
-
 const fetchAuthorIdsByQuery = async (
   authorQuery: string,
   retryOnAuthError = true
@@ -889,7 +840,7 @@ const PublicationsPage = () => {
         fetchReferenceMap('users', userIds, 'user_id', 'full_name'),
         fetchReferenceMap('authors', authorIds, 'author_id', formatAuthorOption),
         fetchReferenceMap('publications', publicationIds, 'publication_id', 'abbreviated_title'),
-        fetchTaxonPublicationsViaDataProvider(dataProvider, publicationIdsForTaxonLinks),
+        fetchTaxonPublications(publicationIdsForTaxonLinks),
       ]);
       const taxonNameIds = uniqueNumericIds(
         taxonPublications.map((link) => link.taxon_name_id)

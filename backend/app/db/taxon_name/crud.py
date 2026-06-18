@@ -264,6 +264,25 @@ class TaxonNameCrud(crud.Crud):
             "formatted_scientific_name"
         )
 
+    @staticmethod
+    def _apply_publication_status_suffix(taxon_name: TaxonName) -> None:
+        transform = (
+            append_ms_suffix
+            if taxon_name.publication_status == PublicationStatus.manuscript_name
+            else remove_ms_suffix
+        )
+        for field in (
+            "legacy_canonical_name",
+            "legacy_scientific_name",
+            "scientific_name",
+            "formatted_scientific_name",
+            "canonical_name",
+            "canonical_name_without_rank",
+            "infragenus_name",
+            "infragenus_name_with_rank",
+        ):
+            setattr(taxon_name, field, transform(getattr(taxon_name, field, None)))
+
     @classmethod
     def create_item(
         cls,
@@ -314,6 +333,7 @@ class TaxonNameCrud(crud.Crud):
         cls.calculate_name_formats(db, db_taxon_name.taxon_name_id)
         db.refresh(db_taxon_name)
         cls._apply_parallel_derived_name_fields(db, db_taxon_name)
+        cls._apply_publication_status_suffix(db_taxon_name)
         db.add(db_taxon_name)
         db.commit()
         db.refresh(db_taxon_name)
@@ -410,6 +430,7 @@ class TaxonNameCrud(crud.Crud):
         cls.calculate_name_formats(db, db_taxon_name.taxon_name_id)
         db.refresh(db_taxon_name)
         cls._apply_parallel_derived_name_fields(db, db_taxon_name)
+        cls._apply_publication_status_suffix(db_taxon_name)
         db.add(db_taxon_name)
         db.commit()
         db.refresh(db_taxon_name)
@@ -666,35 +687,8 @@ class TaxonNameCrud(crud.Crud):
                 taxon_name.calculate_name = False
         print(taxon_name.infragenus_name)
 
-        # Aplly or remove ms suffix on publication status
-        if taxon_name.publication_status == PublicationStatus.manuscript_name:
-            taxon_name.scientific_name = append_ms_suffix(taxon_name.scientific_name)
-            taxon_name.formatted_scientific_name = append_ms_suffix(
-                taxon_name.formatted_scientific_name
-            )
-            taxon_name.canonical_name = append_ms_suffix(taxon_name.canonical_name)
-            taxon_name.canonical_name_without_rank = append_ms_suffix(
-                taxon_name.canonical_name_without_rank
-            )
-            taxon_name.infragenus_name = append_ms_suffix(taxon_name.infragenus_name)
-            taxon_name.infragenus_name_with_rank = append_ms_suffix(
-                taxon_name.infragenus_name_with_rank
-            )
-        else:
-            taxon_name.scientific_name = remove_ms_suffix(taxon_name.scientific_name)
-            taxon_name.formatted_scientific_name = remove_ms_suffix(
-                taxon_name.formatted_scientific_name
-            )
-            taxon_name.canonical_name = remove_ms_suffix(taxon_name.canonical_name)
-            taxon_name.canonical_name_without_rank = remove_ms_suffix(
-                taxon_name.canonical_name_without_rank
-            )
-            taxon_name.infragenus_name = remove_ms_suffix(taxon_name.infragenus_name)
-            taxon_name.infragenus_name_with_rank = remove_ms_suffix(
-                taxon_name.infragenus_name_with_rank
-            )
-
         cls._apply_parallel_derived_name_fields(db, taxon_name)
+        cls._apply_publication_status_suffix(taxon_name)
 
         if db.is_modified(taxon_name):
             if current_user:
