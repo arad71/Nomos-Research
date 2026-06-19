@@ -278,19 +278,13 @@ const UninomialInput = () => {
       parentDerivedValue &&
       currentValue === parentDerivedValue.trim()
   );
-  const shouldShowInput =
+  const shouldForceShowInput =
     !parentDerivedValue || (hasOverride && !matchesParentDerived);
-  const [showOverrideInput, setShowOverrideInput] =
-    React.useState(shouldShowInput);
+  const [showOverrideInput, setShowOverrideInput] = React.useState(false);
   const [stashedOverrideValue, setStashedOverrideValue] = React.useState<
     string | null
   >(null);
-
-  React.useEffect(() => {
-    if (!showOverrideInput || shouldShowInput) {
-      setShowOverrideInput(shouldShowInput);
-    }
-  }, [shouldShowInput, showOverrideInput]);
+  const showInput = shouldForceShowInput || showOverrideInput;
 
   React.useEffect(() => {
     if (hasOverride) {
@@ -300,7 +294,7 @@ const UninomialInput = () => {
 
   return (
     <div className="grid min-w-0 self-start gap-2">
-      {showOverrideInput ? (
+      {showInput ? (
         <div className="grid min-w-0 gap-2">
           <TextInput
             source="parallel_override_uninomial"
@@ -370,7 +364,7 @@ const UninomialInput = () => {
         <span className="text-xs text-muted-foreground">
           Loading parent-derived value...
         </span>
-      ) : parentDerivedValue && showOverrideInput && !hasOverride ? (
+      ) : parentDerivedValue && showInput && !hasOverride ? (
         <div className="flex flex-wrap items-center gap-2">
           <Badge variant="outline">{parentDerivedValue}</Badge>
           <span className="text-xs text-muted-foreground">

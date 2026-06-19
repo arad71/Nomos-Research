@@ -132,13 +132,28 @@ def get_parallel_name_components(
     target: model.TaxonName,
 ) -> schema.NameStringComponents:
     vals = get_name_components(target)
-    if target.parallel_override_uninomial is not None:
-        vals.uninomial = target.parallel_override_uninomial
-    if target.parallel_override_specific_epithet is not None:
-        vals.specific_epithet = target.parallel_override_specific_epithet
-    if target.parallel_override_infraspecific_epithet is not None:
-        vals.infraspecific_epithet = target.parallel_override_infraspecific_epithet
+    parallel_uninomial = get_parallel_override_value(target.parallel_override_uninomial)
+    parallel_specific_epithet = get_parallel_override_value(
+        target.parallel_override_specific_epithet
+    )
+    parallel_infraspecific_epithet = get_parallel_override_value(
+        target.parallel_override_infraspecific_epithet
+    )
+    if parallel_uninomial is not None:
+        vals.uninomial = parallel_uninomial
+    if parallel_specific_epithet is not None:
+        vals.specific_epithet = parallel_specific_epithet
+    if parallel_infraspecific_epithet is not None:
+        vals.infraspecific_epithet = parallel_infraspecific_epithet
     return vals
+
+
+def get_parallel_override_value(value: str | None) -> str | None:
+    if value is None:
+        return None
+
+    stripped_value = value.strip()
+    return stripped_value or None
 
 
 def calculate_scientific_name_string(
