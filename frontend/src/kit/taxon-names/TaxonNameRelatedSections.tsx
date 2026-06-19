@@ -144,16 +144,6 @@ const formatPreviewTitle = (value?: string | null) => {
 
 const formatTitle = formatPreviewTitle;
 
-const parseNullableText = (value?: string | null) => {
-  if (typeof value !== 'string') {
-    return value ?? null;
-  }
-  const trimmed = value.trim();
-  return trimmed ? trimmed : null;
-};
-
-const formatNullableText = (value?: string | null) => value ?? '';
-
 const renderScientificName = (taxon?: {
   formatted_scientific_name?: string | null;
   scientific_name?: string | null;
@@ -172,15 +162,6 @@ type ParentLinkRecord = {
   sequence?: number | string | null;
 };
 
-type ParentTaxonRecord = {
-  id?: string | number;
-  taxon_name_id?: string | number;
-  scientific_name?: string | null;
-  canonical_name?: string | null;
-  uninomial?: string | null;
-  formatted_scientific_name?: string | null;
-};
-
 type ParallelNamePreviewRecord = {
   id?: string | number;
   taxon_name_id?: string | number;
@@ -197,42 +178,6 @@ type ParallelNamePreviewRecord = {
   matches_current_uninomial?: boolean;
   matches_current_scientific_name?: boolean;
   parent_taxon_name_ids?: Array<string | number> | null;
-};
-
-const formatParentPreviewName = (taxon?: ParentTaxonRecord) =>
-  taxon?.uninomial?.trim() ||
-  taxon?.scientific_name?.trim() ||
-  taxon?.canonical_name?.trim() ||
-  '';
-
-const getOrderedParentNames = (
-  rows: ParentLinkRecord[],
-  parentMap: Map<string, ParentTaxonRecord>
-) =>
-  [...rows]
-    .sort(
-      (left, right) => Number(left.sequence ?? 0) - Number(right.sequence ?? 0)
-    )
-    .map((row) => parentMap.get(String(row.parent_taxon_name_id ?? '')))
-    .map(formatParentPreviewName)
-    .filter(Boolean);
-
-const deriveParentValue = (
-  rows: ParentLinkRecord[],
-  parentMap: Map<string, ParentTaxonRecord>,
-  hybridCategory?: string | null
-) => {
-  const orderedParentNames = getOrderedParentNames(rows, parentMap);
-
-  if (hybridCategory === 'hybrid_formula') {
-    return orderedParentNames.join(' × ');
-  }
-
-  if (hybridCategory === 'intergrade') {
-    return orderedParentNames.join(' - ');
-  }
-
-  return orderedParentNames.join(' × ');
 };
 
 const validateHybridCategory = (
@@ -354,317 +299,17 @@ const ParentHybridFields = ({ editable }: { editable?: boolean }) => {
   );
 };
 
-const useParentDerivedUninomial = ({
-  recordId,
-  hybridCategory,
-}: {
-  recordId?: string | number;
-  hybridCategory?: string | null;
-}) => {
-  const { data: parentRows = [], isPending: parentRowsPending } =
-    useGetList<ParentLinkRecord>(
-      'taxon_name_parents',
-      {
-        filter: { taxon_name_id: recordId },
-        pagination: { page: 1, perPage: 100 },
-        sort: { field: 'sequence', order: 'ASC' },
-      },
-      { enabled: recordId != null }
-    );
-
-  const parentIds = React.useMemo(
-    () =>
-      (Array.isArray(parentRows) ? parentRows : [])
-        .map((row) => row.parent_taxon_name_id)
-        .filter(
-          (value): value is string | number =>
-            value !== null && value !== undefined && value !== ''
-        ),
-    [parentRows]
-  );
-
-  const { data: parentRecords = [], isPending: parentRecordsPending } =
-    useGetMany<ParentTaxonRecord>(
-      'taxon_names',
-      { ids: parentIds },
-      { enabled: parentIds.length > 0 }
-    );
-
-  const parentMap = React.useMemo(
-    () =>
-      new Map(
-        (Array.isArray(parentRecords) ? parentRecords : []).map((parent) => [
-          String(parent.id ?? parent.taxon_name_id ?? ''),
-          parent,
-        ])
-      ),
-    [parentRecords]
-  );
-
-  const parentDerivedValue = React.useMemo(
-    () =>
-      deriveParentValue(
-        (Array.isArray(parentRows) ? parentRows : []) as ParentLinkRecord[],
-        parentMap,
-        hybridCategory
-      ),
-    [hybridCategory, parentMap, parentRows]
-  );
-
-  return {
-    parentDerivedValue,
-    isPending: parentRowsPending || parentRecordsPending,
-  };
-};
-
-const ReadOnlyParallelUninomialField = () => {
-  const record = useRecordContext<{
-    id?: string | number;
-    hybrid_category?: string | null;
-    parallel_override_uninomial?: string | null;
-  }>();
-  const recordId = record?.id;
-  const { parentDerivedValue } = useParentDerivedUninomial({
-    recordId,
-    hybridCategory: record?.hybrid_category,
-  });
-
-  const parallelUninomial = record?.parallel_override_uninomial;
-  const hasOverride = Boolean(parallelUninomial && parallelUninomial.trim());
-  const matchesParentDerived = Boolean(
-    hasOverride &&
-      parentDerivedValue &&
-      parallelUninomial.trim() === parentDerivedValue.trim()
-  );
-
-  return (
-    <div className="space-y-2 xl:col-span-2">
-      <div className="text-sm font-medium">Parallel uninomial</div>
-      <div className="flex flex-wrap items-center gap-2">
-        {hasOverride && !matchesParentDerived ? (
-          <>
-            <Badge variant="outline">{parallelUninomial}</Badge>
-            <span className="text-xs text-muted-foreground">
-              Explicit parallel override
-            </span>
-          </>
-        ) : parentDerivedValue ? (
-          <>
-            <Badge variant="secondary">{parentDerivedValue}</Badge>
-            <span className="text-xs text-muted-foreground">
-              Using the parent-derived value
-            </span>
-          </>
-        ) : (
-          <span className="text-sm text-muted-foreground">Not set</span>
-        )}
-      </div>
-    </div>
-  );
-};
-
-const EditableParallelUninomialField = () => {
-  const record = useRecordContext<{
-    id?: string | number;
-    hybrid_category?: string | null;
-  }>();
-  const form = useFormContext();
-  const hybridCategory = useWatch({ name: 'hybrid_category' });
-  const parallelUninomial = useWatch({ name: 'parallel_override_uninomial' });
-  const recordId = record?.id;
-  const { parentDerivedValue, isPending } = useParentDerivedUninomial({
-    recordId,
-    hybridCategory,
-  });
-
-  const hasOverride = Boolean(
-    parallelUninomial && String(parallelUninomial).trim()
-  );
-  const matchesParentDerived = Boolean(
-    hasOverride &&
-      parentDerivedValue &&
-      String(parallelUninomial).trim() === parentDerivedValue.trim()
-  );
-  const [showOverrideInput, setShowOverrideInput] = React.useState(
-    !parentDerivedValue || (hasOverride && !matchesParentDerived)
-  );
-  const [stashedOverrideValue, setStashedOverrideValue] = React.useState<
-    string | null
-  >(null);
-
-  React.useEffect(() => {
-    setShowOverrideInput(
-      !parentDerivedValue || (hasOverride && !matchesParentDerived)
-    );
-  }, [hasOverride, matchesParentDerived, parentDerivedValue]);
-
-  React.useEffect(() => {
-    if (hasOverride) {
-      setStashedOverrideValue(String(parallelUninomial).trim());
-    }
-  }, [hasOverride, parallelUninomial]);
-
-  if (!showOverrideInput && parentDerivedValue) {
-    return (
-      <div className="grid gap-2 xl:col-span-2">
-        <div className="flex items-center gap-2 text-sm leading-none font-medium">
-          Parallel uninomial
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="flex min-h-10 flex-1 flex-wrap items-center gap-2 rounded-xl border border-border bg-background px-3 py-2">
-            <Badge variant="secondary">{parentDerivedValue}</Badge>
-            <span className="text-sm text-muted-foreground">
-              Using the parent-derived value.
-            </span>
-          </div>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              setShowOverrideInput(true);
-              form.setValue(
-                'parallel_override_uninomial',
-                stashedOverrideValue ?? null,
-                {
-                  shouldDirty: true,
-                  shouldTouch: true,
-                  shouldValidate: true,
-                }
-              );
-            }}
-          >
-            Override
-          </Button>
-        </div>
-        <div className="text-xs text-muted-foreground">
-          Set an override only when the parallel uninomial should differ from
-          the parent-derived value.
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="grid gap-2 xl:col-span-2">
-      <div className="flex flex-wrap items-start gap-2">
-        <TextInput
-          source="parallel_override_uninomial"
-          label="Parallel uninomial"
-          parse={parseNullableText}
-          format={formatNullableText}
-          className="min-w-[260px] flex-1"
-        />
-        {parentDerivedValue ? (
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="mt-7"
-            onClick={() => {
-              const currentValue =
-                typeof parallelUninomial === 'string'
-                  ? parallelUninomial.trim()
-                  : '';
-              if (currentValue) {
-                setStashedOverrideValue(currentValue);
-              }
-              form.setValue('parallel_override_uninomial', null, {
-                shouldDirty: true,
-                shouldTouch: true,
-                shouldValidate: true,
-              });
-              setShowOverrideInput(false);
-            }}
-          >
-            Use parent
-          </Button>
-        ) : null}
-      </div>
-      <div className="flex flex-wrap items-center gap-2">
-        {isPending ? (
-          <span className="text-xs text-muted-foreground">
-            Loading parent-derived value...
-          </span>
-        ) : parentDerivedValue ? (
-          <>
-            <Badge variant="outline">{parentDerivedValue}</Badge>
-            <span className="text-xs text-muted-foreground">
-              Parent-derived default
-            </span>
-          </>
-        ) : (
-          <span className="text-xs text-muted-foreground">
-            No parent-derived uninomial is available, so this field acts as the
-            parallel fallback.
-          </span>
-        )}
-      </div>
-    </div>
-  );
-};
-
-const ParallelNameOverridesPanel = ({ editable }: { editable?: boolean }) => {
-  if (editable) {
-    return (
-      <div className="space-y-3 rounded-2xl border border-border/80 bg-muted/10 p-4">
-        <div className="space-y-1">
-          <div className="text-sm font-medium">Parallel name fields</div>
-          <p className="text-sm text-muted-foreground">
-            These fields drive the parallel name engine separately from the
-            current saved taxon-name fields. They are seeded from the current
-            values, but can then diverge safely.
-          </p>
-        </div>
-        <div className="grid items-start gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <EditableParallelUninomialField />
-          <TextInput
-            source="parallel_override_specific_epithet"
-            label="Parallel specific epithet"
-            parse={parseNullableText}
-            format={formatNullableText}
-          />
-          <TextInput
-            source="parallel_override_infraspecific_epithet"
-            label="Parallel infraspecific epithet"
-            parse={parseNullableText}
-            format={formatNullableText}
-          />
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-3 rounded-2xl border border-border/80 bg-muted/10 p-4">
-      <div className="space-y-1">
-        <div className="text-sm font-medium">Parallel name fields</div>
-        <p className="text-sm text-muted-foreground">
-          These fields drive the parallel name engine separately from the
-          current saved taxon-name fields. They are seeded from the current
-          values, but can then diverge safely.
-        </p>
-      </div>
-      <div className="grid items-start gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <ReadOnlyParallelUninomialField />
-        <RecordField
-          source="parallel_override_specific_epithet"
-          label="Parallel specific epithet"
-        />
-        <RecordField
-          source="parallel_override_infraspecific_epithet"
-          label="Parallel infraspecific epithet"
-        />
-      </div>
-    </div>
-  );
-};
-
 const ParallelNamePreviewPanel = ({
   recordId,
 }: {
   recordId?: string | number;
 }) => {
+  const record = useRecordContext<{
+    formatted_scientific_name?: string | null;
+    scientific_name?: string | null;
+    legacy_scientific_name?: string | null;
+    legacy_canonical_name?: string | null;
+  }>();
   const { data, isPending, error } = useGetOne<ParallelNamePreviewRecord>(
     'taxon_names_parallel_name_preview',
     { id: recordId, meta: { strict: true } },
@@ -695,90 +340,66 @@ const ParallelNamePreviewPanel = ({
     return null;
   }
 
-  const notes = Array.isArray(data.notes) ? data.notes.filter(Boolean) : [];
-
   return (
     <div className="rounded-xl border border-sky-200 bg-sky-50/80 p-4 dark:border-sky-900/60 dark:bg-sky-950/20">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">
           <div className="text-sm font-medium">
-            Parallel name engine preview
+            Scientific and legacy names
           </div>
           <Badge className="border-sky-300 bg-sky-100 text-sky-900 hover:bg-sky-100 dark:border-sky-800 dark:bg-sky-900/50 dark:text-sky-100">
             {formatPreviewTitle(data.strategy)}
           </Badge>
-          {data.matches_current_scientific_name ? (
-            <Badge className="border-emerald-300 bg-emerald-100 text-emerald-900 hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-100">
-              Scientific name matches current
-            </Badge>
-          ) : null}
-          {data.matches_current_uninomial ? (
-            <Badge className="border-emerald-300 bg-emerald-100 text-emerald-900 hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-100">
-              Uninomial matches current
-            </Badge>
-          ) : null}
         </div>
         <Badge className="border-sky-300 bg-sky-100 text-sky-900 hover:bg-sky-100 dark:border-sky-800 dark:bg-sky-900/50 dark:text-sky-100">
-          Strict parallel mode
+          Parallel derived
         </Badge>
       </div>
       <div className="mt-3 grid gap-3 md:grid-cols-2">
         <div className="space-y-1">
           <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            Current scientific name
-          </div>
-          <div className="text-sm">
-            {data.current_formatted_scientific_name ? (
-              <HtmlValue value={data.current_formatted_scientific_name} />
-            ) : (
-              data.current_scientific_name || 'Not set'
-            )}
-          </div>
-        </div>
-        <div className="space-y-1">
-          <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            Derived scientific name
+            Scientific name
           </div>
           <div className="text-sm">
             {data.derived_formatted_scientific_name ? (
               <HtmlValue value={data.derived_formatted_scientific_name} />
+            ) : data.derived_scientific_name ? (
+              data.derived_scientific_name
+            ) : record?.formatted_scientific_name ? (
+              <HtmlValue value={record.formatted_scientific_name} />
             ) : (
-              data.derived_scientific_name || 'Unable to derive yet'
+              record?.scientific_name || 'Unable to derive yet'
             )}
           </div>
         </div>
         <div className="space-y-1">
           <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            Current canonical name
+            Legacy scientific name
           </div>
           <div className="text-sm">
-            {data.current_canonical_name || 'Not set'}
+            {record?.legacy_scientific_name || 'Not set'}
           </div>
         </div>
         <div className="space-y-1">
           <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            Derived canonical name
+            Canonical name
           </div>
           <div className="text-sm">
             {data.derived_canonical_name || 'Unable to derive yet'}
           </div>
         </div>
-      </div>
-      {notes.length ? (
-        <div className="mt-3 space-y-2">
+        <div className="space-y-1">
           <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            Notes
+            Legacy canonical name
           </div>
-          <div className="space-y-1 text-sm text-muted-foreground">
-            {notes.map((note) => (
-              <div key={note}>{note}</div>
-            ))}
+          <div className="text-sm">
+            {record?.legacy_canonical_name || 'Not set'}
           </div>
         </div>
-      ) : null}
+      </div>
       <div className="mt-3 text-xs text-muted-foreground">
-        This preview uses the parallel engine and does not replace the current
-        saved name fields.
+        Scientific name is derived from the parallel fields. Legacy names are
+        retained from the old name parts.
       </div>
     </div>
   );
@@ -1644,6 +1265,70 @@ const PublicationReadOnlySection = () => {
   );
 };
 
+const LegacyPublicationDataSection = () => {
+  const record = useRecordContext<{
+    publication_id?: string | number | null;
+    publication_year?: string | number | null;
+    form_desc_yr?: string | number | null;
+    reference?: string | null;
+    volume_information?: string | null;
+  }>();
+  const hasLegacyPublicationData =
+    record?.publication_id != null ||
+    record?.publication_year != null ||
+    record?.form_desc_yr != null ||
+    Boolean(record?.reference) ||
+    Boolean(record?.volume_information);
+
+  if (!hasLegacyPublicationData) {
+    return null;
+  }
+
+  return (
+    <section className="mt-6 space-y-4 rounded-2xl border border-sky-200 bg-sky-50/80 p-4 dark:border-sky-900/60 dark:bg-sky-950/20">
+      <SectionHeader
+        title="Legacy publication data"
+        description="Legacy publication values retained on the taxon name record during the publication-reference migration."
+      />
+      <div className="grid gap-4 md:grid-cols-2">
+        <RecordField
+          label="Volume information"
+          record={record}
+          render={(taxon: { volume_information?: string | null }) =>
+            taxon.volume_information ?? ''
+          }
+        />
+        <RecordField
+          label="Publication year"
+          record={record}
+          render={(taxon: {
+            publication_year?: string | number | null;
+            form_desc_yr?: string | number | null;
+          }) =>
+            taxon.publication_year ??
+            taxon.form_desc_yr ??
+            ''
+          }
+        />
+        <RecordField
+          label="Reference"
+          record={record}
+          render={(taxon: { reference?: string | null }) =>
+            taxon.reference ?? ''
+          }
+        />
+        <RecordField
+          label="Publication ID"
+          record={record}
+          render={(taxon: { publication_id?: string | number | null }) =>
+            taxon.publication_id ?? ''
+          }
+        />
+      </div>
+    </section>
+  );
+};
+
 const CreatePublicationButton = () => {
   const form = useFormContext();
   const publicationId = form.watch('publication_id');
@@ -1727,6 +1412,7 @@ const EditPublicationButton = () => {
 };
 
 type RelatedSectionKey =
+  | 'parallelNamePreview'
   | 'authors'
   | 'publicationReferences'
   | 'publication'
@@ -1878,6 +1564,14 @@ const TaxonNameRelatedSections = ({
             : 'min-w-0 space-y-0 rounded-2xl border border-border bg-card p-6'
         }
       >
+        {editable &&
+        visibleSections.has('parallelNamePreview') &&
+        canViewHybridRollout ? (
+          <section className="space-y-4">
+            <ParallelNamePreviewPanel recordId={recordId} />
+          </section>
+        ) : null}
+
         {!editable ? (
           <>
             {visibleSections.has('parents') && canViewHybridRollout ? (
@@ -1887,11 +1581,13 @@ const TaxonNameRelatedSections = ({
             ) : null}
 
             <section className="space-y-4">
-              <SectionHeader title="Taxon name summary" />
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)_minmax(0,1.5fr)]">
+              <h3 className="text-lg font-semibold tracking-tight">
+                Taxon name
+              </h3>
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                 <RecordField
                   label="NomosID"
-                  className="xl:min-w-0"
+                  className="min-w-0"
                   render={(taxon: {
                     id?: string | number | null;
                     taxon_name_id?: string | number | null;
@@ -1899,13 +1595,18 @@ const TaxonNameRelatedSections = ({
                 />
                 <RecordField
                   label="Formatted scientific name"
-                  className="md:col-span-1 xl:min-w-0"
+                  className="min-w-0 md:col-start-2 xl:col-start-2 xl:col-span-3"
                   render={(taxon: {
                     formatted_scientific_name?: string | null;
                   }) => <HtmlValue value={taxon.formatted_scientific_name} />}
                 />
-                <DerivedScientificNameSummaryField recordId={recordId} />
+                <RecordField
+                  source="canonical_name"
+                  label="Canonical name"
+                  className="min-w-0 md:col-start-2 xl:col-start-2 xl:col-span-3"
+                />
               </div>
+              <SectionHeader title="Taxonomic placement" />
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                 <RecordField label="Kingdom" source="kingdom_id">
                   <ReferenceField
@@ -1965,6 +1666,9 @@ const TaxonNameRelatedSections = ({
                   className="hidden md:block md:col-span-2 xl:col-span-4"
                   aria-hidden="true"
                 />
+                <div className="md:col-span-2 xl:col-span-4">
+                  <SectionHeader title="Taxonomic status" />
+                </div>
                 <RecordField
                   source="publication_status"
                   label="Publication status"
@@ -1995,6 +1699,30 @@ const TaxonNameRelatedSections = ({
                   }
                 />
                 <RecordField
+                  label="Hybrid"
+                  render={(taxon: { is_hybrid?: boolean | null }) =>
+                    renderBoolean(taxon.is_hybrid)
+                  }
+                />
+                <RecordField
+                  source="hybrid_category"
+                  label="Hybrid category"
+                >
+                  <RecordField
+                    label=""
+                    render={(taxon: { hybrid_category?: string | null }) =>
+                      renderChoice(HybridCategory, taxon.hybrid_category)
+                    }
+                  />
+                </RecordField>
+                <div
+                  className="hidden md:block md:col-span-2 xl:col-span-4"
+                  aria-hidden="true"
+                />
+                <div className="md:col-span-2 xl:col-span-4">
+                  <SectionHeader title="Taxonomic review" />
+                </div>
+                <RecordField
                   label="Review"
                   render={(taxon: { review?: boolean | null }) =>
                     renderBoolean(taxon.review)
@@ -2009,16 +1737,32 @@ const TaxonNameRelatedSections = ({
                   className="hidden md:block md:col-span-2 xl:col-span-4"
                   aria-hidden="true"
                 />
+                <div className="md:col-span-2 xl:col-span-4">
+                  <SectionHeader title="Taxonomic codes" />
+                </div>
+                <RecordField
+                  label="NomosID"
+                  className="xl:min-w-0"
+                  render={(taxon: {
+                    id?: string | number | null;
+                    taxon_name_id?: string | number | null;
+                  }) => taxon.taxon_name_id ?? taxon.id ?? ''}
+                />
                 <RecordField
                   source="legacy_id"
                   label="LegacyID"
-                  className="xl:col-span-2"
                 />
                 <RecordField
                   source="species_code"
                   label="Species code"
-                  className="xl:col-span-2"
                 />
+                <div
+                  className="hidden md:block md:col-span-2 xl:col-span-4"
+                  aria-hidden="true"
+                />
+                <div className="md:col-span-2 xl:col-span-4">
+                  <SectionHeader title="Taxonomic comments" />
+                </div>
                 <RecordField
                   source="comments"
                   label="Internal comments"
@@ -2102,18 +1846,12 @@ const TaxonNameRelatedSections = ({
           </>
         ) : null}
 
-        {visibleSections.has('parents') && (!editable || canViewHybridRollout) ? (
+        {editable && visibleSections.has('parents') && canViewHybridRollout ? (
           <>
-            {editable && canViewHybridRollout ? (
-              <section className="space-y-4">
-                <ParallelNamePreviewPanel recordId={recordId} />
-              </section>
-            ) : null}
-
-            <section className="mt-12 space-y-4">
+            <section className={embedded ? 'space-y-4' : 'mt-12 space-y-4'}>
               <SectionHeader
-                title="Parent names"
-                description="Ordered parent-name rows used to support hybrids and derived uninomial generation during migration."
+                title="Taxonomic parent names"
+                description="Ordered parent-name rows used for hybrid formulas and parent-derived uninomial values."
                 action={
                   editable && recordId ? (
                     <CreateParentNameRowButton recordId={recordId} />
@@ -2190,8 +1928,7 @@ const TaxonNameRelatedSections = ({
                   </DataTable>
                 </ReferenceManyField>
               ) : null}
-              <ParallelNameOverridesPanel editable={editable} />
-              <ParentHybridFields editable={editable} />
+              {!editable ? <ParentHybridFields editable={editable} /> : null}
             </section>
           </>
         ) : null}
@@ -2236,12 +1973,15 @@ const TaxonNameRelatedSections = ({
         ) : null}
 
         {visibleSections.has('publicationReferences') ? (
-          <PublicationReferenceSection
-            editable={editable}
-            parentId={recordId}
-            parentField="taxon_name_id"
-            parentLabel="taxon name"
-          />
+          <>
+            <PublicationReferenceSection
+              editable={editable}
+              parentId={recordId}
+              parentField="taxon_name_id"
+              parentLabel="taxon name"
+            />
+            <LegacyPublicationDataSection />
+          </>
         ) : null}
 
         {visibleSections.has('publication') && canViewLegacyPublication ? (

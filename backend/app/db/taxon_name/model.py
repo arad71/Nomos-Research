@@ -46,6 +46,8 @@ class TaxonName(BaseModel, TableMixin):
     canonical_name_without_rank = sqlalchemy.Column(sqlalchemy.String, index=True)
     scientific_name = sqlalchemy.Column(sqlalchemy.String, index=True)
     formatted_scientific_name = sqlalchemy.Column(sqlalchemy.String)
+    legacy_canonical_name = sqlalchemy.Column(sqlalchemy.String, index=True)
+    legacy_scientific_name = sqlalchemy.Column(sqlalchemy.String, index=True)
     species_code = sqlalchemy.Column(
         sqlalchemy.String(50),
         index=True,
