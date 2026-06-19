@@ -401,7 +401,7 @@ const fetchTaxonPublicationRowsByFilter = async (
   retryOnAuthError = true
 ): Promise<TaxonPublicationRecord[]> => {
   const sort = encodeURIComponent(JSON.stringify(['taxon_publication_id', 'ASC']));
-  const range = encodeURIComponent(JSON.stringify([0, 10000]));
+  const range = encodeURIComponent(JSON.stringify([0, 9999]));
   const filter = encodeURIComponent(JSON.stringify(filterObject));
   const endpoints = ['taxon-publications', 'taxon_publications'];
   let response: Response | null = null;
@@ -591,31 +591,11 @@ const fetchTaxonPublications = async (
   retryOnAuthError = true
 ): Promise<TaxonPublicationRecord[]> => {
   if (!publicationIds.length) return [];
-  if (publicationIds.length === 1) {
-    const rows = await fetchTaxonPublicationRowsByFilter(
-      { publication_id: publicationIds[0] },
-      retryOnAuthError
-    );
-    if (rows.length > 0) return rows;
-    return fetchTaxonPublicationRowsByFilter({ publication_id: [publicationIds[0]] }, retryOnAuthError);
-  }
-
-  const rowBatches = await Promise.all(
-    publicationIds.map((publicationId) =>
-      fetchTaxonPublicationRowsByFilter({ publication_id: publicationId }, retryOnAuthError)
-    )
+  const rows = await fetchTaxonPublicationRowsByFilter(
+    { publication_id: publicationIds },
+    retryOnAuthError
   );
-  const flattened = rowBatches.flat();
-  if (flattened.length > 0) {
-    return dedupeTaxonPublicationRows(flattened);
-  }
-
-  const fallbackBatches = await Promise.all(
-    publicationIds.map((publicationId) =>
-      fetchTaxonPublicationRowsByFilter({ publication_id: [publicationId] }, retryOnAuthError)
-    )
-  );
-  return dedupeTaxonPublicationRows(fallbackBatches.flat());
+  return dedupeTaxonPublicationRows(rows);
 };
 
 const fetchPublicationIdsByTaxonQuery = async (
@@ -661,14 +641,16 @@ const getTaxonLabelFromLink = (
   link: TaxonPublicationRecord,
   taxonNameMap: Record<number, string>
 ) => {
-  if (typeof link.taxon_name_id === 'number' && taxonNameMap[link.taxon_name_id]) {
-    return taxonNameMap[link.taxon_name_id];
+  const taxonNameId = toNumberId(link.taxon_name_id);
+  if (taxonNameId !== undefined && taxonNameMap[taxonNameId]) {
+    return taxonNameMap[taxonNameId];
   }
   return (
     link.taxon_name___scientific_name ||
     link.taxon_name___formatted_scientific_name ||
     link.taxon_name?.scientific_name ||
     link.taxon_name?.formatted_scientific_name ||
+    (taxonNameId !== undefined ? `Taxon name #${taxonNameId}` : '') ||
     ''
   );
 };
