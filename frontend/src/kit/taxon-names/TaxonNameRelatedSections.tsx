@@ -307,6 +307,7 @@ const ParallelNamePreviewPanel = ({
   const record = useRecordContext<{
     formatted_scientific_name?: string | null;
     scientific_name?: string | null;
+    canonical_name?: string | null;
     legacy_scientific_name?: string | null;
     legacy_canonical_name?: string | null;
   }>();
@@ -352,7 +353,7 @@ const ParallelNamePreviewPanel = ({
           </Badge>
         </div>
         <Badge className="border-sky-300 bg-sky-100 text-sky-900 hover:bg-sky-100 dark:border-sky-800 dark:bg-sky-900/50 dark:text-sky-100">
-          Parallel derived
+          Parallel fields
         </Badge>
       </div>
       <div className="mt-3 grid gap-3 md:grid-cols-2">
@@ -361,14 +362,10 @@ const ParallelNamePreviewPanel = ({
             Scientific name
           </div>
           <div className="text-sm">
-            {data.derived_formatted_scientific_name ? (
-              <HtmlValue value={data.derived_formatted_scientific_name} />
-            ) : data.derived_scientific_name ? (
-              data.derived_scientific_name
-            ) : record?.formatted_scientific_name ? (
+            {record?.formatted_scientific_name ? (
               <HtmlValue value={record.formatted_scientific_name} />
             ) : (
-              record?.scientific_name || 'Unable to derive yet'
+              record?.scientific_name || 'Not set'
             )}
           </div>
         </div>
@@ -385,7 +382,7 @@ const ParallelNamePreviewPanel = ({
             Canonical name
           </div>
           <div className="text-sm">
-            {data.derived_canonical_name || 'Unable to derive yet'}
+            {record?.canonical_name || 'Not set'}
           </div>
         </div>
         <div className="space-y-1">
@@ -398,44 +395,10 @@ const ParallelNamePreviewPanel = ({
         </div>
       </div>
       <div className="mt-3 text-xs text-muted-foreground">
-        Scientific name is derived from the parallel fields. Legacy names are
-        retained from the old name parts.
+        Scientific and canonical names are stored on the taxon name. Legacy
+        names are retained from the old name parts.
       </div>
     </div>
-  );
-};
-
-const DerivedScientificNameSummaryField = ({
-  recordId,
-}: {
-  recordId?: string | number;
-}) => {
-  const { data, isPending } = useGetOne<ParallelNamePreviewRecord>(
-    'taxon_names_parallel_name_preview',
-    { id: recordId as string | number, meta: { strict: true } },
-    { enabled: recordId != null }
-  );
-
-  if (recordId == null) {
-    return null;
-  }
-
-  return (
-    <RecordField
-      label="Derived scientific name"
-      className="md:col-span-1 xl:min-w-0"
-      render={() => {
-        if (isPending) {
-          return 'Loading...';
-        }
-
-        if (data?.derived_formatted_scientific_name) {
-          return <HtmlValue value={data.derived_formatted_scientific_name} />;
-        }
-
-        return data?.derived_scientific_name ?? 'Not set';
-      }}
-    />
   );
 };
 
