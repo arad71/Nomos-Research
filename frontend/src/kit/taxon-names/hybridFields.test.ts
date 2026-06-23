@@ -120,4 +120,33 @@ describe('deriveParentValue', () => {
     ).toBe('Cicindela (Myriochile)');
   });
 
+  it('can include bracketed canonical context for subgenus parent display values', () => {
+    const bracketedParentTaxa = new Map<string, ParentTaxonRecord>([
+      [
+        '1',
+        {
+          id: 1,
+          uninomial: 'Aedimorphus',
+          canonical_name: 'Aedes (Aedimorphus)',
+          scientific_name: 'Aedes (Aedimorphus) Theobald, 1903',
+        },
+      ],
+    ]);
+
+    expect(
+      deriveParentValue(
+        [{ parent_taxon_name_id: 1, sequence: 1 }],
+        bracketedParentTaxa
+      )
+    ).toBe('Aedimorphus');
+    expect(
+      deriveParentValue(
+        [{ parent_taxon_name_id: 1, sequence: 1 }],
+        bracketedParentTaxa,
+        null,
+        { includeBracketedScientificContext: true }
+      )
+    ).toBe('Aedes (Aedimorphus)');
+  });
+
 });
