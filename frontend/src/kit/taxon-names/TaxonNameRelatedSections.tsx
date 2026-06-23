@@ -205,18 +205,6 @@ const ParentHybridFields = ({ editable }: { editable?: boolean }) => {
     }>();
     const isHybrid = useWatch({ name: 'is_hybrid' });
     const hybridCategory = useWatch({ name: 'hybrid_category' });
-    const recordId = record?.id;
-    const { data: parentRows = [] } = useGetList(
-      'taxon_name_parents',
-      {
-        filter: { taxon_name_id: recordId },
-        pagination: { page: 1, perPage: 100 },
-        sort: { field: 'sequence', order: 'ASC' },
-      },
-      { enabled: Boolean(recordId) }
-    );
-    const hasMultipleParents = parentRows.length > 1;
-
     React.useEffect(() => {
       if (!isHybrid) {
         setValue('hybrid_category', null, {
@@ -225,15 +213,6 @@ const ParentHybridFields = ({ editable }: { editable?: boolean }) => {
         });
       }
     }, [isHybrid, setValue]);
-
-    React.useEffect(() => {
-      if (hasMultipleParents && !isHybrid) {
-        setValue('is_hybrid', true, {
-          shouldDirty: true,
-          shouldValidate: true,
-        });
-      }
-    }, [hasMultipleParents, isHybrid, setValue]);
 
     return (
       <div className="grid items-start gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -254,12 +233,6 @@ const ParentHybridFields = ({ editable }: { editable?: boolean }) => {
             if (value === false || value === 'false') return false;
             return value;
           }}
-          disabled={hasMultipleParents}
-          helperText={
-            hasMultipleParents
-              ? 'Automatically set to Yes when more than one parent row exists.'
-              : undefined
-          }
         />
         {isHybrid ? (
           <SelectInput
@@ -1228,16 +1201,52 @@ const PublicationReadOnlySection = () => {
   );
 };
 
+type LegacyPublicationTitleRecord = {
+  display_title?: string | null;
+  title?: string | null;
+  abbreviated_title?: string | null;
+};
+
+const LegacyPublicationTitleValue = ({
+  publicationId,
+}: {
+  publicationId?: string | number | null;
+}) => {
+  const ids = React.useMemo(
+    () =>
+      publicationId !== null && publicationId !== undefined && publicationId !== ''
+        ? [publicationId]
+        : [],
+    [publicationId]
+  );
+  const { data } = useGetMany<LegacyPublicationTitleRecord>(
+    'publications',
+    { ids },
+    { enabled: ids.length > 0 }
+  );
+  const publication = data?.[0];
+  const title =
+    publication?.display_title ??
+    publication?.title ??
+    publication?.abbreviated_title ??
+    '';
+
+  return <span className="flex-1">{title}</span>;
+};
+
 const LegacyPublicationDataSection = () => {
   const record = useRecordContext<{
     publication_id?: string | number | null;
+    legacy_publication_id?: string | number | null;
     publication_year?: string | number | null;
     form_desc_yr?: string | number | null;
     reference?: string | null;
     volume_information?: string | null;
   }>();
+  const publicationId = record?.publication_id;
   const hasLegacyPublicationData =
-    record?.publication_id != null ||
+    publicationId != null ||
+    record?.legacy_publication_id != null ||
     record?.publication_year != null ||
     record?.form_desc_yr != null ||
     Boolean(record?.reference) ||
@@ -1254,6 +1263,12 @@ const LegacyPublicationDataSection = () => {
         description="Legacy publication values retained on the taxon name record during the publication-reference migration."
       />
       <div className="grid gap-4 md:grid-cols-2">
+        <RecordField
+          label="Publication title"
+          className="md:col-span-2"
+        >
+          <LegacyPublicationTitleValue publicationId={publicationId} />
+        </RecordField>
         <RecordField
           label="Volume information"
           record={record}
@@ -1281,10 +1296,10 @@ const LegacyPublicationDataSection = () => {
           }
         />
         <RecordField
-          label="Publication ID"
+          label="Legacy publication ID"
           record={record}
-          render={(taxon: { publication_id?: string | number | null }) =>
-            taxon.publication_id ?? ''
+          render={(taxon: { legacy_publication_id?: string | number | null }) =>
+            taxon.legacy_publication_id ?? ''
           }
         />
       </div>
@@ -1714,6 +1729,12 @@ const TaxonNameRelatedSections = ({
                 <RecordField
                   source="legacy_id"
                   label="LegacyID"
+                  className="min-w-0"
+                  render={(taxon: { legacy_id?: string | number | null }) => (
+                    <span className="break-all [overflow-wrap:anywhere]">
+                      {taxon.legacy_id ?? ''}
+                    </span>
+                  )}
                 />
                 <RecordField
                   source="species_code"

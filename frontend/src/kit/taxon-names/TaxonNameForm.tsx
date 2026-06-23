@@ -19,6 +19,11 @@ import { parseDateOnlyToDateTime } from '../shared/dateOnlyDateTime';
 import HybridCategory from '../shared/choices/HybridCategory';
 import NaturalisedStatus from '../shared/choices/NaturalisedStatus';
 import PublicationStatus from '../shared/choices/PublicationStatus';
+import {
+  deriveParentValue,
+  type ParentLinkRecord,
+  type ParentTaxonRecord,
+} from './hybridFields';
 
 const requiredValue = required();
 const minYear = minValue(1735);
@@ -165,63 +170,6 @@ const INFRASPECIFIC_RANKS = new Set([
   'subform',
 ]);
 
-type ParentLinkRecord = {
-  id?: string | number;
-  taxon_name_id?: string | number;
-  parent_taxon_name_id?: string | number;
-  sequence?: number | string | null;
-};
-
-type ParentTaxonRecord = {
-  id?: string | number;
-  taxon_name_id?: string | number;
-  scientific_name?: string | null;
-  canonical_name?: string | null;
-  uninomial?: string | null;
-  formatted_scientific_name?: string | null;
-};
-
-const formatParentPreviewName = (taxon?: ParentTaxonRecord | null) =>
-  taxon?.uninomial?.trim() ||
-  taxon?.scientific_name?.trim() ||
-  taxon?.canonical_name?.trim() ||
-  '';
-
-const getOrderedParentNames = (
-  rows: ParentLinkRecord[],
-  parentTaxa: Map<string, ParentTaxonRecord>
-) =>
-  [...rows]
-    .sort(
-      (left, right) => Number(left.sequence ?? 0) - Number(right.sequence ?? 0)
-    )
-    .map((row) =>
-      row.parent_taxon_name_id == null
-        ? ''
-        : formatParentPreviewName(
-            parentTaxa.get(String(row.parent_taxon_name_id))
-          )
-    )
-    .filter(Boolean);
-
-const deriveParentValue = (
-  rows: ParentLinkRecord[],
-  parentTaxa: Map<string, ParentTaxonRecord>,
-  hybridCategory?: string | null
-) => {
-  const orderedParentNames = getOrderedParentNames(rows, parentTaxa);
-
-  if (hybridCategory === 'hybrid_formula') {
-    return orderedParentNames.join(' × ');
-  }
-
-  if (hybridCategory === 'intergrade') {
-    return orderedParentNames.join(' - ');
-  }
-
-  return orderedParentNames.join(' × ');
-};
-
 const UninomialInput = () => {
   const record = useRecordContext<{ id?: string | number }>();
   const form = useFormContext();
@@ -265,14 +213,14 @@ const UninomialInput = () => {
       ),
     [parentTaxa]
   );
+  const currentValue =
+    typeof parallelUninomial === 'string' ? parallelUninomial.trim() : '';
+  const hasOverride = Boolean(currentValue);
   const parentDerivedValue = React.useMemo(
     () => deriveParentValue(parentRows, parentTaxaById, hybridCategory),
     [hybridCategory, parentRows, parentTaxaById]
   );
   const isPending = parentRowsPending || parentTaxaPending;
-  const currentValue =
-    typeof parallelUninomial === 'string' ? parallelUninomial.trim() : '';
-  const hasOverride = Boolean(currentValue);
   const matchesParentDerived = Boolean(
     hasOverride &&
       parentDerivedValue &&
@@ -595,20 +543,8 @@ const ValidatedInput = () => {
 };
 
 const HybridFields = () => {
-  const record = useRecordContext<{ id?: string | number }>();
   const { setValue } = useFormContext<TaxonNameFormValues>();
   const isHybrid = useWatch({ name: 'is_hybrid' });
-  const recordId = record?.id;
-  const { data: parentRows = [] } = useGetList(
-    'taxon_name_parents',
-    {
-      filter: { taxon_name_id: recordId },
-      pagination: { page: 1, perPage: 100 },
-      sort: { field: 'sequence', order: 'ASC' },
-    },
-    { enabled: Boolean(recordId) }
-  );
-  const hasMultipleParents = parentRows.length > 1;
 
   React.useEffect(() => {
     if (!isHybrid) {
@@ -618,15 +554,6 @@ const HybridFields = () => {
       });
     }
   }, [isHybrid, setValue]);
-
-  React.useEffect(() => {
-    if (hasMultipleParents && !isHybrid) {
-      setValue('is_hybrid', true, {
-        shouldDirty: true,
-        shouldValidate: true,
-      });
-    }
-  }, [hasMultipleParents, isHybrid, setValue]);
 
   return (
     <>
@@ -647,12 +574,6 @@ const HybridFields = () => {
           if (value === false || value === 'false') return false;
           return value;
         }}
-        disabled={hasMultipleParents}
-        helperText={
-          hasMultipleParents
-            ? 'Automatically set to Yes when more than one parent row exists.'
-            : undefined
-        }
       />
       {isHybrid ? (
         <SelectInput
@@ -863,7 +784,10 @@ const TaxonNameFormInner = ({
             </div>
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
               <TextInput source="uninomial" label="Current uninomial" />
-              <TextInput source="specific_epithet" label="Current specific epithet" />
+              <TextInput
+                source="specific_epithet"
+                label="Current specific epithet"
+              />
               <TextInput
                 source="infraspecific_epithet"
                 label="Current infraspecific epithet"

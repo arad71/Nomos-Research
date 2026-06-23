@@ -6,6 +6,24 @@ export type TaxonNameHybridPayload = {
   parallel_override_uninomial?: string | null;
   parallel_override_specific_epithet?: string | null;
   parallel_override_infraspecific_epithet?: string | null;
+  specific_epithet?: string | null;
+  infraspecific_epithet?: string | null;
+};
+
+export type ParentLinkRecord = {
+  id?: string | number;
+  taxon_name_id?: string | number;
+  parent_taxon_name_id?: string | number;
+  sequence?: number | string | null;
+};
+
+export type ParentTaxonRecord = {
+  id?: string | number;
+  taxon_name_id?: string | number;
+  scientific_name?: string | null;
+  canonical_name?: string | null;
+  uninomial?: string | null;
+  formatted_scientific_name?: string | null;
 };
 
 const nullableBlank = <T>(value: T | '' | undefined): T | null | undefined => {
@@ -15,9 +33,20 @@ const nullableBlank = <T>(value: T | '' | undefined): T | null | undefined => {
   return value;
 };
 
+export const normalizeHybridMultiplicationSign = (
+  value?: string | null
+): string | null | undefined =>
+  typeof value === 'string'
+    ? value.replace(/(^|\s)x\s+/gi, '$1× ')
+    : value;
+
 export const normalizeTaxonNameHybridFields = <T extends TaxonNameHybridPayload>(data: T): T => {
   const hybridCategory = data.hybrid_category || null;
   const isHybrid = Boolean(data.is_hybrid || hybridCategory);
+  const parallelUninomial = nullableBlank(data.parallel_override_uninomial);
+  const parallelSpecificEpithet = nullableBlank(
+    data.parallel_override_specific_epithet
+  );
 
   return {
     ...data,
@@ -25,12 +54,57 @@ export const normalizeTaxonNameHybridFields = <T extends TaxonNameHybridPayload>
     hybrid_category: isHybrid ? hybridCategory : null,
     naturalised_status: nullableBlank(data.naturalised_status),
     naturalised_certainty: nullableBlank(data.naturalised_certainty),
-    parallel_override_uninomial: nullableBlank(data.parallel_override_uninomial),
-    parallel_override_specific_epithet: nullableBlank(
-      data.parallel_override_specific_epithet
+    parallel_override_uninomial: parallelUninomial,
+    parallel_override_specific_epithet: normalizeHybridMultiplicationSign(
+      parallelSpecificEpithet
     ),
-    parallel_override_infraspecific_epithet: nullableBlank(
-      data.parallel_override_infraspecific_epithet
+    parallel_override_infraspecific_epithet: normalizeHybridMultiplicationSign(
+      nullableBlank(data.parallel_override_infraspecific_epithet)
+    ),
+    specific_epithet: normalizeHybridMultiplicationSign(data.specific_epithet),
+    infraspecific_epithet: normalizeHybridMultiplicationSign(
+      data.infraspecific_epithet
     ),
   };
+};
+
+export const formatParentPreviewName = (taxon?: ParentTaxonRecord | null) =>
+  taxon?.uninomial?.trim() ||
+  taxon?.scientific_name?.trim() ||
+  taxon?.canonical_name?.trim() ||
+  '';
+
+export const getOrderedParentNames = (
+  rows: ParentLinkRecord[],
+  parentTaxa: Map<string, ParentTaxonRecord>
+) =>
+  [...rows]
+    .sort(
+      (left, right) => Number(left.sequence ?? 0) - Number(right.sequence ?? 0)
+    )
+    .map((row) =>
+      row.parent_taxon_name_id == null
+        ? ''
+        : formatParentPreviewName(
+            parentTaxa.get(String(row.parent_taxon_name_id))
+          )
+    )
+    .filter(Boolean);
+
+export const deriveParentValue = (
+  rows: ParentLinkRecord[],
+  parentTaxa: Map<string, ParentTaxonRecord>,
+  hybridCategory?: string | null
+) => {
+  const orderedParentNames = getOrderedParentNames(rows, parentTaxa);
+
+  if (hybridCategory === 'named_hybrid') {
+    return orderedParentNames[0] ?? '';
+  }
+
+  if (hybridCategory === 'intergrade') {
+    return orderedParentNames.join(' - ');
+  }
+
+  return orderedParentNames.join(' × ');
 };

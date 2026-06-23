@@ -137,13 +137,6 @@ def derive_parallel_name(
     has_meaningful_uninomial_override = has_uninomial_override
     has_meaningful_specific_epithet_override = has_specific_epithet_override
     has_meaningful_infraspecific_epithet_override = has_infraspecific_epithet_override
-    has_meaningful_parallel_override = any(
-        [
-            has_meaningful_uninomial_override,
-            has_meaningful_specific_epithet_override,
-            has_meaningful_infraspecific_epithet_override,
-        ]
-    )
     has_explicit_parallel_uninomial_override = (
         taxon_name.parallel_override_uninomial is not None
     )
@@ -181,27 +174,26 @@ def derive_parallel_name(
 
     ensure_rank_abbreviation_from_taxon(taxon_name=taxon_name, components=components)
 
-    if (
-        rank_name == "genus"
-        and bool(getattr(taxon_name, "is_hybrid", False))
+    is_named_hybrid = (
+        bool(getattr(taxon_name, "is_hybrid", False))
         and getattr(getattr(taxon_name, "hybrid_category", None), "value", None)
         == "named_hybrid"
-        and components.uninomial
-    ):
+    )
+
+    if is_named_hybrid and components.uninomial:
         components.hybrid_marker_on_uninomial = True
     if (
         rank_name == SPECIES_RANK_NAME
-        and bool(getattr(taxon_name, "is_hybrid", False))
-        and getattr(getattr(taxon_name, "hybrid_category", None), "value", None)
-        == "named_hybrid"
+        and is_named_hybrid
+        and not components.uninomial
         and components.specific_epithet
     ):
         components.hybrid_marker_on_specific_epithet = True
     if (
         rank_name in INFRASPECIFIC_RANK_NAMES
-        and bool(getattr(taxon_name, "is_hybrid", False))
-        and getattr(getattr(taxon_name, "hybrid_category", None), "value", None)
-        == "named_hybrid"
+        and is_named_hybrid
+        and not components.uninomial
+        and not components.specific_epithet
         and components.infraspecific_epithet
     ):
         components.hybrid_marker_on_infraspecific_epithet = True
@@ -216,38 +208,50 @@ def derive_parallel_name(
 
     if parent_taxa:
         if len(parent_taxa) >= 2:
-            is_named_hybrid = (
-                bool(getattr(taxon_name, "is_hybrid", False))
-                and getattr(getattr(taxon_name, "hybrid_category", None), "value", None)
-                == "named_hybrid"
-            )
             if is_named_hybrid and rank_name in {
                 SPECIES_RANK_NAME,
                 *INFRASPECIFIC_RANK_NAMES,
             }:
-                strategy = "named_hybrid_parent_genus_inheritance"
-                first_parent = parent_taxa[0]
-                first_parent_value = (
-                    normalize_parallel_name_part(first_parent.uninomial)
-                    or normalize_parallel_name_part(
-                        best_parent_name_value(first_parent, italicize=False)
-                    )
-                    or normalize_parallel_name_part(first_parent.scientific_name)
-                    or normalize_parallel_name_part(first_parent.canonical_name)
-                )
-                parent_genus = extract_leading_name_token(first_parent_value)
-                if parent_genus:
-                    components.uninomial = parent_genus
+                if has_meaningful_uninomial_override:
+                    strategy = "named_hybrid_parallel_override"
                     notes.append(
-                        f"Derived named-hybrid genus from the first linked parent taxon {first_parent.taxon_name_id}."
+                        "Skipped named-hybrid parent inheritance because a parallel uninomial override is present."
                     )
                 else:
-                    notes.append(
-                        f"Could not derive a genus token from the first linked parent taxon {first_parent.taxon_name_id}; kept the current parallel uninomial value."
+                    strategy = "named_hybrid_parent_genus_inheritance"
+                    first_parent = parent_taxa[0]
+                    first_parent_value = (
+                        normalize_parallel_name_part(first_parent.uninomial)
+                        or normalize_parallel_name_part(
+                            best_parent_name_value(first_parent, italicize=False)
+                        )
+                        or normalize_parallel_name_part(first_parent.scientific_name)
+                        or normalize_parallel_name_part(first_parent.canonical_name)
                     )
-                notes.append(
-                    "Retained the child epithet and author while using parent links only to determine named-hybrid lineage."
-                )
+                    parent_genus = extract_leading_name_token(first_parent_value)
+                    if parent_genus:
+                        components.uninomial = parent_genus
+                        notes.append(
+                            f"Derived named-hybrid genus from the first linked parent taxon {first_parent.taxon_name_id}."
+                        )
+                    else:
+                        notes.append(
+                            f"Could not derive a genus token from the first linked parent taxon {first_parent.taxon_name_id}; kept the current parallel uninomial value."
+                        )
+                    notes.append(
+                        "Retained the child epithet and author while using parent links only to determine named-hybrid lineage."
+                    )
+                    if (
+                        rank_name in INFRASPECIFIC_RANK_NAMES
+                        and not components.infraspecific_epithet
+                    ):
+                        components.infraspecific_epithet = normalize_parallel_name_part(
+                            taxon_name.infraspecific_epithet
+                        )
+                components.hybrid_marker_on_specific_epithet = False
+                components.hybrid_marker_on_infraspecific_epithet = False
+                if components.uninomial:
+                    components.hybrid_marker_on_uninomial = True
                 derived_canonical_name = calculated.calculate_canonical_name_string(
                     components
                 )
@@ -259,6 +263,41 @@ def derive_parallel_name(
                 derived_formatted_scientific_name = (
                     calculated.calculate_scientific_name_string(
                         components=components,
+                        is_autonym=taxon_name.is_autonym,
+                        italicize=True,
+                    )
+                )
+                return derived_parallel_name_result(
+                    taxon_name=taxon_name,
+                    strategy=strategy,
+                    notes=notes,
+                    parent_taxon_name_ids=[
+                        parent.taxon_name_id for parent in parent_taxa
+                    ],
+                    uninomial=components.uninomial,
+                    canonical_name=derived_canonical_name,
+                    scientific_name=derived_scientific_name,
+                    formatted_scientific_name=derived_formatted_scientific_name,
+                )
+            if has_meaningful_uninomial_override:
+                strategy = "hybrid_parallel_override"
+                notes.append(
+                    "Skipped hybrid parent formula because an explicit parallel uninomial override is present."
+                )
+                override_components = components.model_copy(
+                    update={"is_hybrid_formula": False}
+                )
+                derived_canonical_name = calculated.calculate_canonical_name_string(
+                    override_components
+                )
+                derived_scientific_name = calculated.calculate_scientific_name_string(
+                    components=override_components,
+                    is_autonym=taxon_name.is_autonym,
+                    italicize=False,
+                )
+                derived_formatted_scientific_name = (
+                    calculated.calculate_scientific_name_string(
+                        components=override_components,
                         is_autonym=taxon_name.is_autonym,
                         italicize=True,
                     )
@@ -740,9 +779,18 @@ def best_parent_name_value(
     name_value: str = "canonical",
 ) -> str | None:
     if name_value == "formatted_scientific":
-        value = build_parent_formatted_scientific_name(parent)
+        value = build_hybrid_parent_formula_from_links(
+            parent,
+            name_value="formatted_scientific",
+        ) or build_parent_formatted_scientific_name(parent)
     elif name_value == "scientific":
-        value = parent.scientific_name
+        value = (
+            build_hybrid_parent_formula_from_links(
+                parent,
+                name_value="scientific",
+            )
+            or parent.scientific_name
+        )
     else:
         value = (
             parent.infragenus_name
@@ -753,6 +801,20 @@ def best_parent_name_value(
     if not value:
         return None
     return calculated.italicize_name(value) if italicize else value
+
+
+def build_hybrid_parent_formula_from_links(
+    parent: TaxonName,
+    *,
+    name_value: str,
+) -> str | None:
+    hybrid_category = getattr(getattr(parent, "hybrid_category", None), "value", None)
+    if hybrid_category not in {"hybrid_formula", "intergrade"}:
+        return None
+    nested_parent_taxa = ordered_parent_taxa(parent)
+    if len(nested_parent_taxa) < 2:
+        return None
+    return join_parent_names(parent, nested_parent_taxa, name_value=name_value)
 
 
 def bracket_hybrid_parent_name(parent: TaxonName, value: str | None) -> str | None:
@@ -777,6 +839,10 @@ def parent_is_hybrid_formula_group(parent: TaxonName, value: str) -> bool:
 
 
 def build_parent_formatted_scientific_name(parent: TaxonName) -> str | None:
+    formatted_scientific_name = getattr(parent, "formatted_scientific_name", None)
+    if formatted_scientific_name:
+        return unitalicize_infraspecific_rank_abbreviations(formatted_scientific_name)
+
     uninomial = getattr(parent, "uninomial", None)
     specific_epithet = getattr(parent, "specific_epithet", None)
     infraspecific_epithet = getattr(parent, "infraspecific_epithet", None)
@@ -800,10 +866,6 @@ def build_parent_formatted_scientific_name(parent: TaxonName) -> str | None:
             is_autonym=bool(getattr(parent, "is_autonym", False)),
             italicize=True,
         )
-
-    formatted_scientific_name = getattr(parent, "formatted_scientific_name", None)
-    if formatted_scientific_name:
-        return unitalicize_infraspecific_rank_abbreviations(formatted_scientific_name)
 
     return getattr(parent, "scientific_name", None)
 
