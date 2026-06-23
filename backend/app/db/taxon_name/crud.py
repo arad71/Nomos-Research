@@ -44,6 +44,7 @@ CANONICAL = "Canonical"
 
 CANONICAL_WITHOUT_RANK = "Canonical without rank"
 HYBRID_FORMULA_PREFIX_RE = re.compile(r"^(?:×|x|X)\s+")
+SPACED_HYBRID_MARKER_RE = re.compile(r"(^|\s)x\s+", re.IGNORECASE)
 
 
 class TaxonNameCrud(crud.Crud):
@@ -94,6 +95,29 @@ class TaxonNameCrud(crud.Crud):
         if value is None:
             return False
         return bool(HYBRID_FORMULA_PREFIX_RE.match(value.strip()))
+
+    @staticmethod
+    def _normalize_hybrid_multiplication_sign(value: str | None) -> str | None:
+        if value is None:
+            return None
+        return SPACED_HYBRID_MARKER_RE.sub(r"\1× ", value)
+
+    @classmethod
+    def _normalize_legacy_hybrid_name_parts(cls, values) -> None:
+        for field in (
+            "specific_epithet",
+            "infraspecific_epithet",
+            "parallel_override_specific_epithet",
+            "parallel_override_infraspecific_epithet",
+        ):
+            if hasattr(values, field):
+                setattr(
+                    values,
+                    field,
+                    cls._normalize_hybrid_multiplication_sign(
+                        getattr(values, field, None)
+                    ),
+                )
 
     @classmethod
     def _normalize_hybrid_formula_fields(cls, values) -> None:
@@ -310,6 +334,7 @@ class TaxonNameCrud(crud.Crud):
         db_session.close()
         ```
         """
+        cls._normalize_legacy_hybrid_name_parts(taxon_name)
         create_data = taxon_name.dict(exclude_unset=True)
         delattr(taxon_name, "classification_system_ids")
         db_taxon_name = super().create_item(db, taxon_name, current_user=current_user)
@@ -389,6 +414,7 @@ class TaxonNameCrud(crud.Crud):
         updated_taxon_name = TaxonNameCrud.edit_item(db, current_user, taxon_name_id,
         taxon_name_edit)
         """
+        cls._normalize_legacy_hybrid_name_parts(taxon_name)
         update_data = taxon_name.dict(exclude_unset=True)
         if "classification_system_ids" in update_data:
             classification_system_ids = update_data["classification_system_ids"]

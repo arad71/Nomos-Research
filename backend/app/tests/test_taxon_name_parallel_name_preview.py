@@ -69,6 +69,171 @@ def test_derive_parallel_name_marks_genus_level_named_hybrid():
     )
 
 
+def test_derive_species_named_hybrid_uses_first_parent_with_specific_override():
+    parent = SimpleNamespace(
+        taxon_name_id=10,
+        deleted=False,
+        rank_name="Species",
+        taxon_rank=SimpleNamespace(rank_name="Species"),
+        uninomial="Acacia",
+        canonical_name_without_rank="Acacia ampliceps",
+        canonical_name="Acacia ampliceps",
+        scientific_name="Acacia ampliceps Maslin",
+        formatted_scientific_name="<i>Acacia ampliceps</i> Maslin",
+        hybrid_category=None,
+    )
+    second_parent = SimpleNamespace(
+        taxon_name_id=11,
+        deleted=False,
+        rank_name="Species",
+        taxon_rank=SimpleNamespace(rank_name="Species"),
+        uninomial="Acacia",
+        canonical_name_without_rank="Acacia sclerosperma",
+        canonical_name="Acacia sclerosperma",
+        scientific_name="Acacia sclerosperma F.Muell.",
+        formatted_scientific_name="<i>Acacia sclerosperma</i> F.Muell.",
+        hybrid_category=None,
+    )
+    taxon_name = SimpleNamespace(
+        taxon_name_id=1,
+        author=None,
+        is_autonym=False,
+        taxon_rank=SimpleNamespace(rank_name="Species", rank_abbrev=None),
+        rank_name="Species",
+        is_hybrid=True,
+        hybrid_category=SimpleNamespace(value="named_hybrid"),
+        taxon_name_parents=[
+            SimpleNamespace(
+                deleted=False,
+                sequence=1,
+                parent_taxon_name_id=parent.taxon_name_id,
+                parent_taxon_name=parent,
+            ),
+            SimpleNamespace(
+                deleted=False,
+                sequence=2,
+                parent_taxon_name_id=second_parent.taxon_name_id,
+                parent_taxon_name=second_parent,
+            )
+        ],
+        parallel_override_uninomial=None,
+        parallel_override_specific_epithet="danny",
+        parallel_override_infraspecific_epithet=None,
+        uninomial=None,
+        specific_epithet="ampliceps x sclerosperma subsp. sclerosperma",
+        infraspecific_epithet=None,
+        canonical_name=None,
+        scientific_name=None,
+    )
+
+    derived = derive_parallel_name(None, taxon_name, strict=True)
+
+    assert derived["strategy"] == "named_hybrid_parent_genus_inheritance"
+    assert derived["canonical_name"] == "× Acacia danny"
+
+
+def test_derive_species_named_hybrid_parent_fallback_ignores_legacy_specific():
+    parent = SimpleNamespace(
+        taxon_name_id=10,
+        deleted=False,
+        rank_name="Species",
+        taxon_rank=SimpleNamespace(rank_name="Species"),
+        uninomial="Acacia",
+        canonical_name_without_rank="Acacia ampliceps",
+        canonical_name="Acacia ampliceps",
+        scientific_name="Acacia ampliceps Maslin",
+        formatted_scientific_name="<i>Acacia ampliceps</i> Maslin",
+        hybrid_category=None,
+    )
+    taxon_name = SimpleNamespace(
+        taxon_name_id=1,
+        author=None,
+        is_autonym=False,
+        taxon_rank=SimpleNamespace(rank_name="Species", rank_abbrev=None),
+        rank_name="Species",
+        is_hybrid=True,
+        hybrid_category=SimpleNamespace(value="named_hybrid"),
+        taxon_name_parents=[
+            SimpleNamespace(
+                deleted=False,
+                sequence=1,
+                parent_taxon_name_id=parent.taxon_name_id,
+                parent_taxon_name=parent,
+            ),
+            SimpleNamespace(
+                deleted=False,
+                sequence=2,
+                parent_taxon_name_id=11,
+                parent_taxon_name=parent,
+            ),
+        ],
+        parallel_override_uninomial=None,
+        parallel_override_specific_epithet=None,
+        parallel_override_infraspecific_epithet=None,
+        uninomial="Acacia",
+        specific_epithet="ampliceps x sclerosperma subsp. sclerosperma",
+        infraspecific_epithet=None,
+        canonical_name=None,
+        scientific_name=None,
+    )
+
+    derived = derive_parallel_name(None, taxon_name, strict=True)
+
+    assert derived["strategy"] == "named_hybrid_parent_genus_inheritance"
+    assert derived["canonical_name"] == "× Acacia"
+
+
+def test_derive_species_named_hybrid_skips_parent_when_override_is_present():
+    parent = SimpleNamespace(
+        taxon_name_id=10,
+        deleted=False,
+        rank_name="Species",
+        taxon_rank=SimpleNamespace(rank_name="Species"),
+        uninomial="Acacia",
+        canonical_name_without_rank="Acacia ampliceps",
+        canonical_name="Acacia ampliceps",
+        scientific_name="Acacia ampliceps Maslin",
+        formatted_scientific_name="<i>Acacia ampliceps</i> Maslin",
+        hybrid_category=None,
+    )
+    taxon_name = SimpleNamespace(
+        taxon_name_id=1,
+        author=None,
+        is_autonym=False,
+        taxon_rank=SimpleNamespace(rank_name="Species", rank_abbrev=None),
+        rank_name="Species",
+        is_hybrid=True,
+        hybrid_category=SimpleNamespace(value="named_hybrid"),
+        taxon_name_parents=[
+            SimpleNamespace(
+                deleted=False,
+                sequence=1,
+                parent_taxon_name_id=parent.taxon_name_id,
+                parent_taxon_name=parent,
+            ),
+            SimpleNamespace(
+                deleted=False,
+                sequence=2,
+                parent_taxon_name_id=11,
+                parent_taxon_name=parent,
+            ),
+        ],
+        parallel_override_uninomial="danny",
+        parallel_override_specific_epithet="danny",
+        parallel_override_infraspecific_epithet=None,
+        uninomial="Acacia",
+        specific_epithet="old",
+        infraspecific_epithet=None,
+        canonical_name=None,
+        scientific_name=None,
+    )
+
+    derived = derive_parallel_name(None, taxon_name, strict=True)
+
+    assert derived["strategy"] == "named_hybrid_parallel_override"
+    assert derived["canonical_name"] == "× danny danny"
+
+
 def test_derive_parallel_name_uses_bracketed_subgenus_for_canonical_name():
     parent = SimpleNamespace(
         taxon_name_id=1,
@@ -147,6 +312,176 @@ def test_join_parent_names_keeps_repeated_genus_for_hybrid_formula():
     assert join_parent_names(
         taxon_name, parent_taxa, name_value="formatted_scientific"
     ) == ("<i>Acacia rhodophloia</i> Maslin × " "<i>Acacia sibirica</i> S.Moore")
+
+
+def test_derive_hybrid_formula_uses_parallel_override_instead_of_parent_formula():
+    parents = [
+        SimpleNamespace(
+            taxon_name_id=10,
+            deleted=False,
+            infragenus_name=None,
+            rank_name="Species",
+            taxon_rank=SimpleNamespace(rank_name="Species"),
+            canonical_name_without_rank="Acacia ampliceps",
+            canonical_name="Acacia ampliceps",
+            scientific_name="Acacia ampliceps Maslin",
+            formatted_scientific_name="<i>Acacia ampliceps</i> Maslin",
+            uninomial="Acacia",
+            specific_epithet="ampliceps",
+            infraspecific_epithet=None,
+            is_hybrid=False,
+            hybrid_category=None,
+        ),
+        SimpleNamespace(
+            taxon_name_id=11,
+            deleted=False,
+            infragenus_name=None,
+            rank_name="Subspecies",
+            taxon_rank=SimpleNamespace(rank_name="Subspecies"),
+            canonical_name_without_rank="Acacia sclerosperma subsp. sclerosperma",
+            canonical_name="Acacia sclerosperma subsp. sclerosperma",
+            scientific_name="Acacia sclerosperma F.Muell. subsp. sclerosperma",
+            formatted_scientific_name=(
+                "<i>Acacia sclerosperma</i> F.Muell. subsp. "
+                "<i>sclerosperma</i>"
+            ),
+            uninomial="Acacia",
+            specific_epithet="sclerosperma",
+            rank_abbreviation="subsp.",
+            infraspecific_epithet="sclerosperma",
+            is_hybrid=False,
+            hybrid_category=None,
+        ),
+    ]
+    taxon_name = SimpleNamespace(
+        taxon_name_id=12,
+        author=None,
+        is_autonym=False,
+        taxon_rank=SimpleNamespace(rank_name="Species", rank_abbrev=None),
+        rank_name="Species",
+        publication_status="published",
+        is_hybrid=True,
+        hybrid_category=SimpleNamespace(value="hybrid_formula"),
+        taxon_name_parents=[
+            SimpleNamespace(
+                parent_taxon_name=parents[0],
+                parent_taxon_name_id=parents[0].taxon_name_id,
+                sequence=1,
+                deleted=False,
+            ),
+            SimpleNamespace(
+                parent_taxon_name=parents[1],
+                parent_taxon_name_id=parents[1].taxon_name_id,
+                sequence=2,
+                deleted=False,
+            ),
+        ],
+        parallel_override_uninomial="danny",
+        parallel_override_specific_epithet="x bob",
+        parallel_override_infraspecific_epithet=None,
+        uninomial=None,
+        specific_epithet=None,
+        infraspecific_epithet=None,
+        canonical_name="Acacia ampliceps × Acacia sclerosperma subsp. sclerosperma",
+        scientific_name=(
+            "Acacia ampliceps Maslin × "
+            "Acacia sclerosperma F.Muell. subsp. sclerosperma"
+        ),
+    )
+
+    derived = derive_parallel_name(None, taxon_name, strict=True)
+
+    assert derived["strategy"] == "hybrid_parallel_override"
+    assert derived["canonical_name"] == "danny x bob"
+    assert derived["scientific_name"] == "danny x bob"
+    assert derived["formatted_scientific_name"] == "<i>danny</i> <i>x bob</i>"
+
+
+def test_derive_hybrid_formula_uses_parent_formula_without_uninomial_override():
+    parents = [
+        SimpleNamespace(
+            taxon_name_id=10,
+            deleted=False,
+            infragenus_name=None,
+            rank_name="Species",
+            taxon_rank=SimpleNamespace(rank_name="Species"),
+            canonical_name_without_rank="Acacia ampliceps",
+            canonical_name="Acacia ampliceps",
+            scientific_name="Acacia ampliceps Maslin",
+            formatted_scientific_name="<i>Acacia ampliceps</i> Maslin",
+            uninomial="Acacia",
+            specific_epithet="ampliceps",
+            infraspecific_epithet=None,
+            is_hybrid=False,
+            hybrid_category=None,
+        ),
+        SimpleNamespace(
+            taxon_name_id=11,
+            deleted=False,
+            infragenus_name=None,
+            rank_name="Subspecies",
+            taxon_rank=SimpleNamespace(rank_name="Subspecies"),
+            canonical_name_without_rank="Acacia sclerosperma subsp. sclerosperma",
+            canonical_name="Acacia sclerosperma subsp. sclerosperma",
+            scientific_name="Acacia sclerosperma F.Muell. subsp. sclerosperma",
+            formatted_scientific_name=(
+                "<i>Acacia sclerosperma</i> F.Muell. subsp. "
+                "<i>sclerosperma</i>"
+            ),
+            uninomial="Acacia",
+            specific_epithet="sclerosperma",
+            rank_abbreviation="subsp.",
+            infraspecific_epithet="sclerosperma",
+            is_hybrid=False,
+            hybrid_category=None,
+        ),
+    ]
+    taxon_name = SimpleNamespace(
+        taxon_name_id=12,
+        author=None,
+        is_autonym=False,
+        taxon_rank=SimpleNamespace(rank_name="Species", rank_abbrev=None),
+        rank_name="Species",
+        publication_status="published",
+        is_hybrid=True,
+        hybrid_category=SimpleNamespace(value="hybrid_formula"),
+        taxon_name_parents=[
+            SimpleNamespace(
+                parent_taxon_name=parents[0],
+                parent_taxon_name_id=parents[0].taxon_name_id,
+                sequence=1,
+                deleted=False,
+            ),
+            SimpleNamespace(
+                parent_taxon_name=parents[1],
+                parent_taxon_name_id=parents[1].taxon_name_id,
+                sequence=2,
+                deleted=False,
+            ),
+        ],
+        parallel_override_uninomial=None,
+        parallel_override_specific_epithet="x bob",
+        parallel_override_infraspecific_epithet=None,
+        uninomial=None,
+        specific_epithet=None,
+        infraspecific_epithet=None,
+        canonical_name="Acacia ampliceps × Acacia sclerosperma subsp. sclerosperma",
+        scientific_name=(
+            "Acacia ampliceps Maslin × "
+            "Acacia sclerosperma F.Muell. subsp. sclerosperma"
+        ),
+    )
+
+    derived = derive_parallel_name(None, taxon_name, strict=True)
+
+    assert derived["strategy"] == "hybrid_parent_formula"
+    assert derived["canonical_name"] == (
+        "Acacia ampliceps × Acacia sclerosperma subsp. sclerosperma"
+    )
+    assert derived["scientific_name"] == (
+        "Acacia ampliceps Maslin × "
+        "Acacia sclerosperma F.Muell. subsp. sclerosperma"
+    )
 
 
 def test_join_parent_names_keeps_repeated_genus_for_intergrade():
@@ -301,6 +636,110 @@ def test_join_parent_names_brackets_hybrid_formula_parent():
     ) == (
         "<i>Agrilus</i> Curtis, 1825 × "
         "(<i>Acacia ampliceps x sclerosperma</i> subsp. "
+        "<i>sclerosperma</i>)"
+    )
+
+
+def test_join_parent_names_rebuilds_nested_hybrid_formula_parent_for_scientific_names():
+    taxon_name = SimpleNamespace(
+        hybrid_category=SimpleNamespace(value="hybrid_formula")
+    )
+    nested_parent_one = SimpleNamespace(
+        taxon_name_id=2147,
+        deleted=False,
+        infragenus_name=None,
+        canonical_name_without_rank="Acacia ampliceps",
+        canonical_name="Acacia ampliceps",
+        scientific_name="Acacia ampliceps Maslin",
+        formatted_scientific_name="<i>Acacia</i> <i>ampliceps</i> Maslin",
+        uninomial="Acacia",
+        specific_epithet="ampliceps",
+        infraspecific_epithet=None,
+        author="Maslin",
+        is_autonym=False,
+        is_hybrid=False,
+        hybrid_category=None,
+    )
+    nested_parent_two = SimpleNamespace(
+        taxon_name_id=7458,
+        deleted=False,
+        infragenus_name=None,
+        canonical_name_without_rank="Acacia sclerosperma subsp. sclerosperma",
+        canonical_name="Acacia sclerosperma subsp. sclerosperma",
+        scientific_name="Acacia sclerosperma F.Muell. subsp. sclerosperma",
+        formatted_scientific_name=(
+            "<i>Acacia</i> <i>sclerosperma</i> F.Muell. subsp. "
+            "<i>sclerosperma</i>"
+        ),
+        uninomial="Acacia",
+        specific_epithet="sclerosperma",
+        rank_abbreviation="subsp.",
+        infraspecific_epithet="sclerosperma",
+        author="F.Muell.",
+        is_autonym=False,
+        is_hybrid=False,
+        hybrid_category=None,
+    )
+    hybrid_parent = SimpleNamespace(
+        taxon_name_id=31299,
+        deleted=False,
+        infragenus_name=None,
+        canonical_name_without_rank=(
+            "Acacia ampliceps × sclerosperma subsp. sclerosperma"
+        ),
+        canonical_name="Acacia ampliceps × sclerosperma subsp. sclerosperma",
+        scientific_name="Acacia ampliceps × sclerosperma subsp. sclerosperma",
+        formatted_scientific_name=(
+            "<i>Acacia ampliceps × sclerosperma subsp. sclerosperma</i>"
+        ),
+        uninomial="Acacia",
+        is_hybrid=True,
+        hybrid_category=SimpleNamespace(value="hybrid_formula"),
+        taxon_name_parents=[
+            SimpleNamespace(
+                parent_taxon_name=nested_parent_one,
+                parent_taxon_name_id=nested_parent_one.taxon_name_id,
+                sequence=1,
+                deleted=False,
+            ),
+            SimpleNamespace(
+                parent_taxon_name=nested_parent_two,
+                parent_taxon_name_id=nested_parent_two.taxon_name_id,
+                sequence=2,
+                deleted=False,
+            ),
+        ],
+    )
+    parent_taxa = [
+        SimpleNamespace(
+            taxon_name_id=347,
+            deleted=False,
+            infragenus_name=None,
+            canonical_name_without_rank="Acacia eriopoda",
+            canonical_name="Acacia eriopoda",
+            scientific_name="Acacia eriopoda Maiden & Blakely",
+            formatted_scientific_name="<i>Acacia</i> <i>eriopoda</i> Maiden & Blakely",
+            uninomial="Acacia",
+            specific_epithet="eriopoda",
+            infraspecific_epithet=None,
+            author="Maiden & Blakely",
+            is_hybrid=False,
+            hybrid_category=None,
+        ),
+        hybrid_parent,
+    ]
+
+    assert join_parent_names(taxon_name, parent_taxa, name_value="scientific") == (
+        "Acacia eriopoda Maiden & Blakely × "
+        "(Acacia ampliceps Maslin × "
+        "Acacia sclerosperma F.Muell. subsp. sclerosperma)"
+    )
+    assert join_parent_names(
+        taxon_name, parent_taxa, name_value="formatted_scientific"
+    ) == (
+        "<i>Acacia</i> <i>eriopoda</i> Maiden & Blakely × "
+        "(<i>Acacia</i> <i>ampliceps</i> Maslin × "
+        "<i>Acacia</i> <i>sclerosperma</i> F.Muell. subsp. "
         "<i>sclerosperma</i>)"
     )
 
