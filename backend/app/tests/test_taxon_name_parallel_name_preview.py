@@ -114,7 +114,7 @@ def test_derive_species_named_hybrid_uses_first_parent_with_specific_override():
                 sequence=2,
                 parent_taxon_name_id=second_parent.taxon_name_id,
                 parent_taxon_name=second_parent,
-            )
+            ),
         ],
         parallel_override_uninomial=None,
         parallel_override_specific_epithet="danny",
@@ -342,8 +342,7 @@ def test_derive_hybrid_formula_uses_parallel_override_instead_of_parent_formula(
             canonical_name="Acacia sclerosperma subsp. sclerosperma",
             scientific_name="Acacia sclerosperma F.Muell. subsp. sclerosperma",
             formatted_scientific_name=(
-                "<i>Acacia sclerosperma</i> F.Muell. subsp. "
-                "<i>sclerosperma</i>"
+                "<i>Acacia sclerosperma</i> F.Muell. subsp. " "<i>sclerosperma</i>"
             ),
             uninomial="Acacia",
             specific_epithet="sclerosperma",
@@ -425,8 +424,7 @@ def test_derive_hybrid_formula_uses_parent_formula_without_uninomial_override():
             canonical_name="Acacia sclerosperma subsp. sclerosperma",
             scientific_name="Acacia sclerosperma F.Muell. subsp. sclerosperma",
             formatted_scientific_name=(
-                "<i>Acacia sclerosperma</i> F.Muell. subsp. "
-                "<i>sclerosperma</i>"
+                "<i>Acacia sclerosperma</i> F.Muell. subsp. " "<i>sclerosperma</i>"
             ),
             uninomial="Acacia",
             specific_epithet="sclerosperma",
@@ -479,8 +477,7 @@ def test_derive_hybrid_formula_uses_parent_formula_without_uninomial_override():
         "Acacia ampliceps × Acacia sclerosperma subsp. sclerosperma"
     )
     assert derived["scientific_name"] == (
-        "Acacia ampliceps Maslin × "
-        "Acacia sclerosperma F.Muell. subsp. sclerosperma"
+        "Acacia ampliceps Maslin × " "Acacia sclerosperma F.Muell. subsp. sclerosperma"
     )
 
 
@@ -668,8 +665,7 @@ def test_join_parent_names_rebuilds_nested_hybrid_formula_parent_for_scientific_
         canonical_name="Acacia sclerosperma subsp. sclerosperma",
         scientific_name="Acacia sclerosperma F.Muell. subsp. sclerosperma",
         formatted_scientific_name=(
-            "<i>Acacia</i> <i>sclerosperma</i> F.Muell. subsp. "
-            "<i>sclerosperma</i>"
+            "<i>Acacia</i> <i>sclerosperma</i> F.Muell. subsp. " "<i>sclerosperma</i>"
         ),
         uninomial="Acacia",
         specific_epithet="sclerosperma",

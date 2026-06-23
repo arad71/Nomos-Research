@@ -137,13 +137,6 @@ def derive_parallel_name(
     has_meaningful_uninomial_override = has_uninomial_override
     has_meaningful_specific_epithet_override = has_specific_epithet_override
     has_meaningful_infraspecific_epithet_override = has_infraspecific_epithet_override
-    has_meaningful_parallel_override = any(
-        [
-            has_meaningful_uninomial_override,
-            has_meaningful_specific_epithet_override,
-            has_meaningful_infraspecific_epithet_override,
-        ]
-    )
     has_explicit_parallel_uninomial_override = (
         taxon_name.parallel_override_uninomial is not None
     )
@@ -791,10 +784,13 @@ def best_parent_name_value(
             name_value="formatted_scientific",
         ) or build_parent_formatted_scientific_name(parent)
     elif name_value == "scientific":
-        value = build_hybrid_parent_formula_from_links(
-            parent,
-            name_value="scientific",
-        ) or parent.scientific_name
+        value = (
+            build_hybrid_parent_formula_from_links(
+                parent,
+                name_value="scientific",
+            )
+            or parent.scientific_name
+        )
     else:
         value = (
             parent.infragenus_name
