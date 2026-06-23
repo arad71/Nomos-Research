@@ -487,6 +487,52 @@ def derive_parallel_name(
                             strict_overlay_formatted_scientific_name
                         ),
                     )
+            if (
+                strict
+                and not parent_is_infrageneric
+                and rank_name
+                in {
+                    SPECIES_RANK_NAME,
+                    *INFRASPECIFIC_RANK_NAMES,
+                }
+            ):
+                strict_parent_bracketed_scientific_name = (
+                    build_strict_parent_bracketed_scientific_name(
+                        parent=parent,
+                        components=components,
+                        author=taxon_name.author,
+                        italicize=False,
+                    )
+                )
+                strict_parent_bracketed_formatted_scientific_name = (
+                    build_strict_parent_bracketed_scientific_name(
+                        parent=parent,
+                        components=components,
+                        author=taxon_name.author,
+                        italicize=True,
+                    )
+                )
+                if strict_parent_bracketed_scientific_name:
+                    strategy = "strict_parent_bracketed_scientific_overlay"
+                    notes.append(
+                        f"Carried the bracketed scientific-name context from linked parent taxon {parent.taxon_name_id}."
+                    )
+                    return derived_parallel_name_result(
+                        taxon_name=taxon_name,
+                        strategy=strategy,
+                        notes=notes,
+                        parent_taxon_name_ids=[
+                            parent.taxon_name_id for parent in parent_taxa
+                        ],
+                        uninomial=components.uninomial,
+                        canonical_name=calculated.calculate_canonical_name_string(
+                            components
+                        ),
+                        scientific_name=strict_parent_bracketed_scientific_name,
+                        formatted_scientific_name=(
+                            strict_parent_bracketed_formatted_scientific_name
+                        ),
+                    )
 
     if rank_name in HIGHER_RANK_INFRAGENERIC_NAMES and len(parent_taxa) == 1:
         stored_bracketed_component = extract_stored_bracketed_scientific_component(
@@ -981,6 +1027,45 @@ def build_strict_infrageneric_overlay_name(
         f"{genus_value} ({bracketed_component})" if bracketed_component else genus_value
     )
 
+    specific_epithet = (
+        calculated.italicize_name(components.specific_epithet)
+        if italicize
+        else components.specific_epithet
+    )
+    infraspecific_epithet = (
+        calculated.italicize_name(components.infraspecific_epithet)
+        if italicize
+        else components.infraspecific_epithet
+    )
+
+    return calculated.filter_join(
+        [
+            head,
+            specific_epithet,
+            components.rank_abbreviation,
+            infraspecific_epithet,
+            author,
+        ]
+    )
+
+
+def build_strict_parent_bracketed_scientific_name(
+    *,
+    parent: TaxonName,
+    components: schema.NameStringComponents,
+    author: str | None,
+    italicize: bool = False,
+) -> str | None:
+    genus_value = components.uninomial
+    bracketed_component = extract_stored_bracketed_scientific_component(parent)
+    if not genus_value or not bracketed_component:
+        return None
+
+    if italicize:
+        genus_value = calculated.italicize_name(genus_value)
+        bracketed_component = calculated.italicize_name(bracketed_component)
+
+    head = f"{genus_value} ({bracketed_component})"
     specific_epithet = (
         calculated.italicize_name(components.specific_epithet)
         if italicize

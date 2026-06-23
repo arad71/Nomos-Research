@@ -220,6 +220,13 @@ const UninomialInput = () => {
     () => deriveParentValue(parentRows, parentTaxaById, hybridCategory),
     [hybridCategory, parentRows, parentTaxaById]
   );
+  const parentDisplayValue = React.useMemo(
+    () =>
+      deriveParentValue(parentRows, parentTaxaById, hybridCategory, {
+        includeBracketedScientificContext: true,
+      }),
+    [hybridCategory, parentRows, parentTaxaById]
+  );
   const isPending = parentRowsPending || parentTaxaPending;
   const matchesParentDerived = Boolean(
     hasOverride &&
@@ -279,7 +286,9 @@ const UninomialInput = () => {
               Uninomial <span className="text-destructive">*</span>
             </span>
             <div className="flex flex-wrap items-center gap-2 py-2">
-              <Badge variant="outline">{parentDerivedValue}</Badge>
+              <Badge variant="outline">
+                {parentDisplayValue || parentDerivedValue}
+              </Badge>
               <span className="text-xs text-muted-foreground">
                 Parent value
               </span>
@@ -314,7 +323,9 @@ const UninomialInput = () => {
         </span>
       ) : parentDerivedValue && showInput && !hasOverride ? (
         <div className="flex flex-wrap items-center gap-2">
-          <Badge variant="outline">{parentDerivedValue}</Badge>
+          <Badge variant="outline">
+            {parentDisplayValue || parentDerivedValue}
+          </Badge>
           <span className="text-xs text-muted-foreground">
             Parent value
           </span>
