@@ -327,7 +327,7 @@ def test_derive_infraspecific_name_carries_parent_bracketed_subgenus():
     derived = derive_parallel_name(None, taxon_name, strict=True)
 
     assert derived["strategy"] == "strict_parent_bracketed_scientific_overlay"
-    assert derived["canonical_name"] == "Cicindela mastersi catoptriola"
+    assert derived["canonical_name"] == "Cicindela (Myriochile) mastersi catoptriola"
     assert derived["scientific_name"] == (
         "Cicindela (Myriochile) mastersi catoptriola Horn, 1901"
     )

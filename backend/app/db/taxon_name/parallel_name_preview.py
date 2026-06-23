@@ -504,6 +504,14 @@ def derive_parallel_name(
                         italicize=False,
                     )
                 )
+                strict_parent_bracketed_canonical_name = (
+                    build_strict_parent_bracketed_scientific_name(
+                        parent=parent,
+                        components=components,
+                        author=taxon_name.author,
+                        include_author=False,
+                    )
+                )
                 strict_parent_bracketed_formatted_scientific_name = (
                     build_strict_parent_bracketed_scientific_name(
                         parent=parent,
@@ -525,9 +533,7 @@ def derive_parallel_name(
                             parent.taxon_name_id for parent in parent_taxa
                         ],
                         uninomial=components.uninomial,
-                        canonical_name=calculated.calculate_canonical_name_string(
-                            components
-                        ),
+                        canonical_name=strict_parent_bracketed_canonical_name,
                         scientific_name=strict_parent_bracketed_scientific_name,
                         formatted_scientific_name=(
                             strict_parent_bracketed_formatted_scientific_name
@@ -1054,6 +1060,7 @@ def build_strict_parent_bracketed_scientific_name(
     parent: TaxonName,
     components: schema.NameStringComponents,
     author: str | None,
+    include_author: bool = True,
     italicize: bool = False,
 ) -> str | None:
     genus_value = components.uninomial
@@ -1083,7 +1090,7 @@ def build_strict_parent_bracketed_scientific_name(
             specific_epithet,
             components.rank_abbreviation,
             infraspecific_epithet,
-            author,
+            author if include_author else None,
         ]
     )
 
