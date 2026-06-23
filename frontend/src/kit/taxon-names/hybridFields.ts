@@ -73,18 +73,18 @@ export const normalizeTaxonNameHybridFields = <T extends TaxonNameHybridPayload>
 };
 
 const bracketedScientificHead = (taxon?: ParentTaxonRecord | null) => {
-  const uninomial = taxon?.uninomial?.trim();
-  const scientificName = taxon?.scientific_name?.trim();
-  if (!uninomial || !scientificName) {
-    return '';
+  const candidates = [taxon?.canonical_name, taxon?.scientific_name]
+    .map((value) => value?.trim())
+    .filter((value): value is string => Boolean(value));
+
+  for (const candidate of candidates) {
+    const match = candidate.match(/^(\S+)\s+\(([^)]+)\)/);
+    if (match) {
+      return `${match[1]} (${match[2].trim()})`;
+    }
   }
 
-  const match = scientificName.match(/^(\S+)\s+\(([^)]+)\)/);
-  if (!match || match[1] !== uninomial) {
-    return '';
-  }
-
-  return `${uninomial} (${match[2].trim()})`;
+  return '';
 };
 
 export const formatParentPreviewName = (
