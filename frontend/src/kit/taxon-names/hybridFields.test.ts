@@ -92,4 +92,32 @@ describe('deriveParentValue', () => {
     );
   });
 
+  it('can include bracketed scientific context for parent display values', () => {
+    const bracketedParentTaxa = new Map<string, ParentTaxonRecord>([
+      [
+        '1',
+        {
+          id: 1,
+          uninomial: 'Cicindela',
+          scientific_name: 'Cicindela (Myriochile) mastersi Castelnau, 1867',
+        },
+      ],
+    ]);
+
+    expect(
+      deriveParentValue(
+        [{ parent_taxon_name_id: 1, sequence: 1 }],
+        bracketedParentTaxa
+      )
+    ).toBe('Cicindela');
+    expect(
+      deriveParentValue(
+        [{ parent_taxon_name_id: 1, sequence: 1 }],
+        bracketedParentTaxa,
+        null,
+        { includeBracketedScientificContext: true }
+      )
+    ).toBe('Cicindela (Myriochile)');
+  });
+
 });

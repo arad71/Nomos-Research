@@ -26,6 +26,10 @@ export type ParentTaxonRecord = {
   formatted_scientific_name?: string | null;
 };
 
+type ParentPreviewOptions = {
+  includeBracketedScientificContext?: boolean;
+};
+
 const nullableBlank = <T>(value: T | '' | undefined): T | null | undefined => {
   if (typeof value === 'string' && value.trim() === '') {
     return null;
@@ -68,7 +72,28 @@ export const normalizeTaxonNameHybridFields = <T extends TaxonNameHybridPayload>
   };
 };
 
-export const formatParentPreviewName = (taxon?: ParentTaxonRecord | null) =>
+const bracketedScientificHead = (taxon?: ParentTaxonRecord | null) => {
+  const uninomial = taxon?.uninomial?.trim();
+  const scientificName = taxon?.scientific_name?.trim();
+  if (!uninomial || !scientificName) {
+    return '';
+  }
+
+  const match = scientificName.match(/^(\S+)\s+\(([^)]+)\)/);
+  if (!match || match[1] !== uninomial) {
+    return '';
+  }
+
+  return `${uninomial} (${match[2].trim()})`;
+};
+
+export const formatParentPreviewName = (
+  taxon?: ParentTaxonRecord | null,
+  options: ParentPreviewOptions = {}
+) =>
+  (options.includeBracketedScientificContext
+    ? bracketedScientificHead(taxon)
+    : '') ||
   taxon?.uninomial?.trim() ||
   taxon?.scientific_name?.trim() ||
   taxon?.canonical_name?.trim() ||
@@ -76,7 +101,8 @@ export const formatParentPreviewName = (taxon?: ParentTaxonRecord | null) =>
 
 export const getOrderedParentNames = (
   rows: ParentLinkRecord[],
-  parentTaxa: Map<string, ParentTaxonRecord>
+  parentTaxa: Map<string, ParentTaxonRecord>,
+  options: ParentPreviewOptions = {}
 ) =>
   [...rows]
     .sort(
@@ -86,7 +112,8 @@ export const getOrderedParentNames = (
       row.parent_taxon_name_id == null
         ? ''
         : formatParentPreviewName(
-            parentTaxa.get(String(row.parent_taxon_name_id))
+            parentTaxa.get(String(row.parent_taxon_name_id)),
+            options
           )
     )
     .filter(Boolean);
@@ -94,9 +121,10 @@ export const getOrderedParentNames = (
 export const deriveParentValue = (
   rows: ParentLinkRecord[],
   parentTaxa: Map<string, ParentTaxonRecord>,
-  hybridCategory?: string | null
+  hybridCategory?: string | null,
+  options: ParentPreviewOptions = {}
 ) => {
-  const orderedParentNames = getOrderedParentNames(rows, parentTaxa);
+  const orderedParentNames = getOrderedParentNames(rows, parentTaxa, options);
 
   if (hybridCategory === 'named_hybrid') {
     return orderedParentNames[0] ?? '';
