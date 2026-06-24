@@ -181,23 +181,8 @@ def derive_parallel_name(
         == "named_hybrid"
     )
 
-    if is_named_hybrid and components.uninomial:
-        components.hybrid_marker_on_uninomial = True
-    if (
-        rank_name == SPECIES_RANK_NAME
-        and is_named_hybrid
-        and not components.uninomial
-        and components.specific_epithet
-    ):
-        components.hybrid_marker_on_specific_epithet = True
-    if (
-        rank_name in INFRASPECIFIC_RANK_NAMES
-        and is_named_hybrid
-        and not components.uninomial
-        and not components.specific_epithet
-        and components.infraspecific_epithet
-    ):
-        components.hybrid_marker_on_infraspecific_epithet = True
+    if is_named_hybrid:
+        apply_named_hybrid_marker(components=components, rank_name=rank_name)
 
     # Parallel derivation intentionally avoids current-name alignment checks.
 
@@ -249,10 +234,7 @@ def derive_parallel_name(
                         components.infraspecific_epithet = normalize_parallel_name_part(
                             taxon_name.infraspecific_epithet
                         )
-                components.hybrid_marker_on_specific_epithet = False
-                components.hybrid_marker_on_infraspecific_epithet = False
-                if components.uninomial:
-                    components.hybrid_marker_on_uninomial = True
+                apply_named_hybrid_marker(components=components, rank_name=rank_name)
                 derived_canonical_name = calculated.calculate_canonical_name_string(
                     components
                 )
@@ -536,10 +518,8 @@ def derive_parallel_name(
                         ),
                     )
 
-            if is_named_hybrid and components.uninomial:
-                components.hybrid_marker_on_uninomial = True
-                components.hybrid_marker_on_specific_epithet = False
-                components.hybrid_marker_on_infraspecific_epithet = False
+            if is_named_hybrid:
+                apply_named_hybrid_marker(components=components, rank_name=rank_name)
 
     if rank_name in HIGHER_RANK_INFRAGENERIC_NAMES and len(parent_taxa) == 1:
         stored_bracketed_component = extract_stored_bracketed_scientific_component(
@@ -681,6 +661,23 @@ def normalize_parallel_name_part(value: str | None) -> str | None:
 
     normalized = re.sub(r"\s+", " ", value).strip()
     return normalized or None
+
+
+def apply_named_hybrid_marker(
+    *,
+    components: schema.NameStringComponents,
+    rank_name: str,
+) -> None:
+    components.hybrid_marker_on_uninomial = False
+    components.hybrid_marker_on_specific_epithet = False
+    components.hybrid_marker_on_infraspecific_epithet = False
+
+    if rank_name == "genus" and components.uninomial:
+        components.hybrid_marker_on_uninomial = True
+    elif rank_name == SPECIES_RANK_NAME and components.specific_epithet:
+        components.hybrid_marker_on_specific_epithet = True
+    elif rank_name in INFRASPECIFIC_RANK_NAMES and components.infraspecific_epithet:
+        components.hybrid_marker_on_infraspecific_epithet = True
 
 
 def derive_overlay_uninomial_from_infrageneric_parent(parent: TaxonName) -> str | None:
@@ -1021,8 +1018,13 @@ def build_strict_infrageneric_overlay_name(
         if italicize
         else components.uninomial
     )
+    parent_infrageneric_value = (
+        parent.uninomial or extract_stored_bracketed_scientific_component(parent)
+    )
     infrageneric_value = (
-        calculated.italicize_name(parent.uninomial) if italicize else parent.uninomial
+        calculated.italicize_name(parent_infrageneric_value)
+        if italicize
+        else parent_infrageneric_value
     )
     if not genus_value or not infrageneric_value:
         return None
