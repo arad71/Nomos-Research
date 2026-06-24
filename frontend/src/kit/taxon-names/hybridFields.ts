@@ -73,6 +73,7 @@ export const normalizeTaxonNameHybridFields = <T extends TaxonNameHybridPayload>
 };
 
 const bracketedScientificHead = (taxon?: ParentTaxonRecord | null) => {
+  const uninomial = taxon?.uninomial?.trim();
   const candidates = [taxon?.canonical_name, taxon?.scientific_name]
     .map((value) => value?.trim())
     .filter((value): value is string => Boolean(value));
@@ -80,7 +81,12 @@ const bracketedScientificHead = (taxon?: ParentTaxonRecord | null) => {
   for (const candidate of candidates) {
     const match = candidate.match(/^(\S+)\s+\(([^)]+)\)/);
     if (match) {
-      return `${match[1]} (${match[2].trim()})`;
+      const bracketedValue = match[2].trim();
+      const looksLikeAuthorCitation = /[.,&]/.test(bracketedValue);
+      if (bracketedValue !== uninomial && looksLikeAuthorCitation) {
+        continue;
+      }
+      return `${match[1]} (${bracketedValue})`;
     }
   }
 
