@@ -132,6 +132,54 @@ def test_derive_species_named_hybrid_uses_first_parent_with_specific_override():
     assert derived["canonical_name"] == "× Acacia danny"
 
 
+def test_derive_species_named_hybrid_single_parent_moves_marker_to_parent_genus():
+    parent = SimpleNamespace(
+        taxon_name_id=10,
+        deleted=False,
+        rank_name="Genus",
+        taxon_rank=SimpleNamespace(rank_name="Genus"),
+        uninomial="Banksia",
+        canonical_name_without_rank="Banksia",
+        canonical_name="Banksia",
+        scientific_name="Banksia L.f.",
+        formatted_scientific_name="<i>Banksia</i> L.f.",
+        hybrid_category=None,
+    )
+    taxon_name = SimpleNamespace(
+        taxon_name_id=1,
+        author=None,
+        is_autonym=False,
+        taxon_rank=SimpleNamespace(rank_name="Species", rank_abbrev=None),
+        rank_name="Species",
+        publication_status="published",
+        is_hybrid=True,
+        hybrid_category=SimpleNamespace(value="named_hybrid"),
+        taxon_name_parents=[
+            SimpleNamespace(
+                deleted=False,
+                sequence=1,
+                parent_taxon_name_id=parent.taxon_name_id,
+                parent_taxon_name=parent,
+            )
+        ],
+        parallel_override_uninomial=None,
+        parallel_override_specific_epithet="test",
+        parallel_override_infraspecific_epithet=None,
+        uninomial=None,
+        specific_epithet=None,
+        infraspecific_epithet=None,
+        canonical_name=None,
+        scientific_name=None,
+    )
+
+    derived = derive_parallel_name(None, taxon_name, strict=True)
+
+    assert derived["strategy"] == "single_parent_species_inheritance"
+    assert derived["canonical_name"] == "× Banksia test"
+    assert derived["scientific_name"] == "× Banksia test"
+    assert derived["formatted_scientific_name"] == "× <i>Banksia</i> <i>test</i>"
+
+
 def test_derive_species_named_hybrid_parent_fallback_ignores_legacy_specific():
     parent = SimpleNamespace(
         taxon_name_id=10,
@@ -590,6 +638,35 @@ def test_derive_hybrid_formula_uses_parent_formula_without_uninomial_override():
     assert derived["scientific_name"] == (
         "Acacia ampliceps Maslin × " "Acacia sclerosperma F.Muell. subsp. sclerosperma"
     )
+
+
+def test_derive_zero_parent_hybrid_formula_does_not_prefix_name_parts():
+    taxon_name = SimpleNamespace(
+        taxon_name_id=12,
+        author="Author",
+        is_autonym=False,
+        taxon_rank=SimpleNamespace(rank_name="Species", rank_abbrev=None),
+        rank_name="Species",
+        publication_status="published",
+        is_hybrid=True,
+        hybrid_category=SimpleNamespace(value="hybrid_formula"),
+        taxon_name_parents=[],
+        parallel_override_uninomial="danny",
+        parallel_override_specific_epithet="test",
+        parallel_override_infraspecific_epithet=None,
+        uninomial=None,
+        specific_epithet=None,
+        infraspecific_epithet=None,
+        canonical_name=None,
+        scientific_name=None,
+    )
+
+    derived = derive_parallel_name(None, taxon_name, strict=True)
+
+    assert derived["strategy"] == "stored_fields"
+    assert derived["canonical_name"] == "danny test"
+    assert derived["scientific_name"] == "danny test Author"
+    assert derived["formatted_scientific_name"] == "<i>danny</i> <i>test</i> Author"
 
 
 def test_join_parent_names_keeps_repeated_genus_for_intergrade():
