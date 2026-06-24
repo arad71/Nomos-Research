@@ -113,15 +113,16 @@ def derive_parallel_name(
 ) -> dict[str, object]:
     notes: list[str] = []
     strategy = "stored_fields"
+    parent_taxa = ordered_parent_taxa(taxon_name)
     components = schema.NameStringComponents(
         author=taxon_name.author,
         is_hybrid_formula=(
             bool(getattr(taxon_name, "is_hybrid", False))
             and getattr(getattr(taxon_name, "hybrid_category", None), "value", None)
             == "hybrid_formula"
+            and len(parent_taxa) >= 2
         ),
     )
-    parent_taxa = ordered_parent_taxa(taxon_name)
     rank_name = (
         ((taxon_name.rank_name or taxon_name.taxon_rank.rank_name) or "")
         .strip()
@@ -534,6 +535,11 @@ def derive_parallel_name(
                             strict_parent_bracketed_formatted_scientific_name
                         ),
                     )
+
+            if is_named_hybrid and components.uninomial:
+                components.hybrid_marker_on_uninomial = True
+                components.hybrid_marker_on_specific_epithet = False
+                components.hybrid_marker_on_infraspecific_epithet = False
 
     if rank_name in HIGHER_RANK_INFRAGENERIC_NAMES and len(parent_taxa) == 1:
         stored_bracketed_component = extract_stored_bracketed_scientific_component(
