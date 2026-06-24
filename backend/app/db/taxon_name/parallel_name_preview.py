@@ -490,6 +490,7 @@ def derive_parallel_name(
             if (
                 strict
                 and not parent_is_infrageneric
+                and parent_rank_name == SPECIES_RANK_NAME
                 and rank_name
                 in {
                     SPECIES_RANK_NAME,

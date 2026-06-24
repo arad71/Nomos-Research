@@ -149,4 +149,27 @@ describe('deriveParentValue', () => {
     ).toBe('Aedes (Aedimorphus)');
   });
 
+  it('does not include genus parent author parentheses for display values', () => {
+    const parentTaxaWithAuthorCitation = new Map<string, ParentTaxonRecord>([
+      [
+        '1',
+        {
+          id: 1,
+          uninomial: 'Albugo',
+          canonical_name: 'Albugo',
+          scientific_name: 'Albugo (Pers.) Roussel',
+        },
+      ],
+    ]);
+
+    expect(
+      deriveParentValue(
+        [{ parent_taxon_name_id: 1, sequence: 1 }],
+        parentTaxaWithAuthorCitation,
+        null,
+        { includeBracketedScientificContext: true }
+      )
+    ).toBe('Albugo');
+  });
+
 });

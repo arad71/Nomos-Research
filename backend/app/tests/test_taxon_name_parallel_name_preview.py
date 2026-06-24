@@ -337,6 +337,60 @@ def test_derive_infraspecific_name_carries_parent_bracketed_subgenus():
     )
 
 
+def test_derive_species_name_does_not_carry_genus_parent_author_parentheses():
+    parent = SimpleNamespace(
+        taxon_name_id=172472,
+        deleted=False,
+        rank_name="Genus",
+        taxon_rank=SimpleNamespace(rank_name="Genus", rank_abbrev=None),
+        infragenus_name=None,
+        canonical_name_without_rank="Albugo",
+        canonical_name="Albugo",
+        scientific_name="Albugo (Pers.) Roussel",
+        formatted_scientific_name="<i>Albugo</i> (Pers.) Roussel",
+        uninomial="Albugo",
+        specific_epithet=None,
+        hybrid_category=None,
+    )
+    taxon_name = SimpleNamespace(
+        taxon_name_id=173470,
+        author="(Schwein.) Swingle",
+        is_autonym=False,
+        taxon_rank=SimpleNamespace(rank_name="Species", rank_abbrev=None),
+        rank_name="Species",
+        publication_status="published",
+        is_hybrid=False,
+        hybrid_category=None,
+        taxon_name_parents=[
+            SimpleNamespace(
+                parent_taxon_name=parent,
+                parent_taxon_name_id=parent.taxon_name_id,
+                sequence=1,
+                deleted=False,
+            )
+        ],
+        parallel_override_uninomial="Albugo",
+        parallel_override_specific_epithet="ipomoeae-panduratae",
+        parallel_override_infraspecific_epithet=None,
+        uninomial="Albugo",
+        specific_epithet="ipomoeae-panduratae",
+        infraspecific_epithet=None,
+        canonical_name="Albugo ipomoeae-panduratae",
+        scientific_name="Albugo (Pers.) ipomoeae-panduratae (Schwein.) Swingle",
+    )
+
+    derived = derive_parallel_name(None, taxon_name, strict=True)
+
+    assert derived["strategy"] == "single_parent_species_inheritance"
+    assert derived["canonical_name"] == "Albugo ipomoeae-panduratae"
+    assert derived["scientific_name"] == (
+        "Albugo ipomoeae-panduratae (Schwein.) Swingle"
+    )
+    assert derived["formatted_scientific_name"] == (
+        "<i>Albugo</i> <i>ipomoeae-panduratae</i> (Schwein.) Swingle"
+    )
+
+
 def test_join_parent_names_keeps_repeated_genus_for_hybrid_formula():
     taxon_name = SimpleNamespace(
         hybrid_category=SimpleNamespace(value="hybrid_formula")
