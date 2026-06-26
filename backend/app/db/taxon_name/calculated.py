@@ -96,6 +96,8 @@ def calculate_fields(
     )
 
     if is_manuscript:
+        target.legacy_canonical_name = append_ms_suffix(target.legacy_canonical_name)
+        target.legacy_scientific_name = append_ms_suffix(target.legacy_scientific_name)
         target.canonical_name = append_ms_suffix(target.canonical_name)
         target.canonical_name_without_rank = append_ms_suffix(
             target.canonical_name_without_rank
@@ -109,6 +111,8 @@ def calculate_fields(
             target.infragenus_name_with_rank
         )
     else:
+        target.legacy_canonical_name = remove_ms_suffix(target.legacy_canonical_name)
+        target.legacy_scientific_name = remove_ms_suffix(target.legacy_scientific_name)
         target.canonical_name = remove_ms_suffix(target.canonical_name)
         target.canonical_name_without_rank = remove_ms_suffix(
             target.canonical_name_without_rank
@@ -143,7 +147,18 @@ def calculate_name_fields(target: model.TaxonName):
     calculate_formatted_scientific_name() function, which takes the canonical name
     and the author as parameters.
     """
-    canonical_parts = get_name_components(target)
+    legacy_canonical_parts = get_name_components(target)
+    target.legacy_canonical_name = calculate_canonical_name_string(
+        legacy_canonical_parts
+    )
+    if any([target.legacy_canonical_name, target.author]):
+        target.legacy_scientific_name = calculate_scientific_name_string(
+            components=legacy_canonical_parts,
+            is_autonym=target.is_autonym,
+            italicize=False,
+        )
+
+    canonical_parts = get_parallel_name_components(target)
     target.canonical_name = calculate_canonical_name_string(canonical_parts)
     target.canonical_name_without_rank = calculate_canonical_name_string(
         canonical_parts,
@@ -156,6 +171,34 @@ def calculate_name_fields(target: model.TaxonName):
         target.formatted_scientific_name = calculate_scientific_name_string(
             components=canonical_parts, is_autonym=target.is_autonym, italicize=True
         )
+
+
+def get_parallel_name_components(
+    target: model.TaxonName,
+) -> schema.NameStringComponents:
+    vals = get_name_components(target)
+    parallel_uninomial = get_parallel_override_value(target.parallel_override_uninomial)
+    parallel_specific_epithet = get_parallel_override_value(
+        target.parallel_override_specific_epithet
+    )
+    parallel_infraspecific_epithet = get_parallel_override_value(
+        target.parallel_override_infraspecific_epithet
+    )
+    if parallel_uninomial is not None:
+        vals.uninomial = parallel_uninomial
+    if parallel_specific_epithet is not None:
+        vals.specific_epithet = parallel_specific_epithet
+    if parallel_infraspecific_epithet is not None:
+        vals.infraspecific_epithet = parallel_infraspecific_epithet
+    return vals
+
+
+def get_parallel_override_value(value: str | None) -> str | None:
+    if value is None:
+        return None
+
+    stripped_value = value.strip()
+    return stripped_value or None
 
 
 def calculate_scientific_name_string(

@@ -14,7 +14,6 @@ import app.db.taxon_name.schema as schema
 from app.db.hierarchy.model import Hierarchy
 from app.db.informal_group.model import InformalGroup
 from app.db.taxon_name.calculated import (
-    append_cultivar_epithet_to_name,
     append_ms_suffix,
     remove_ms_suffix,
 )
@@ -26,7 +25,10 @@ from app.db.taxon_name.infrageneric_names import (
     InfraGenericNames,
 )
 from app.db.taxon_name.model import TaxonName
-from app.db.taxon_name.parallel_name_preview import generate_parallel_name_preview
+from app.db.taxon_name.parallel_name_preview import (
+    derive_parallel_name,
+    generate_parallel_name_preview,
+)
 from app.db.taxon_name.species_code import (
     generate_species_code,
     should_generate_species_code,
@@ -48,6 +50,7 @@ HYBRID_FORMULA_PREFIX_RE = re.compile(r"^(?:×|x|X)\s+")
 CULTIVAR_QUOTE_RE = re.compile(
     r"['\"`\u2018\u2019\u201A\u201B\u201C\u201D\u201E\u201F]"
 )
+SPACED_HYBRID_MARKER_RE = re.compile(r"(^|\s)x\s+", re.IGNORECASE)
 
 
 class TaxonNameCrud(crud.Crud):
@@ -122,6 +125,29 @@ class TaxonNameCrud(crud.Crud):
         if value is None:
             return False
         return bool(HYBRID_FORMULA_PREFIX_RE.match(value.strip()))
+
+    @staticmethod
+    def _normalize_hybrid_multiplication_sign(value: str | None) -> str | None:
+        if value is None:
+            return None
+        return SPACED_HYBRID_MARKER_RE.sub(r"\1× ", value)
+
+    @classmethod
+    def _normalize_legacy_hybrid_name_parts(cls, values) -> None:
+        for field in (
+            "specific_epithet",
+            "infraspecific_epithet",
+            "parallel_override_specific_epithet",
+            "parallel_override_infraspecific_epithet",
+        ):
+            if hasattr(values, field):
+                setattr(
+                    values,
+                    field,
+                    cls._normalize_hybrid_multiplication_sign(
+                        getattr(values, field, None)
+                    ),
+                )
 
     @classmethod
     def _normalize_hybrid_formula_fields(cls, values) -> None:
@@ -280,6 +306,36 @@ class TaxonNameCrud(crud.Crud):
         db.commit()
         db.refresh(db_taxon_name)
 
+    @staticmethod
+    def _apply_parallel_derived_name_fields(
+        db: orm.Session,
+        taxon_name: TaxonName,
+    ) -> None:
+        derived = derive_parallel_name(db, taxon_name, strict=True)
+        taxon_name.canonical_name = derived.get("canonical_name")
+        taxon_name.scientific_name = derived.get("scientific_name")
+        taxon_name.formatted_scientific_name = derived.get("formatted_scientific_name")
+        taxon_name.calculate_name = False
+
+    @staticmethod
+    def _apply_publication_status_suffix(taxon_name: TaxonName) -> None:
+        transform = (
+            append_ms_suffix
+            if taxon_name.publication_status == PublicationStatus.manuscript_name
+            else remove_ms_suffix
+        )
+        for field in (
+            "legacy_canonical_name",
+            "legacy_scientific_name",
+            "scientific_name",
+            "formatted_scientific_name",
+            "canonical_name",
+            "canonical_name_without_rank",
+            "infragenus_name",
+            "infragenus_name_with_rank",
+        ):
+            setattr(taxon_name, field, transform(getattr(taxon_name, field, None)))
+
     @classmethod
     def create_item(
         cls,
@@ -309,6 +365,7 @@ class TaxonNameCrud(crud.Crud):
         db_session.close()
         ```
         """
+        cls._normalize_legacy_hybrid_name_parts(taxon_name)
         create_data = taxon_name.dict(exclude_unset=True)
         delattr(taxon_name, "classification_system_ids")
         db_taxon_name = super().create_item(db, taxon_name, current_user=current_user)
@@ -328,6 +385,12 @@ class TaxonNameCrud(crud.Crud):
         cls.calculate_species_code(db_taxon_name)
         db.commit()
         cls.calculate_name_formats(db, db_taxon_name.taxon_name_id)
+        db.refresh(db_taxon_name)
+        cls._apply_parallel_derived_name_fields(db, db_taxon_name)
+        cls._apply_publication_status_suffix(db_taxon_name)
+        db.add(db_taxon_name)
+        db.commit()
+        db.refresh(db_taxon_name)
         return db_taxon_name
 
     @classmethod
@@ -382,6 +445,7 @@ class TaxonNameCrud(crud.Crud):
         updated_taxon_name = TaxonNameCrud.edit_item(db, current_user, taxon_name_id,
         taxon_name_edit)
         """
+        cls._normalize_legacy_hybrid_name_parts(taxon_name)
         update_data = taxon_name.dict(exclude_unset=True)
         if "classification_system_ids" in update_data:
             classification_system_ids = update_data["classification_system_ids"]
@@ -419,6 +483,12 @@ class TaxonNameCrud(crud.Crud):
         cls.calculate_species_code(db_taxon_name)
         db.commit()
         cls.calculate_name_formats(db, db_taxon_name.taxon_name_id)
+        db.refresh(db_taxon_name)
+        cls._apply_parallel_derived_name_fields(db, db_taxon_name)
+        cls._apply_publication_status_suffix(db_taxon_name)
+        db.add(db_taxon_name)
+        db.commit()
+        db.refresh(db_taxon_name)
         return db_taxon_name
 
     @classmethod
@@ -672,50 +742,8 @@ class TaxonNameCrud(crud.Crud):
                 taxon_name.calculate_name = False
         print(taxon_name.infragenus_name)
 
-        taxon_name.canonical_name = append_cultivar_epithet_to_name(
-            taxon_name.canonical_name,
-            taxon_name.cultivar_epithet,
-        )
-        taxon_name.canonical_name_without_rank = append_cultivar_epithet_to_name(
-            taxon_name.canonical_name_without_rank,
-            taxon_name.cultivar_epithet,
-        )
-        taxon_name.scientific_name = append_cultivar_epithet_to_name(
-            taxon_name.scientific_name,
-            taxon_name.cultivar_epithet,
-        )
-        taxon_name.formatted_scientific_name = append_cultivar_epithet_to_name(
-            taxon_name.formatted_scientific_name,
-            taxon_name.cultivar_epithet,
-        )
-
-        # Apply or remove ms suffix on publication status
-        if taxon_name.publication_status == PublicationStatus.manuscript_name:
-            taxon_name.scientific_name = append_ms_suffix(taxon_name.scientific_name)
-            taxon_name.formatted_scientific_name = append_ms_suffix(
-                taxon_name.formatted_scientific_name
-            )
-            taxon_name.canonical_name = append_ms_suffix(taxon_name.canonical_name)
-            taxon_name.canonical_name_without_rank = append_ms_suffix(
-                taxon_name.canonical_name_without_rank
-            )
-            taxon_name.infragenus_name = append_ms_suffix(taxon_name.infragenus_name)
-            taxon_name.infragenus_name_with_rank = append_ms_suffix(
-                taxon_name.infragenus_name_with_rank
-            )
-        else:
-            taxon_name.scientific_name = remove_ms_suffix(taxon_name.scientific_name)
-            taxon_name.formatted_scientific_name = remove_ms_suffix(
-                taxon_name.formatted_scientific_name
-            )
-            taxon_name.canonical_name = remove_ms_suffix(taxon_name.canonical_name)
-            taxon_name.canonical_name_without_rank = remove_ms_suffix(
-                taxon_name.canonical_name_without_rank
-            )
-            taxon_name.infragenus_name = remove_ms_suffix(taxon_name.infragenus_name)
-            taxon_name.infragenus_name_with_rank = remove_ms_suffix(
-                taxon_name.infragenus_name_with_rank
-            )
+        cls._apply_parallel_derived_name_fields(db, taxon_name)
+        cls._apply_publication_status_suffix(taxon_name)
 
         if db.is_modified(taxon_name):
             if current_user:

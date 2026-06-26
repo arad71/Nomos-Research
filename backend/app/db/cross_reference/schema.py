@@ -1,10 +1,11 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from app.db.cross_reference import enums
 from app.db.cross_reference.constants import (
+    ACTIVE,
     AUTHORISED_BY,
     AUTHORISED_ON,
     COMMENTS,
@@ -18,8 +19,14 @@ from app.db.cross_reference.constants import (
     OLD_NAME_ID,
     TABLE_DESCRIPTION,
 )
+from app.db.publication.schema import Publication
 from app.db.schemas import TableBase
 from app.db.taxon_name.schema import TaxonName
+
+_ALLOWED_NULL_NEW_NAME_TYPES = {
+    enums.CrossReferenceType.excluded_name,
+    enums.CrossReferenceType.name_entered_in_error,
+}
 
 
 class CrossReferenceBase(BaseModel):
@@ -40,6 +47,38 @@ class CrossReferenceBase(BaseModel):
     external_comments: Optional[str] = Field(None, description=EXTERNAL_COMMENTS)
     notes: Optional[str] = None
     legacy_id: Optional[int] = None
+    is_active: bool = Field(True, description=ACTIVE)
+    publication_id: Optional[int] = Field(
+        None,
+        description="Associated publication ID",
+    )
+
+    @field_validator("new_name_id", mode="before")
+    @classmethod
+    def empty_to_none(cls, value):
+        if value in ("", "Search", None):
+            return None
+        return value
+
+    # Cross-field business rules
+    @model_validator(mode="after")
+    def validate_new_name_and_rationale(self):
+        if self.cross_reference_type in _ALLOWED_NULL_NEW_NAME_TYPES:
+            if self.new_name_id is None:
+                if not self.internal_comments or not self.internal_comments.strip():
+                    raise ValueError(
+                        "internal_comments is required when new_name_id is null"
+                    )
+            else:
+                raise ValueError(
+                    "new_name_id should be null for the selected cross_reference_type"
+                )
+        else:
+            if self.new_name_id is None:
+                raise ValueError(
+                    "new_name_id is required for the selected cross_reference_type"
+                )
+        return self
 
 
 class CrossReferenceCreate(CrossReferenceBase):
@@ -54,6 +93,7 @@ class CrossReference(CrossReferenceBase, TableBase):
     cross_reference_id: int = Field(description=CROSS_REFERENCE_ID)
     old_name: TaxonName
     new_name: Optional[TaxonName] = None
+    publication: Optional[Publication] = None
     deleted: bool
 
     # class Config:

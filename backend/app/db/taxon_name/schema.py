@@ -189,6 +189,8 @@ class TaxonName(TaxonNameBase, TableBase):
     scientific_name: Optional[str] = None
     formatted_scientific_name: Optional[str] = None
     has_cultivar: bool = False
+    legacy_canonical_name: Optional[str] = None
+    legacy_scientific_name: Optional[str] = None
     species_code: Optional[str] = None
     canonical_name_without_rank: Optional[str] = None
     path: Optional[list[str]] = None

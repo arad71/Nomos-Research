@@ -18,6 +18,8 @@ type ReviewRecord = {
   scientific_name?: string | null;
   formatted_scientific_name?: string | null;
   canonical_name?: string | null;
+  legacy_scientific_name?: string | null;
+  legacy_canonical_name?: string | null;
   uninomial?: string | null;
   parallel_override_uninomial?: string | null;
   is_current?: boolean | null;
@@ -189,10 +191,10 @@ const columnOptions: Array<{ key: ColumnKey; label: string }> = [
   { key: 'isCurrent', label: 'Is current' },
   { key: 'comparison', label: 'Comparison' },
   { key: 'strategy', label: 'Strategy' },
-  { key: 'currentScientific', label: 'Current scientific name' },
-  { key: 'derivedScientific', label: 'Derived scientific name' },
-  { key: 'currentCanonical', label: 'Current canonical name' },
-  { key: 'derivedCanonical', label: 'Derived canonical name' },
+  { key: 'currentScientific', label: 'Legacy scientific name' },
+  { key: 'derivedScientific', label: 'Scientific name' },
+  { key: 'currentCanonical', label: 'Legacy canonical name' },
+  { key: 'derivedCanonical', label: 'Canonical name' },
   { key: 'actions', label: 'Actions' },
 ];
 
@@ -217,6 +219,10 @@ const defaultHiddenColumns = columnOptions
 const HtmlValue = ({ value }: { value?: string | null }) =>
   value ? <span dangerouslySetInnerHTML={{ __html: value }} /> : null;
 
+const stopTableInteraction = (event: React.SyntheticEvent) => {
+  event.stopPropagation();
+};
+
 const formatTitle = (value?: string | null) => {
   if (!value) return 'Not set';
   return value
@@ -224,6 +230,29 @@ const formatTitle = (value?: string | null) => {
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(' ');
 };
+
+const getLegacyScientificName = (
+  record: ReviewRecord,
+  preview?: ParallelPreview,
+) =>
+  record.legacy_scientific_name
+  || record.audit_current_scientific_name
+  || preview?.current_scientific_name
+  || record.scientific_name
+  || null;
+
+const getLegacyCanonicalName = (
+  record: ReviewRecord,
+  preview?: ParallelPreview,
+) =>
+  record.legacy_canonical_name
+  || record.audit_current_canonical_name
+  || preview?.current_canonical_name
+  || record.canonical_name
+  || null;
+
+const valuesMatch = (left?: string | null, right?: string | null) =>
+  (left || '') === (right || '');
 
 const buildFilterObject = (filters: Filters) => {
   const next: Record<string, string> = {};
@@ -378,19 +407,27 @@ const ParallelNameReviewPage = () => {
       }
       if (taxonId == null) return false;
       if (!preview) return false;
-      const scientificMatch = Boolean(preview.matches_current_scientific_name);
-      const canonicalMatch = (preview.current_canonical_name || '') === (preview.derived_canonical_name || '');
+      const scientificMatch = valuesMatch(
+        getLegacyScientificName(record, preview),
+        preview.derived_scientific_name,
+      );
+      const canonicalMatch = valuesMatch(
+        getLegacyCanonicalName(record, preview),
+        preview.derived_canonical_name,
+      );
       return !(scientificMatch && canonicalMatch);
     });
   }, [filters.hasParentLink, filters.onlyMismatches, filters.parallelUninomialOverride, previewByTaxonId, state.data]);
 
   const completedAuditRows = React.useMemo<ReviewRecord[]>(() => {
-    if (!lastAuditRun?.result?.mismatch_rows?.length) return [];
+    if (!lastAuditRun?.result) return [];
     return lastAuditRun.result.mismatch_rows.map((row) => ({
       id: row.taxon_name_id,
       taxon_name_id: row.taxon_name_id,
       scientific_name: row.current_scientific_name || null,
       canonical_name: row.current_canonical_name || null,
+      legacy_scientific_name: row.current_scientific_name || null,
+      legacy_canonical_name: row.current_canonical_name || null,
       audit_strategy: row.strategy,
       audit_mismatch_kind: row.mismatch_kind,
       audit_current_scientific_name: row.current_scientific_name || null,
@@ -400,7 +437,7 @@ const ParallelNameReviewPage = () => {
     }));
   }, [lastAuditRun]);
 
-  const usingFullAuditRows = !auditRunning && completedAuditRows.length > 0;
+  const usingFullAuditRows = filters.onlyMismatches && !auditRunning && Boolean(lastAuditRun?.result);
   const pagedFullAuditRows = React.useMemo(() => {
     if (!usingFullAuditRows) return [];
     const start = (page - 1) * perPage;
@@ -482,6 +519,14 @@ const ParallelNameReviewPage = () => {
       .then((status) => {
         if (!active) return;
         setAuditJobStatus(status);
+        if (status.status === 'completed' && status.result) {
+          const run = {
+            runAt: status.finished_at || new Date().toISOString(),
+            result: status.result,
+          };
+          setLastAuditRun(run);
+          localStorage.setItem(AUDIT_RESULT_STORAGE_KEY, JSON.stringify(run));
+        }
         if (status.status === 'running') {
           setAuditRunning(true);
         }
@@ -547,7 +592,12 @@ const ParallelNameReviewPage = () => {
       case 'taxonName':
         if (!taxonId) return <span className="text-sm text-muted-foreground">Unknown taxon</span>;
         return (
-          <Link to={`/taxon_names/${taxonId}/show`} className="font-medium text-primary hover:underline">
+          <Link
+            to={`/taxon_names/${taxonId}/show`}
+            className="font-medium text-primary hover:underline"
+            onClick={stopTableInteraction}
+            onAuxClick={stopTableInteraction}
+          >
             {record.formatted_scientific_name ? (
               <HtmlValue value={record.formatted_scientific_name} />
             ) : (
@@ -570,39 +620,35 @@ const ParallelNameReviewPage = () => {
       case 'comparison':
         if (record.audit_mismatch_kind) {
           if (record.audit_mismatch_kind === 'both') {
-            return <Badge variant="destructive">Scientific + canonical mismatch</Badge>;
+            return <Badge variant="destructive">Legacy scientific + canonical mismatch</Badge>;
           }
           if (record.audit_mismatch_kind === 'canonical_only') {
-            return <Badge variant="outline">Canonical mismatch</Badge>;
+            return <Badge variant="outline">Legacy canonical mismatch</Badge>;
           }
-          return <Badge variant="destructive">Scientific mismatch</Badge>;
+          return <Badge variant="destructive">Legacy scientific mismatch</Badge>;
         }
         if (previewLoading && !preview) return <span className="text-sm text-muted-foreground">Loading...</span>;
         if (!preview) return <Badge variant="outline">Unavailable</Badge>;
-        const scientificMatch = Boolean(preview.matches_current_scientific_name);
-        const canonicalMatch = (preview.current_canonical_name || '') === (preview.derived_canonical_name || '');
+        const scientificMatch = valuesMatch(
+          getLegacyScientificName(record, preview),
+          preview.derived_scientific_name,
+        );
+        const canonicalMatch = valuesMatch(
+          getLegacyCanonicalName(record, preview),
+          preview.derived_canonical_name,
+        );
         if (scientificMatch && canonicalMatch) {
-          return <Badge variant="secondary">Matches current</Badge>;
+          return <Badge variant="secondary">Matches legacy</Badge>;
         }
         if (!scientificMatch && !canonicalMatch) {
-          return <Badge variant="destructive">Scientific + canonical mismatch</Badge>;
+          return <Badge variant="destructive">Legacy scientific + canonical mismatch</Badge>;
         }
         if (!scientificMatch) {
-          return <Badge variant="destructive">Scientific mismatch</Badge>;
+          return <Badge variant="destructive">Legacy scientific mismatch</Badge>;
         }
-        return <Badge variant="outline">Canonical mismatch</Badge>;
+        return <Badge variant="outline">Legacy canonical mismatch</Badge>;
       case 'currentScientific':
-        if (record.audit_current_scientific_name) {
-          return <span className="text-sm">{record.audit_current_scientific_name}</span>;
-        }
-        if (!preview) {
-          return <span className="text-sm text-muted-foreground">{record.scientific_name || 'Not set'}</span>;
-        }
-        return preview.current_formatted_scientific_name ? (
-          <HtmlValue value={preview.current_formatted_scientific_name} />
-        ) : (
-          <span className="text-sm">{preview.current_scientific_name || 'Not set'}</span>
-        );
+        return <span className="text-sm">{getLegacyScientificName(record, preview) || 'Not set'}</span>;
       case 'derivedScientific':
         if (record.audit_derived_scientific_name) {
           return <span className="text-sm">{record.audit_derived_scientific_name}</span>;
@@ -614,10 +660,7 @@ const ParallelNameReviewPage = () => {
           <span className="text-sm">{preview?.derived_scientific_name || 'Unavailable'}</span>
         );
       case 'currentCanonical':
-        if (record.audit_current_canonical_name) {
-          return <span className="text-sm">{record.audit_current_canonical_name}</span>;
-        }
-        return <span className="text-sm">{preview?.current_canonical_name || record.canonical_name || 'Not set'}</span>;
+        return <span className="text-sm">{getLegacyCanonicalName(record, preview) || 'Not set'}</span>;
       case 'derivedCanonical':
         if (record.audit_derived_canonical_name) {
           return <span className="text-sm">{record.audit_derived_canonical_name}</span>;
@@ -627,10 +670,16 @@ const ParallelNameReviewPage = () => {
       case 'actions':
         return taxonId ? (
           <Button asChild variant="outline" size="sm">
-            <Link to={`/taxon_names/${taxonId}/show`}>
+            <a
+              href={`/taxon_names/${taxonId}/show`}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={stopTableInteraction}
+              onAuxClick={stopTableInteraction}
+            >
               <ExternalLink className="h-4 w-4" />
               Open taxon
-            </Link>
+            </a>
           </Button>
         ) : null;
       default:
@@ -643,7 +692,7 @@ const ParallelNameReviewPage = () => {
       <div className="space-y-2">
         <h1 className="text-3xl font-semibold tracking-tight">Parallel Name Review</h1>
         <p className="max-w-3xl text-sm text-muted-foreground">
-          Compare current stored names with the strict parallel name engine across the taxon-name register, page by page.
+          Compare legacy stored names with the strict parallel name engine across the taxon-name register, page by page.
         </p>
       </div>
 
@@ -657,7 +706,7 @@ const ParallelNameReviewPage = () => {
                 <input
                   value={formFilters.q}
                   onChange={(event) => setFormFilters((current) => ({ ...current, q: event.target.value }))}
-                  placeholder="Taxon or current name..."
+                  placeholder="Taxon or legacy name..."
                   className="h-11 w-full rounded-xl border border-border bg-background pl-10 pr-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
                 />
               </div>
@@ -735,7 +784,7 @@ const ParallelNameReviewPage = () => {
                 onChange={(event) => setFormFilters((current) => ({ ...current, onlyMismatches: event.target.checked }))}
                 className="h-4 w-4 rounded border-border text-primary focus:ring-ring"
               />
-              Only show non-matches on this page
+              Only show non-matches
             </label>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -744,7 +793,11 @@ const ParallelNameReviewPage = () => {
               Reset
             </Button>
             <Button type="button" variant="outline" onClick={() => void runFullAudit()} disabled={auditRunning}>
-              {auditRunning ? 'Running full audit...' : 'Run Full Audit'}
+              {auditRunning
+                ? 'Finding non-matches...'
+                : lastAuditRun?.result
+                  ? 'Refresh all non-matches'
+                  : 'Find all non-matches'}
             </Button>
             {auditJobStatus?.status === 'running' ? (
               <Badge variant="outline">
@@ -760,7 +813,7 @@ const ParallelNameReviewPage = () => {
               </Badge>
             ) : null}
             {usingFullAuditRows ? (
-              <Badge variant="secondary">Table source: full audit mismatches</Badge>
+              <Badge variant="secondary">Table source: all audited non-matches</Badge>
             ) : (
               <Badge variant="outline">Table source: page preview</Badge>
             )}
@@ -768,8 +821,8 @@ const ParallelNameReviewPage = () => {
               {loading
                 ? 'Loading...'
                 : usingFullAuditRows
-                  ? `${tableRows.length} shown from full audit mismatches of ${tableTotal.toLocaleString()}`
-                  : `${displayedRecords.length} shown in page preview of ${state.total.toLocaleString()} fetched rows`}
+                  ? `${tableRows.length} shown from ${tableTotal.toLocaleString()} audited non-matches`
+                  : `${displayedRecords.length} shown from this page; run audit to find all non-matches`}
             </Badge>
           </div>
         </form>
@@ -807,9 +860,9 @@ const ParallelNameReviewPage = () => {
                     <div className="grid gap-3 md:grid-cols-4">
                       <Badge variant="outline">Processed: {lastAuditRun.result.processed.toLocaleString()}</Badge>
                       <Badge variant="outline">All matched: {lastAuditRun.result.matches_all.toLocaleString()}</Badge>
-                      <Badge variant="outline">Scientific only: {lastAuditRun.result.scientific_mismatch.toLocaleString()}</Badge>
-                      <Badge variant="outline">Author-only scientific: {lastAuditRun.result.author_only_scientific_mismatch.toLocaleString()}</Badge>
-                      <Badge variant="outline">Canonical only: {lastAuditRun.result.canonical_mismatch.toLocaleString()}</Badge>
+                      <Badge variant="outline">Legacy scientific only: {lastAuditRun.result.scientific_mismatch.toLocaleString()}</Badge>
+                      <Badge variant="outline">Author-only legacy scientific: {lastAuditRun.result.author_only_scientific_mismatch.toLocaleString()}</Badge>
+                      <Badge variant="outline">Legacy canonical only: {lastAuditRun.result.canonical_mismatch.toLocaleString()}</Badge>
                       <Badge variant="outline">Both mismatch: {lastAuditRun.result.both_mismatch.toLocaleString()}</Badge>
                       <Badge variant="outline">Errors: {lastAuditRun.result.errors.toLocaleString()}</Badge>
                       <Badge variant="outline">Rows returned: {lastAuditRun.result.mismatch_rows.length.toLocaleString()}</Badge>
@@ -827,16 +880,16 @@ const ParallelNameReviewPage = () => {
                               </Link>
                             </div>
                             <div className="mt-1 text-xs text-muted-foreground">
-                              Current scientific: {row.current_scientific_name || 'Not set'}
+                              Legacy scientific: {row.current_scientific_name || 'Not set'}
                             </div>
                             <div className="text-xs text-muted-foreground">
-                              Derived scientific: {row.derived_scientific_name || 'Not set'}
+                              Scientific name: {row.derived_scientific_name || 'Not set'}
                             </div>
                             <div className="text-xs text-muted-foreground">
-                              Current canonical: {row.current_canonical_name || 'Not set'}
+                              Legacy canonical: {row.current_canonical_name || 'Not set'}
                             </div>
                             <div className="text-xs text-muted-foreground">
-                              Derived canonical: {row.derived_canonical_name || 'Not set'}
+                              Canonical name: {row.derived_canonical_name || 'Not set'}
                             </div>
                           </div>
                         ))

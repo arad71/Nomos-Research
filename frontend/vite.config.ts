@@ -1,7 +1,38 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
+
+const manualChunkGroups: Record<string, string[]> = {
+  react: ['react', 'react-dom', 'react-router-dom'],
+  adminUi: [
+    '@mui/material',
+    '@mui/icons-material',
+    '@emotion/react',
+    '@emotion/styled',
+    'tss-react',
+    'react-admin',
+    'ra-core',
+    '@react-admin/ra-rbac',
+    '@react-admin/ra-navigation',
+    '@react-admin/ra-relationships',
+    '@react-admin/ra-editable-datagrid',
+  ],
+  forms: ['final-form', 'final-form-arrays', 'react-final-form'],
+  editor: ['ra-input-rich-text'],
+};
+
+const getManualChunk = (id: string) => {
+  if (!id.includes('node_modules')) {
+    return undefined;
+  }
+
+  return Object.entries(manualChunkGroups).find(([, packages]) =>
+    packages.some((packageName) =>
+      id.includes(`/node_modules/${packageName}/`)
+    )
+  )?.[0];
+};
 
 export default defineConfig({
   plugins: [react(), tailwindcss(), tsconfigPaths()],
@@ -14,6 +45,9 @@ export default defineConfig({
   server: {
     port: 3000,
     allowedHosts: ['host.docker.internal', 'localhost', 'nomos-frontend'],
+    headers: {
+      'Cache-Control': 'no-store',
+    },
     proxy: {
       '/api': {
         target: 'http://host.docker.internal:8000',
@@ -30,28 +64,7 @@ export default defineConfig({
     chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
-        manualChunks: {
-          react: ['react', 'react-dom', 'react-router-dom'],
-          adminUi: [
-            '@mui/material',
-            '@mui/icons-material',
-            '@emotion/react',
-            '@emotion/styled',
-            'tss-react',
-            'react-admin',
-            'ra-core',
-            '@react-admin/ra-rbac',
-            '@react-admin/ra-navigation',
-            '@react-admin/ra-relationships',
-            '@react-admin/ra-editable-datagrid',
-          ],
-          forms: [
-            'final-form',
-            'final-form-arrays',
-            'react-final-form',
-          ],
-          editor: ['ra-input-rich-text'],
-        },
+        manualChunks: getManualChunk,
       },
     },
   },

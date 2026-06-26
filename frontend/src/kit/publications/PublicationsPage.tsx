@@ -13,6 +13,8 @@ import { Button } from '../../components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { formatAuthorOption } from '../authors/authorDisplay';
 import PublicationReferenceType from '../shared/choices/PublicationReferenceType';
+import { formatCrossReferenceOption } from '../taxon-publications/TaxonPublicationForm';
+import { getPublicationReferenceTypeLabel } from '../shared/choices/publicationReferenceTypeLabel';
 
 type SortOrder = 'ASC' | 'DESC';
 
@@ -56,12 +58,17 @@ type TaxonPublicationRecord = {
   taxon_publication_id?: number;
   publication_id?: number | string;
   taxon_name_id?: number | string;
+  cross_reference_id?: number | string;
   taxon_name___scientific_name?: string;
   taxon_name___formatted_scientific_name?: string;
   taxon_name?: {
     scientific_name?: string | null;
     formatted_scientific_name?: string | null;
   } | null;
+  cross_reference?: Record<string, unknown> | null;
+  cross_reference___cross_reference_type?: string;
+  cross_reference___old_name___scientific_name?: string;
+  cross_reference___new_name___scientific_name?: string;
 };
 
 type PublicationsResponse = {
@@ -95,6 +102,7 @@ type ColumnKey =
   | 'displayTitle'
   | 'authorName'
   | 'linkedTaxonNames'
+  | 'linkedCrossReferences'
   | 'taxonPublicationLinks'
   | 'authors'
   | 'publicationYear'
@@ -159,6 +167,7 @@ const columnOptions: Array<{ key: ColumnKey; label: string }> = [
   { key: 'displayTitle', label: 'Display title' },
   { key: 'authorName', label: 'Publication authors' },
   { key: 'linkedTaxonNames', label: 'Linked taxon names' },
+  { key: 'linkedCrossReferences', label: 'Linked cross reference' },
   { key: 'taxonPublicationLinks', label: 'Taxon links' },
   { key: 'publicationMonth', label: 'Month' },
   { key: 'publicationDay', label: 'Day' },
@@ -392,7 +401,7 @@ const fetchTaxonPublicationRowsByFilter = async (
   retryOnAuthError = true
 ): Promise<TaxonPublicationRecord[]> => {
   const sort = encodeURIComponent(JSON.stringify(['taxon_publication_id', 'ASC']));
-  const range = encodeURIComponent(JSON.stringify([0, 10000]));
+  const range = encodeURIComponent(JSON.stringify([0, 9999]));
   const filter = encodeURIComponent(JSON.stringify(filterObject));
   const endpoints = ['taxon-publications', 'taxon_publications'];
   let response: Response | null = null;
@@ -422,61 +431,14 @@ const dedupeTaxonPublicationRows = (rows: TaxonPublicationRecord[]) => {
   rows.forEach((row, index) => {
     const key =
       String(row.taxon_publication_id ?? row.id ?? '') ||
-      `${row.publication_id ?? ''}-${row.taxon_name_id ?? ''}-${index}`;
+      `${row.publication_id ?? ''}-${row.taxon_name_id ?? ''}-${
+        row.cross_reference_id ?? ''
+      }-${index}`;
     if (seen.has(key)) return;
     seen.add(key);
     deduped.push(row);
   });
   return deduped;
-};
-
-const fetchTaxonPublicationsViaDataProvider = async (
-  dataProvider: ReturnType<typeof useDataProvider>,
-  publicationIds: number[]
-) => {
-  if (!publicationIds.length) return [];
-  const resources = ['taxon-publications', 'taxon_publications'] as const;
-
-  const fetchForResource = async (resource: (typeof resources)[number]) => {
-    const batches = await Promise.all(
-      publicationIds.map(async (publicationId) => {
-        const perPage = 250;
-        let page = 1;
-        const rows: TaxonPublicationRecord[] = [];
-        while (true) {
-          const response = await dataProvider.getManyReference(resource, {
-            target: 'publication_id',
-            id: publicationId,
-            pagination: { page, perPage },
-            sort: { field: 'taxon_publication_id', order: 'ASC' },
-            filter: {},
-          });
-          const data = Array.isArray(response?.data)
-            ? (response.data as TaxonPublicationRecord[])
-            : [];
-          rows.push(...data);
-          const total = typeof response?.total === 'number' ? response.total : undefined;
-          if (!data.length) break;
-          if ((total !== undefined && rows.length >= total) || data.length < perPage) break;
-          page += 1;
-        }
-        return rows;
-      })
-    );
-    return dedupeTaxonPublicationRows(batches.flat());
-  };
-
-  try {
-    const rows = await fetchForResource('taxon-publications');
-    if (rows.length > 0) return rows;
-  } catch {
-    // Try underscore resource fallback below.
-  }
-  try {
-    return await fetchForResource('taxon_publications');
-  } catch {
-    return [];
-  }
 };
 
 const fetchAuthorIdsByQuery = async (
@@ -629,31 +591,11 @@ const fetchTaxonPublications = async (
   retryOnAuthError = true
 ): Promise<TaxonPublicationRecord[]> => {
   if (!publicationIds.length) return [];
-  if (publicationIds.length === 1) {
-    const rows = await fetchTaxonPublicationRowsByFilter(
-      { publication_id: publicationIds[0] },
-      retryOnAuthError
-    );
-    if (rows.length > 0) return rows;
-    return fetchTaxonPublicationRowsByFilter({ publication_id: [publicationIds[0]] }, retryOnAuthError);
-  }
-
-  const rowBatches = await Promise.all(
-    publicationIds.map((publicationId) =>
-      fetchTaxonPublicationRowsByFilter({ publication_id: publicationId }, retryOnAuthError)
-    )
+  const rows = await fetchTaxonPublicationRowsByFilter(
+    { publication_id: publicationIds },
+    retryOnAuthError
   );
-  const flattened = rowBatches.flat();
-  if (flattened.length > 0) {
-    return dedupeTaxonPublicationRows(flattened);
-  }
-
-  const fallbackBatches = await Promise.all(
-    publicationIds.map((publicationId) =>
-      fetchTaxonPublicationRowsByFilter({ publication_id: [publicationId] }, retryOnAuthError)
-    )
-  );
-  return dedupeTaxonPublicationRows(fallbackBatches.flat());
+  return dedupeTaxonPublicationRows(rows);
 };
 
 const fetchPublicationIdsByTaxonQuery = async (
@@ -699,15 +641,40 @@ const getTaxonLabelFromLink = (
   link: TaxonPublicationRecord,
   taxonNameMap: Record<number, string>
 ) => {
-  if (typeof link.taxon_name_id === 'number' && taxonNameMap[link.taxon_name_id]) {
-    return taxonNameMap[link.taxon_name_id];
+  const taxonNameId = toNumberId(link.taxon_name_id);
+  if (taxonNameId !== undefined && taxonNameMap[taxonNameId]) {
+    return taxonNameMap[taxonNameId];
   }
   return (
     link.taxon_name___scientific_name ||
     link.taxon_name___formatted_scientific_name ||
     link.taxon_name?.scientific_name ||
     link.taxon_name?.formatted_scientific_name ||
+    (taxonNameId !== undefined ? `Taxon name #${taxonNameId}` : '') ||
     ''
+  );
+};
+
+const getCrossReferenceLabelFromLink = (
+  link: TaxonPublicationRecord,
+  crossReferenceMap: Record<number, string>
+) => {
+  const crossReferenceId = toNumberId(link.cross_reference_id);
+  if (crossReferenceId && crossReferenceMap[crossReferenceId]) {
+    return crossReferenceMap[crossReferenceId];
+  }
+
+  return (
+    formatCrossReferenceOption(
+      (link.cross_reference as Record<string, unknown> | null | undefined) ??
+        {
+          cross_reference_type: link.cross_reference___cross_reference_type,
+          old_name___scientific_name:
+            link.cross_reference___old_name___scientific_name,
+          new_name___scientific_name:
+            link.cross_reference___new_name___scientific_name,
+        }
+    ) || (crossReferenceId ? `Cross reference #${crossReferenceId}` : '')
   );
 };
 
@@ -778,6 +745,7 @@ const PublicationsPage = () => {
   const [authorMap, setAuthorMap] = React.useState<Record<number, string>>({});
   const [publicationMap, setPublicationMap] = React.useState<Record<number, string>>({});
   const [taxonNameMap, setTaxonNameMap] = React.useState<Record<number, string>>({});
+  const [crossReferenceMap, setCrossReferenceMap] = React.useState<Record<number, string>>({});
   const [taxonPublicationMap, setTaxonPublicationMap] = React.useState<
     Record<number, TaxonPublicationRecord[]>
   >({});
@@ -854,10 +822,13 @@ const PublicationsPage = () => {
         fetchReferenceMap('users', userIds, 'user_id', 'full_name'),
         fetchReferenceMap('authors', authorIds, 'author_id', formatAuthorOption),
         fetchReferenceMap('publications', publicationIds, 'publication_id', 'abbreviated_title'),
-        fetchTaxonPublicationsViaDataProvider(dataProvider, publicationIdsForTaxonLinks),
+        fetchTaxonPublications(publicationIdsForTaxonLinks),
       ]);
       const taxonNameIds = uniqueNumericIds(
         taxonPublications.map((link) => link.taxon_name_id)
+      );
+      const crossReferenceIds = uniqueNumericIds(
+        taxonPublications.map((link) => link.cross_reference_id)
       );
       const nextTaxonNameMap = await fetchReferenceMap(
         'taxon_names',
@@ -865,9 +836,24 @@ const PublicationsPage = () => {
         'taxon_name_id',
         'scientific_name'
       );
+      const nextCrossReferenceMap = await fetchReferenceMap(
+        'cross_references',
+        crossReferenceIds,
+        'cross_reference_id',
+        formatCrossReferenceOption
+      );
       const fallbackTaxonNameMap =
         Object.keys(nextTaxonNameMap).length === 0
           ? await fetchReferenceMap('taxon_names', taxonNameIds, 'id', 'scientific_name')
+          : {};
+      const fallbackCrossReferenceMap =
+        Object.keys(nextCrossReferenceMap).length === 0
+          ? await fetchReferenceMap(
+              'cross_references',
+              crossReferenceIds,
+              'id',
+              formatCrossReferenceOption
+            )
           : {};
       if (!active) return;
       setUserMap(nextUserMap);
@@ -875,6 +861,10 @@ const PublicationsPage = () => {
       setPublicationMap(nextPublicationMap);
       setTaxonPublicationMap(mapTaxonPublicationsByPublication(taxonPublications));
       setTaxonNameMap({ ...fallbackTaxonNameMap, ...nextTaxonNameMap });
+      setCrossReferenceMap({
+        ...fallbackCrossReferenceMap,
+        ...nextCrossReferenceMap,
+      });
     };
     void loadReferences();
     return () => {
@@ -968,7 +958,8 @@ const PublicationsPage = () => {
     exportAuthorMap: Record<number, string>,
     exportPublicationMap: Record<number, string>,
     exportTaxonPublicationMap: Record<number, TaxonPublicationRecord[]>,
-    exportTaxonNameMap: Record<number, string>
+    exportTaxonNameMap: Record<number, string>,
+    exportCrossReferenceMap: Record<number, string>
   ) => {
     const publicationId = record.publication_id ?? record.id ?? 0;
     switch (column) {
@@ -980,7 +971,15 @@ const PublicationsPage = () => {
         return record.author_name ?? '';
       case 'linkedTaxonNames':
         return (exportTaxonPublicationMap[publicationId] ?? [])
+          .filter((link) => link.taxon_name_id)
           .map((link) => getTaxonLabelFromLink(link, exportTaxonNameMap))
+          .filter(Boolean)
+          .filter((value, index, values) => values.indexOf(value) === index)
+          .join('; ');
+      case 'linkedCrossReferences':
+        return (exportTaxonPublicationMap[publicationId] ?? [])
+          .filter((link) => link.cross_reference_id)
+          .map((link) => getCrossReferenceLabelFromLink(link, exportCrossReferenceMap))
           .filter(Boolean)
           .filter((value, index, values) => values.indexOf(value) === index)
           .join('; ');
@@ -1028,7 +1027,7 @@ const PublicationsPage = () => {
       case 'bhlUrl':
         return record.bhl_url ?? '';
       case 'referenceType':
-        return record.reference_type ?? '';
+        return getPublicationReferenceTypeLabel(record.reference_type);
       case 'referenceAuthorRole':
         return record.reference_author_role ?? '';
       case 'duplicateOf':
@@ -1056,7 +1055,8 @@ const PublicationsPage = () => {
     exportAuthorMap: Record<number, string>,
     exportPublicationMap: Record<number, string>,
     exportTaxonPublicationMap: Record<number, TaxonPublicationRecord[]>,
-    exportTaxonNameMap: Record<number, string>
+    exportTaxonNameMap: Record<number, string>,
+    exportCrossReferenceMap: Record<number, string>
   ) =>
     [
       exportColumnOptions.map((column) => column.label),
@@ -1069,7 +1069,8 @@ const PublicationsPage = () => {
             exportAuthorMap,
             exportPublicationMap,
             exportTaxonPublicationMap,
-            exportTaxonNameMap
+            exportTaxonNameMap,
+            exportCrossReferenceMap
           )
         )
       ),
@@ -1135,11 +1136,20 @@ const PublicationsPage = () => {
       const exportTaxonNameIds = uniqueNumericIds(
         exportTaxonPublications.map((link) => link.taxon_name_id)
       );
+      const exportCrossReferenceIds = uniqueNumericIds(
+        exportTaxonPublications.map((link) => link.cross_reference_id)
+      );
       const exportTaxonNameMap = await fetchReferenceMap(
         'taxon_names',
         exportTaxonNameIds,
         'taxon_name_id',
         'scientific_name'
+      );
+      const exportCrossReferenceMap = await fetchReferenceMap(
+        'cross_references',
+        exportCrossReferenceIds,
+        'cross_reference_id',
+        formatCrossReferenceOption
       );
       const csv = buildExportCsv(
         allRecords,
@@ -1147,7 +1157,8 @@ const PublicationsPage = () => {
         exportAuthorMap,
         exportPublicationMap,
         mapTaxonPublicationsByPublication(exportTaxonPublications),
-        exportTaxonNameMap
+        exportTaxonNameMap,
+        exportCrossReferenceMap
       );
       downloadCsv(`publications_${new Date().toISOString().slice(0, 10)}.csv`, csv);
     } finally {
@@ -1158,12 +1169,29 @@ const PublicationsPage = () => {
   const renderCellContent = (column: ColumnKey, record: PublicationRecord) => {
     const publicationId = record.publication_id ?? record.id ?? 0;
     const linkedTaxa = (taxonPublicationMap[publicationId] ?? [])
+      .filter((link) => link.taxon_name_id)
       .map((link, index) => ({
         key: link.taxon_publication_id ?? link.id ?? `${publicationId}-${index}`,
         taxonNameId: toNumberId(link.taxon_name_id),
         label: getTaxonLabelFromLink(link, taxonNameMap),
       }))
       .filter((taxon) => Boolean(taxon.label));
+    const linkedCrossReferences = (taxonPublicationMap[publicationId] ?? [])
+      .map((link, index) => ({
+        key:
+          link.taxon_publication_id ??
+          link.id ??
+          `${publicationId}-cross-reference-${index}`,
+        crossReferenceId: toNumberId(link.cross_reference_id),
+        label: getCrossReferenceLabelFromLink(link, crossReferenceMap),
+      }))
+      .filter((crossReference) => crossReference.crossReferenceId !== undefined)
+      .filter(
+        (crossReference, index, values) =>
+          values.findIndex(
+            (value) => value.crossReferenceId === crossReference.crossReferenceId
+          ) === index
+      );
     switch (column) {
       case 'publicationId':
         return record.publication_id ?? record.id ?? '';
@@ -1201,6 +1229,30 @@ const PublicationsPage = () => {
                   {taxon.label}
                 </span>
               )
+            ))}
+            {hiddenCount > 0 ? (
+              <Badge variant="outline">+{hiddenCount} more</Badge>
+            ) : null}
+          </span>
+        );
+      }
+      case 'linkedCrossReferences': {
+        if (!linkedCrossReferences.length) {
+          return <span className="text-muted-foreground">No linked cross references</span>;
+        }
+        const visibleCrossReferences = linkedCrossReferences.slice(0, 3);
+        const hiddenCount = linkedCrossReferences.length - visibleCrossReferences.length;
+        return (
+          <span className="inline-flex flex-wrap items-center gap-1.5">
+            {visibleCrossReferences.map((crossReference) => (
+              <Link
+                key={crossReference.key}
+                to={`/cross_references/${crossReference.crossReferenceId}/show`}
+                className="rounded-md border border-border px-2 py-0.5 text-xs hover:bg-accent"
+              >
+                {crossReference.label ||
+                  `Cross reference #${crossReference.crossReferenceId}`}
+              </Link>
             ))}
             {hiddenCount > 0 ? (
               <Badge variant="outline">+{hiddenCount} more</Badge>
@@ -1252,7 +1304,7 @@ const PublicationsPage = () => {
       case 'bhlUrl':
         return record.bhl_url ?? '';
       case 'referenceType':
-        return record.reference_type ?? '';
+        return getPublicationReferenceTypeLabel(record.reference_type);
       case 'referenceAuthorRole':
         return record.reference_author_role ?? '';
       case 'duplicateOf':

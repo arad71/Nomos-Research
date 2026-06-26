@@ -48,6 +48,13 @@ const TaxonNameEditPage = () => {
         <div className="grid min-w-0 gap-6">
           <div className="rounded-2xl border border-border bg-card p-6">
             <TaxonNameForm
+              pageTopContent={
+                <TaxonNameRelatedSections
+                  editable
+                  embedded
+                  sections={['parallelNamePreview']}
+                />
+              }
               topContent={
                 <TaxonNameRelatedSections
                   editable
@@ -62,7 +69,6 @@ const TaxonNameEditPage = () => {
                   sections={[
                     'authors',
                     'publicationReferences',
-                    'publication',
                     'vernaculars',
                     'hierarchy',
                     'relatedNames',

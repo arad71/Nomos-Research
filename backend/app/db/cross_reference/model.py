@@ -1,10 +1,19 @@
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
+from sqlalchemy import (
+    Boolean,
+    CheckConstraint,
+    Column,
+    DateTime,
+    ForeignKey,
+    Integer,
+    String,
+)
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.schema import Index
 from sqlalchemy.types import Enum
 
 from app.db.cross_reference import enums
 from app.db.cross_reference.constants import (
+    ACTIVE,
     AUTHORISED_BY,
     AUTHORISED_ON,
     COMMENTS,
@@ -19,6 +28,7 @@ from app.db.cross_reference.constants import (
     TABLE_DESCRIPTION,
 )
 from app.db.models import BaseModel, TableMixin
+from app.db.publication.model import Publication
 from app.db.taxon_name.model import TaxonName
 
 
@@ -56,6 +66,20 @@ class CrossReference(BaseModel, TableMixin):
         remote_side=[TaxonName.taxon_name_id],
         backref=backref("cross_referenced_new_name", cascade="all, delete-orphan"),
     )
+    publication_id = Column(
+        Integer,
+        ForeignKey("publication.publication_id"),
+        nullable=True,
+        comment="Associated publication",
+        doc="Associated publication",
+    )
+
+    publication = relationship(
+        "Publication",
+        foreign_keys=[publication_id],
+        remote_side=[Publication.publication_id],
+        backref=backref("cross_referenced_publication"),
+    )
     cross_reference_type = Column(
         Enum(enums.CrossReferenceType, name=__tablename__ + "__cross_reference_type"),
         nullable=False,
@@ -82,8 +106,33 @@ class CrossReference(BaseModel, TableMixin):
     )
     notes = Column(String(3000))
     legacy_id = Column(Integer)
+    is_active = Column(Boolean, default=True, comment=ACTIVE, doc=ACTIVE)
     legacy_id_columns = ["legacy_id"]
+
     __table_args__ = (
+        # Rule 1: Conditional NULL for new_name_id
+        CheckConstraint(
+            """
+            new_name_id IS NOT NULL
+            OR cross_reference_type IN (
+                'Excluded Name',
+                'Name Entered in Error'
+            )
+            """,
+            name="chk_cross_reference_new_name_required",
+        ),
+        # Rule 2: Mandatory internal rationale when new_name_id IS NULL
+        CheckConstraint(
+            """
+            new_name_id IS NOT NULL
+            OR (
+                internal_comments IS NOT NULL
+                AND length(trim(internal_comments)) > 0
+            )
+            """,
+            name="chk_cross_reference_rationale_required",
+        ),
+        # Existing legacy index
         Index(
             f"ix_{__tablename__}_legacy_id_isactive",
             *legacy_id_columns,

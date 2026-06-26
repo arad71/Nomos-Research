@@ -5,6 +5,7 @@ import { Edit } from '@/components/admin/edit';
 import CrossReferenceForm from './CrossReferenceForm';
 import HistoryInfoBox from '../shared/HistoryInfoBox';
 import RecordPageActions from '../shared/RecordPageActions';
+import PublicationReferenceSection from '../taxon-publications/PublicationReferenceSection';
 
 const CrossReferenceEditTitle = () => {
   const record = useRecordContext<{ id?: string | number; deleted?: boolean | null }>();
@@ -30,6 +31,23 @@ const CrossReferenceEditActions = () => {
   );
 };
 
+const CrossReferencePublicationReferences = () => {
+  const record = useRecordContext<{
+    id?: string | number;
+    cross_reference_id?: string | number;
+  }>();
+  const recordId = record?.cross_reference_id ?? record?.id;
+
+  return (
+    <PublicationReferenceSection
+      editable
+      parentId={recordId}
+      parentField="cross_reference_id"
+      parentLabel="cross reference"
+    />
+  );
+};
+
 const CrossReferenceEditPage = () => (
   <Edit
     resource="cross_references"
@@ -39,7 +57,9 @@ const CrossReferenceEditPage = () => (
     actions={<CrossReferenceEditActions />}
   >
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
-      <CrossReferenceForm />
+      <div className="grid min-w-0 gap-6">
+        <CrossReferenceForm beforeNotes={<CrossReferencePublicationReferences />} />
+      </div>
       <div className="xl:sticky xl:top-6 xl:self-start">
         <HistoryInfoBox />
       </div>

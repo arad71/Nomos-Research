@@ -61,7 +61,7 @@ import CrossReferenceForm from '../cross-references/CrossReferenceForm';
 import HierarchyForm from '../hierarchies/HierarchyForm';
 import TaxonNameParentForm from '../taxon-name-parents/TaxonNameParentForm';
 import PublicationForm from '../publications/PublicationForm';
-import TaxonPublicationForm from '../taxon-publications/TaxonPublicationForm';
+import PublicationReferenceSection from '../taxon-publications/PublicationReferenceSection';
 import HybridCategory from '../shared/choices/HybridCategory';
 import {
   normalizeDoi,
@@ -74,6 +74,8 @@ import {
   hasAnyRole,
   HYBRID_ROLLOUT_ROLES,
 } from '../../adminShell';
+
+const LEGACY_PUBLICATION_ROLES = ['SUPER_ADMIN', 'APPLICATION_SUPPORT'];
 
 const INFRASPECIFIC_RANK_ABBREVIATIONS = [
   'nothovar.',
@@ -142,16 +144,6 @@ const formatPreviewTitle = (value?: string | null) => {
 
 const formatTitle = formatPreviewTitle;
 
-const parseNullableText = (value?: string | null) => {
-  if (typeof value !== 'string') {
-    return value ?? null;
-  }
-  const trimmed = value.trim();
-  return trimmed ? trimmed : null;
-};
-
-const formatNullableText = (value?: string | null) => value ?? '';
-
 const renderScientificName = (taxon?: {
   formatted_scientific_name?: string | null;
   scientific_name?: string | null;
@@ -170,15 +162,6 @@ type ParentLinkRecord = {
   sequence?: number | string | null;
 };
 
-type ParentTaxonRecord = {
-  id?: string | number;
-  taxon_name_id?: string | number;
-  scientific_name?: string | null;
-  canonical_name?: string | null;
-  uninomial?: string | null;
-  formatted_scientific_name?: string | null;
-};
-
 type ParallelNamePreviewRecord = {
   id?: string | number;
   taxon_name_id?: string | number;
@@ -195,42 +178,6 @@ type ParallelNamePreviewRecord = {
   matches_current_uninomial?: boolean;
   matches_current_scientific_name?: boolean;
   parent_taxon_name_ids?: Array<string | number> | null;
-};
-
-const formatParentPreviewName = (taxon?: ParentTaxonRecord) =>
-  taxon?.uninomial?.trim() ||
-  taxon?.scientific_name?.trim() ||
-  taxon?.canonical_name?.trim() ||
-  '';
-
-const getOrderedParentNames = (
-  rows: ParentLinkRecord[],
-  parentMap: Map<string, ParentTaxonRecord>
-) =>
-  [...rows]
-    .sort(
-      (left, right) => Number(left.sequence ?? 0) - Number(right.sequence ?? 0)
-    )
-    .map((row) => parentMap.get(String(row.parent_taxon_name_id ?? '')))
-    .map(formatParentPreviewName)
-    .filter(Boolean);
-
-const deriveParentValue = (
-  rows: ParentLinkRecord[],
-  parentMap: Map<string, ParentTaxonRecord>,
-  hybridCategory?: string | null
-) => {
-  const orderedParentNames = getOrderedParentNames(rows, parentMap);
-
-  if (hybridCategory === 'hybrid_formula') {
-    return orderedParentNames.join(' × ');
-  }
-
-  if (hybridCategory === 'intergrade') {
-    return orderedParentNames.join(' - ');
-  }
-
-  return orderedParentNames.join(' × ');
 };
 
 const validateHybridCategory = (
@@ -258,18 +205,6 @@ const ParentHybridFields = ({ editable }: { editable?: boolean }) => {
     }>();
     const isHybrid = useWatch({ name: 'is_hybrid' });
     const hybridCategory = useWatch({ name: 'hybrid_category' });
-    const recordId = record?.id;
-    const { data: parentRows = [] } = useGetList(
-      'taxon_name_parents',
-      {
-        filter: { taxon_name_id: recordId },
-        pagination: { page: 1, perPage: 100 },
-        sort: { field: 'sequence', order: 'ASC' },
-      },
-      { enabled: Boolean(recordId) }
-    );
-    const hasMultipleParents = parentRows.length > 1;
-
     React.useEffect(() => {
       if (!isHybrid) {
         setValue('hybrid_category', null, {
@@ -278,15 +213,6 @@ const ParentHybridFields = ({ editable }: { editable?: boolean }) => {
         });
       }
     }, [isHybrid, setValue]);
-
-    React.useEffect(() => {
-      if (hasMultipleParents && !isHybrid) {
-        setValue('is_hybrid', true, {
-          shouldDirty: true,
-          shouldValidate: true,
-        });
-      }
-    }, [hasMultipleParents, isHybrid, setValue]);
 
     return (
       <div className="grid items-start gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -307,12 +233,6 @@ const ParentHybridFields = ({ editable }: { editable?: boolean }) => {
             if (value === false || value === 'false') return false;
             return value;
           }}
-          disabled={hasMultipleParents}
-          helperText={
-            hasMultipleParents
-              ? 'Automatically set to Yes when more than one parent row exists.'
-              : undefined
-          }
         />
         {isHybrid ? (
           <SelectInput
@@ -352,317 +272,18 @@ const ParentHybridFields = ({ editable }: { editable?: boolean }) => {
   );
 };
 
-const useParentDerivedUninomial = ({
-  recordId,
-  hybridCategory,
-}: {
-  recordId?: string | number;
-  hybridCategory?: string | null;
-}) => {
-  const { data: parentRows = [], isPending: parentRowsPending } =
-    useGetList<ParentLinkRecord>(
-      'taxon_name_parents',
-      {
-        filter: { taxon_name_id: recordId },
-        pagination: { page: 1, perPage: 100 },
-        sort: { field: 'sequence', order: 'ASC' },
-      },
-      { enabled: recordId != null }
-    );
-
-  const parentIds = React.useMemo(
-    () =>
-      (Array.isArray(parentRows) ? parentRows : [])
-        .map((row) => row.parent_taxon_name_id)
-        .filter(
-          (value): value is string | number =>
-            value !== null && value !== undefined && value !== ''
-        ),
-    [parentRows]
-  );
-
-  const { data: parentRecords = [], isPending: parentRecordsPending } =
-    useGetMany<ParentTaxonRecord>(
-      'taxon_names',
-      { ids: parentIds },
-      { enabled: parentIds.length > 0 }
-    );
-
-  const parentMap = React.useMemo(
-    () =>
-      new Map(
-        (Array.isArray(parentRecords) ? parentRecords : []).map((parent) => [
-          String(parent.id ?? parent.taxon_name_id ?? ''),
-          parent,
-        ])
-      ),
-    [parentRecords]
-  );
-
-  const parentDerivedValue = React.useMemo(
-    () =>
-      deriveParentValue(
-        (Array.isArray(parentRows) ? parentRows : []) as ParentLinkRecord[],
-        parentMap,
-        hybridCategory
-      ),
-    [hybridCategory, parentMap, parentRows]
-  );
-
-  return {
-    parentDerivedValue,
-    isPending: parentRowsPending || parentRecordsPending,
-  };
-};
-
-const ReadOnlyParallelUninomialField = () => {
-  const record = useRecordContext<{
-    id?: string | number;
-    hybrid_category?: string | null;
-    parallel_override_uninomial?: string | null;
-  }>();
-  const recordId = record?.id;
-  const { parentDerivedValue } = useParentDerivedUninomial({
-    recordId,
-    hybridCategory: record?.hybrid_category,
-  });
-
-  const parallelUninomial = record?.parallel_override_uninomial;
-  const hasOverride = Boolean(parallelUninomial && parallelUninomial.trim());
-  const matchesParentDerived = Boolean(
-    hasOverride &&
-      parentDerivedValue &&
-      parallelUninomial.trim() === parentDerivedValue.trim()
-  );
-
-  return (
-    <div className="space-y-2 xl:col-span-2">
-      <div className="text-sm font-medium">Parallel uninomial</div>
-      <div className="flex flex-wrap items-center gap-2">
-        {hasOverride && !matchesParentDerived ? (
-          <>
-            <Badge variant="outline">{parallelUninomial}</Badge>
-            <span className="text-xs text-muted-foreground">
-              Explicit parallel override
-            </span>
-          </>
-        ) : parentDerivedValue ? (
-          <>
-            <Badge variant="secondary">{parentDerivedValue}</Badge>
-            <span className="text-xs text-muted-foreground">
-              Using the parent-derived value
-            </span>
-          </>
-        ) : (
-          <span className="text-sm text-muted-foreground">Not set</span>
-        )}
-      </div>
-    </div>
-  );
-};
-
-const EditableParallelUninomialField = () => {
-  const record = useRecordContext<{
-    id?: string | number;
-    hybrid_category?: string | null;
-  }>();
-  const form = useFormContext();
-  const hybridCategory = useWatch({ name: 'hybrid_category' });
-  const parallelUninomial = useWatch({ name: 'parallel_override_uninomial' });
-  const recordId = record?.id;
-  const { parentDerivedValue, isPending } = useParentDerivedUninomial({
-    recordId,
-    hybridCategory,
-  });
-
-  const hasOverride = Boolean(
-    parallelUninomial && String(parallelUninomial).trim()
-  );
-  const matchesParentDerived = Boolean(
-    hasOverride &&
-      parentDerivedValue &&
-      String(parallelUninomial).trim() === parentDerivedValue.trim()
-  );
-  const [showOverrideInput, setShowOverrideInput] = React.useState(
-    !parentDerivedValue || (hasOverride && !matchesParentDerived)
-  );
-  const [stashedOverrideValue, setStashedOverrideValue] = React.useState<
-    string | null
-  >(null);
-
-  React.useEffect(() => {
-    setShowOverrideInput(
-      !parentDerivedValue || (hasOverride && !matchesParentDerived)
-    );
-  }, [hasOverride, matchesParentDerived, parentDerivedValue]);
-
-  React.useEffect(() => {
-    if (hasOverride) {
-      setStashedOverrideValue(String(parallelUninomial).trim());
-    }
-  }, [hasOverride, parallelUninomial]);
-
-  if (!showOverrideInput && parentDerivedValue) {
-    return (
-      <div className="grid gap-2 xl:col-span-2">
-        <div className="flex items-center gap-2 text-sm leading-none font-medium">
-          Parallel uninomial
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="flex min-h-10 flex-1 flex-wrap items-center gap-2 rounded-xl border border-border bg-background px-3 py-2">
-            <Badge variant="secondary">{parentDerivedValue}</Badge>
-            <span className="text-sm text-muted-foreground">
-              Using the parent-derived value.
-            </span>
-          </div>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              setShowOverrideInput(true);
-              form.setValue(
-                'parallel_override_uninomial',
-                stashedOverrideValue ?? null,
-                {
-                  shouldDirty: true,
-                  shouldTouch: true,
-                  shouldValidate: true,
-                }
-              );
-            }}
-          >
-            Override
-          </Button>
-        </div>
-        <div className="text-xs text-muted-foreground">
-          Set an override only when the parallel uninomial should differ from
-          the parent-derived value.
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="grid gap-2 xl:col-span-2">
-      <div className="flex flex-wrap items-start gap-2">
-        <TextInput
-          source="parallel_override_uninomial"
-          label="Parallel uninomial"
-          parse={parseNullableText}
-          format={formatNullableText}
-          className="min-w-[260px] flex-1"
-        />
-        {parentDerivedValue ? (
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="mt-7"
-            onClick={() => {
-              const currentValue =
-                typeof parallelUninomial === 'string'
-                  ? parallelUninomial.trim()
-                  : '';
-              if (currentValue) {
-                setStashedOverrideValue(currentValue);
-              }
-              form.setValue('parallel_override_uninomial', null, {
-                shouldDirty: true,
-                shouldTouch: true,
-                shouldValidate: true,
-              });
-              setShowOverrideInput(false);
-            }}
-          >
-            Use parent
-          </Button>
-        ) : null}
-      </div>
-      <div className="flex flex-wrap items-center gap-2">
-        {isPending ? (
-          <span className="text-xs text-muted-foreground">
-            Loading parent-derived value...
-          </span>
-        ) : parentDerivedValue ? (
-          <>
-            <Badge variant="outline">{parentDerivedValue}</Badge>
-            <span className="text-xs text-muted-foreground">
-              Parent-derived default
-            </span>
-          </>
-        ) : (
-          <span className="text-xs text-muted-foreground">
-            No parent-derived uninomial is available, so this field acts as the
-            parallel fallback.
-          </span>
-        )}
-      </div>
-    </div>
-  );
-};
-
-const ParallelNameOverridesPanel = ({ editable }: { editable?: boolean }) => {
-  if (editable) {
-    return (
-      <div className="space-y-3 rounded-2xl border border-border/80 bg-muted/10 p-4">
-        <div className="space-y-1">
-          <div className="text-sm font-medium">Parallel name fields</div>
-          <p className="text-sm text-muted-foreground">
-            These fields drive the parallel name engine separately from the
-            current saved taxon-name fields. They are seeded from the current
-            values, but can then diverge safely.
-          </p>
-        </div>
-        <div className="grid items-start gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <EditableParallelUninomialField />
-          <TextInput
-            source="parallel_override_specific_epithet"
-            label="Parallel specific epithet"
-            parse={parseNullableText}
-            format={formatNullableText}
-          />
-          <TextInput
-            source="parallel_override_infraspecific_epithet"
-            label="Parallel infraspecific epithet"
-            parse={parseNullableText}
-            format={formatNullableText}
-          />
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-3 rounded-2xl border border-border/80 bg-muted/10 p-4">
-      <div className="space-y-1">
-        <div className="text-sm font-medium">Parallel name fields</div>
-        <p className="text-sm text-muted-foreground">
-          These fields drive the parallel name engine separately from the
-          current saved taxon-name fields. They are seeded from the current
-          values, but can then diverge safely.
-        </p>
-      </div>
-      <div className="grid items-start gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <ReadOnlyParallelUninomialField />
-        <RecordField
-          source="parallel_override_specific_epithet"
-          label="Parallel specific epithet"
-        />
-        <RecordField
-          source="parallel_override_infraspecific_epithet"
-          label="Parallel infraspecific epithet"
-        />
-      </div>
-    </div>
-  );
-};
-
 const ParallelNamePreviewPanel = ({
   recordId,
 }: {
   recordId?: string | number;
 }) => {
+  const record = useRecordContext<{
+    formatted_scientific_name?: string | null;
+    scientific_name?: string | null;
+    canonical_name?: string | null;
+    legacy_scientific_name?: string | null;
+    legacy_canonical_name?: string | null;
+  }>();
   const { data, isPending, error } = useGetOne<ParallelNamePreviewRecord>(
     'taxon_names_parallel_name_preview',
     { id: recordId, meta: { strict: true } },
@@ -693,126 +314,64 @@ const ParallelNamePreviewPanel = ({
     return null;
   }
 
-  const notes = Array.isArray(data.notes) ? data.notes.filter(Boolean) : [];
-
   return (
     <div className="rounded-xl border border-sky-200 bg-sky-50/80 p-4 dark:border-sky-900/60 dark:bg-sky-950/20">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">
           <div className="text-sm font-medium">
-            Parallel name engine preview
+            Scientific and legacy names
           </div>
           <Badge className="border-sky-300 bg-sky-100 text-sky-900 hover:bg-sky-100 dark:border-sky-800 dark:bg-sky-900/50 dark:text-sky-100">
             {formatPreviewTitle(data.strategy)}
           </Badge>
-          {data.matches_current_scientific_name ? (
-            <Badge className="border-emerald-300 bg-emerald-100 text-emerald-900 hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-100">
-              Scientific name matches current
-            </Badge>
-          ) : null}
-          {data.matches_current_uninomial ? (
-            <Badge className="border-emerald-300 bg-emerald-100 text-emerald-900 hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-100">
-              Uninomial matches current
-            </Badge>
-          ) : null}
         </div>
         <Badge className="border-sky-300 bg-sky-100 text-sky-900 hover:bg-sky-100 dark:border-sky-800 dark:bg-sky-900/50 dark:text-sky-100">
-          Strict parallel mode
+          Parallel fields
         </Badge>
       </div>
       <div className="mt-3 grid gap-3 md:grid-cols-2">
         <div className="space-y-1">
           <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            Current scientific name
+            Scientific name
           </div>
           <div className="text-sm">
-            {data.current_formatted_scientific_name ? (
-              <HtmlValue value={data.current_formatted_scientific_name} />
+            {record?.formatted_scientific_name ? (
+              <HtmlValue value={record.formatted_scientific_name} />
             ) : (
-              data.current_scientific_name || 'Not set'
+              record?.scientific_name || 'Not set'
             )}
           </div>
         </div>
         <div className="space-y-1">
           <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            Derived scientific name
+            Legacy scientific name
           </div>
           <div className="text-sm">
-            {data.derived_formatted_scientific_name ? (
-              <HtmlValue value={data.derived_formatted_scientific_name} />
-            ) : (
-              data.derived_scientific_name || 'Unable to derive yet'
-            )}
+            {record?.legacy_scientific_name || 'Not set'}
           </div>
         </div>
         <div className="space-y-1">
           <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            Current canonical name
+            Canonical name
           </div>
           <div className="text-sm">
-            {data.current_canonical_name || 'Not set'}
+            {record?.canonical_name || 'Not set'}
           </div>
         </div>
         <div className="space-y-1">
           <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            Derived canonical name
+            Legacy canonical name
           </div>
           <div className="text-sm">
-            {data.derived_canonical_name || 'Unable to derive yet'}
+            {record?.legacy_canonical_name || 'Not set'}
           </div>
         </div>
       </div>
-      {notes.length ? (
-        <div className="mt-3 space-y-2">
-          <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            Notes
-          </div>
-          <div className="space-y-1 text-sm text-muted-foreground">
-            {notes.map((note) => (
-              <div key={note}>{note}</div>
-            ))}
-          </div>
-        </div>
-      ) : null}
       <div className="mt-3 text-xs text-muted-foreground">
-        This preview uses the parallel engine and does not replace the current
-        saved name fields.
+        Scientific and canonical names are stored on the taxon name. Legacy
+        names are retained from the old name parts.
       </div>
     </div>
-  );
-};
-
-const DerivedScientificNameSummaryField = ({
-  recordId,
-}: {
-  recordId?: string | number;
-}) => {
-  const { data, isPending } = useGetOne<ParallelNamePreviewRecord>(
-    'taxon_names_parallel_name_preview',
-    { id: recordId as string | number, meta: { strict: true } },
-    { enabled: recordId != null }
-  );
-
-  if (recordId == null) {
-    return null;
-  }
-
-  return (
-    <RecordField
-      label="Derived scientific name"
-      className="md:col-span-1 xl:min-w-0"
-      render={() => {
-        if (isPending) {
-          return 'Loading...';
-        }
-
-        if (data?.derived_formatted_scientific_name) {
-          return <HtmlValue value={data.derived_formatted_scientific_name} />;
-        }
-
-        return data?.derived_scientific_name ?? 'Not set';
-      }}
-    />
   );
 };
 
@@ -1163,8 +722,8 @@ const EditRelatedButton = ({
   title?: string;
 }) => (
   <EditInDialogButton
-    id={id}
     resource={resource}
+    {...(id != null ? { id } : {})}
     fullWidth
     maxWidth="md"
     title={title ?? label}
@@ -1213,6 +772,23 @@ const DialogFormPadding = ({ children }: { children: React.ReactNode }) => (
   <div className="px-4 py-2 sm:px-6">{children}</div>
 );
 
+const CrossReferencePublicationReferences = () => {
+  const record = useRecordContext<{
+    id?: string | number;
+    cross_reference_id?: string | number;
+  }>();
+  const recordId = record?.cross_reference_id ?? record?.id;
+
+  return (
+    <PublicationReferenceSection
+      editable
+      parentId={recordId}
+      parentField="cross_reference_id"
+      parentLabel="cross reference"
+    />
+  );
+};
+
 type RelatedNameCardRecord = {
   id?: string | number;
   cross_reference_id?: string | number;
@@ -1220,6 +796,22 @@ type RelatedNameCardRecord = {
   new_name_id?: string | number | null;
   cross_reference_type?: string | null;
   reference_comments?: string | null;
+  is_active?: boolean | null;
+};
+
+type RelatedNamePublicationReferenceRecord = {
+  id?: string | number;
+  taxon_publication_id?: string | number;
+  cross_reference_id?: string | number | null;
+  publication_id?: string | number | null;
+};
+
+type RelatedNamePublicationRecord = {
+  id?: string | number;
+  publication_id?: string | number;
+  display_title?: string | null;
+  abbreviated_title?: string | null;
+  title?: string | null;
 };
 
 const RelatedNameCards = ({
@@ -1234,6 +826,117 @@ const RelatedNameCards = ({
   showOpenAction?: boolean;
 }) => {
   const { data } = useListContext<RelatedNameCardRecord>();
+  const dataProvider = useDataProvider();
+  const [publicationReferenceMap, setPublicationReferenceMap] = React.useState<
+    Record<string, RelatedNamePublicationReferenceRecord[]>
+  >({});
+  const [publicationMap, setPublicationMap] = React.useState<
+    Record<string, RelatedNamePublicationRecord>
+  >({});
+
+  const crossReferenceIds = React.useMemo(
+    () =>
+      Array.from(
+        new Set(
+          (data ?? [])
+            .map((crossRef) => crossRef.cross_reference_id ?? crossRef.id)
+            .filter(
+              (value): value is string | number =>
+                value !== null && value !== undefined && value !== ''
+            )
+            .map(String)
+        )
+      ),
+    [data]
+  );
+
+  React.useEffect(() => {
+    let active = true;
+
+    const loadPublicationReferences = async () => {
+      if (!crossReferenceIds.length) {
+        setPublicationReferenceMap({});
+        setPublicationMap({});
+        return;
+      }
+
+      const batches = await Promise.all(
+        crossReferenceIds.map(async (crossReferenceId) => {
+          try {
+            const response = await dataProvider.getList('taxon-publications', {
+              pagination: { page: 1, perPage: 100 },
+              sort: { field: 'taxon_publication_id', order: 'ASC' },
+              filter: { cross_reference_id: Number(crossReferenceId) },
+            });
+            return Array.isArray(response?.data)
+              ? (response.data as RelatedNamePublicationReferenceRecord[])
+              : [];
+          } catch {
+            return [];
+          }
+        })
+      );
+      const publicationReferences = batches.flat();
+      const nextPublicationReferenceMap =
+        publicationReferences.reduce<
+          Record<string, RelatedNamePublicationReferenceRecord[]>
+        >((acc, row) => {
+          const crossReferenceId = row.cross_reference_id;
+          if (crossReferenceId === null || crossReferenceId === undefined) {
+            return acc;
+          }
+          const key = String(crossReferenceId);
+          if (!acc[key]) {
+            acc[key] = [];
+          }
+          acc[key].push(row);
+          return acc;
+        }, {});
+
+      const publicationIds = Array.from(
+        new Set(
+          publicationReferences
+            .map((row) => row.publication_id)
+            .filter(
+              (value): value is string | number =>
+                value !== null && value !== undefined && value !== ''
+            )
+        )
+      );
+      const publications = publicationIds.length
+        ? await dataProvider
+            .getMany('publications', { ids: publicationIds })
+            .then((response) =>
+              Array.isArray(response?.data)
+                ? (response.data as RelatedNamePublicationRecord[])
+                : []
+            )
+            .catch(() => [])
+        : [];
+      const nextPublicationMap = publications.reduce<
+        Record<string, RelatedNamePublicationRecord>
+      >((acc, publication) => {
+        const publicationId = publication.publication_id ?? publication.id;
+        if (publicationId !== null && publicationId !== undefined) {
+          acc[String(publicationId)] = publication;
+        }
+        return acc;
+      }, {});
+
+      if (!active) {
+        return;
+      }
+
+      setPublicationReferenceMap(nextPublicationReferenceMap);
+      setPublicationMap(nextPublicationMap);
+    };
+
+    void loadPublicationReferences();
+
+    return () => {
+      active = false;
+    };
+  }, [crossReferenceIds, dataProvider]);
 
   if (!data?.length) {
     return null;
@@ -1245,6 +948,36 @@ const RelatedNameCards = ({
         const crossReferenceId = crossRef.cross_reference_id ?? crossRef.id;
         const relatedTaxonId = crossRef[nameSource];
         const cardRecord = { ...crossRef, id: crossReferenceId };
+        const linkedPublications = (crossReferenceId != null
+          ? publicationReferenceMap[String(crossReferenceId)] ?? []
+          : []
+        )
+          .map((row, index) => {
+            const publicationId = row.publication_id;
+            const publication =
+              publicationId !== null && publicationId !== undefined
+                ? publicationMap[String(publicationId)]
+                : undefined;
+            return {
+              key:
+                row.taxon_publication_id ??
+                row.id ??
+                `${String(crossReferenceId)}-publication-${index}`,
+              publicationId,
+              label:
+                publication?.display_title ??
+                publication?.abbreviated_title ??
+                publication?.title ??
+                (publicationId ? `Publication ${publicationId}` : ''),
+            };
+          })
+          .filter((publication) => publication.label)
+          .filter(
+            (publication, index, values) =>
+              values.findIndex(
+                (value) => value.publicationId === publication.publicationId
+              ) === index
+          );
 
         return (
           <RecordContextProvider key={String(crossReferenceId)} value={cardRecord}>
@@ -1256,6 +989,12 @@ const RelatedNameCards = ({
                   </Badge>
                   <Badge variant="outline" className="w-fit">
                     {getCrossRefTypeLabel(crossRef.cross_reference_type)}
+                  </Badge>
+                  <Badge
+                    variant={crossRef.is_active === false ? 'outline' : 'secondary'}
+                    className="w-fit"
+                  >
+                    {crossRef.is_active === false ? 'Inactive' : 'Active'}
                   </Badge>
                 </div>
               </CardHeader>
@@ -1283,6 +1022,28 @@ const RelatedNameCards = ({
                     {crossRef.reference_comments}
                   </p>
                 ) : null}
+                {linkedPublications.length ? (
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    {linkedPublications.map((publication) =>
+                      publication.publicationId ? (
+                        <Link
+                          key={publication.key}
+                          to={`/publications/${publication.publicationId}/show`}
+                          className="rounded-md border border-border px-2 py-0.5 text-xs hover:bg-accent"
+                        >
+                          {publication.label}
+                        </Link>
+                      ) : (
+                        <span
+                          key={publication.key}
+                          className="rounded-md border border-border px-2 py-0.5 text-xs"
+                        >
+                          {publication.label}
+                        </span>
+                      )
+                    )}
+                  </div>
+                ) : null}
               </CardContent>
               {editable ? (
                 <CardFooter className="flex flex-wrap items-center justify-end gap-2 border-t border-border px-4 pb-3 pt-3 [.border-t]:pt-3">
@@ -1291,6 +1052,7 @@ const RelatedNameCards = ({
                       <CrossReferenceForm
                         hideNewName={nameSource === 'old_name_id'}
                         hideOldName={nameSource === 'new_name_id'}
+                        beforeNotes={<CrossReferencePublicationReferences />}
                       />
                     </DialogFormPadding>
                   </EditRelatedButton>
@@ -1439,6 +1201,112 @@ const PublicationReadOnlySection = () => {
   );
 };
 
+type LegacyPublicationTitleRecord = {
+  display_title?: string | null;
+  title?: string | null;
+  abbreviated_title?: string | null;
+};
+
+const LegacyPublicationTitleValue = ({
+  publicationId,
+}: {
+  publicationId?: string | number | null;
+}) => {
+  const ids = React.useMemo(
+    () =>
+      publicationId !== null && publicationId !== undefined && publicationId !== ''
+        ? [publicationId]
+        : [],
+    [publicationId]
+  );
+  const { data } = useGetMany<LegacyPublicationTitleRecord>(
+    'publications',
+    { ids },
+    { enabled: ids.length > 0 }
+  );
+  const publication = data?.[0];
+  const title =
+    publication?.display_title ??
+    publication?.title ??
+    publication?.abbreviated_title ??
+    '';
+
+  return <span className="flex-1">{title}</span>;
+};
+
+const LegacyPublicationDataSection = () => {
+  const record = useRecordContext<{
+    publication_id?: string | number | null;
+    legacy_publication_id?: string | number | null;
+    publication_year?: string | number | null;
+    form_desc_yr?: string | number | null;
+    reference?: string | null;
+    volume_information?: string | null;
+  }>();
+  const publicationId = record?.publication_id;
+  const hasLegacyPublicationData =
+    publicationId != null ||
+    record?.legacy_publication_id != null ||
+    record?.publication_year != null ||
+    record?.form_desc_yr != null ||
+    Boolean(record?.reference) ||
+    Boolean(record?.volume_information);
+
+  if (!hasLegacyPublicationData) {
+    return null;
+  }
+
+  return (
+    <section className="mt-6 space-y-4 rounded-2xl border border-sky-200 bg-sky-50/80 p-4 dark:border-sky-900/60 dark:bg-sky-950/20">
+      <SectionHeader
+        title="Legacy publication data"
+        description="Legacy publication values retained on the taxon name record during the publication-reference migration."
+      />
+      <div className="grid gap-4 md:grid-cols-2">
+        <RecordField
+          label="Publication title"
+          className="md:col-span-2"
+        >
+          <LegacyPublicationTitleValue publicationId={publicationId} />
+        </RecordField>
+        <RecordField
+          label="Volume information"
+          record={record}
+          render={(taxon: { volume_information?: string | null }) =>
+            taxon.volume_information ?? ''
+          }
+        />
+        <RecordField
+          label="Publication year"
+          record={record}
+          render={(taxon: {
+            publication_year?: string | number | null;
+            form_desc_yr?: string | number | null;
+          }) =>
+            taxon.publication_year ??
+            taxon.form_desc_yr ??
+            ''
+          }
+        />
+        <RecordField
+          label="Reference"
+          record={record}
+          render={(taxon: { reference?: string | null }) =>
+            taxon.reference ?? ''
+          }
+        />
+        <RecordField
+          label="Legacy publication ID"
+          record={record}
+          render={(taxon: { legacy_publication_id?: string | number | null }) =>
+            taxon.legacy_publication_id ?? ''
+          }
+        />
+      </div>
+    </section>
+  );
+};
+
 const CreatePublicationButton = () => {
   const form = useFormContext();
   const publicationId = form.watch('publication_id');
@@ -1521,143 +1389,8 @@ const EditPublicationButton = () => {
   );
 };
 
-type TaxonPublicationLinkRecord = {
-  id?: string | number;
-  taxon_publication_id?: string | number;
-  publication_id?: string | number | null;
-  page_reference?: string | null;
-  figure_reference?: string | null;
-  notes?: string | null;
-};
-
-const PublicationReferenceCards = ({ editable }: { editable: boolean }) => {
-  const { data = [] } = useListContext<TaxonPublicationLinkRecord>();
-
-  const publicationIds = React.useMemo(
-    () =>
-      Array.from(
-        new Set(
-          data
-            .map((row) => row.publication_id)
-            .filter(
-              (value): value is string | number =>
-                value !== null && value !== undefined && value !== ''
-            )
-        )
-      ),
-    [data]
-  );
-
-  const { data: publications = [] } = useGetMany(
-    'publications',
-    { ids: publicationIds },
-    { enabled: publicationIds.length > 0 }
-  );
-
-  const publicationMap = React.useMemo(
-    () =>
-      new Map(
-        (Array.isArray(publications) ? publications : []).map((publication) => [
-          String(publication.id ?? publication.publication_id ?? ''),
-          publication,
-        ])
-      ),
-    [publications]
-  );
-
-  return (
-    <div className="space-y-3">
-      {data.map((row, index) => {
-        const rowId = row.id ?? row.taxon_publication_id;
-        const publication = publicationMap.get(String(row.publication_id ?? ''));
-        const publicationLabel =
-          publication?.display_title ??
-          publication?.abbreviated_title ??
-          (row.publication_id ? `Publication ${row.publication_id}` : 'No publication');
-        const publicationDoi =
-          typeof publication?.doi === 'string' && publication.doi.trim()
-            ? publication.doi
-            : null;
-
-        return (
-          <RecordContextProvider key={String(rowId ?? `publication-link-${index}`)} value={row}>
-            <div className="rounded-xl border border-border bg-card p-4">
-              <div className="space-y-1">
-                <div className="space-y-1">
-                  <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                    Publication
-                  </div>
-                  {row.publication_id ? (
-                    <Link
-                      to={`/publications/${row.publication_id}/show`}
-                      className="text-sm font-medium text-foreground hover:underline"
-                    >
-                      {publicationLabel}
-                    </Link>
-                  ) : (
-                    <div className="text-sm font-medium text-foreground">
-                      {publicationLabel}
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className="mt-3 grid gap-3 md:grid-cols-2">
-                <div className="space-y-1">
-                  <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                    Page reference
-                  </div>
-                  <div className="text-sm text-foreground">
-                    {row.page_reference || 'Not set'}
-                  </div>
-                </div>
-                <div className="space-y-1">
-                  <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                    Figure reference
-                  </div>
-                  <div className="text-sm text-foreground">
-                    {row.figure_reference || 'Not set'}
-                  </div>
-                </div>
-                {publicationDoi ? (
-                  <div className="space-y-1 md:col-span-2">
-                    <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                      DOI
-                    </div>
-                    <div className="text-sm text-foreground">
-                      <PublicationDoiLink value={publicationDoi} />
-                    </div>
-                  </div>
-                ) : null}
-                <div className="space-y-1 md:col-span-2">
-                  <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                    Notes
-                  </div>
-                  <div className="text-sm text-foreground">
-                    {row.notes || 'Not set'}
-                  </div>
-                </div>
-              </div>
-              {editable ? (
-                <div className="-mx-4 -mb-4 mt-4 rounded-b-xl border-t border-border bg-muted/20 px-4 py-3">
-                  <div className="flex items-center justify-end gap-2">
-                    <EditRelatedButton label="Edit publication reference">
-                      <DialogFormPadding>
-                        <TaxonPublicationForm hideTaxonName />
-                      </DialogFormPadding>
-                    </EditRelatedButton>
-                    <DeleteRelatedButton resource="taxon-publications" />
-                  </div>
-                </div>
-              ) : null}
-            </div>
-          </RecordContextProvider>
-        );
-      })}
-    </div>
-  );
-};
-
 type RelatedSectionKey =
+  | 'parallelNamePreview'
   | 'authors'
   | 'publicationReferences'
   | 'publication'
@@ -1779,7 +1512,14 @@ const TaxonNameRelatedSections = ({
   const recordId = record?.id;
   const navigate = useNavigate();
   const refresh = useRefresh();
-  const canViewHybridRollout = hasAnyRole(getStoredRoles(), HYBRID_ROLLOUT_ROLES);
+  const canViewHybridRollout = hasAnyRole(
+    getStoredRoles(),
+    HYBRID_ROLLOUT_ROLES
+  );
+  const canViewLegacyPublication = hasAnyRole(
+    getStoredRoles(),
+    LEGACY_PUBLICATION_ROLES
+  );
   const visibleSections = new Set<RelatedSectionKey>(
     sections ?? [
       'authors',
@@ -1802,6 +1542,14 @@ const TaxonNameRelatedSections = ({
             : 'min-w-0 space-y-0 rounded-2xl border border-border bg-card p-6'
         }
       >
+        {editable &&
+        visibleSections.has('parallelNamePreview') &&
+        canViewHybridRollout ? (
+          <section className="space-y-4">
+            <ParallelNamePreviewPanel recordId={recordId} />
+          </section>
+        ) : null}
+
         {!editable ? (
           <>
             {visibleSections.has('parents') && canViewHybridRollout ? (
@@ -1811,11 +1559,13 @@ const TaxonNameRelatedSections = ({
             ) : null}
 
             <section className="space-y-4">
-              <SectionHeader title="Taxon name summary" />
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)_minmax(0,1.5fr)]">
+              <h3 className="text-lg font-semibold tracking-tight">
+                Taxon name
+              </h3>
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                 <RecordField
                   label="NomosID"
-                  className="xl:min-w-0"
+                  className="min-w-0"
                   render={(taxon: {
                     id?: string | number | null;
                     taxon_name_id?: string | number | null;
@@ -1823,13 +1573,18 @@ const TaxonNameRelatedSections = ({
                 />
                 <RecordField
                   label="Formatted scientific name"
-                  className="md:col-span-1 xl:min-w-0"
+                  className="min-w-0 md:col-start-2 xl:col-start-2 xl:col-span-3"
                   render={(taxon: {
                     formatted_scientific_name?: string | null;
                   }) => <HtmlValue value={taxon.formatted_scientific_name} />}
                 />
-                <DerivedScientificNameSummaryField recordId={recordId} />
+                <RecordField
+                  source="canonical_name"
+                  label="Canonical name"
+                  className="min-w-0 md:col-start-2 xl:col-start-2 xl:col-span-3"
+                />
               </div>
+              <SectionHeader title="Taxonomic placement" />
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                 <RecordField label="Kingdom" source="kingdom_id">
                   <ReferenceField
@@ -1889,6 +1644,9 @@ const TaxonNameRelatedSections = ({
                   className="hidden md:block md:col-span-2 xl:col-span-4"
                   aria-hidden="true"
                 />
+                <div className="md:col-span-2 xl:col-span-4">
+                  <SectionHeader title="Taxonomic status" />
+                </div>
                 <RecordField
                   source="publication_status"
                   label="Publication status"
@@ -1919,6 +1677,30 @@ const TaxonNameRelatedSections = ({
                   }
                 />
                 <RecordField
+                  label="Hybrid"
+                  render={(taxon: { is_hybrid?: boolean | null }) =>
+                    renderBoolean(taxon.is_hybrid)
+                  }
+                />
+                <RecordField
+                  source="hybrid_category"
+                  label="Hybrid category"
+                >
+                  <RecordField
+                    label=""
+                    render={(taxon: { hybrid_category?: string | null }) =>
+                      renderChoice(HybridCategory, taxon.hybrid_category)
+                    }
+                  />
+                </RecordField>
+                <div
+                  className="hidden md:block md:col-span-2 xl:col-span-4"
+                  aria-hidden="true"
+                />
+                <div className="md:col-span-2 xl:col-span-4">
+                  <SectionHeader title="Taxonomic review" />
+                </div>
+                <RecordField
                   label="Review"
                   render={(taxon: { review?: boolean | null }) =>
                     renderBoolean(taxon.review)
@@ -1933,16 +1715,38 @@ const TaxonNameRelatedSections = ({
                   className="hidden md:block md:col-span-2 xl:col-span-4"
                   aria-hidden="true"
                 />
+                <div className="md:col-span-2 xl:col-span-4">
+                  <SectionHeader title="Taxonomic codes" />
+                </div>
+                <RecordField
+                  label="NomosID"
+                  className="xl:min-w-0"
+                  render={(taxon: {
+                    id?: string | number | null;
+                    taxon_name_id?: string | number | null;
+                  }) => taxon.taxon_name_id ?? taxon.id ?? ''}
+                />
                 <RecordField
                   source="legacy_id"
                   label="LegacyID"
-                  className="xl:col-span-2"
+                  className="min-w-0"
+                  render={(taxon: { legacy_id?: string | number | null }) => (
+                    <span className="break-all [overflow-wrap:anywhere]">
+                      {taxon.legacy_id ?? ''}
+                    </span>
+                  )}
                 />
                 <RecordField
                   source="species_code"
                   label="Species code"
-                  className="xl:col-span-2"
                 />
+                <div
+                  className="hidden md:block md:col-span-2 xl:col-span-4"
+                  aria-hidden="true"
+                />
+                <div className="md:col-span-2 xl:col-span-4">
+                  <SectionHeader title="Taxonomic comments" />
+                </div>
                 <RecordField
                   source="comments"
                   label="Internal comments"
@@ -2026,18 +1830,12 @@ const TaxonNameRelatedSections = ({
           </>
         ) : null}
 
-        {visibleSections.has('parents') && (!editable || canViewHybridRollout) ? (
+        {editable && visibleSections.has('parents') && canViewHybridRollout ? (
           <>
-            {editable && canViewHybridRollout ? (
-              <section className="space-y-4">
-                <ParallelNamePreviewPanel recordId={recordId} />
-              </section>
-            ) : null}
-
-            <section className="mt-12 space-y-4">
+            <section className={embedded ? 'space-y-4' : 'mt-12 space-y-4'}>
               <SectionHeader
-                title="Parent names"
-                description="Ordered parent-name rows used to support hybrids and derived uninomial generation during migration."
+                title="Taxonomic parent names"
+                description="Ordered parent-name rows used for hybrid formulas and parent-derived uninomial values."
                 action={
                   editable && recordId ? (
                     <CreateParentNameRowButton recordId={recordId} />
@@ -2070,7 +1868,10 @@ const TaxonNameRelatedSections = ({
                       <DataTable.Col label="Actions">
                         <div className="flex items-center gap-2">
                           <ParentSequenceButtons />
-                          <EditRelatedButton label="Edit parent name row">
+                          <EditRelatedButton
+                            resource="taxon_name_parents"
+                            label="Edit parent name row"
+                          >
                             <DialogFormPadding>
                               <TaxonNameParentForm hideTaxonName />
                             </DialogFormPadding>
@@ -2111,14 +1912,13 @@ const TaxonNameRelatedSections = ({
                   </DataTable>
                 </ReferenceManyField>
               ) : null}
-              <ParallelNameOverridesPanel editable={editable} />
-              <ParentHybridFields editable={editable} />
+              {!editable ? <ParentHybridFields editable={editable} /> : null}
             </section>
           </>
         ) : null}
 
         {visibleSections.has('authors') ? (
-          <section className="mt-12 space-y-4">
+          <section className="mt-12 space-y-4 border-t border-border pt-12">
             <SectionHeader
               title="Authors"
               description="Citation author rows linked to this taxon name."
@@ -2157,67 +1957,19 @@ const TaxonNameRelatedSections = ({
         ) : null}
 
         {visibleSections.has('publicationReferences') ? (
-          <section className="mt-12 space-y-4">
-            <SectionHeader
-              title="Publication references"
-              description="Taxon-specific references for linked publications (page, figure, notes)."
-              action={
-                editable && recordId ? (
-                  <CreateInDialogButton
-                    resource="taxon-publications"
-                    record={{ taxon_name_id: recordId }}
-                    fullWidth
-                    maxWidth="md"
-                    title="Create publication reference"
-                    label="Create publication reference"
-                    ButtonProps={relatedDialogButtonProps}
-                  >
-                    <DialogFormPadding>
-                      <TaxonPublicationForm hideTaxonName />
-                    </DialogFormPadding>
-                  </CreateInDialogButton>
-                ) : undefined
-              }
+          <>
+            <PublicationReferenceSection
+              editable={editable}
+              parentId={recordId}
+              parentField="taxon_name_id"
+              parentLabel="taxon name"
             />
-            {editable ? (
-              recordId ? (
-                <ReferenceManyField
-                  reference="taxon-publications"
-                  target="taxon_name_id"
-                  sort={{ field: 'taxon_publication_id', order: 'ASC' }}
-                  empty={
-                    <EmptyState>
-                      No publication references linked to this taxon name yet.
-                    </EmptyState>
-                  }
-                >
-                  <PublicationReferenceCards editable />
-                </ReferenceManyField>
-              ) : (
-                <EmptyState>
-                  Save the taxon name first, then you can add publication
-                  references inline here.
-                </EmptyState>
-              )
-            ) : recordId ? (
-              <ReferenceManyField
-                reference="taxon-publications"
-                target="taxon_name_id"
-                sort={{ field: 'taxon_publication_id', order: 'ASC' }}
-                empty={
-                  <EmptyState>
-                    No publication references linked to this taxon name yet.
-                  </EmptyState>
-                }
-              >
-                <PublicationReferenceCards editable={false} />
-              </ReferenceManyField>
-            ) : null}
-          </section>
+            <LegacyPublicationDataSection />
+          </>
         ) : null}
 
-        {visibleSections.has('publication') ? (
-          <section className="mt-12 space-y-4">
+        {visibleSections.has('publication') && canViewLegacyPublication ? (
+          <section className="mt-12 space-y-4 rounded-2xl border border-red-200 bg-red-50/70 p-4 dark:border-red-900/60 dark:bg-red-950/20">
             <SectionHeader
               title="Publication"
               description="Linked publication for this taxon name."
@@ -2489,7 +2241,10 @@ const TaxonNameRelatedSections = ({
                           ButtonProps={relatedDialogButtonProps}
                         >
                           <DialogFormPadding>
-                            <CrossReferenceForm hideNewName />
+                            <CrossReferenceForm
+                              hideNewName
+                              beforeNotes={<CrossReferencePublicationReferences />}
+                            />
                           </DialogFormPadding>
                         </CreateInDialogButton>
                       ) : undefined
@@ -2526,7 +2281,10 @@ const TaxonNameRelatedSections = ({
                           ButtonProps={relatedDialogButtonProps}
                         >
                           <DialogFormPadding>
-                            <CrossReferenceForm hideOldName />
+                            <CrossReferenceForm
+                              hideOldName
+                              beforeNotes={<CrossReferencePublicationReferences />}
+                            />
                           </DialogFormPadding>
                         </CreateInDialogButton>
                       ) : undefined

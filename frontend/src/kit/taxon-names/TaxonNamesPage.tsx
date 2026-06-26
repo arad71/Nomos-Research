@@ -275,7 +275,6 @@ const columnOptions: Array<{ key: ColumnKey; label: string }> = [
   { key: 'author', label: 'Author' },
   { key: 'monthPublished', label: 'Month published' },
   { key: 'dayPublished', label: 'Day published' },
-  { key: 'publication', label: 'Publication' },
   { key: 'publicationReferences', label: 'Publication references' },
   { key: 'volumeInformation', label: 'Volume information' },
   { key: 'reviewFlag', label: 'Review?' },
@@ -296,7 +295,6 @@ const columnOptions: Array<{ key: ColumnKey; label: string }> = [
   { key: 'source', label: 'Source' },
   { key: 'externalId', label: 'External ID' },
   { key: 'familyCode', label: 'Family code' },
-  { key: 'speciesCode', label: 'Species code' },
   { key: 'editor', label: 'Editor' },
   { key: 'naturalisedStatus', label: 'Naturalised status' },
   { key: 'naturalisedCertainty', label: 'Naturalised certainty' },
@@ -1873,11 +1871,14 @@ const TaxonNamesPage = () => {
           (record.publication_id ? `Publication ${record.publication_id}` : '');
       case 'publicationReferences':
         return publicationReferenceMap[taxonNameId]?.length ? (
-          <div className="flex max-w-80 flex-wrap gap-2">
+          <div className="flex max-w-80 flex-col gap-1 whitespace-normal break-words">
             {publicationReferenceMap[taxonNameId].map((reference) => (
-              <Badge key={reference} variant="outline">
+              <span
+                key={reference}
+                className="max-w-full rounded border border-border bg-background px-2 py-1 text-left text-xs leading-5 text-foreground"
+              >
                 {formatPublicationReferenceLabel(reference)}
-              </Badge>
+              </span>
             ))}
           </div>
         ) : (
@@ -2502,6 +2503,8 @@ const TaxonNamesPage = () => {
               cellClassName={
                 column.key === 'actions'
                   ? 'align-top'
+                  : column.key === 'publicationReferences'
+                    ? 'max-w-80 whitespace-normal break-words align-top'
                   : column.key === 'status'
                     ? 'min-w-56 whitespace-nowrap [&>div]:!flex-nowrap [&>div]:!whitespace-nowrap'
                     : undefined
