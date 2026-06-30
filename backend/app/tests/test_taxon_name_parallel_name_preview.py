@@ -505,8 +505,7 @@ def test_derive_bracketed_subgenus_name_includes_cultivar_epithet():
         canonical_name="Cicindela mastersi",
         scientific_name="Cicindela (Myriochile) mastersi Castelnau, 1867",
         formatted_scientific_name=(
-            "<i>Cicindela</i> (<i>Myriochile</i>) <i>mastersi</i> "
-            "Castelnau, 1867"
+            "<i>Cicindela</i> (<i>Myriochile</i>) <i>mastersi</i> " "Castelnau, 1867"
         ),
         uninomial="Cicindela",
         specific_epithet="mastersi",
