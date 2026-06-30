@@ -13,7 +13,10 @@ import app.db.crud as crud
 import app.db.taxon_name.schema as schema
 from app.db.hierarchy.model import Hierarchy
 from app.db.informal_group.model import InformalGroup
-from app.db.taxon_name.calculated import append_ms_suffix, remove_ms_suffix
+from app.db.taxon_name.calculated import (
+    append_ms_suffix,
+    remove_ms_suffix,
+)
 
 # from app.db.taxon_name.calculated import append_ms_suffix
 from app.db.taxon_name.enums import PublicationStatus
@@ -44,6 +47,9 @@ CANONICAL = "Canonical"
 
 CANONICAL_WITHOUT_RANK = "Canonical without rank"
 HYBRID_FORMULA_PREFIX_RE = re.compile(r"^(?:×|x|X)\s+")
+CULTIVAR_QUOTE_RE = re.compile(
+    r"['\"`\u2018\u2019\u201A\u201B\u201C\u201D\u201E\u201F]"
+)
 SPACED_HYBRID_MARKER_RE = re.compile(r"(^|\s)x\s+", re.IGNORECASE)
 
 
@@ -59,6 +65,8 @@ class TaxonNameCrud(crud.Crud):
         "scientific_name",
         "canonical_name",
         "canonical_name_without_rank",
+        "cultivar_epithet",
+        "cultivar_search_text",
         "author",
         "all_vernaculars",
         "cross_referenced_old_name___new_name___scientific_name",
@@ -67,6 +75,28 @@ class TaxonNameCrud(crud.Crud):
     calculation_unmodified: int = 0
     calculation_count: int = 0
     calculation_total: int = 0
+
+    @staticmethod
+    def _normalize_cultivar_search_value(value):
+        if not isinstance(value, str):
+            return value
+        return re.sub(r"\s+", " ", CULTIVAR_QUOTE_RE.sub(" ", value).strip())
+
+    @classmethod
+    def apply_filter(
+        cls,
+        current_user: User,
+        filters: dict,
+        column,
+        filter_value,
+        path_match,
+        query: orm.Query,
+    ):
+        if column == "q":
+            filter_value = cls._normalize_cultivar_search_value(filter_value)
+        return super().apply_filter(
+            current_user, filters, column, filter_value, path_match, query
+        )
 
     @staticmethod
     def _seed_parallel_name_fields_from_current(values) -> None:

@@ -91,4 +91,3 @@ secrets:
 volumes:
   db-data:
   frontend-node-modules:
-  

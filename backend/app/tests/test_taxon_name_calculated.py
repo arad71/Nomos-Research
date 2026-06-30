@@ -12,7 +12,11 @@ from app.db.citation.model import Citation
 from app.db.kingdom.crud import KingdomCrud
 from app.db.kingdom.model import Kingdom
 from app.db.taxon_name import schema
-from app.db.taxon_name.calculated import calculate_scientific_name_string
+from app.db.taxon_name.calculated import (
+    append_cultivar_epithet_to_name,
+    calculate_canonical_name_string,
+    calculate_scientific_name_string,
+)
 from app.db.taxon_name.model import TaxonName
 from app.db.taxon_rank.model import TaxonRank
 from app.db.user.model import User
@@ -243,4 +247,49 @@ def test_calculate_formatted_scientific_name():
     assert (
         calculate_scientific_name_string(autonym, is_autonym=False)
         == "<i>Poa</i> <i>annua</i> subsp. <i>annua</i> L."  # noqa: E501
+    )
+
+
+def test_calculate_names_with_cultivar_epithet():
+    cultivar = schema.NameStringComponents(
+        uninomial="Lomandra",
+        specific_epithet="confertifolia",
+        rank_abbreviation="subsp.",
+        infraspecific_epithet="rubiginosa",
+        cultivar_epithet="merlom ruby",
+    )
+
+    assert (
+        calculate_canonical_name_string(cultivar)
+        == "Lomandra confertifolia subsp. rubiginosa \u2018Merlom Ruby\u2019"
+    )
+    assert (
+        calculate_canonical_name_string(cultivar, include_rank=False)
+        == "Lomandra confertifolia rubiginosa \u2018Merlom Ruby\u2019"
+    )
+    assert (
+        calculate_scientific_name_string(cultivar, italicize=False)
+        == "Lomandra confertifolia subsp. rubiginosa \u2018Merlom Ruby\u2019"
+    )
+    assert (
+        calculate_scientific_name_string(cultivar, italicize=True)
+        == "<i>Lomandra</i> <i>confertifolia</i> subsp. "
+        "<i>rubiginosa</i> \u2018Merlom Ruby\u2019"
+    )
+
+
+def test_append_cultivar_epithet_to_stored_name_is_idempotent():
+    assert (
+        append_cultivar_epithet_to_name(
+            "Sargassum ilicifolium var. oocystoides Grunow",
+            "golden form",
+        )
+        == "Sargassum ilicifolium var. oocystoides Grunow \u2018Golden Form\u2019"
+    )
+    assert (
+        append_cultivar_epithet_to_name(
+            "Sargassum ilicifolium var. oocystoides Grunow \u2018Golden Form\u2019",
+            "golden form",
+        )
+        == "Sargassum ilicifolium var. oocystoides Grunow \u2018Golden Form\u2019"
     )

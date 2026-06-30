@@ -33,6 +33,26 @@ describe('normalizeTaxonNameHybridFields', () => {
     });
   });
 
+  it('normalizes cultivar epithet on submit without preventing spaces while typing', () => {
+    expect(
+      normalizeTaxonNameHybridFields({
+        is_hybrid: false,
+        has_cultivar: true,
+        cultivar_epithet: '  Bluff   Cream  ',
+      }).cultivar_epithet
+    ).toBe('Bluff Cream');
+  });
+
+  it('clears cultivar epithet on submit when cultivar is toggled off', () => {
+    const normalized = normalizeTaxonNameHybridFields({
+      has_cultivar: false,
+      cultivar_epithet: 'Bluff Cream',
+    });
+
+    expect(normalized.cultivar_epithet).toBeNull();
+    expect('has_cultivar' in normalized).toBe(false);
+  });
+
   it('preserves duplicate named hybrid uninomial and specific overrides', () => {
     expect(
       normalizeTaxonNameHybridFields({
@@ -171,5 +191,4 @@ describe('deriveParentValue', () => {
       )
     ).toBe('Albugo');
   });
-
 });

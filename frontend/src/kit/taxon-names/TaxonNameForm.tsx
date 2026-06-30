@@ -14,11 +14,16 @@ import { SimpleForm } from '@/components/admin/simple-form';
 import { TextInput } from '@/components/admin/text-input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import { parseDateOnlyToDateTime } from '../shared/dateOnlyDateTime';
 import HybridCategory from '../shared/choices/HybridCategory';
 import NaturalisedStatus from '../shared/choices/NaturalisedStatus';
 import PublicationStatus from '../shared/choices/PublicationStatus';
+import {
+  hasCultivarEpithet,
+  validateCultivarEpithet,
+} from './cultivar';
 import {
   deriveParentValue,
   type ParentLinkRecord,
@@ -53,6 +58,8 @@ type TaxonNameFormValues = {
   review_reason?: string | null;
   specific_epithet?: string | null;
   infraspecific_epithet?: string | null;
+  cultivar_epithet?: string | null;
+  has_cultivar?: boolean | null;
   is_autonym?: boolean;
 };
 
@@ -623,6 +630,61 @@ const formatRankOption = (choice?: {
   return choice.rank_name;
 };
 
+const CultivarFields = () => {
+  const { setValue } = useFormContext();
+  const cultivarEpithet = useWatch({ name: 'cultivar_epithet' });
+  const hasCultivar = useWatch({ name: 'has_cultivar' });
+  const [showCultivarField, setShowCultivarField] = React.useState(
+    Boolean(hasCultivar ?? hasCultivarEpithet(cultivarEpithet))
+  );
+  const hasUserToggled = React.useRef(false);
+
+  React.useEffect(() => {
+    if (!hasUserToggled.current) {
+      const nextShowCultivarField = Boolean(
+        hasCultivar ?? hasCultivarEpithet(cultivarEpithet)
+      );
+      setShowCultivarField(nextShowCultivarField);
+      setValue('has_cultivar', nextShowCultivarField, {
+        shouldDirty: false,
+        shouldValidate: false,
+      });
+    }
+  }, [cultivarEpithet, hasCultivar, setValue]);
+
+  const toggleCultivar = (checked: boolean) => {
+    hasUserToggled.current = true;
+    setShowCultivarField(checked);
+    setValue('has_cultivar', checked, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+  };
+
+  return (
+    <>
+      <div className="flex items-center gap-2">
+        <Switch
+          id="taxon-name-has-cultivar"
+          checked={showCultivarField}
+          onCheckedChange={toggleCultivar}
+        />
+        <label htmlFor="taxon-name-has-cultivar" className="text-sm font-medium">
+          Cultivar
+        </label>
+      </div>
+      {showCultivarField ? (
+        <TextInput
+          source="cultivar_epithet"
+          label="Cultivar epithet"
+          validate={validateCultivarEpithet}
+          helperText="Store the raw epithet only, without quotation marks."
+        />
+      ) : null}
+    </>
+  );
+};
+
 const TaxonNameFormInner = ({
   pageTopContent,
   topContent,
@@ -665,7 +727,7 @@ const TaxonNameFormInner = ({
       {pageTopContent}
 
       <section className="space-y-4">
-       
+
         <div className="space-y-1">
           <h3 className="text-lg font-semibold tracking-tight">Taxon name</h3>
           <p className="text-sm text-muted-foreground">Placement, parent-name links, and core name parts.</p>
@@ -735,6 +797,8 @@ const TaxonNameFormInner = ({
             </div>
           </div>
 
+          <div className="hidden md:block md:col-span-2 xl:col-span-4" aria-hidden="true" />
+          <CultivarFields />
           <div className="hidden md:block md:col-span-2 xl:col-span-4" aria-hidden="true" />
           <HybridFields />
 
