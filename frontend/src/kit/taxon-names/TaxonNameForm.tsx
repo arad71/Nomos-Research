@@ -799,6 +799,7 @@ const TaxonNameFormInner = ({
 
           <div className="hidden md:block md:col-span-2 xl:col-span-4" aria-hidden="true" />
           <CultivarFields />
+          <div className="hidden md:block md:col-span-2 xl:col-span-4" aria-hidden="true" />
           <HybridFields />
 
           <div className="hidden md:block md:col-span-2 xl:col-span-4" aria-hidden="true" />

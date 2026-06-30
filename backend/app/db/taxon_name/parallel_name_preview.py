@@ -623,6 +623,20 @@ def derived_parallel_name_result(
     publication_status = getattr(taxon_name, "publication_status", None)
     publication_status_value = getattr(publication_status, "value", publication_status)
     is_manuscript = publication_status_value == "manuscript_name"
+    cultivar_epithet = getattr(taxon_name, "cultivar_epithet", None)
+
+    canonical_name = calculated.append_cultivar_epithet_to_name(
+        canonical_name,
+        cultivar_epithet,
+    )
+    scientific_name = calculated.append_cultivar_epithet_to_name(
+        scientific_name,
+        cultivar_epithet,
+    )
+    formatted_scientific_name = calculated.append_cultivar_epithet_to_name(
+        formatted_scientific_name,
+        cultivar_epithet,
+    )
 
     if is_manuscript:
         canonical_name = calculated.append_ms_suffix(canonical_name)

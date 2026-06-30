@@ -494,6 +494,68 @@ def test_derive_infraspecific_name_carries_parent_bracketed_subgenus():
     )
 
 
+def test_derive_bracketed_subgenus_name_includes_cultivar_epithet():
+    parent = SimpleNamespace(
+        taxon_name_id=274827,
+        deleted=False,
+        rank_name="Species",
+        taxon_rank=SimpleNamespace(rank_name="Species", rank_abbrev=None),
+        infragenus_name=None,
+        canonical_name_without_rank="Cicindela mastersi",
+        canonical_name="Cicindela mastersi",
+        scientific_name="Cicindela (Myriochile) mastersi Castelnau, 1867",
+        formatted_scientific_name=(
+            "<i>Cicindela</i> (<i>Myriochile</i>) <i>mastersi</i> "
+            "Castelnau, 1867"
+        ),
+        uninomial="Cicindela",
+        specific_epithet="mastersi",
+        hybrid_category=None,
+    )
+    taxon_name = SimpleNamespace(
+        taxon_name_id=274828,
+        author="Horn, 1901",
+        cultivar_epithet="blue flash",
+        is_autonym=False,
+        taxon_rank=SimpleNamespace(rank_name="Subspecies", rank_abbrev=None),
+        rank_name="Subspecies",
+        publication_status="published",
+        is_hybrid=False,
+        hybrid_category=None,
+        taxon_name_parents=[
+            SimpleNamespace(
+                parent_taxon_name=parent,
+                parent_taxon_name_id=parent.taxon_name_id,
+                sequence=1,
+                deleted=False,
+            )
+        ],
+        parallel_override_uninomial="Cicindela",
+        parallel_override_specific_epithet="mastersi",
+        parallel_override_infraspecific_epithet="catoptriola",
+        uninomial="Cicindela",
+        specific_epithet="mastersi",
+        infraspecific_epithet="catoptriola",
+        canonical_name="Cicindela mastersi catoptriola",
+        scientific_name="Cicindela mastersi catoptriola Horn, 1901",
+    )
+
+    derived = derive_parallel_name(None, taxon_name, strict=True)
+
+    assert derived["strategy"] == "strict_parent_bracketed_scientific_overlay"
+    assert derived["canonical_name"] == (
+        "Cicindela mastersi catoptriola \u2018Blue Flash\u2019"
+    )
+    assert derived["scientific_name"] == (
+        "Cicindela (Myriochile) mastersi catoptriola Horn, 1901 "
+        "\u2018Blue Flash\u2019"
+    )
+    assert derived["formatted_scientific_name"] == (
+        "<i>Cicindela</i> (<i>Myriochile</i>) <i>mastersi</i> "
+        "<i>catoptriola</i> Horn, 1901 \u2018Blue Flash\u2019"
+    )
+
+
 def test_derive_species_name_carries_blank_uninomial_subgenus_parent():
     parent = SimpleNamespace(
         taxon_name_id=281299,
