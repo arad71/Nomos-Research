@@ -48,7 +48,7 @@ flake8 = "^7.0.0"
 black = "^26.5.1"
 colorama = "^0.4.6"
 isort = "^8.0.1"
-typer = {extras = ["all"], version = "^0.26.8"}
+typer = {extras = ["all"], version = "^0.27.0"}
 rich = "^15.0.0"
 deepdiff = "^9.1.0"
 pydantic-settings = "^2.14.2"
