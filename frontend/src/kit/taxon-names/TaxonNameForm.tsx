@@ -14,11 +14,21 @@ import { SimpleForm } from '@/components/admin/simple-form';
 import { TextInput } from '@/components/admin/text-input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import { parseDateOnlyToDateTime } from '../shared/dateOnlyDateTime';
 import HybridCategory from '../shared/choices/HybridCategory';
 import NaturalisedStatus from '../shared/choices/NaturalisedStatus';
 import PublicationStatus from '../shared/choices/PublicationStatus';
+import {
+  hasCultivarEpithet,
+  validateCultivarEpithet,
+} from './cultivar';
+import {
+  deriveParentValue,
+  type ParentLinkRecord,
+  type ParentTaxonRecord,
+} from './hybridFields';
 
 const requiredValue = required();
 const minYear = minValue(1735);
@@ -48,6 +58,8 @@ type TaxonNameFormValues = {
   review_reason?: string | null;
   specific_epithet?: string | null;
   infraspecific_epithet?: string | null;
+  cultivar_epithet?: string | null;
+  has_cultivar?: boolean | null;
   is_autonym?: boolean;
 };
 
@@ -165,63 +177,6 @@ const INFRASPECIFIC_RANKS = new Set([
   'subform',
 ]);
 
-type ParentLinkRecord = {
-  id?: string | number;
-  taxon_name_id?: string | number;
-  parent_taxon_name_id?: string | number;
-  sequence?: number | string | null;
-};
-
-type ParentTaxonRecord = {
-  id?: string | number;
-  taxon_name_id?: string | number;
-  scientific_name?: string | null;
-  canonical_name?: string | null;
-  uninomial?: string | null;
-  formatted_scientific_name?: string | null;
-};
-
-const formatParentPreviewName = (taxon?: ParentTaxonRecord | null) =>
-  taxon?.uninomial?.trim() ||
-  taxon?.scientific_name?.trim() ||
-  taxon?.canonical_name?.trim() ||
-  '';
-
-const getOrderedParentNames = (
-  rows: ParentLinkRecord[],
-  parentTaxa: Map<string, ParentTaxonRecord>
-) =>
-  [...rows]
-    .sort(
-      (left, right) => Number(left.sequence ?? 0) - Number(right.sequence ?? 0)
-    )
-    .map((row) =>
-      row.parent_taxon_name_id == null
-        ? ''
-        : formatParentPreviewName(
-            parentTaxa.get(String(row.parent_taxon_name_id))
-          )
-    )
-    .filter(Boolean);
-
-const deriveParentValue = (
-  rows: ParentLinkRecord[],
-  parentTaxa: Map<string, ParentTaxonRecord>,
-  hybridCategory?: string | null
-) => {
-  const orderedParentNames = getOrderedParentNames(rows, parentTaxa);
-
-  if (hybridCategory === 'hybrid_formula') {
-    return orderedParentNames.join(' × ');
-  }
-
-  if (hybridCategory === 'intergrade') {
-    return orderedParentNames.join(' - ');
-  }
-
-  return orderedParentNames.join(' × ');
-};
-
 const UninomialInput = () => {
   const record = useRecordContext<{ id?: string | number }>();
   const form = useFormContext();
@@ -265,14 +220,21 @@ const UninomialInput = () => {
       ),
     [parentTaxa]
   );
+  const currentValue =
+    typeof parallelUninomial === 'string' ? parallelUninomial.trim() : '';
+  const hasOverride = Boolean(currentValue);
   const parentDerivedValue = React.useMemo(
     () => deriveParentValue(parentRows, parentTaxaById, hybridCategory),
     [hybridCategory, parentRows, parentTaxaById]
   );
+  const parentDisplayValue = React.useMemo(
+    () =>
+      deriveParentValue(parentRows, parentTaxaById, hybridCategory, {
+        includeBracketedScientificContext: true,
+      }),
+    [hybridCategory, parentRows, parentTaxaById]
+  );
   const isPending = parentRowsPending || parentTaxaPending;
-  const currentValue =
-    typeof parallelUninomial === 'string' ? parallelUninomial.trim() : '';
-  const hasOverride = Boolean(currentValue);
   const matchesParentDerived = Boolean(
     hasOverride &&
       parentDerivedValue &&
@@ -331,7 +293,9 @@ const UninomialInput = () => {
               Uninomial <span className="text-destructive">*</span>
             </span>
             <div className="flex flex-wrap items-center gap-2 py-2">
-              <Badge variant="outline">{parentDerivedValue}</Badge>
+              <Badge variant="outline">
+                {parentDisplayValue || parentDerivedValue}
+              </Badge>
               <span className="text-xs text-muted-foreground">
                 Parent value
               </span>
@@ -366,7 +330,9 @@ const UninomialInput = () => {
         </span>
       ) : parentDerivedValue && showInput && !hasOverride ? (
         <div className="flex flex-wrap items-center gap-2">
-          <Badge variant="outline">{parentDerivedValue}</Badge>
+          <Badge variant="outline">
+            {parentDisplayValue || parentDerivedValue}
+          </Badge>
           <span className="text-xs text-muted-foreground">
             Parent value
           </span>
@@ -595,20 +561,8 @@ const ValidatedInput = () => {
 };
 
 const HybridFields = () => {
-  const record = useRecordContext<{ id?: string | number }>();
   const { setValue } = useFormContext<TaxonNameFormValues>();
   const isHybrid = useWatch({ name: 'is_hybrid' });
-  const recordId = record?.id;
-  const { data: parentRows = [] } = useGetList(
-    'taxon_name_parents',
-    {
-      filter: { taxon_name_id: recordId },
-      pagination: { page: 1, perPage: 100 },
-      sort: { field: 'sequence', order: 'ASC' },
-    },
-    { enabled: Boolean(recordId) }
-  );
-  const hasMultipleParents = parentRows.length > 1;
 
   React.useEffect(() => {
     if (!isHybrid) {
@@ -618,15 +572,6 @@ const HybridFields = () => {
       });
     }
   }, [isHybrid, setValue]);
-
-  React.useEffect(() => {
-    if (hasMultipleParents && !isHybrid) {
-      setValue('is_hybrid', true, {
-        shouldDirty: true,
-        shouldValidate: true,
-      });
-    }
-  }, [hasMultipleParents, isHybrid, setValue]);
 
   return (
     <>
@@ -647,12 +592,6 @@ const HybridFields = () => {
           if (value === false || value === 'false') return false;
           return value;
         }}
-        disabled={hasMultipleParents}
-        helperText={
-          hasMultipleParents
-            ? 'Automatically set to Yes when more than one parent row exists.'
-            : undefined
-        }
       />
       {isHybrid ? (
         <SelectInput
@@ -689,6 +628,61 @@ const formatRankOption = (choice?: {
     return `${choice.rank_name} (${kingdomLabel})`;
   }
   return choice.rank_name;
+};
+
+const CultivarFields = () => {
+  const { setValue } = useFormContext();
+  const cultivarEpithet = useWatch({ name: 'cultivar_epithet' });
+  const hasCultivar = useWatch({ name: 'has_cultivar' });
+  const [showCultivarField, setShowCultivarField] = React.useState(
+    Boolean(hasCultivar ?? hasCultivarEpithet(cultivarEpithet))
+  );
+  const hasUserToggled = React.useRef(false);
+
+  React.useEffect(() => {
+    if (!hasUserToggled.current) {
+      const nextShowCultivarField = Boolean(
+        hasCultivar ?? hasCultivarEpithet(cultivarEpithet)
+      );
+      setShowCultivarField(nextShowCultivarField);
+      setValue('has_cultivar', nextShowCultivarField, {
+        shouldDirty: false,
+        shouldValidate: false,
+      });
+    }
+  }, [cultivarEpithet, hasCultivar, setValue]);
+
+  const toggleCultivar = (checked: boolean) => {
+    hasUserToggled.current = true;
+    setShowCultivarField(checked);
+    setValue('has_cultivar', checked, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+  };
+
+  return (
+    <>
+      <div className="flex items-center gap-2">
+        <Switch
+          id="taxon-name-has-cultivar"
+          checked={showCultivarField}
+          onCheckedChange={toggleCultivar}
+        />
+        <label htmlFor="taxon-name-has-cultivar" className="text-sm font-medium">
+          Cultivar
+        </label>
+      </div>
+      {showCultivarField ? (
+        <TextInput
+          source="cultivar_epithet"
+          label="Cultivar epithet"
+          validate={validateCultivarEpithet}
+          helperText="Store the raw epithet only, without quotation marks."
+        />
+      ) : null}
+    </>
+  );
 };
 
 const TaxonNameFormInner = ({
@@ -733,7 +727,7 @@ const TaxonNameFormInner = ({
       {pageTopContent}
 
       <section className="space-y-4">
-       
+
         <div className="space-y-1">
           <h3 className="text-lg font-semibold tracking-tight">Taxon name</h3>
           <p className="text-sm text-muted-foreground">Placement, parent-name links, and core name parts.</p>
@@ -804,6 +798,8 @@ const TaxonNameFormInner = ({
           </div>
 
           <div className="hidden md:block md:col-span-2 xl:col-span-4" aria-hidden="true" />
+          <CultivarFields />
+          <div className="hidden md:block md:col-span-2 xl:col-span-4" aria-hidden="true" />
           <HybridFields />
 
           <div className="hidden md:block md:col-span-2 xl:col-span-4" aria-hidden="true" />
@@ -863,7 +859,10 @@ const TaxonNameFormInner = ({
             </div>
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
               <TextInput source="uninomial" label="Current uninomial" />
-              <TextInput source="specific_epithet" label="Current specific epithet" />
+              <TextInput
+                source="specific_epithet"
+                label="Current specific epithet"
+              />
               <TextInput
                 source="infraspecific_epithet"
                 label="Current infraspecific epithet"
