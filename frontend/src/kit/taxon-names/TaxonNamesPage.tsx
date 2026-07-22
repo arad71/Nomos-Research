@@ -29,6 +29,9 @@ import { BACKEND_URL } from '../../config';
 import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
+import {
+  hasCultivarEpithet,
+} from './cultivar';
 
 type TaxonNameRecord = {
   id?: number;
@@ -37,6 +40,8 @@ type TaxonNameRecord = {
   scientific_name?: string;
   canonical_name?: string;
   formatted_scientific_name?: string;
+  cultivar_epithet?: string | null;
+  has_cultivar?: boolean;
   author?: string;
   kingdom?: { kingdom_name?: string } | string;
   taxon_rank?: { rank_name?: string } | string;
@@ -123,6 +128,9 @@ type ColumnKey =
   | 'legacyId'
   | 'scientificName'
   | 'canonicalName'
+  | 'formattedDisplayName'
+  | 'cultivarEpithet'
+  | 'hasCultivar'
   | 'rank'
   | 'kingdom'
   | 'division'
@@ -185,6 +193,8 @@ type TaxonNameFilters = {
   id: string;
   legacyId: string;
   scientificName: string;
+  cultivarEpithet: string;
+  cultivarMode: string;
   author: string;
   yearPublished: string;
   publicationName: string;
@@ -249,7 +259,10 @@ const columnOptions: Array<{ key: ColumnKey; label: string }> = [
   { key: 'status', label: 'Status' },
   { key: 'updated', label: 'Updated on' },
   { key: 'legacyId', label: 'LegacyID' },
+  { key: 'formattedDisplayName', label: 'Formatted display name' },
   { key: 'canonicalName', label: 'Canonical name' },
+  { key: 'cultivarEpithet', label: 'cultivarEpithet' },
+  { key: 'hasCultivar', label: 'Has cultivar' },
   { key: 'division', label: 'Division' },
   { key: 'phylum', label: 'Phylum' },
   { key: 'class', label: 'Class' },
@@ -314,6 +327,8 @@ const sortableColumns: Partial<Record<ColumnKey, string>> = {
   legacyId: 'legacy_id',
   scientificName: 'scientific_name',
   canonicalName: 'canonical_name',
+  cultivarEpithet: 'cultivar_epithet',
+  hasCultivar: 'has_cultivar',
   rank: 'taxon_rank___rank_name',
   kingdom: 'kingdom___kingdom_name',
   author: 'author',
@@ -404,6 +419,15 @@ const buildFilterObject = (filters: TaxonNameFilters) => {
   }
   if (filters.scientificName) {
     nextFilter.scientific_name__contains = filters.scientificName;
+  }
+  if (filters.cultivarEpithet) {
+    nextFilter.cultivar_epithet__contains = filters.cultivarEpithet;
+  }
+  if (filters.cultivarMode === 'only') {
+    nextFilter.has_cultivar = true;
+  }
+  if (filters.cultivarMode === 'exclude') {
+    nextFilter.has_cultivar = false;
   }
   if (filters.author) {
     nextFilter.author__contains = filters.author;
@@ -902,6 +926,12 @@ const renderHtmlOrFallback = (value?: string, fallback = '') => {
   return <span dangerouslySetInnerHTML={{ __html: value }} />;
 };
 
+const stripHtml = (value?: string | null) =>
+  value ? value.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim() : '';
+
+const getPlainFormattedDisplayName = (record: TaxonNameRecord) =>
+  stripHtml(record.formatted_scientific_name) || record.scientific_name || '';
+
 const renderName = (record: TaxonNameRecord) => {
   if (record.formatted_scientific_name) {
     return (
@@ -911,7 +941,7 @@ const renderName = (record: TaxonNameRecord) => {
     );
   }
 
-  return record.scientific_name || 'Untitled';
+  return getPlainFormattedDisplayName(record) || 'Untitled';
 };
 
 const getTaxonNameId = (record: TaxonNameRecord) =>
@@ -988,6 +1018,12 @@ const booleanOptions = [
   { label: 'No', value: 'false' },
 ];
 
+const cultivarModeOptions = [
+  { label: 'All taxon names', value: '' },
+  { label: 'Cultivars only', value: 'only' },
+  { label: 'Exclude cultivars', value: 'exclude' },
+];
+
 const getBooleanLabel = (value: string) => {
   if (value === 'true') {
     return 'Yes';
@@ -1011,9 +1047,6 @@ const escapeCsvValue = (value: string | number | boolean | null | undefined) => 
   }
   return stringValue;
 };
-
-const stripHtml = (value?: string | null) =>
-  value ? value.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim() : '';
 
 const formatPublicationReferenceLabel = (value: string) => {
   const linkIdMatch = value.match(/taxon_publication_id:\s*([^|]+)/);
@@ -1047,13 +1080,19 @@ const getExportValue = (
     case 'id':
       return taxonNameId;
     case 'name':
-      return stripHtml(record.formatted_scientific_name) || record.scientific_name || '';
+      return getPlainFormattedDisplayName(record);
     case 'legacyId':
       return record.legacy_id ?? '';
     case 'scientificName':
       return record.scientific_name ?? '';
     case 'canonicalName':
       return record.canonical_name ?? '';
+    case 'formattedDisplayName':
+      return getPlainFormattedDisplayName(record);
+    case 'cultivarEpithet':
+      return record.cultivar_epithet ?? '';
+    case 'hasCultivar':
+      return booleanOrEmpty(record.has_cultivar ?? hasCultivarEpithet(record.cultivar_epithet));
     case 'rank':
       return typeof record.taxon_rank === 'string'
         ? record.taxon_rank
@@ -1305,6 +1344,8 @@ const TaxonNamesPage = () => {
       id: searchParams.get('id') || '',
       legacyId: searchParams.get('legacy_id') || '',
       scientificName: searchParams.get('scientific_name') || '',
+      cultivarEpithet: searchParams.get('cultivar_epithet') || '',
+      cultivarMode: searchParams.get('has_cultivar') || '',
       author: searchParams.get('author') || '',
       yearPublished: searchParams.get('form_desc_yr') || '',
       publicationName: searchParams.get('publication_name') || '',
@@ -1516,6 +1557,15 @@ const TaxonNamesPage = () => {
         filters.scientificName
           ? { label: 'Scientific name', value: filters.scientificName }
           : null,
+        filters.cultivarEpithet
+          ? { label: 'Cultivar epithet', value: filters.cultivarEpithet }
+          : null,
+        filters.cultivarMode
+          ? {
+              label: 'Cultivars',
+              value: filters.cultivarMode === 'only' ? 'Only cultivars' : 'Exclude cultivars',
+            }
+          : null,
         filters.author ? { label: 'Author', value: filters.author } : null,
         filters.taxonRank ? { label: 'Taxon rank', value: filters.taxonRank } : null,
         filters.kingdomIds.length > 0
@@ -1641,6 +1691,8 @@ const TaxonNamesPage = () => {
       ['id', next.id],
       ['legacy_id', next.legacyId],
       ['scientific_name', next.scientificName],
+      ['cultivar_epithet', next.cultivarEpithet],
+      ['has_cultivar', next.cultivarMode],
       ['author', next.author],
       ['form_desc_yr', next.yearPublished],
       ['publication_name', next.publicationName],
@@ -1698,6 +1750,8 @@ const TaxonNamesPage = () => {
       id: draftFilters.id.trim(),
       legacyId: draftFilters.legacyId.trim(),
       scientificName: draftFilters.scientificName.trim(),
+      cultivarEpithet: draftFilters.cultivarEpithet.trim(),
+      cultivarMode: draftFilters.cultivarMode,
       author: draftFilters.author.trim(),
       yearPublished: draftFilters.yearPublished.trim(),
       publicationName: draftFilters.publicationName.trim(),
@@ -1772,6 +1826,12 @@ const TaxonNamesPage = () => {
         return textOrEmpty(record.scientific_name);
       case 'canonicalName':
         return textOrEmpty(record.canonical_name);
+      case 'formattedDisplayName':
+        return getPlainFormattedDisplayName(record);
+      case 'cultivarEpithet':
+        return textOrEmpty(record.cultivar_epithet);
+      case 'hasCultivar':
+        return booleanOrEmpty(record.has_cultivar ?? hasCultivarEpithet(record.cultivar_epithet));
       case 'rank':
         return typeof record.taxon_rank === 'string'
           ? record.taxon_rank
@@ -2049,6 +2109,8 @@ const TaxonNamesPage = () => {
       id: '',
       legacyId: '',
       scientificName: '',
+      cultivarEpithet: '',
+      cultivarMode: '',
       author: '',
       yearPublished: '',
       publicationName: '',
@@ -2255,6 +2317,8 @@ const TaxonNamesPage = () => {
               {renderTextFilter('Species code', 'speciesCode')}
             </div>
             {renderTextFilter('Scientific name', 'scientificName')}
+            {renderSelectFilter('Cultivars', 'cultivarMode', cultivarModeOptions)}
+            {renderTextFilter('Cultivar epithet', 'cultivarEpithet', 'Bluff Cream')}
             {renderTextFilter('Author', 'author')}
             {renderSelectFilter(
               'Taxon rank',

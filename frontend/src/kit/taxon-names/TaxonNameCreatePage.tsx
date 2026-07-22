@@ -10,6 +10,7 @@ const TaxonNameCreatePage = () => (
     title="Create taxon name"
     mutationMode="pessimistic"
     redirect="edit"
+    transform={normalizeTaxonNameHybridFields}
   >
     <div className="grid gap-6">
       <div className="rounded-2xl border border-border bg-card p-6">
