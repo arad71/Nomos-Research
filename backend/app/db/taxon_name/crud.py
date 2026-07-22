@@ -13,7 +13,10 @@ import app.db.crud as crud
 import app.db.taxon_name.schema as schema
 from app.db.hierarchy.model import Hierarchy
 from app.db.informal_group.model import InformalGroup
-from app.db.taxon_name.calculated import append_ms_suffix, remove_ms_suffix
+from app.db.taxon_name.calculated import (
+    append_ms_suffix,
+    remove_ms_suffix,
+)
 
 # from app.db.taxon_name.calculated import append_ms_suffix
 from app.db.taxon_name.enums import PublicationStatus
@@ -44,6 +47,10 @@ CANONICAL = "Canonical"
 
 CANONICAL_WITHOUT_RANK = "Canonical without rank"
 HYBRID_FORMULA_PREFIX_RE = re.compile(r"^(?:×|x|X)\s+")
+CULTIVAR_QUOTE_RE = re.compile(
+    r"['\"`\u2018\u2019\u201A\u201B\u201C\u201D\u201E\u201F]"
+)
+SPACED_HYBRID_MARKER_RE = re.compile(r"(^|\s)x\s+", re.IGNORECASE)
 
 
 class TaxonNameCrud(crud.Crud):
@@ -58,6 +65,8 @@ class TaxonNameCrud(crud.Crud):
         "scientific_name",
         "canonical_name",
         "canonical_name_without_rank",
+        "cultivar_epithet",
+        "cultivar_search_text",
         "author",
         "all_vernaculars",
         "cross_referenced_old_name___new_name___scientific_name",
@@ -66,6 +75,28 @@ class TaxonNameCrud(crud.Crud):
     calculation_unmodified: int = 0
     calculation_count: int = 0
     calculation_total: int = 0
+
+    @staticmethod
+    def _normalize_cultivar_search_value(value):
+        if not isinstance(value, str):
+            return value
+        return re.sub(r"\s+", " ", CULTIVAR_QUOTE_RE.sub(" ", value).strip())
+
+    @classmethod
+    def apply_filter(
+        cls,
+        current_user: User,
+        filters: dict,
+        column,
+        filter_value,
+        path_match,
+        query: orm.Query,
+    ):
+        if column == "q":
+            filter_value = cls._normalize_cultivar_search_value(filter_value)
+        return super().apply_filter(
+            current_user, filters, column, filter_value, path_match, query
+        )
 
     @staticmethod
     def _seed_parallel_name_fields_from_current(values) -> None:
@@ -94,6 +125,29 @@ class TaxonNameCrud(crud.Crud):
         if value is None:
             return False
         return bool(HYBRID_FORMULA_PREFIX_RE.match(value.strip()))
+
+    @staticmethod
+    def _normalize_hybrid_multiplication_sign(value: str | None) -> str | None:
+        if value is None:
+            return None
+        return SPACED_HYBRID_MARKER_RE.sub(r"\1× ", value)
+
+    @classmethod
+    def _normalize_legacy_hybrid_name_parts(cls, values) -> None:
+        for field in (
+            "specific_epithet",
+            "infraspecific_epithet",
+            "parallel_override_specific_epithet",
+            "parallel_override_infraspecific_epithet",
+        ):
+            if hasattr(values, field):
+                setattr(
+                    values,
+                    field,
+                    cls._normalize_hybrid_multiplication_sign(
+                        getattr(values, field, None)
+                    ),
+                )
 
     @classmethod
     def _normalize_hybrid_formula_fields(cls, values) -> None:
@@ -261,6 +315,7 @@ class TaxonNameCrud(crud.Crud):
         taxon_name.canonical_name = derived.get("canonical_name")
         taxon_name.scientific_name = derived.get("scientific_name")
         taxon_name.formatted_scientific_name = derived.get("formatted_scientific_name")
+        taxon_name.calculate_name = False
 
     @staticmethod
     def _apply_publication_status_suffix(taxon_name: TaxonName) -> None:
@@ -310,6 +365,7 @@ class TaxonNameCrud(crud.Crud):
         db_session.close()
         ```
         """
+        cls._normalize_legacy_hybrid_name_parts(taxon_name)
         create_data = taxon_name.dict(exclude_unset=True)
         delattr(taxon_name, "classification_system_ids")
         db_taxon_name = super().create_item(db, taxon_name, current_user=current_user)
@@ -389,6 +445,7 @@ class TaxonNameCrud(crud.Crud):
         updated_taxon_name = TaxonNameCrud.edit_item(db, current_user, taxon_name_id,
         taxon_name_edit)
         """
+        cls._normalize_legacy_hybrid_name_parts(taxon_name)
         update_data = taxon_name.dict(exclude_unset=True)
         if "classification_system_ids" in update_data:
             classification_system_ids = update_data["classification_system_ids"]
