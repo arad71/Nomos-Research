@@ -89,7 +89,7 @@ const columnLabelMap = columnOptions.reduce<Record<ColumnKey, string>>(
 
 const sortableColumns: Partial<Record<ColumnKey, string>> = {
   taxonName: 'taxon_name___scientific_name',
-  parentName: 'parent___scientific_name',
+  parentName: 'parent_name___scientific_name',
   classificationSystem: 'classification_system___class_desc',
   updatedBy: 'updated_by',
   updated: 'updated_on',
@@ -136,7 +136,7 @@ const buildFilterObject = (filters: HierarchyFilters) => {
     nextFilter.path__ltxtquery = filters.higherClassification;
   }
   if (filters.parentName) {
-    nextFilter.parent___scientific_name__contains = filters.parentName;
+    nextFilter.parent_name___scientific_name__contains = filters.parentName;
   }
   if (filters.taxonName) {
     nextFilter.taxon_name___scientific_name__contains = filters.taxonName;

@@ -238,8 +238,8 @@ export const myDataProvider: DataProvider = {
       ...freshRecord,
       data: {
         ...(params.previousData ?? {}),
-        ...(freshRecord?.data ?? {}),
         ...(params.data ?? {}),
+        ...(freshRecord?.data ?? {}),
         id: freshRecord?.data?.id ?? recordId,
       },
     };

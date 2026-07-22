@@ -1,7 +1,7 @@
+import { resolve } from 'node:path';
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
-import tsconfigPaths from 'vite-tsconfig-paths';
 
 const manualChunkGroups: Record<string, string[]> = {
   react: ['react', 'react-dom', 'react-router-dom'],
@@ -35,10 +35,12 @@ const getManualChunk = (id: string) => {
 };
 
 export default defineConfig({
-  plugins: [react(), tailwindcss(), tsconfigPaths()],
+  plugins: [react(), tailwindcss()],
   envPrefix: ['VITE_', 'REACT_APP_', 'AUTH_'],
   resolve: {
     alias: {
+      '@': resolve(__dirname, 'src/@'),
+      lib: resolve(__dirname, 'src/lib'),
       '@mui/icons-material': '@mui/icons-material/esm',
     },
   },

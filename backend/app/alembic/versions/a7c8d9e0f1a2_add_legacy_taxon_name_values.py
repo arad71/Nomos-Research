@@ -1,7 +1,7 @@
 """Add legacy taxon name values
 
-Revision ID: f2a3b4c5d6e7
-Revises: e1b2c3d4f5a6
+Revision ID: a7c8d9e0f1a2
+Revises: f2a3b4c5d6e7
 Create Date: 2026-06-18 00:00:00.000000+08:00
 
 """
@@ -12,8 +12,8 @@ from sqlalchemy.engine.reflection import Inspector
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision = "f2a3b4c5d6e7"
-down_revision = "e1b2c3d4f5a6"
+revision = "a7c8d9e0f1a2"
+down_revision = "f2a3b4c5d6e7"
 branch_labels = None
 depends_on = None
 
