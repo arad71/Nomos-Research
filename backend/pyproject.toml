@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "Nomos"
-version = "2.0.10"
+version = "2.0.11"
 description = "Nomos - Taxonomic Names Management Tool"
 authors = [
     "Bri Williams <bri.williams@gaiaresources.com.au>",
@@ -19,20 +19,20 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.12"
-alembic = "^1.16.5"
+alembic = "^1.18.5"
 Authlib = "^1.7.2"
-fastapi =  "^0.136.1"
+fastapi =  "^0.139.2"
 fastapi-key-auth = "^0.15.5"
 httpx = "^0.28.1"
-ipython = "^9.13.0"
+ipython = "^9.15.0"
 itsdangerous = "^2.1.2"
 Jinja2 = "^3.1.6"
 loguru = "^0.7.3"
 psycopg2-binary = "^2.9.12"
-pytest = "^9.0.3"
+pytest = "^9.1.1"
 requests = "^2.34.2"
 SQLAlchemy = "<2.0"
-uvicorn = "^0.49.0"
+uvicorn = "^0.51.0"
 passlib = ">=1.7.4"
 pandas = "^3.0.3"
 openpyxl = "^3.1.2"
@@ -40,7 +40,7 @@ bcrypt = "4.0.1"
 sqlalchemy-utils = "^0.42.1"
 sqlalchemy_mixins = "^1.5.3"
 python-dateutil = "^2.8.2"
-python-multipart = "^0.0.31"
+python-multipart = "^0.0.32"
 pyjwt = "^2.13.0"
 mypy = "^2.1.0"
 autoflake = "^2.2.1"
@@ -48,10 +48,10 @@ flake8 = "^7.0.0"
 black = "^26.5.1"
 colorama = "^0.4.6"
 isort = "^8.0.1"
-typer = {extras = ["all"], version = "^0.25.1"}
+typer = {extras = ["all"], version = "^0.27.0"}
 rich = "^15.0.0"
 deepdiff = "^9.1.0"
-pydantic-settings = "^2.14.1"
+pydantic-settings = "^2.14.2"
 
 
 [tool.black]

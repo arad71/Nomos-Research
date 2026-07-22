@@ -35,7 +35,9 @@ const TaxonNameTitle = ({ fallback }: { fallback: string }) => {
         <span className="text-base font-normal text-foreground">{rankRecord.rank_name}</span>
       ) : null}
       <span className="inline-flex items-center gap-2">
-        <span dangerouslySetInnerHTML={{ __html: title }} />
+        <span>
+          <span dangerouslySetInnerHTML={{ __html: title }} />
+        </span>
         {record.is_current ? <Badge>Current</Badge> : null}
         {record.deleted ? <Badge variant="destructive">Deleted</Badge> : null}
       </span>
