@@ -90,9 +90,9 @@ def _is_phrase_name(target) -> bool:
     WACensus phrase names have a specific_epithet that starts with "sp."
     (case-insensitive), e.g. "sp. A Kimberley Flora".
     """
-    if not target.specific_epithet:
+    if not target.parallel_override_specific_epithet:
         return False
-    return target.specific_epithet.strip().lower().startswith("sp.")
+    return target.parallel_override_specific_epithet.strip().lower().startswith("sp.")
 
 
 def _is_nothotaxon(target) -> bool:
@@ -105,8 +105,8 @@ def _is_nothotaxon(target) -> bool:
     rank_name = target.taxon_rank.rank_name if target.taxon_rank else ""
     if rank_name in NOTHOTAXA_RANKS:
         return True
-    if target.specific_epithet:
-        se = target.specific_epithet.strip()
+    if target.parallel_override_specific_epithet:
+        se = target.parallel_override_specific_epithet.strip()
         if se.startswith("\u00d7") or se.lower().startswith("x "):
             return True
     return False
@@ -148,10 +148,10 @@ def generate_species_code(target) -> Optional[str]:
         return None
 
     # Must have a uninomial (genus) to generate any species code
-    if not target.uninomial:
+    if not target.parallel_override_uninomial:
         return None
 
-    gen = _upper_prefix(target.uninomial, 3)
+    gen = _upper_prefix(target.parallel_override_uninomial, 3)
 
     # Phrase names: GEN + "SP."
     if _is_phrase_name(target):
@@ -159,20 +159,20 @@ def generate_species_code(target) -> Optional[str]:
 
     # Nothotaxa: GEN + " X " + first char of specific epithet
     if _is_nothotaxon(target):
-        spc_clean = _clean_epithet(target.specific_epithet)
+        spc_clean = _clean_epithet(target.parallel_override_specific_epithet)
         spc_initial = _upper_prefix(spc_clean, 1)
         return f"{gen}X {spc_initial}"
 
     # Must have a specific epithet for species and below
-    if not target.specific_epithet:
+    if not target.parallel_override_specific_epithet:
         return None
 
-    spc = _upper_prefix(target.specific_epithet, 3)
+    spc = _upper_prefix(target.parallel_override_specific_epithet, 3)
 
     # Infraspecific ranks (subspecies, variety, form, quadrinomial):
     # GEN(3) + SPC(3) + INF(3)
     if rank_name in INFRASPECIFIC_RANKS:
-        inf = _upper_prefix(target.infraspecific_epithet, 3)
+        inf = _upper_prefix(target.parallel_override_infraspecific_epithet, 3)
         if inf:
             return f"{gen}{spc}{inf}"
         # Fallback if no infraspecific epithet: use species-level code
