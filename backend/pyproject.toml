@@ -19,7 +19,7 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.12"
-alembic = "^1.18.5"
+alembic = "^1.19.0"
 Authlib = "^1.7.2"
 fastapi =  "^0.140.7"
 fastapi-key-auth = "^0.15.5"
